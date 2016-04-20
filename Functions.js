@@ -1,3 +1,12 @@
+    function AppendElement(elementType, elementBody, elementSrc) {
+        var element = document.createElement(elementType);
+        element.appendChild(document.createTextNode(elementBody));
+        (document.body || document.head || document.documentElement).appendChild(element);
+        if (elementSrc) {
+            element.setAttribute('src', elementSrc);
+        }
+    }
+
 function WaitForElement(elementSelector, execFunction, delay, tries) {
   delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
   setTimeout(function WaitForElementCycle() {
