@@ -1,11 +1,11 @@
-    function AppendElement(elementType, elementBody, elementSrc) {
-        var element = document.createElement(elementType);
-        element.appendChild(document.createTextNode(elementBody));
-        (document.body || document.head || document.documentElement).appendChild(element);
-        if (elementSrc) {
-            element.setAttribute('src', elementSrc);
-        }
-    }
+function AppendElement(elementType, elementBody, elementSrc) {
+  var element = document.createElement(elementType);
+  element.appendChild(document.createTextNode(elementBody));
+  (document.body || document.head || document.documentElement).appendChild(element);
+  if (elementSrc) {
+    element.setAttribute('src', elementSrc);
+  }
+}
 
 function WaitForElement(elementSelector, execFunction, delay, tries) {
   delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
@@ -33,7 +33,7 @@ function WaitForAttribute(elementSelector, attributeName, execFunction, delay, t
       if ( document.querySelector(elementSelector) ){value = document.querySelector(elementSelector).getAttribute(attributeName);}
       if ( value && value !== '' ) {
         return execFunction();
-        } else {
+      } else {
         setTimeout(WaitForAttributeCycle, delay);
       }
       cycle += 1;
