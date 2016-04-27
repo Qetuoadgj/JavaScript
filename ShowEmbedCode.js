@@ -23,7 +23,7 @@
     }
   };
 
-  function ShowEmbedCode_MainFunction(targetFrame, thumbnail, content, embedFramePadding, embedLinkPadding) {
+  function ShowEmbedCode_MainFunction(targetFrame, thumbnail, content, embedFramePadding, embedLinkPadding, embedFrameBackgroundColor) {
     var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
     var createImage = true, createLink = true;
 
@@ -35,9 +35,9 @@
       var embedFrame = document.createElement('div');
       embedFrame.setAttribute('id', 'ShowEmbedCode_Frame');
       embedFrame.style.display = "block";
-      embedFrame.style.padding = '0px 9px 0px 9px';
+      if (embedFramePadding) {embedFrame.style.padding = embedFramePadding;}
       embedFrame.style['word-wrap'] = "break-word";
-      var bodyColor = window.getComputedStyle( document.body ,null).getPropertyValue('background-color'); embedFrame.style.backgroundColor = bodyColor;
+      if (embedFrameBackgroundColor) {embedFrame.style.backgroundColor = embedFrameBackgroundColor;}
       targetFrame.parentNode.insertBefore(embedFrame, targetFrame.nextSibling);
 
       var textFrame = document.createElement('textarea');
@@ -57,7 +57,7 @@
       if (createLink) {
         var embedLink = document.createElement('a');
         embedLink.style.display = 'table';
-        embedLink.style.padding = '5px 0px';
+        if (embedLinkPadding) {embedLink.style.padding = '5px 0px';}
         embedLink.style['font-size'] = '12px';
         embedLink.style.color = '#086081';
         embedLink.style.width = 'auto';
