@@ -71,10 +71,9 @@
         var embedImage = document.createElement('img');
         embedImage.style.display = 'block';
         embedImage.style['max-height'] = '120px';
-        embedImage.setAttribute('onclick', 'ShowEmbedCode_MainFunction();');
         embedImage.setAttribute('src', thumbnail);
         embedFrame.appendChild(embedImage);
-        embedImage.addEventListener ("click", ShowEmbedCode_MainFunction , false);
+        embedImage.addEventListener("click", ShowEmbedCode_MainFunction(targetFrame, thumbnail, content, embedFramePadding, embedLinkPadding, embedFrameBackgroundColor), false);
       }
     }
   }
