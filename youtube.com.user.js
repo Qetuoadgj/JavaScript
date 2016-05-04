@@ -5,7 +5,7 @@
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
 // @grant        none
-// @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/youtube.com.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/youtube.com.user.js
 // ==/UserScript==
 
 (function() {
