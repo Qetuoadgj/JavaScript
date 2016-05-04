@@ -2,7 +2,7 @@
 // @name         fs.to
 // @version      1.0.0
 // @description  Pure JavaScript version.
-// @author       You
+// @author       Ægir
 // @match        http://fs.to/video/*
 // @match        http://*.filecdn.to/*/*
 // @grant        none
