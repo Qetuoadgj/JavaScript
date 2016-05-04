@@ -7,7 +7,6 @@
 // @match        http://*.filecdn.to/*/*
 // @grant        none
 // @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
 // ==/UserScript==
 
 (function() {
@@ -153,8 +152,8 @@
     var videoFrame = document.querySelector('body > video'); videoFrame.style.width = '100%';
     var html = document.querySelector('html'); html.innerHTML = '';
     var body = document.querySelector('body'); body.appendChild(videoFrame);
-    videoFrame.play();
     MouseWheelAudioControl(videoFrame, 5);
+    videoFrame.play();
   }
 
   function RemoveADS() {
