@@ -6,8 +6,8 @@
 // @match        http://fs.to/video/*
 // @match        http://*.filecdn.to/*/*
 // @grant        none
-// @updateURL    https://drive.google.com/uc?export=download&id=0BwWINEArcS4yOVVKSjVQRTZNdm8
-// @downloadURL  https://drive.google.com/uc?export=download&id=0BwWINEArcS4yOVVKSjVQRTZNdm8
+// @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
 // ==/UserScript==
 
 (function() {
