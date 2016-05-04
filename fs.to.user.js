@@ -6,7 +6,7 @@
 // @match        http://fs.to/video/*
 // @match        http://*.filecdn.to/*/*
 // @grant        none
-// @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
 // ==/UserScript==
 
 (function() {
