@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         youtube.com
-// @version      0.1
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
 // @grant        none
+// @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/youtube.com.user.js
 // ==/UserScript==
 
 (function() {
