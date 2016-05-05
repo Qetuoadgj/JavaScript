@@ -133,7 +133,7 @@
   function MouseWheelAudioControl(media, step) {
     step = step || 1;
 
-    var volumeText = parent.document.createElement('div');
+    var volumeText = document.createElement('div');
     volumeText.style.color = 'yellow'; volumeText.style['font-size'] = '72px';
     volumeText.style.position = 'absolute'; volumeText.style['z-index'] = 2147483647; // Always on TOP
     media.parentNode.insertBefore(volumeText, media.nextSibling);
