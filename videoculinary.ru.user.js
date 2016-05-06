@@ -3,8 +3,9 @@
 // @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @match        http://www.videoculinary.ru/recipe/*/
+// @match        http://www.videoculinary.ru/recipe/*
 // @grant        none
+// @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/videoculinary.ru.user.js
 // ==/UserScript==
 
 (function() {
