@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         youtube.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
@@ -13,6 +13,22 @@
   'use strict';
 
   // Your code here...
+  function WaitForElement(elementSelector, execFunction, delay, tries) {
+    delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
+    setTimeout(function WaitForElementCycle() {
+      if (tries) {keepRun = (cycle < tries);}
+      if (keepRun) {
+        // alert('cycle = ' + cycle);
+        if ( document.querySelector(elementSelector) ) {
+          if (execFunction && (typeof execFunction == "function")) {return execFunction();}
+        } else {
+          setTimeout(WaitForElementCycle, delay);
+        }
+        cycle += 1;
+      }
+    }, delay);
+  }
+
   function WaitForAttribute(elementSelector, attributeName, execFunction, delay, tries) {
     delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true; var value;
     setTimeout(function WaitForAttributeCycle() {
@@ -95,5 +111,20 @@
     }
   }
 
+  function ClipConverterFixStyle() {
+    // document.querySelector('span#clipconverter > a > button').setAttribute('class', 'yt-uix-button addto-button yt-uix-tooltip');
+    var buttons = document.querySelectorAll('span#clipconverter > a > button'), i;
+    for (i = 0; i < buttons.length; ++i) {
+      var btn = buttons[i];
+      var span = btn.querySelector('span'); if (!span) {
+        var text = btn.innerHTML;
+        btn.innerHTML = '<span class="yt-uix-button-content"><strong>' + text + '</strong></span>';
+      }
+      btn.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
+    }
+  }
+
   WaitForAttribute('meta[property="og:video:url"]', 'content', ShowEmbedCode_MainFunction, 1000, 30);
+  // WaitForElement('span#clipconverter > a > button', ClipConverterFixStyle, 1000, 30);
+  ClipConverterFixStyle();
 })();
