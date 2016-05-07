@@ -13,6 +13,7 @@
   'use strict';
 
   // Your code here...
+  /*
   function WaitForElement(elementSelector, execFunction, delay, tries) {
     delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
     setTimeout(function WaitForElementCycle() {
@@ -45,7 +46,7 @@
       }
     }, delay);
   }
-
+  */
   String.prototype.Capitalize = function() {
     return this.split(' ').map(capFirst).join(' ');
     function capFirst(str) {
