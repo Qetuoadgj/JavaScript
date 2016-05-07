@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         youtube.com
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
@@ -124,7 +124,8 @@
     }
   }
 
-  WaitForAttribute('meta[property="og:video:url"]', 'content', ShowEmbedCode_MainFunction, 1000, 30);
+  // WaitForAttribute('meta[property="og:video:url"]', 'content', ShowEmbedCode_MainFunction, 1000, 30);
   // WaitForElement('span#clipconverter > a > button', ClipConverterFixStyle, 1000, 30);
+  ShowEmbedCode_MainFunction();
   ClipConverterFixStyle();
 })();
