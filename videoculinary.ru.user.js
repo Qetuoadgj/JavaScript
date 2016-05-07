@@ -6,6 +6,7 @@
 // @match        http://www.videoculinary.ru/recipe/*
 // @grant        none
 // @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/videoculinary.ru.user.js
+// @icon         http://a4.mzstatic.com/eu/r30/Purple4/v4/78/82/dd/7882ddd0-c8ca-a024-4670-61e4ca8b41d6/icon128-2x.png
 // ==/UserScript==
 
 (function() {
