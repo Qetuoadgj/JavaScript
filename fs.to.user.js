@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -77,10 +77,16 @@
     // embedFrameBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
 
     if (videoSrc) {
+      var iframe = parent.document.body.querySelector('div.l-body-inner.m-theme-video > div > div.l-content-wrap > div > div.b-player-popup > div.b-player-popup__content > div.b-iframe-player-wrap > div > iframe');
+      if (iframe) {
+        parent.document.body.querySelector('div.l-content-wrap').onwheel = function(){return false;}; // Отключение прокрутки для работы ResizeVideo()
+        iframe.innerHTML = ''; iframe.src = ''; iframe.src = videoSrc; // Вставка видео вместо содержимого iframe
+      }
+
       pageTitle = parent.document.title;
       var title = pageTitle.replace(/^.{1} /i, '').Capitalize(); title = title.replace(/(.*): Смотреть Онлайн.*/i, '$1'); title = title.replace(/(.*): .*$/i, '$1'); title = title.replace(/Сериал (.*)/i, '$1'); title = title.replace(/ \(.+Сезон.*\)/i, '');
 
-      var oldEmbedFrame = document.getElementById("ShowEmbedCode_Frame"); if (oldEmbedFrame) {oldEmbedFrame.remove();}
+      var oldEmbedFrame = document.getElementById("ShowEmbedCode_Frame") || parent.document.getElementById("ShowEmbedCode_Frame"); if (oldEmbedFrame) {oldEmbedFrame.remove();}
       var embedCode = ('#EXTINF: -1 group-title="",'+title+'\n'+videoSrc);
 
       var embedFrame = document.createElement('div');
@@ -126,8 +132,7 @@
         linkHeader.appendChild(downloaLink);
       }
     }
-
-    window.open(videoSrc, '_self');
+    // window.open(videoSrc, '_self');
   }
 
   function MouseWheelAudioControl(media, step) {
@@ -258,7 +263,7 @@
     WaitForAttribute('video#player.b-aplayer__html5-desktop.m-hidden', 'src', ShowEmbedCode, 1000, 30);
 
   } else if ( pageURL.match(/.*?filecdn.to/i) ) {
-    WaitForElement('body > video', ResizeVideo, 1000, 30);
+    WaitForElement('body > video', ResizeVideo, 250, 30);
 
   } else if ( pageURL.match(/fs.to\/video\/.*/i) ) {
     WaitForElement('div.b-scroll-to', RemoveADS, 1000, 30);
