@@ -6,6 +6,7 @@
 // @match        https://www.youtube.com/watch?*
 // @grant        none
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/youtube.com.user.js
+// @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // ==/UserScript==
 
 (function() {
