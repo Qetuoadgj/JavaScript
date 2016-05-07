@@ -7,6 +7,7 @@
 // @match        http://*.filecdn.to/*/*
 // @grant        none
 // @updateURL    https://github.com/Qetuoadgj/JavaScript/raw/master/fs.to.user.js
+// @icon         https://www.google.com/s2/favicons?domain=fs.to
 // ==/UserScript==
 
 (function() {
