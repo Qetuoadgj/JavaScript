@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         videoculinary.ru
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://www.videoculinary.ru/recipe/*
@@ -22,7 +22,7 @@
       }
     } else {
       element = document.querySelector(selector);
-      element.remove();
+      if (element) {element.remove();}
     }
     return false;
   }
