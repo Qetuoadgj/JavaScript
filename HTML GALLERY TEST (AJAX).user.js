@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @namespace    none
+// @version      1.0.0
+// @author       Æegir
 // @description  try to take over the world!
-// @author       You
 // @match        file:///*/2.0.3.html
 // @grant        unsafeWindow
 // @run-at       document-start
+// @icon         http://rddnickel.com/images/HTML%20icon.png
+// updateURL     https://github.com/Qetuoadgj/JavaScript/raw/master/HTML%20GALLERY%20TEST%20(AJAX).user.js
 // ==/UserScript==
 
 (function() {
