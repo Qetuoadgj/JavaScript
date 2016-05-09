@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  try to take over the world!
 // @author       You
-// @match        file:///*/2.0.1.html
+// @match        file:///*/2.0.3.html
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
@@ -132,6 +132,9 @@
       forEach(spoilersArray, function(index, self) {self.style.removeProperty('display');});
       if (active) {buttonClicked(thisButton, spoilerButtonsArray, true); activeSpoiler = false;} else {
         spoiler.style.display = 'block';
+        var activeThumbnails = spoiler.querySelectorAll('.thumbnail'); forEach(thumbnailsArray, function(index, self) {
+          if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
+        });
         galleryList = createGalleryList(spoiler);
         activeSpoiler = spoiler;
       }
@@ -160,7 +163,7 @@
       if (spoiler) {self.addEventListener("click", function(){showSpoiler(self, spoiler);}, false);}
     });
     forEach(thumbnailsArray, function(index, self) {
-      if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
+      // if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
       self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
     });
     forEach(backgroundsArray, function(index, self) {
