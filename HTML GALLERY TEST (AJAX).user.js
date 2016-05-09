@@ -20,7 +20,10 @@
   function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
   function resetAttributes(node) {
     var clone = node.cloneNode(true); var cloneThumbnailsArray = clone.querySelectorAll('.thumbnail'); forEach(cloneThumbnailsArray, function(index, self) {
-      if (!self.getAttribute('image')) {var image = self.src; self.setAttribute('image', image); self.removeAttribute('src');}
+      // if (!self.getAttribute('image')) {var image = self.src; self.setAttribute('image', image); self.removeAttribute('src');}
+      var Class = self.getAttribute('class'), Title = self.title, Image = self.getAttribute('image') || self.src, Content = self.getAttribute('content'), Url = self.getAttribute('url');
+      self.removeAttribute('class'); self.removeAttribute('title'); self.removeAttribute('image'); self.removeAttribute('src'); self.removeAttribute('content'); self.removeAttribute('url');
+      self.setAttribute('class', Class); self.setAttribute('title', Title); self.setAttribute('image', Image); self.setAttribute('content', Content); self.setAttribute('url', Url);
       self.removeAttribute('style');
     });
     clone.removeAttribute('style');
