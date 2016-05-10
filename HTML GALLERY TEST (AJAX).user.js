@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
 // @namespace    none
-// @version      1.0.0
+// @version      1.0.1
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
@@ -20,17 +20,27 @@
   function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
   function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
   function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
+
   function resetAttributes(node) {
-    var clone = node.cloneNode(true); var cloneThumbnailsArray = clone.querySelectorAll('.thumbnail'); forEach(cloneThumbnailsArray, function(index, self) {
-      // if (!self.getAttribute('image')) {var image = self.src; self.setAttribute('image', image); self.removeAttribute('src');}
+    var clone = node.cloneNode(true);
+    var spoilerButtonsArray = clone.querySelectorAll('.spoilertop');
+    var spoilersArray = clone.querySelectorAll('.spoilerbox');
+    var thumbnailsArray = clone.querySelectorAll('.thumbnail');
+    var outputs = clone.querySelector('div#content');
+    if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);}
+    var backgroundsArray = clone.querySelectorAll('.background');
+
+    forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
+    forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
+    forEach(thumbnailsArray, function(index, self) {
       var Class = self.getAttribute('class'), Title = self.title, Image = self.getAttribute('image') || self.src, Content = self.getAttribute('content'), Url = self.getAttribute('url');
-      self.removeAttribute('class'); self.removeAttribute('title'); self.removeAttribute('image'); self.removeAttribute('src'); self.removeAttribute('content'); self.removeAttribute('url');
+      self.removeAttribute('class'); self.removeAttribute('title'); self.removeAttribute('image'); self.removeAttribute('src'); self.removeAttribute('content'); self.removeAttribute('url'); self.removeAttribute('style');
       self.setAttribute('class', Class); self.setAttribute('title', Title); self.setAttribute('image', Image); self.setAttribute('content', Content); self.setAttribute('url', Url);
-      self.removeAttribute('style');
     });
-    clone.removeAttribute('style');
+
     return clone;
   }
+
   function copyToClipboard(element) {
     var clone = resetAttributes(element);
     var code = clone.outerHTML;
@@ -42,9 +52,13 @@
     setTimeout(function(){clipboard.remove(); clone.remove();}, 200);
   }
 
-  function fixScale(element) {
-    var W = element.offsetWidth, H = element.offsetHeight;
-    if (W > (window.width * 0.9)) {element.style.width = '90%'; element.style.height = 'auto';}
+  function fixScale(element) {var W = element.offsetWidth, H = element.offsetHeight; if (W > (window.width * 0.9)) {element.style.width = '90%'; element.style.height = 'auto';}}
+
+  function downloadCurrentDocument() {
+    var pageURL = location.href; var pageTitle = pageURL.replace(/.*\/(.*)$/i, '$1'); pageTitle = pageTitle.replace('.html', '') + '.html';
+    var doc = resetAttributes(document.documentElement).innerHTML;
+    var base64doc = btoa(unescape(encodeURIComponent(doc))), a = document.createElement('a'), e = document.createEvent("HTMLEvents");
+    a.download = pageTitle; a.href = 'data:text/html;base64,' + base64doc; e.initEvent('click'); a.dispatchEvent(e);
   }
 
   document.addEventListener("DOMContentLoaded", function(event) {
@@ -128,8 +142,6 @@
     }
 
     function changeContent(galleryList, delta) {
-      // var activeSpoiler; forEach(spoilersArray, function(index, self) {if (isVisible(self)) {activeSpoiler = self;}});
-      // var activeOutput; forEach(outputsArray, function(index, self) {if (isVisible(self)) {activeOutput = self;}});
       if (activeOutput) {
         var activeContent = activeOutput.data || activeOutput.src;
         var galleryContent = galleryList[galleryList.indexOf(activeContent) + (delta || 1)] || galleryList[delta ? galleryList.length - 1 : 0];
@@ -158,8 +170,10 @@
 
     document.onkeydown = function(e) {
       e = e || window.event;
-      var ctrlKey = 17, vKey = 86, cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27;
+      var ctrlKey = 17, vKey = 86, cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+
+      var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
 
       if (e.keyCode == escKey) { // Escape
         hideContent();
@@ -167,10 +181,13 @@
         changeContent(galleryList,-1); // Left Arrow
       } else if (e.keyCode == rArrowKey) {
         changeContent(galleryList); // Right Arrow
-      } else if (activeThumbnail && e.keyCode == delKey) { // Delete
-        commentElement(activeThumbnail); changeContent(galleryList);
+      } else if ((hovered || activeThumbnail) && e.keyCode == delKey) { // Delete
+        if (activeThumbnail) {commentElement(activeThumbnail); changeContent(galleryList);} else if (hovered) {commentElement(hovered);}
       } else if (activeSpoiler && ctrlDown && e.keyCode == cKey) { // Control + C
         copyToClipboard(activeSpoiler);
+      } else if (ctrlDown && e.keyCode == sKey) {
+        downloadCurrentDocument(document.documentElement);
+        e.preventDefault();
       }
     };
 
@@ -179,7 +196,6 @@
       if (spoiler) {self.addEventListener("click", function(){showSpoiler(self, spoiler);}, false);}
     });
     forEach(thumbnailsArray, function(index, self) {
-      // if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
       self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
     });
     forEach(backgroundsArray, function(index, self) {
