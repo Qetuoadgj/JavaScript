@@ -185,7 +185,7 @@
         if (activeThumbnail) {commentElement(activeThumbnail); changeContent(galleryList);} else if (hovered) {commentElement(hovered);}
       } else if (activeSpoiler && ctrlDown && e.keyCode == cKey) { // Control + C
         copyToClipboard(activeSpoiler);
-      } else if (ctrlDown && e.keyCode == sKey) {
+      } else if (ctrlDown && e.keyCode == sKey) { // Control + S
         downloadCurrentDocument(document.documentElement);
         e.preventDefault();
       }
