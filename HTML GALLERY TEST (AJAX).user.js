@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
 // @namespace    none
-// @version      1.0.3
+// @version      1.0.4
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
@@ -21,14 +21,18 @@
   function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
   function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
 
+  function getDoctype() {var doctype ='<!DOCTYPE ' + document.doctype.name.toUpperCase() + (document.doctype.publicId?' PUBLIC "' +  document.doctype.publicId.toUpperCase() + '"':'') + (document.doctype.systemId?' "' + document.doctype.systemId.toUpperCase() + '"':'') + '>'; return doctype;}
+
   function resetAttributes(node) {
     var clone = node.cloneNode(true);
     var spoilerButtonsArray = clone.querySelectorAll('.spoilertop');
     var spoilersArray = clone.querySelectorAll('.spoilerbox');
     var thumbnailsArray = clone.querySelectorAll('.thumbnail');
-    // var outputs = clone.querySelector('div#content');
-    // if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);}
-    // var backgroundsArray = clone.querySelectorAll('.background');
+    var outputs = clone.querySelector('div#content');
+    var outputsArray = [];
+    if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); outputsArray.push(iframeOutput, objectOutput, imgOutput);}
+    var backgroundsArray = clone.querySelectorAll('.background');
+    var temporary = clone.querySelectorAll('.temporary');
 
     forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
     forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
@@ -37,6 +41,8 @@
       self.removeAttribute('class'); self.removeAttribute('title'); self.removeAttribute('image'); self.removeAttribute('src'); self.removeAttribute('content'); self.removeAttribute('url'); self.removeAttribute('style');
       self.setAttribute('class', Class); self.setAttribute('title', Title); self.setAttribute('image', Image); self.setAttribute('content', Content); self.setAttribute('url', Url);
     });
+    forEach(outputsArray, function(index, self) {self.removeAttribute('style');});
+    forEach(temporary, function(index, self) {self.remove();});
 
     return clone;
   }
@@ -56,16 +62,17 @@
 
   function downloadCurrentDocument() {
     var pageURL = location.href; var pageTitle = pageURL.replace(/.*\/(.*)$/i, '$1'); pageTitle = pageTitle.replace('.html', '') + '.html';
-    var doc = resetAttributes(document.documentElement).innerHTML;
+    var doc = getDoctype() + '\n' + resetAttributes(document.documentElement).outerHTML;
     var base64doc = btoa(unescape(encodeURIComponent(doc))), a = document.createElement('a'), e = document.createEvent("HTMLEvents");
     a.download = pageTitle; a.href = 'data:text/html;base64,' + base64doc; e.initEvent('click'); a.dispatchEvent(e);
   }
 
   function asArray(list) {return Array.prototype.slice.call(list);}
 
-  function addGlobalStyle(css) {
+  function addGlobalStyle(css, cssClass) {
     var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
     var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+    if (cssClass) style.setAttribute('class', cssClass);
     head.appendChild(style);
   }
 
@@ -204,7 +211,7 @@
     forEach(spoilersArray, function(index, self) {
       var spoiler_id = self.getAttribute('id');
       var allowBackground = self.getAttribute('background'); if (allowBackground && allowBackground == 'yes') {var background = document.createElement('div'); background.setAttribute('class', 'background'); self.insertBefore(background, self.firstChild);backgroundsArray.push(background);}
-      var thumbnailsStyle = self.getAttribute('css'); if (thumbnailsStyle && thumbnailsStyle !== '') {addGlobalStyle('#'+spoiler_id+' > .thumbnail '+'{'+thumbnailsStyle+'}');}
+      var thumbnailsStyle = self.getAttribute('css'); if (thumbnailsStyle && thumbnailsStyle !== '') {addGlobalStyle('#'+spoiler_id+' > .thumbnail '+'{'+thumbnailsStyle+'}', 'temporary');}
     });
     forEach(thumbnailsArray, function(index, self) {
       self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
