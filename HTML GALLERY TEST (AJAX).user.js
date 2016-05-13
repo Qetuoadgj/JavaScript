@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
 // @namespace    none
-// @version      1.0.2
+// @version      1.0.3
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
@@ -20,7 +20,6 @@
   function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
   function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
   function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
-  function asArray(list) {return Array.prototype.slice.call(list);}
 
   function resetAttributes(node) {
     var clone = node.cloneNode(true);
@@ -60,6 +59,14 @@
     var doc = resetAttributes(document.documentElement).innerHTML;
     var base64doc = btoa(unescape(encodeURIComponent(doc))), a = document.createElement('a'), e = document.createEvent("HTMLEvents");
     a.download = pageTitle; a.href = 'data:text/html;base64,' + base64doc; e.initEvent('click'); a.dispatchEvent(e);
+  }
+
+  function asArray(list) {return Array.prototype.slice.call(list);}
+
+  function addGlobalStyle(css) {
+    var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
+    var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+    head.appendChild(style);
   }
 
   document.addEventListener("DOMContentLoaded", function(event) {
@@ -159,10 +166,8 @@
       forEach(spoilersArray, function(index, self) {self.style.removeProperty('display');});
       if (active) {buttonClicked(thisButton, spoilerButtonsArray, true); activeSpoiler = false;} else {
         spoiler.style.display = 'block';
-        var size = spoiler.getAttribute('thumbnail-size'); if (size) {var width = size.split(',', 2)[0], height = size.split(',', 2)[1]; height = height || width;}
         var activeThumbnails = spoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnails, function(index, self) {
           if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
-          if (size) {self.style.width = width; self.style.height = height;}
         });
         galleryList = createGalleryList(spoiler);
         activeSpoiler = spoiler;
@@ -197,10 +202,9 @@
       if (spoiler) {self.addEventListener("click", function(){showSpoiler(self, spoiler);}, false);}
     });
     forEach(spoilersArray, function(index, self) {
-      var allowBackground = self.getAttribute('background'); if (allowBackground && allowBackground == 'yes') {
-        var background = document.createElement('div'); background.setAttribute('class', 'background'); self.insertBefore(background, self.firstChild);
-        backgroundsArray.push(background);
-      }
+      var spoiler_id = self.getAttribute('id');
+      var allowBackground = self.getAttribute('background'); if (allowBackground && allowBackground == 'yes') {var background = document.createElement('div'); background.setAttribute('class', 'background'); self.insertBefore(background, self.firstChild);backgroundsArray.push(background);}
+      var thumbnailsStyle = self.getAttribute('css'); if (thumbnailsStyle && thumbnailsStyle !== '') {addGlobalStyle('#'+spoiler_id+' > .thumbnail '+'{'+thumbnailsStyle+'}');}
     });
     forEach(thumbnailsArray, function(index, self) {
       self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
