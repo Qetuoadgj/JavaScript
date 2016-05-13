@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
 // @namespace    none
-// @version      1.0.1
+// @version      1.0.2
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
@@ -20,15 +20,16 @@
   function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
   function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
   function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
+  function asArray(list) {return Array.prototype.slice.call(list);}
 
   function resetAttributes(node) {
     var clone = node.cloneNode(true);
     var spoilerButtonsArray = clone.querySelectorAll('.spoilertop');
     var spoilersArray = clone.querySelectorAll('.spoilerbox');
     var thumbnailsArray = clone.querySelectorAll('.thumbnail');
-    var outputs = clone.querySelector('div#content');
-    if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);}
-    var backgroundsArray = clone.querySelectorAll('.background');
+    // var outputs = clone.querySelector('div#content');
+    // if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);}
+    // var backgroundsArray = clone.querySelectorAll('.background');
 
     forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
     forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
@@ -71,7 +72,7 @@
     var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
-    var backgroundsArray = document.querySelectorAll('.background');
+    var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -187,13 +188,19 @@
         copyToClipboard(activeSpoiler);
       } else if (ctrlDown && e.keyCode == sKey) { // Control + S
         downloadCurrentDocument(document.documentElement);
-        e.preventDefault();
       }
+      e.preventDefault();
     };
 
     forEach(spoilerButtonsArray, function(index, self) {
       var spoiler_id = self.getAttribute('spoiler'); var spoiler = document.getElementById(spoiler_id);
       if (spoiler) {self.addEventListener("click", function(){showSpoiler(self, spoiler);}, false);}
+    });
+    forEach(spoilersArray, function(index, self) {
+      var allowBackground = self.getAttribute('background'); if (allowBackground && allowBackground == 'yes') {
+        var background = document.createElement('div'); background.setAttribute('class', 'background'); self.insertBefore(background, self.firstChild);
+        backgroundsArray.push(background);
+      }
     });
     forEach(thumbnailsArray, function(index, self) {
       self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
