@@ -6,9 +6,9 @@
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
 // @grant        unsafeWindow
-// @run-at       document-start
-// @icon         http://rddnickel.com/images/HTML%20icon.png
 // updateURL     https://github.com/Qetuoadgj/JavaScript/raw/master/HTML%20GALLERY%20TEST%20(AJAX).user.js
+// @icon         http://rddnickel.com/images/HTML%20icon.png
+// @run-at       document-start
 // ==/UserScript==
 
 (function() {
