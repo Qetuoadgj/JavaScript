@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX)
 // @namespace    none
-// @version      1.0.4
+// @version      1.0.5
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.3.html
@@ -34,6 +34,7 @@
     var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
+    clone.removeAttribute('style');
     forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
     forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
     forEach(thumbnailsArray, function(index, self) {
