@@ -182,7 +182,7 @@
       }
     }
 
-    document.onkeydown = function(e) {
+    function onKeyDown(e) {
       e = e || window.event;
       var ctrlKey = 17, vKey = 86, cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
@@ -203,6 +203,11 @@
         downloadCurrentDocument(document.documentElement);
       }
       e.preventDefault();
+    }
+
+    // document.addEventListener("keydown", function(e) {onKeyDown(e);});
+    document.onkeydown =  function(e) {
+      onKeyDown(e);
     };
 
     forEach(spoilerButtonsArray, function(index, self) {
