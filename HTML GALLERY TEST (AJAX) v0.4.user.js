@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.0
+// @version      2.0.1
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -38,9 +38,6 @@
     forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
     forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
     forEach(thumbnailsArray, function(index, self) {
-      // var Class = self.getAttribute('class'), Title = self.title, Image = self.getAttribute('image') || self.src, Content = self.getAttribute('content'), Url = self.getAttribute('url');
-      // self.removeAttribute('class'); self.removeAttribute('title'); self.removeAttribute('image'); self.removeAttribute('src'); self.removeAttribute('content'); self.removeAttribute('url'); self.removeAttribute('style');
-      // self.setAttribute('class', Class); self.setAttribute('title', Title); self.setAttribute('image', Image); self.setAttribute('content', Content); self.setAttribute('url', Url);
       self.removeAttribute('style');
       var image = self.querySelector('img'); if (image) image.remove();
     });
@@ -137,7 +134,7 @@
 
     function showContent(thisThumbnail, thumbnailsArray) {
       var output = thisThumbnail.getAttribute('output');
-      var content = thisThumbnail.getAttribute('content'); content = appendFlashVars(content);
+      var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image'); content = appendFlashVars(content);
       if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';} else if (!output) {output = 'iframe';}
       buttonClicked(thisThumbnail, thumbnailsArray);
       var outputFrame = outputs.querySelector(output);
@@ -177,9 +174,8 @@
       if (active) {buttonClicked(thisButton, spoilerButtonsArray, true); activeSpoiler = false;} else {
         spoiler.style.display = 'block';
         var activeThumbnails = spoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnails, function(index, self) {
-          // if (!self.src) {var image = self.getAttribute('image'); self.src = image; self.removeAttribute('image');}
           var image = self.querySelector('img'); if (!image) {
-            image = document.createElement('img'); var imageSrc = self.getAttribute('image');
+            image = document.createElement('img'); var imageSrc = self.getAttribute('image') || self.getAttribute('content');
             image.setAttribute('src', imageSrc);
             self.appendChild(image);
           }
