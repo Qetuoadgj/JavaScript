@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         youtube.com
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
@@ -54,12 +54,24 @@
     }
   };
 
+  function appendFrame(embedFrame, appendPosition, targetFrame) {
+    if (appendPosition == 'after') {
+      targetFrame.parentNode.insertBefore(embedFrame, targetFrame.nextSibling);
+    } else if (appendPosition == 'before') {
+      targetFrame.parentNode.insertBefore(embedFrame, targetFrame);
+    } else if (appendPosition == 'append') {
+      targetFrame.appendChild(embedFrame);
+    } else {
+      console.log('appendPosition = '+appendPosition);
+    }
+  }
+
   function ShowEmbedCode_MainFunction() {
     var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
     var targetFrame, thumbnail, content, embedFrameMargin, embedLinkMargin, embedFrameBackgroundColor;
-    var createImage = true, createLink = true;
+    var createImage = true, createLink = true; var appendPosition;
 
-    targetFrame = document.querySelector('#watch-description');
+    targetFrame = document.querySelector('#watch-description'); appendPosition = 'after';
     thumbnail = document.querySelector('meta[property="og:image"]').getAttribute('content'); thumbnail = thumbnail.replace(/(.*)\/.*default.jpg$/i, '$1/mqdefault.jpg');
     content = document.querySelector('meta[property="og:video:url"]').getAttribute('content'); content = content.replace(/(.*)[?].*/i, '$1') + '?start=0';
     pageURL = pageURL.replace(/[?].*&?(v=.+?)(&.*)?$/i, '?$1');
@@ -71,14 +83,20 @@
     if (targetFrame) {
       var title = pageTitle.replace(/^.{1} /i, '').Capitalize();
       var oldEmbedFrame = document.getElementById("ShowEmbedCode_Frame"); if (oldEmbedFrame) {oldEmbedFrame.remove();}
-      var embedCode = '<img class="thumbnail" title="'+title+'" image="'+thumbnail+'" content="'+content+'" url="'+pageURL+'">';
+
+      var embedCode = '<div class="thumbnail"';
+      if (content !== pageURL) embedCode += ' title="'+title+'"';
+      if (thumbnail && thumbnail !== content) embedCode += ' image="'+thumbnail+'"';
+      embedCode += ' content="'+content+'"';
+      if (content !== pageURL) embedCode +=' url="'+pageURL+'"';
+      embedCode += '></div>';
 
       var embedFrame = document.createElement('div');
       embedFrame.setAttribute('id', 'ShowEmbedCode_Frame');
       embedFrame.style.display = "block"; embedFrame.style['word-wrap'] = "break-word";
       if (embedFrameMargin) {embedFrame.style.margin = embedFrameMargin;}
       if (embedFrameBackgroundColor) {embedFrame.style.backgroundColor = embedFrameBackgroundColor;}
-      targetFrame.parentNode.insertBefore(embedFrame, targetFrame);
+      appendFrame(embedFrame, appendPosition, targetFrame);
 
       var textFrame = document.createElement('textarea');
       textFrame.style.display = 'block'; textFrame.style.border = 'none';
