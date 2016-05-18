@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.1
+// @version      2.0.2
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -76,6 +76,12 @@
     head.appendChild(style);
   }
 
+  function relativeURL(url) {
+    var path = window.location.protocol + "//" + window.location.host  + window.location.pathname; path = path.replace(/(.*)\/.*$/i, '$1');
+    url = url.replace(path, '');  url = url.replace(/^(\/)/, '');
+    return url;
+  }
+
   document.addEventListener("DOMContentLoaded", function(event) {
     // GLOBAL VARIABLES
     var spoilerButtonsArray = document.querySelectorAll('#galleries > .spoilertop');
@@ -87,6 +93,7 @@
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
+    var wallpapers = document.getElementById('wallpapers'), wp_mp4, wp_mp4_default_src; if (wallpapers) {wp_mp4 = wallpapers.querySelectorAll('source')[0]; wp_mp4_default_src = wp_mp4.src; wp_mp4_default_src = relativeURL(wp_mp4_default_src);}
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -122,6 +129,16 @@
       return source;
     }
 
+    function setWallpaper(spoiler, unset) {
+      var currentSrc = wp_mp4.src; currentSrc = relativeURL(currentSrc);
+      var wallpaper = spoiler.getAttribute('wallpaper');
+      if (wallpaper && !unset) {
+        if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper; wallpapers.load();}
+      } else {
+        if (currentSrc !== wp_mp4_default_src) {wp_mp4.src = wp_mp4_default_src; wallpapers.load();}
+      }
+    }
+
     function hideContent() {
       if (activeOutput) {
         resetContentOutputs();
@@ -129,6 +146,8 @@
       } else if (activeSpoiler) {
         activeSpoiler.style.removeProperty('display');
         buttonClicked(false, spoilerButtonsArray, true);
+        setWallpaper(activeSpoiler, true);
+        activeSpoiler = false;
       }
     }
 
@@ -171,7 +190,8 @@
       var active = isVisible(spoiler);
       buttonClicked(thisButton, spoilerButtonsArray);
       forEach(spoilersArray, function(index, self) {self.style.removeProperty('display');});
-      if (active) {buttonClicked(thisButton, spoilerButtonsArray, true); activeSpoiler = false;} else {
+      if (active) {hideContent();} else {
+        setWallpaper(spoiler);
         spoiler.style.display = 'block';
         var activeThumbnails = spoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnails, function(index, self) {
           var image = self.querySelector('img'); if (!image) {
