@@ -95,7 +95,7 @@
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
-    var wallpapers = document.getElementById('wallpapers'), wallpapers_mp4, wallpapers_mp4_default; if (wallpapers) {wallpapers_mp4 = wallpapers.querySelectorAll('source')[0]; wallpapers_mp4_default = wallpapers_mp4.getAttribute('src'); wallpapers_mp4_default = relativeURL(wallpapers_mp4_default);}
+    var wallpapers = document.getElementById('wallpapers'), wallpapers_mp4, wallpapers_mp4_default; if (wallpapers) {wallpapers_mp4 = wallpapers.querySelector('source[type="video/mp4"]'); wallpapers_mp4_default = wallpapers_mp4.getAttribute('src'); wallpapers_mp4_default = relativeURL(wallpapers_mp4_default);}
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
