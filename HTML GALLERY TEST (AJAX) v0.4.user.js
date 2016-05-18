@@ -95,7 +95,7 @@
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
-    var wallpapers = document.getElementById('wallpapers'), wp_mp4, wp_mp4_default_src; if (wallpapers) {wp_mp4 = wallpapers.querySelectorAll('source')[0]; wp_mp4_default_src = wp_mp4.getAttribute('src'); wp_mp4_default_src = relativeURL(wp_mp4_default_src);}
+    var wallpapers = document.getElementById('wallpapers'), wallpapers_mp4, wallpapers_mp4_default; if (wallpapers) {wallpapers_mp4 = wallpapers.querySelectorAll('source')[0]; wallpapers_mp4_default = wallpapers_mp4.getAttribute('src'); wallpapers_mp4_default = relativeURL(wallpapers_mp4_default);}
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -133,13 +133,13 @@
 
     function setWallpaper(spoiler, unset) {
       if (wallpapers) {
-        var currentSrc = wp_mp4.getAttribute('src'); currentSrc = relativeURL(currentSrc);
+        var currentSrc = wallpapers_mp4.getAttribute('src'); currentSrc = relativeURL(currentSrc);
         var wallpaper = spoiler.getAttribute('wallpaper');
         if (wallpaper && !unset) {
-          if (wallpaper == 'no') {wp_mp4.src = '';} else if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper;}
+          if (wallpaper == 'no') {wallpapers_mp4.src = '';} else if (wallpaper !== currentSrc) {wallpapers_mp4.src = wallpaper;}
           wallpapers.load();
         } else {
-          if (currentSrc !== wp_mp4_default_src) {wp_mp4.src = wp_mp4_default_src; wallpapers.load();}
+          if (currentSrc !== wallpapers_mp4_default) {wallpapers_mp4.src = wallpapers_mp4_default; wallpapers.load();}
         }
       }
     }
