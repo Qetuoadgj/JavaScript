@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.1
+// @version      2.0.2
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -31,7 +31,7 @@
     var outputs = clone.querySelector('div#content');
     var outputsArray = [];
     if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); outputsArray.push(iframeOutput, objectOutput, imgOutput);}
-    var backgroundsArray = clone.querySelectorAll('.background');
+    // var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
     clone.removeAttribute('style');
@@ -66,8 +66,9 @@
   function downloadCurrentDocument() {
     var pageURL = location.href; var pageTitle = pageURL.replace(/.*\/(.*)$/i, '$1'); pageTitle = pageTitle.replace('.html', '') + '.html';
     var doc = getDoctype() + '\n' + resetAttributes(document.documentElement).outerHTML;
+    //noinspection JSDeprecatedSymbols
     var base64doc = btoa(unescape(encodeURIComponent(doc))), a = document.createElement('a'), e = document.createEvent("HTMLEvents");
-    a.download = pageTitle; a.href = 'data:text/html;base64,' + base64doc; e.initEvent('click'); a.dispatchEvent(e);
+    a.download = pageTitle; a.href = 'data:text/html;base64,' + base64doc; e.initEvent('click', false, false); a.dispatchEvent(e);
   }
 
   function asArray(list) {return Array.prototype.slice.call(list);}
@@ -79,7 +80,7 @@
     head.appendChild(style);
   }
 
-  document.addEventListener("DOMContentLoaded", function(event) {
+  document.addEventListener("DOMContentLoaded", function() {
     // GLOBAL VARIABLES
     var spoilerButtonsArray = document.querySelectorAll('#galleries > .spoilertop');
     var spoilersArray = document.querySelectorAll('#previews > .spoilerbox');
@@ -117,7 +118,8 @@
           flashvars.push(existingVars);
         }
         source += '?';
-        var i = 0; flashvars.forEach(function(flashvar) {
+        var i = 0;
+        flashvars.forEach(function() {
           if (i < flashvars.length - 1) {flashvars[i] += '&';}
           source += flashvars[i]; i += 1;
         });
@@ -190,7 +192,7 @@
 
     function onKeyDown(e) {
       e = e || window.event;
-      var ctrlKey = 17, vKey = 86, cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83;
+      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
 
       var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
