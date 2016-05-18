@@ -77,8 +77,10 @@
   }
 
   function relativeURL(url) {
-    var path = window.location.protocol + "//" + window.location.host  + window.location.pathname; path = path.replace(/(.*)\/.*$/i, '$1');
-    url = url.replace(path, '');  url = url.replace(/^(\/)/, '');
+    if (url) {
+      var path = window.location.protocol + "//" + window.location.host  + window.location.pathname; path = path.replace(/(.*)\/.*$/i, '$1');
+      url = url.replace(path, ''); url = url.replace(/^(\/)/, '');
+    }
     return url;
   }
 
@@ -93,7 +95,7 @@
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
-    var wallpapers = document.getElementById('wallpapers'), wp_mp4, wp_mp4_default_src; if (wallpapers) {wp_mp4 = wallpapers.querySelectorAll('source')[0]; wp_mp4_default_src = wp_mp4.src; wp_mp4_default_src = relativeURL(wp_mp4_default_src);}
+    var wallpapers = document.getElementById('wallpapers'), wp_mp4, wp_mp4_default_src; if (wallpapers) {wp_mp4 = wallpapers.querySelectorAll('source')[0]; wp_mp4_default_src = wp_mp4.getAttribute('src'); wp_mp4_default_src = relativeURL(wp_mp4_default_src);}
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -130,10 +132,11 @@
     }
 
     function setWallpaper(spoiler, unset) {
-      var currentSrc = wp_mp4.src; currentSrc = relativeURL(currentSrc);
+      var currentSrc = wp_mp4.getAttribute('src'); currentSrc = relativeURL(currentSrc);
       var wallpaper = spoiler.getAttribute('wallpaper');
       if (wallpaper && !unset) {
-        if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper; wallpapers.load();}
+        if (wallpaper == 'no') {wp_mp4.src = '';} else if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper;}
+        wallpapers.load();
       } else {
         if (currentSrc !== wp_mp4_default_src) {wp_mp4.src = wp_mp4_default_src; wallpapers.load();}
       }
