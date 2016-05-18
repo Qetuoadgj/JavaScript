@@ -132,13 +132,15 @@
     }
 
     function setWallpaper(spoiler, unset) {
-      var currentSrc = wp_mp4.getAttribute('src'); currentSrc = relativeURL(currentSrc);
-      var wallpaper = spoiler.getAttribute('wallpaper');
-      if (wallpaper && !unset) {
-        if (wallpaper == 'no') {wp_mp4.src = '';} else if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper;}
-        wallpapers.load();
-      } else {
-        if (currentSrc !== wp_mp4_default_src) {wp_mp4.src = wp_mp4_default_src; wallpapers.load();}
+      if (wallpapers) {
+        var currentSrc = wp_mp4.getAttribute('src'); currentSrc = relativeURL(currentSrc);
+        var wallpaper = spoiler.getAttribute('wallpaper');
+        if (wallpaper && !unset) {
+          if (wallpaper == 'no') {wp_mp4.src = '';} else if (wallpaper !== currentSrc) {wp_mp4.src = wallpaper;}
+          wallpapers.load();
+        } else {
+          if (currentSrc !== wp_mp4_default_src) {wp_mp4.src = wp_mp4_default_src; wallpapers.load();}
+        }
       }
     }
 
