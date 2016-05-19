@@ -1,5 +1,15 @@
+// ==UserScript==
+// @name         addEmbedCodeFrame
+// @version      0.1
+// @description  Pure JavaScript version.
+// @author       Ægir
+// @match        none
+// @grant        none
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/showEmbedCode.user.js
+// ==/UserScript==
+
 // GLOBAL FUNCTIONS
-alert('loaded');
+alert('loaded_1');
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 
 String.prototype.Capitalize = function() {
