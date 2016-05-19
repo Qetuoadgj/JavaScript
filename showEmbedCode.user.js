@@ -8,12 +8,8 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/showEmbedCode.user.js
 // ==/UserScript==
 
-(function() {
-  'use strict';
-
-  // Your code here...
-  // GLOBAL VARIABLES
-alert('loaded_2');
+// GLOBAL FUNCTIONS
+alert('loaded_3');
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 
 String.prototype.Capitalize = function() {
@@ -130,4 +126,3 @@ function changeQualityButton(elementSelector) {
   var qualityButton =  document.querySelector(elementSelector);
   qualityButton.addEventListener("click", addEmbedCodeFrame, false);
 }
-})();
