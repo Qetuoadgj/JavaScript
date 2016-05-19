@@ -13,7 +13,7 @@
 
   // Your code here...
 // GLOBAL FUNCTIONS
-alert('loaded_3');
+alert('loaded_4');
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 
 String.prototype.Capitalize = function() {
