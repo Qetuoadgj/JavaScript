@@ -58,11 +58,6 @@
     setTimeout(function(){clipboard.remove(); clone.remove();}, 200);
   }
 
-  // function fixScale(element) {
-  //   var img_width = element.offsetWidth + 1, max_width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) * 0.9;
-  //   if (img_width > max_width) {element.style.width = '90%'; element.style.height = 'auto';} else {element.style.width = 'auto'; element.style.height = '90%';}
-  // }
-
   function downloadCurrentDocument() {
     var pageURL = location.href; var pageTitle = pageURL.replace(/.*\/(.*)$/i, '$1'); pageTitle = pageTitle.replace('.html', '') + '.html';
     var doc = getDoctype() + '\n' + resetAttributes(document.documentElement).outerHTML;
@@ -150,7 +145,6 @@
         resetContentOutputs();
         outputFrame.style.display = 'block'; outputFrame.setAttribute(outputAttr, content);
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
-        // if (activeOutput.tagName.toLowerCase() == 'img') fixScale(activeOutput);
       }
     }
 
