@@ -106,7 +106,7 @@ function addEmbedCodeFrame() {
   textFrame.setAttribute('readonly', 'readonly');
   textFrame.setAttribute('onclick', 'this.focus(); this.select();');
   textFrame.value = embedCodeText;
-  embedCodeFrame.appendChild(textFrame); auto_grow(textFrame);
+  embedCodeFrame.appendChild(textFrame); // auto_grow(textFrame);
 
   if (createLink) {
     var embedCodeLink = document.createElement('a');
