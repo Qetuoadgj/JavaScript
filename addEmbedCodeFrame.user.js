@@ -37,6 +37,7 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
           if (element) return funcToRun(); else setTimeout(runCycle, cycleDelay);
         }
       }
+      console.log('cycleCount: '+count);
     }, cycleDelay);
   }
 }
