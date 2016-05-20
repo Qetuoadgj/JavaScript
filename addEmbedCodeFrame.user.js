@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -59,7 +59,9 @@ var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 
 // LOCAL FUNCTIONS
-function addEmbedCodeFrame() {
+function addEmbedCodeFrame(parentPage) {
+  parentPage = parentPage || document;
+
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   if (oldEmbedCodeFrame) oldEmbedCodeFrame.remove();
 
@@ -86,7 +88,7 @@ function addEmbedCodeFrame() {
   if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
   embedCodeText += '></div>';
 
-  var embedCodeFrame = document.createElement('div');
+  var embedCodeFrame = parentPage.createElement('div');
   embedCodeFrame.setAttribute('id', 'oldEmbedCodeFrame');
   embedCodeFrame.style.display = "block";
   embedCodeFrame.style['word-wrap'] = "break-word";
@@ -94,7 +96,7 @@ function addEmbedCodeFrame() {
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
   appendFrame(embedCodeFrame, appendPosition, appendToFrame);
 
-  var textFrame = document.createElement('textarea');
+  var textFrame = parentPage.createElement('textarea');
   textFrame.style.display = 'block';
   textFrame.style.border = 'none';
   textFrame.style['background-color'] = 'transparent';
@@ -109,7 +111,7 @@ function addEmbedCodeFrame() {
   embedCodeFrame.appendChild(textFrame); // auto_grow(textFrame);
 
   if (createLink) {
-    var embedCodeLink = document.createElement('a');
+    var embedCodeLink = parentPage.createElement('a');
     if (embedCodeLink_Margin) {embedCodeLink.style.margin = embedCodeLink_Margin;}
     embedCodeLink.style['font-size'] = '12px';
     embedCodeLink.style.color = '#086081';
@@ -120,7 +122,7 @@ function addEmbedCodeFrame() {
     embedCodeFrame.appendChild(embedCodeLink);
   }
   if (createPoster)  {
-    var embedCodePoster = document.createElement('img');
+    var embedCodePoster = parentPage.createElement('img');
     embedCodePoster.style.display = 'block';
     embedCodePoster.style['max-height'] = '120px';
     embedCodePoster.setAttribute('src', posterURL);
