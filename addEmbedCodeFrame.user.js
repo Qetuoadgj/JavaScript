@@ -125,12 +125,12 @@ function addEmbedCodeFrame() {
     embedCodePoster.style['max-height'] = '120px';
     embedCodePoster.setAttribute('src', posterURL);
     embedCodeFrame.appendChild(embedCodePoster);
-    embedCodePoster.addEventListener("click", addEmbedCodeFrame, false);
+    embedCodePoster.addEventListener("click", mainFunction, false);
   }
 }
 
 function changeQualityButton(elementSelector) {
   var qualityButton =  document.querySelector(elementSelector);
-  qualityButton.addEventListener("click", addEmbedCodeFrame, false);
+  qualityButton.addEventListener("click", mainFunction, false);
 }
 // })();
