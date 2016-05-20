@@ -53,7 +53,7 @@ function appendFrame(targetFrame, appendPosition, appendToFrame) {
 
 // GLOBAL VARIABLES
 var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
-
+var mainFunction = function(){};
 var createLink, createPoster, contentURL, posterURL, appendToFrame, appendPosition;
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
