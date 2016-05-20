@@ -5,7 +5,7 @@
 // @author       Ægir
 // @match        none
 // @grant        none
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/showEmbedCode.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/addEmbedCodeFrame.user.js
 // ==/UserScript==
 
 // (function() {
