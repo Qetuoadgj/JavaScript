@@ -24,20 +24,19 @@ String.prototype.Capitalize = function() {
 
 function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
-    cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; // default values
-    var count = 0; setTimeout(function runCycle() {
-      if (count < maxTries) {
-        count += 1; var element = document.querySelector(elementSelector);
+    cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
+    setTimeout(function waitForElementCycle() {
+      if (maxTries) {keepRun = (cycleCount < maxTries);}
+      if (keepRun) {
+        element = document.querySelector(elementSelector);
         if (attributeName) {
-          if (element) {
-            var value = element.getAttribute(attributeName);
-            if (value) return funcToRun(); else setTimeout(runCycle, cycleDelay);
-          }
+          if (element) {value = element.getAttribute(attributeName);}
+          if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         } else {
-          if (element) return funcToRun(); else setTimeout(runCycle, cycleDelay);
+          if (element) {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         }
+        cycleCount += 1;
       }
-      console.log('cycleCount: '+count);
     }, cycleDelay);
   }
 }
