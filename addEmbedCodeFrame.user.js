@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      0.1
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -31,9 +31,9 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
         element = document.querySelector(elementSelector);
         if (attributeName) {
           if (element) {value = element.getAttribute(attributeName);}
-          if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          if (value && value !== '') {clearTimeout(); return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         } else {
-          if (element) {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          if (element) {clearTimeout(); return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         }
         cycleCount += 1;
       }
