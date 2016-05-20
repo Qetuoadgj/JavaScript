@@ -63,7 +63,7 @@ function addEmbedCodeFrame() {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   if (oldEmbedCodeFrame) oldEmbedCodeFrame.remove();
 
-  var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
+  //   var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 
   //   var createLink = true, createPoster = true;
 
