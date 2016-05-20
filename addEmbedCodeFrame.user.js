@@ -29,8 +29,10 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
       if (count < maxTries) {
         count += 1; var element = document.querySelector(elementSelector);
         if (attributeName) {
-          var value = element.getAttribute(attributeName);
-          if (value) return funcToRun(); else setTimeout(runCycle, cycleDelay);
+          if (element) {
+            var value = element.getAttribute(attributeName);
+            if (value) return funcToRun(); else setTimeout(runCycle, cycleDelay);
+          }
         } else {
           if (element) return funcToRun(); else setTimeout(runCycle, cycleDelay);
         }
