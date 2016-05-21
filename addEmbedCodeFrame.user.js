@@ -41,6 +41,19 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
   }
 }
 
+function waitForCondition(condition, funcToRun, cycleDelay, maxTries) {
+  if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
+    cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
+    setTimeout(function waitForConditionCycle() {
+      if (maxTries) {keepRun = (cycleCount < maxTries);}
+      if (keepRun) {
+        if (condition()) {clearTimeout(); return funcToRun();} else {setTimeout(waitForConditionCycle, cycleDelay);}
+        cycleCount += 1;
+      }
+    }, cycleDelay);
+  }
+}
+
 function appendFrame(targetFrame, appendPosition, appendToFrame) {
   if (appendPosition == 'after') {
     appendToFrame.parentNode.insertBefore(targetFrame, appendToFrame.nextSibling);
@@ -59,8 +72,8 @@ var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 
 // LOCAL FUNCTIONS
-function addEmbedCodeFrame(parentPage) {
-  parentPage = parentPage || document;
+function addEmbedCodeFrame(parentDocument) {
+  parentDocument = parentDocument || document;
 
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   if (oldEmbedCodeFrame) oldEmbedCodeFrame.remove();
@@ -88,7 +101,7 @@ function addEmbedCodeFrame(parentPage) {
   if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
   embedCodeText += '></div>';
 
-  var embedCodeFrame = parentPage.createElement('div');
+  var embedCodeFrame = parentDocument.createElement('div');
   embedCodeFrame.setAttribute('id', 'oldEmbedCodeFrame');
   embedCodeFrame.style.display = "block";
   embedCodeFrame.style['word-wrap'] = "break-word";
@@ -96,7 +109,7 @@ function addEmbedCodeFrame(parentPage) {
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
   appendFrame(embedCodeFrame, appendPosition, appendToFrame);
 
-  var textFrame = parentPage.createElement('textarea');
+  var textFrame = parentDocument.createElement('textarea');
   textFrame.style.display = 'block';
   textFrame.style.border = 'none';
   textFrame.style['background-color'] = 'transparent';
@@ -111,7 +124,7 @@ function addEmbedCodeFrame(parentPage) {
   embedCodeFrame.appendChild(textFrame); // auto_grow(textFrame);
 
   if (createLink) {
-    var embedCodeLink = parentPage.createElement('a');
+    var embedCodeLink = parentDocument.createElement('a');
     if (embedCodeLink_Margin) {embedCodeLink.style.margin = embedCodeLink_Margin;}
     embedCodeLink.style['font-size'] = '12px';
     embedCodeLink.style.color = '#086081';
@@ -122,7 +135,7 @@ function addEmbedCodeFrame(parentPage) {
     embedCodeFrame.appendChild(embedCodeLink);
   }
   if (createPoster)  {
-    var embedCodePoster = parentPage.createElement('img');
+    var embedCodePoster = parentDocument.createElement('img');
     embedCodePoster.style.display = 'block';
     embedCodePoster.style['max-height'] = '120px';
     embedCodePoster.setAttribute('src', posterURL);
@@ -131,8 +144,10 @@ function addEmbedCodeFrame(parentPage) {
   }
 }
 
-function changeQualityButton(elementSelector) {
-  var qualityButton =  document.querySelector(elementSelector);
+function changeQualityButton(elementSelector, parentDocument) {
+  parentDocument = parentDocument || document;
+
+  var qualityButton = document.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
 }
 // })();
