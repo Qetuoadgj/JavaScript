@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -72,7 +72,7 @@ function appendFrame(targetFrame, appendPosition, appendToFrame) {
 // DEFAULT GLOBAL VARIABLES
 var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 var mainFunction = function(){alert('mainFunction() was not redefined!');};
-var createLink, createPoster, contentURL, posterURL, appendToFrame, appendPosition;
+var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
