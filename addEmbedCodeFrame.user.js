@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.3
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
