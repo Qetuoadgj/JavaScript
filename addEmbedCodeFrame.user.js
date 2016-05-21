@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -12,9 +12,12 @@
 //   'use strict';
 
 // Your code here...
-// alert('loaded_5');
+// alert('loaded');
 
-// GLOBAL FUNCTIONS
+// ====================================================================================================================
+// DEFAULT GLOBAL FUNCTIONS
+function getElementComputedStyle(elementObject, propertyName) {return window.getComputedStyle(elementObject, null).getPropertyValue(propertyName);}
+
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 
 String.prototype.Capitalize = function() {
@@ -64,42 +67,50 @@ function appendFrame(targetFrame, appendPosition, appendToFrame) {
   }
 }
 
-// GLOBAL VARIABLES
+// ====================================================================================================================
+
+// DEFAULT GLOBAL VARIABLES
 var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 var mainFunction = function(){alert('mainFunction() was not redefined!');};
 var createLink, createPoster, contentURL, posterURL, appendToFrame, appendPosition;
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
+var embedCodeText;
 
-// LOCAL FUNCTIONS
+// DEFAULT LOCAL FUNCTIONS
 function addEmbedCodeFrame(parentDocument) {
   parentDocument = parentDocument || document;
 
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   if (oldEmbedCodeFrame) oldEmbedCodeFrame.remove();
 
-  //   var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
+  /*
+    var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 
-  //   var createLink = true, createPoster = true;
+    var createLink = true, createPoster = true;
 
-  //   var contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
-  //   var posterURL = document.querySelector('span[itemprop="thumbnail"] > link').href;
-  //   var appendToFrame = document.querySelector('div.player');
-  //   var appendPosition = 'after';
+    var contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
+    var posterURL = document.querySelector('span[itemprop="thumbnail"] > link').href;
+    var appendToFrame = document.querySelector('div.player');
+    var appendPosition = 'after';
 
-  //   // embedCodeFrame_Margin = '0px 0px 10px 0px';
-  //   // embedCodeLink_Margin = '5px 0px';
-  //   // embedCodeFrame_BackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
+    // embedCodeFrame_Margin = '0px 0px 10px 0px';
+    // embedCodeLink_Margin = '5px 0px';
+    // embedCodeFrame_BackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
 
-  //   var contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
+    var contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
+    */
 
+  contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
 
-  var embedCodeText = '<div class="thumbnail"';
-  if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
-  if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
-  embedCodeText += ' content="'+contentURL+'"';
-  if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
-  embedCodeText += '></div>';
+  if (!embedCodeText) {
+    embedCodeText = '<div class="thumbnail"';
+    if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
+    if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
+    embedCodeText += ' content="'+contentURL+'"';
+    if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
+    embedCodeText += '></div>';
+  }
 
   var embedCodeFrame = parentDocument.createElement('div');
   embedCodeFrame.setAttribute('id', 'oldEmbedCodeFrame');
@@ -150,4 +161,5 @@ function changeQualityButton(elementSelector, parentDocument) {
   var qualityButton = document.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
 }
+// ====================================================================================================================
 // })();
