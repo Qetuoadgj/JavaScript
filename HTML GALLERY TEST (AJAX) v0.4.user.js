@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.3
+// @version      2.0.4
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -75,15 +75,15 @@
     head.appendChild(style);
   }
 
-  function addClass(o, c){
-    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g");
-    if (re.test(o.className)) return;
-    o.className = (o.className + " " + c).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+  function addClass(element, cssClass){
+    var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
+    if (re.test(element.className)) return;
+    element.className = (element.className + " " + cssClass).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
   }
 
-  function removeClass(o, c){
-    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g");
-    o.className = o.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+  function removeClass(element, cssClass){
+    var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
+    element.className = element.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
   }
 
   document.addEventListener("DOMContentLoaded", function() {
@@ -113,15 +113,13 @@
     }
 
     function minimizeContentOutputs() {
-      forEach(outputsArray, function(index, self) {
-        if (outputsMinimized) {
-          removeClass(self, 'minimized');
-          outputsMinimized = false;
-        } else {
-          addClass(self, 'minimized');
-          outputsMinimized = true;
-        }
-      });
+      if (outputsMinimized) {
+        forEach(outputsArray, function(index, self) {removeClass(self, 'minimized');});
+        outputsMinimized = false;
+      } else {
+        forEach(outputsArray, function(index, self) {addClass(self, 'minimized');});
+        outputsMinimized = true;
+      }
     }
 
     function appendFlashVars(source) {
