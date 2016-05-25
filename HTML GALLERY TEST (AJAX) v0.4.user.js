@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.2
+// @version      2.0.3
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -75,6 +75,17 @@
     head.appendChild(style);
   }
 
+  function addClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g");
+    if (re.test(o.className)) return;
+    o.className = (o.className + " " + c).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+  }
+
+  function removeClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g");
+    o.className = o.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     // GLOBAL VARIABLES
     var spoilerButtonsArray = document.querySelectorAll('#galleries > .spoilertop');
@@ -86,6 +97,7 @@
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
+    var outputsMinimized;
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -98,6 +110,18 @@
       iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = '';
       forEach(outputsArray, function(index, self) {self.style.removeProperty('display');});
       activeOutput = false; activeThumbnail = false;
+    }
+
+    function minimizeContentOutputs() {
+      forEach(outputsArray, function(index, self) {
+        if (outputsMinimized) {
+          removeClass(self, 'minimized');
+          outputsMinimized = false;
+        } else {
+          addClass(self, 'minimized');
+          outputsMinimized = true;
+        }
+      });
     }
 
     function appendFlashVars(source) {
@@ -186,7 +210,7 @@
 
     function onKeyDown(e) {
       e = e || window.event;
-      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83;
+      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
 
       var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
@@ -203,6 +227,8 @@
         copyToClipboard(activeSpoiler);
       } else if (ctrlDown && e.keyCode == sKey) { // Control + S
         downloadCurrentDocument(document.documentElement);
+      } else if (activeOutput && e.keyCode == zKey) {
+        minimizeContentOutputs();
       }
       e.preventDefault();
     }
