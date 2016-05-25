@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.4
+// @version      2.0.5
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -31,7 +31,7 @@
     var outputs = clone.querySelector('div#content');
     var outputsArray = [];
     if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); outputsArray.push(iframeOutput, objectOutput, imgOutput);}
-    // var backgroundsArray = clone.querySelectorAll('.background');
+    var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
     clone.removeAttribute('style');
@@ -43,6 +43,7 @@
     });
     forEach(outputsArray, function(index, self) {self.removeAttribute('style');});
     forEach(temporary, function(index, self) {self.remove();});
+    forEach(backgroundsArray, function(index, self) {self.remove();});
 
     return clone;
   }
