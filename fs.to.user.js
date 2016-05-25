@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -14,38 +14,23 @@
   'use strict';
 
   // Your code here...
-  function WaitForElement(elementSelector, execFunction, delay, tries) {
-    delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
-    setTimeout(function WaitForElementCycle() {
-      if (tries) {keepRun = (cycle < tries);}
-      if (keepRun) {
-        // alert('cycle = ' + cycle);
-        if ( document.querySelector(elementSelector) ) {
-          if (execFunction && (typeof execFunction == "function")) {return execFunction();}
-        } else {
-          setTimeout(WaitForElementCycle, delay);
+  function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries) {
+    if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
+      cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
+      setTimeout(function waitForElementCycle() {
+        if (maxTries) {keepRun = (cycleCount < maxTries);}
+        if (keepRun) {
+          element = document.querySelector(elementSelector);
+          if (attributeName) {
+            if (element) {value = element.getAttribute(attributeName);}
+            if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          } else {
+            if (element) {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          }
+          cycleCount += 1;
         }
-        cycle += 1;
-      }
-    }, delay);
-  }
-
-  function WaitForAttribute(elementSelector, attributeName, execFunction, delay, tries) {
-    delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
-    var value;
-    setTimeout(function WaitForAttributeCycle() {
-      if (tries) {keepRun = (cycle < tries);}
-      if (keepRun) {
-        // alert('cycle = ' + cycle);
-        if ( document.querySelector(elementSelector) ){value = document.querySelector(elementSelector).getAttribute(attributeName);}
-        if ( value && value !== '' ) {
-          if (execFunction && (typeof execFunction == "function")) {return execFunction();}
-        } else {
-          setTimeout(WaitForAttributeCycle, delay);
-        }
-        cycle += 1;
-      }
-    }, delay);
+      }, cycleDelay);
+    }
   }
 
   String.prototype.Capitalize = function() {
@@ -178,6 +163,7 @@
     var body = document.querySelector('body'); body.appendChild(videoFrame);
     MouseWheelAudioControl(videoFrame, 5);
     videoFrame.play();
+    videoFrame.volume = 0.5;
   }
 
   function RemoveADS() {
@@ -261,14 +247,21 @@
 
   var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
   if ( pageURL.match(/fs.to\/video\/.+\/view_iframe\/.*/i) ) {
-    WaitForAttribute('video#player.b-aplayer__html5-desktop.m-hidden', 'src', ShowEmbedCode, 1000, 30);
+    waitForElement('video#player.b-aplayer__html5-desktop.m-hidden', 'src', ShowEmbedCode, 1000, 30);
 
   } else if ( pageURL.match(/.*?filecdn.to/i) ) {
-    WaitForElement('body > video', ResizeVideo, 250, 30);
+    waitForElement('body > video', false, ResizeVideo, 250, 30);
 
   } else if ( pageURL.match(/fs.to\/video\/.*/i) ) {
-    WaitForElement('div.b-scroll-to', RemoveADS, 1000, 30);
-    WaitForElement('div.b-section-banner-wrap', RemoveADS, 1000, 30);
-    WaitForElement('#page-item-viewonline', CreateFileList(false), 1000, 30);
+    waitForElement('div.b-scroll-to', false, RemoveADS, 1000, 30);
+    waitForElement('div.b-section-banner-wrap', false, RemoveADS, 1000, 30);
+    waitForElement('#page-item-viewonline', false, CreateFileList, 1000, 30);
+
+    document.querySelector('body').addEventListener('click', function(event) {
+      var targetElement = event.target, targetId = targetElement.getAttribute('id'), targetClass = targetElement.getAttribute('class'), targetTagName = targetElement.tagName.toLowerCase();
+      if (targetElement.classList.contains('link-subtype')) {
+        setTimeout(function() {CreateFileList(true, false);}, 250);
+      }
+    });
   }
 })();
