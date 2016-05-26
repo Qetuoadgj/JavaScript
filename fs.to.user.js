@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -46,6 +46,7 @@
     var numberOfLines = Math.floor(frameHeight/lineHeight);
     element.style.height = lineHeight * (numberOfLines+0.5) + 'px';
     element.style.rows = numberOfLines;
+    if (!element.value || element.value === '') element.style.height = '0px';
   }
 
   function ShowEmbedCode() {
@@ -235,6 +236,7 @@
       embedFrame.appendChild(downloadButton);
 
       var textFrame = parent.document.createElement('textarea');
+      textFrame.setAttribute('id', 'embedCodeTextFrame');
       textFrame.style.display = 'block'; textFrame.style.border = 'none';
       textFrame.style.rows = '2'; textFrame.style.overflow = 'hidden';
       textFrame.style['background-color'] = 'transparent'; textFrame.style.width = '100%';
@@ -261,6 +263,9 @@
       var targetElement = event.target, targetId = targetElement.getAttribute('id'), targetClass = targetElement.getAttribute('class'), targetTagName = targetElement.tagName.toLowerCase();
       if (targetElement.classList.contains('link-subtype')) {
         setTimeout(function() {CreateFileList(true, false);}, 250);
+      } else if (targetElement.classList.contains('link-simple') || targetElement.parentNode.classList.contains('link-simple')) {
+        var textFrame = document.getElementById('embedCodeTextFrame');
+        if (textFrame) {textFrame.value = ''; textFrameAutoHeight(textFrame);}
       }
     });
   }
