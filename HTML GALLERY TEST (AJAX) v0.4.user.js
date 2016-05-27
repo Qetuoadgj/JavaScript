@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.5
+// @version      2.0.6
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -222,6 +222,7 @@
         changeContent(galleryList); // Right Arrow
       } else if ((hovered || activeThumbnail) && e.keyCode == delKey) { // Delete
         if (activeThumbnail) {commentElement(activeThumbnail); changeContent(galleryList);} else if (hovered) {commentElement(hovered);}
+        galleryList = createGalleryList(activeSpoiler);
       } else if (activeSpoiler && ctrlDown && e.keyCode == cKey) { // Control + C
         copyToClipboard(activeSpoiler);
       } else if (ctrlDown && e.keyCode == sKey) { // Control + S
