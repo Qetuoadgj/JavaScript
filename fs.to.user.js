@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -38,6 +38,14 @@
     function capFirst(str) {
       return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);
     }
+  };
+
+  String.prototype.replaceAll = function (find, replace) {
+    var str = this;
+    while( str.indexOf(find) > -1) {
+      str = str.replace(find, replace);
+    }
+    return str;
   };
 
   function textFrameAutoHeight(element) {
@@ -208,6 +216,21 @@
           var videoTitle = serieNumber.innerHTML;
           title = title.replace(/(.*): .*$/i, '$1'); title = title.replace(/Сериал (.*)/i, '$1'); title = title.replace(/ \(.+Сезон.*\)/i, '');
           var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
+          videoTitle = videoFileName.replace(/.*S\d+E\d+(.*)/i, '$1');
+          videoTitle = videoTitle.replace(/(.*)\..*/, '$1');
+          videoTitle = videoTitle.replace(/(.*)\[.*/, '$1');
+          videoTitle = videoTitle.replaceAll('.-.', ' ');
+          videoTitle = videoTitle.replaceAll('.+.', ' ');
+          videoTitle = videoTitle.replaceAll('+-+', ' ');
+          videoTitle = videoTitle.replaceAll('+', ' ');
+          videoTitle = videoTitle.replaceAll('.', ' ');
+          videoTitle = videoTitle.replace(/(360p|480p|720p|1080p|BDRip)/ig, '');
+          videoTitle = videoTitle.replace(/^\s+/, '');
+          videoTitle = videoTitle.replace(/^-/, '');
+          videoTitle = videoTitle.replace(/\s+$/, '');
+          videoTitle = videoTitle.replace(/\s+/g, ' ');
+          videoTitle = videoTitle.replace(/^\s+/, '');
+          videoTitle = serieNumber.innerHTML.replace('Серия ', '') + '. ' + videoTitle;
           if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';}
         } else {
           title = title.replace(/(.*): .*$/i, '$1');
