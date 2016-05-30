@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -55,6 +55,13 @@
     element.style.height = lineHeight * (numberOfLines+0.5) + 'px';
     element.style.rows = numberOfLines;
     if (!element.value || element.value === '') element.style.height = '0px';
+  }
+
+  function addGlobalStyle(css, cssClass) {
+    var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
+    var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+    if (cssClass) style.setAttribute('class', cssClass);
+    head.appendChild(style);
   }
 
   function ShowEmbedCode() {
@@ -167,9 +174,11 @@
   }
 
   function ResizeVideo() {
-    var videoFrame = document.querySelector('body > video'); videoFrame.style.width = '100%';
+    var videoFrame = document.querySelector('body > video'); //videoFrame.style.width = '100%';
     var html = document.querySelector('html'); html.innerHTML = '';
     var body = document.querySelector('body'); body.appendChild(videoFrame);
+    // addGlobalStyle('video {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}');
+    addGlobalStyle('video {width: 100%;}');
     MouseWheelAudioControl(videoFrame, 5);
     videoFrame.play();
     videoFrame.volume = 0.5;
