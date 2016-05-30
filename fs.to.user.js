@@ -224,7 +224,8 @@
           videoTitle = videoTitle.replaceAll('+-+', ' ');
           videoTitle = videoTitle.replaceAll('+', ' ');
           videoTitle = videoTitle.replaceAll('.', ' ');
-          videoTitle = videoTitle.replace(/(360p|480p|720p|1080p|BDRip)/ig, '');
+          videoTitle = videoTitle.replaceAll('_', ' ');
+          videoTitle = videoTitle.replace(/\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720)\b/ig, '');
           videoTitle = videoTitle.replace(/^\s+/, '');
           videoTitle = videoTitle.replace(/^-/, '');
           videoTitle = videoTitle.replace(/\s+$/, '');
