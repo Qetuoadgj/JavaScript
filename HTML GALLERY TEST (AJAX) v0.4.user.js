@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.6
+// @version      2.0.7
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -30,7 +30,9 @@
     var thumbnailsArray = clone.querySelectorAll('.thumbnail');
     var outputs = clone.querySelector('div#content');
     var outputsArray = [];
-    if (outputs) {var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img'); outputsArray.push(iframeOutput, objectOutput, imgOutput);}
+    var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
+    outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
+    var videoSource = videoOutput.querySelector('source');
     var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
@@ -44,6 +46,8 @@
     forEach(outputsArray, function(index, self) {self.removeAttribute('style');});
     forEach(temporary, function(index, self) {self.remove();});
     forEach(backgroundsArray, function(index, self) {self.remove();});
+
+    iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = ''; videoSource.src = '';
 
     return clone;
   }
@@ -93,8 +97,10 @@
     var spoilersArray = document.querySelectorAll('#previews > .spoilerbox');
     var thumbnailsArray = document.querySelectorAll('#previews > .spoilerbox > .thumbnail');
     var outputs = document.getElementById('content');
-    var iframeOutput = outputs.querySelector('#content_iframe'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
-    var outputsArray = []; outputsArray.push(iframeOutput, objectOutput, imgOutput);
+    var outputsArray = [];
+    var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
+    outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
+    var videoSource = videoOutput.querySelector('source');
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
@@ -108,7 +114,7 @@
     }
 
     function resetContentOutputs() {
-      iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = '';
+      iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = ''; videoSource.src = ''; videoOutput.load();
       forEach(outputsArray, function(index, self) {self.style.removeProperty('display');});
       activeOutput = false; activeThumbnail = false;
     }
@@ -158,15 +164,17 @@
     function showContent(thisThumbnail, thumbnailsArray) {
       var output = thisThumbnail.getAttribute('output');
       var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image'); content = appendFlashVars(content);
-      if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';} else if (!output) {output = 'iframe';}
+      if (!output && content.match(/\.mp4$/i)) {output = 'video';} else if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';} else if (!output) {output = 'iframe';}
       buttonClicked(thisThumbnail, thumbnailsArray);
       var outputFrame = outputs.querySelector(output);
       var outputAttr = 'src'; if (output == 'object') outputAttr = 'data';
-      var currentContent = outputFrame.getAttribute(outputAttr);
+      var currentContent;
+      if (output == 'video') {currentContent = videoSource.getAttribute('src');} else {currentContent = outputFrame.getAttribute(outputAttr);}
       var active = (currentContent == content);
       if (active) {buttonClicked(thisThumbnail, thumbnailsArray, true); resetContentOutputs();} else {
         resetContentOutputs();
-        outputFrame.style.display = 'block'; outputFrame.setAttribute(outputAttr, content);
+        outputFrame.style.display = 'block';
+        if (output == 'video') {videoSource.setAttribute('src', content); videoOutput.load(); videoOutput.play();} else {outputFrame.setAttribute(outputAttr, content);}
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
       }
     }
@@ -180,7 +188,7 @@
 
     function changeContent(galleryList, delta) {
       if (activeOutput) {
-        var activeContent = activeOutput.data || activeOutput.src;
+        var activeContent = activeOutput.data || activeOutput.src || videoSource.src;
         var galleryContent = galleryList[galleryList.indexOf(activeContent) + (delta || 1)] || galleryList[delta ? galleryList.length - 1 : 0];
         var activeThumbnailsArray = activeSpoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnailsArray, function(index, self) {
           var content = self.getAttribute('content'); content = appendFlashVars(content);
