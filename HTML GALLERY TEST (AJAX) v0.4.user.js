@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.1
+// @version      2.1.2
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -34,7 +34,7 @@
     var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
     outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
     var videoSource = videoOutput.querySelector('source');
-    var objectMovie = objectOutput.querySelector('param[name="movie"]');
+    var objectFlashvars = objectOutput.querySelector('param[name="flashvars"]');
     var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
@@ -49,7 +49,7 @@
     forEach(temporary, function(index, self) {self.remove();});
     forEach(backgroundsArray, function(index, self) {self.remove();});
 
-    iframeOutput.src = ''; objectOutput.data = ''; objectMovie.value = ''; imgOutput.src = ''; videoSource.src = '';
+    iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = '';
 
     return clone;
   }
@@ -103,7 +103,9 @@
     var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
     outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
     var videoSource = videoOutput.querySelector('source');
-    var objectMovie = objectOutput.querySelector('param[name="movie"]');
+    var objectFlashvars = objectOutput.querySelector('param[name="flashvars"]');
+    var objectSourceKey = objectOutput.querySelector('param[name="sourceKey"]');
+    if (objectSourceKey) objectSourceKey = objectSourceKey.value;
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
@@ -118,7 +120,7 @@
     }
 
     function resetContentOutputs() {
-      iframeOutput.src = ''; objectOutput.data = ''; objectMovie.value = ''; imgOutput.src = ''; videoSource.src = ''; videoOutput.load();
+      iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = ''; videoOutput.load();
       forEach(outputsArray, function(index, self) {self.style.removeProperty('display');});
       activeOutput = false; activeThumbnail = false;
       activeContent = false;
@@ -135,19 +137,42 @@
     }
 
     function appendFlashVars(source) {
+      var i, flashvars, existingVars;
       if (source.indexOf('https://www.youtube.com/embed/') == '0') {
-        var flashvars = [
+        flashvars = [
           'autoplay=1',       // Enable Autoplay
           'hd=1',             // Watch in HD
           'iv_load_policy=3'  // Disable Annotations
         ];
-        var existingVars = '';
+        existingVars = '';
         if (source.match(/[?].*/i)) {
           existingVars += source.replace(/.*[?](.*)/i, '$1'); source = source.replace(/(.*)[?].*/i, '$1');
           flashvars.push(existingVars);
         }
         source += '?';
-        var i = 0;
+        i = 0;
+        flashvars.forEach(function() {
+          if (i < flashvars.length - 1) {flashvars[i] += '&';}
+          source += flashvars[i]; i += 1;
+        });
+      } else if (source.match(/(rtmp:\/\/|\.m3u8)/i)) {
+        flashvars = [
+          'playButtonOverlay=false',   // The default value displays a large Play button over the center of the player window before playback begins.
+          'bufferingOverlay=true',     // The default value displays a visual notification when playback is paused to refill the buffer.
+          'autoPlay=true',             // Enable Autoplay
+          'volume=0.5',                // The initial volume of the media. Allowable values range from 0 (silent) to 1 (full volume).
+          'verbose=true',              // Whether to display detailed error messages for debugging. The default value (false) causes the display of simplified, user-friendly error messages.
+          // 'streamType=live',           // The type of media stream to support. The default setting plays both live and recorded media, with no digital video recording (DVR) features.
+          // 'highQualityThreshold=720 ', // The maximum vertical pixel resolution for which the video is treated as being of standard quality.
+
+        ];
+        existingVars = '';
+        if (source.match(/[?].*/i)) {
+          existingVars += source.replace(/.*[?](.*)/i, '$1'); source = source.replace(/(.*)[?].*/i, '$1');
+          flashvars.push(existingVars);
+        }
+        source += '&';
+        i = 0;
         flashvars.forEach(function() {
           if (i < flashvars.length - 1) {flashvars[i] += '&';}
           source += flashvars[i]; i += 1;
@@ -175,12 +200,7 @@
       else if (!output) {output = 'iframe';}
       buttonClicked(thisThumbnail, thumbnailsArray);
       var outputFrame = outputs.querySelector(output);
-      var outputAttr = 'src'; //if (output == 'object') outputAttr = 'data';
-      // var currentContent;
-      // if (activeOutput == videoOutput) {currentContent = videoSource.getAttribute('src');}
-      // else if (activeOutput == objectOutput) {currentContent = objectMovie.getAttribute('src').replace(/.*src=(.*?)&.*/i, '$1');}
-      // else {currentContent = outputFrame.getAttribute(outputAttr);}
-      // var active = (currentContent == content);
+      var outputAttr = 'src';
       var active = (content == activeContent); // global
       if (active) {buttonClicked(thisThumbnail, thumbnailsArray, true); resetContentOutputs();} else {
         resetContentOutputs();
@@ -189,8 +209,11 @@
         else if (output == 'object') {
           resetContentOutputs();
           setTimeout(function(){
-            objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src=' + content + '&autoPlay=true');
+            // objectFlashvars.setAttribute('value', 'uid=content_object&'+objectSourceKey+'='+content+'&poster=http://atr.ua/assets/279dff17/live.png' + '&auto=play');
+            objectFlashvars.setAttribute('value', objectSourceKey+'='+content);
             outputFrame.style.display = 'block';
+            // uppodSend('content_object', 'play');
+            // outputFrame.sendToUppod('play');
           }, 10);
         }
         else {outputFrame.setAttribute(outputAttr, content);}
@@ -208,7 +231,6 @@
 
     function changeContent(galleryList, delta) {
       if (activeOutput) {
-        // var activeContent = activeOutput.data || activeOutput.src || videoSource.src;
         // global activeContent
         var galleryContent = galleryList[galleryList.indexOf(activeContent) + (delta || 1)] || galleryList[delta ? galleryList.length - 1 : 0];
         var activeThumbnailsArray = activeSpoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnailsArray, function(index, self) {
@@ -238,7 +260,7 @@
 
     function onKeyDown(e) {
       e = e || window.event;
-      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90;
+      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90, fKey = 70;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
 
       var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
@@ -258,7 +280,15 @@
         downloadCurrentDocument(document.documentElement);
       } else if (activeOutput && e.keyCode == zKey) {
         minimizeContentOutputs();
-      }
+      }/* else if (activeOutput && e.keyCode == fKey) {
+        if (activeOutput.requestFullScreen) {
+          activeOutput.requestFullScreen();
+        } else if (activeOutput.mozRequestFullScreen) {
+          activeOutput.mozRequestFullScreen();
+        } else if (activeOutput.webkitRequestFullScreen) {
+          activeOutput.webkitRequestFullScreen();
+        }
+      }*/
       e.preventDefault();
     }
 
