@@ -170,7 +170,7 @@
       var output = thisThumbnail.getAttribute('output');
       var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image'); content = appendFlashVars(content);
       /*if (!output && content.match(/\.mp4$/i)) {output = 'video';} else*/
-      if (!output && content.match(/(^rtmp:\/\/|\.m3u8$)/i)) {output = 'object';}
+      if (!output && content.match(/(rtmp:\/\/|\.m3u8)/i)) {output = 'object';}
       else if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';}
       else if (!output) {output = 'iframe';}
       buttonClicked(thisThumbnail, thumbnailsArray);
@@ -186,7 +186,7 @@
         resetContentOutputs();
         outputFrame.style.display = 'block';
         if (output == 'video') {videoSource.setAttribute(outputAttr, content); videoOutput.load(); videoOutput.play();}
-        else if (output == 'object') {objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src='+content+'&autoPlay=true');}
+        else if (output == 'object') {objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src=' + content + '&autoPlay=true');}
         else {outputFrame.setAttribute(outputAttr, content);}
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
         activeContent = content;
