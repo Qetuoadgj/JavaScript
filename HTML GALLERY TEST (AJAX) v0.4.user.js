@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.0
+// @version      2.1.1
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -186,7 +186,13 @@
         resetContentOutputs();
         outputFrame.style.display = 'block';
         if (output == 'video') {videoSource.setAttribute(outputAttr, content); videoOutput.load(); videoOutput.play();}
-        else if (output == 'object') {objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src=' + content + '&autoPlay=true');}
+        else if (output == 'object') {
+          resetContentOutputs();
+          setTimeout(function(){
+            objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src=' + content + '&autoPlay=true');
+            outputFrame.style.display = 'block';
+          }, 10);
+        }
         else {outputFrame.setAttribute(outputAttr, content);}
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
         activeContent = content;
