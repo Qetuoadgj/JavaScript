@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.0.7
+// @version      2.1.0
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
+// @match        file:///*/2.0.2.html
 // @grant        unsafeWindow
 // updateURL     https://github.com/Qetuoadgj/JavaScript/raw/master/HTML%20GALLERY%20TEST%20(AJAX)%20v0.4.user.js
 // @icon         http://rddnickel.com/images/HTML%20icon.png
@@ -33,6 +34,7 @@
     var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
     outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
     var videoSource = videoOutput.querySelector('source');
+    var objectMovie = objectOutput.querySelector('param[name="movie"]');
     var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
@@ -47,7 +49,7 @@
     forEach(temporary, function(index, self) {self.remove();});
     forEach(backgroundsArray, function(index, self) {self.remove();});
 
-    iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = ''; videoSource.src = '';
+    iframeOutput.src = ''; objectOutput.data = ''; objectMovie.value = ''; imgOutput.src = ''; videoSource.src = '';
 
     return clone;
   }
@@ -101,10 +103,12 @@
     var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
     outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
     var videoSource = videoOutput.querySelector('source');
+    var objectMovie = objectOutput.querySelector('param[name="movie"]');
     var galleryList = [];
     var activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
     var outputsMinimized;
+    var activeContent;
 
     // DOCUMENT FUNCTIONS
     function buttonClicked(button, buttonsArray, unclick) {
@@ -114,9 +118,10 @@
     }
 
     function resetContentOutputs() {
-      iframeOutput.src = ''; objectOutput.data = ''; imgOutput.src = ''; videoSource.src = ''; videoOutput.load();
+      iframeOutput.src = ''; objectOutput.data = ''; objectMovie.value = ''; imgOutput.src = ''; videoSource.src = ''; videoOutput.load();
       forEach(outputsArray, function(index, self) {self.style.removeProperty('display');});
       activeOutput = false; activeThumbnail = false;
+      activeContent = false;
     }
 
     function minimizeContentOutputs() {
@@ -164,18 +169,27 @@
     function showContent(thisThumbnail, thumbnailsArray) {
       var output = thisThumbnail.getAttribute('output');
       var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image'); content = appendFlashVars(content);
-      /*if (!output && content.match(/\.mp4$/i)) {output = 'video';} else*/ if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';} else if (!output) {output = 'iframe';}
+      /*if (!output && content.match(/\.mp4$/i)) {output = 'video';} else*/
+      if (!output && content.match(/(^rtmp:\/\/|\.m3u8$)/i)) {output = 'object';}
+      else if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';}
+      else if (!output) {output = 'iframe';}
       buttonClicked(thisThumbnail, thumbnailsArray);
       var outputFrame = outputs.querySelector(output);
-      var outputAttr = 'src'; if (output == 'object') outputAttr = 'data';
-      var currentContent;
-      if (output == 'video') {currentContent = videoSource.getAttribute('src');} else {currentContent = outputFrame.getAttribute(outputAttr);}
-      var active = (currentContent == content);
+      var outputAttr = 'src'; //if (output == 'object') outputAttr = 'data';
+      // var currentContent;
+      // if (activeOutput == videoOutput) {currentContent = videoSource.getAttribute('src');}
+      // else if (activeOutput == objectOutput) {currentContent = objectMovie.getAttribute('src').replace(/.*src=(.*?)&.*/i, '$1');}
+      // else {currentContent = outputFrame.getAttribute(outputAttr);}
+      // var active = (currentContent == content);
+      var active = (content == activeContent); // global
       if (active) {buttonClicked(thisThumbnail, thumbnailsArray, true); resetContentOutputs();} else {
         resetContentOutputs();
         outputFrame.style.display = 'block';
-        if (output == 'video') {videoSource.setAttribute('src', content); videoOutput.load(); videoOutput.play();} else {outputFrame.setAttribute(outputAttr, content);}
+        if (output == 'video') {videoSource.setAttribute(outputAttr, content); videoOutput.load(); videoOutput.play();}
+        else if (output == 'object') {objectMovie.setAttribute('value', 'StrobeMediaPlayback.swf?src='+content+'&autoPlay=true');}
+        else {outputFrame.setAttribute(outputAttr, content);}
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
+        activeContent = content;
       }
     }
 
@@ -188,7 +202,8 @@
 
     function changeContent(galleryList, delta) {
       if (activeOutput) {
-        var activeContent = activeOutput.data || activeOutput.src || videoSource.src;
+        // var activeContent = activeOutput.data || activeOutput.src || videoSource.src;
+        // global activeContent
         var galleryContent = galleryList[galleryList.indexOf(activeContent) + (delta || 1)] || galleryList[delta ? galleryList.length - 1 : 0];
         var activeThumbnailsArray = activeSpoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnailsArray, function(index, self) {
           var content = self.getAttribute('content'); content = appendFlashVars(content);
