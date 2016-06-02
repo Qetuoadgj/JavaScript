@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.3
+// @version      2.1.4
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -30,11 +30,17 @@
     var spoilersArray = clone.querySelectorAll('.spoilerbox');
     var thumbnailsArray = clone.querySelectorAll('.thumbnail');
     var outputs = clone.querySelector('div#content');
-    var outputsArray = [];
-    var iframeOutput = outputs.querySelector('#content_iframe'), videoOutput = outputs.querySelector('#content_video'), objectOutput = outputs.querySelector('#content_object'), imgOutput = outputs.querySelector('#content_img');
-    outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
-    var videoSource = videoOutput.querySelector('source');
-    var objectFlashvars = objectOutput.querySelector('param[name="flashvars"]');
+    var iframeOutput, videoOutput, objectOutput, imgOutput, outputsArray = [];
+    var videoSource, objectFlashvars;
+    if (outputs) {
+      iframeOutput = outputs.querySelector('#content_iframe');
+      videoOutput = outputs.querySelector('#content_video');
+      objectOutput = outputs.querySelector('#content_object');
+      imgOutput = outputs.querySelector('#content_img');
+      outputsArray.push(iframeOutput, videoOutput, objectOutput, imgOutput);
+      videoSource = videoOutput.querySelector('source');
+      objectFlashvars = objectOutput.querySelector('param[name="flashvars"]');
+    }
     var backgroundsArray = clone.querySelectorAll('.background');
     var temporary = clone.querySelectorAll('.temporary');
 
@@ -44,12 +50,13 @@
     forEach(thumbnailsArray, function(index, self) {
       self.removeAttribute('style');
       var image = self.querySelector('img'); if (image) image.remove();
+      var text = self.querySelector('p'); if (text) text.remove();
     });
     forEach(outputsArray, function(index, self) {self.removeAttribute('style');});
     forEach(temporary, function(index, self) {self.remove();});
     forEach(backgroundsArray, function(index, self) {self.remove();});
 
-    iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = '';
+    if (outputs) iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = '';
 
     return clone;
   }
