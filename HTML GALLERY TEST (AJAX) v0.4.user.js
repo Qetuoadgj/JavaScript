@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.4
+// @version      2.1.5
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -143,7 +143,7 @@
       }
     }
 
-    function appendFlashVars(source) {
+    function appendFlashVars(source, info) {
       var i, flashvars, existingVars;
       if (source.indexOf('https://www.youtube.com/embed/') == '0') {
         flashvars = [
@@ -162,7 +162,7 @@
           if (i < flashvars.length - 1) {flashvars[i] += '&';}
           source += flashvars[i]; i += 1;
         });
-      } else if (source.match(/(rtmp:\/\/|\.m3u8)/i)) {
+      } else if (source.match(/(rtmp:\/\/|\.m3u8)/i) || info == 'rtmp') {
         flashvars = [
           'playButtonOverlay=false',   // The default value displays a large Play button over the center of the player window before playback begins.
           'bufferingOverlay=true',     // The default value displays a visual notification when playback is paused to refill the buffer.
@@ -200,7 +200,7 @@
 
     function showContent(thisThumbnail, thumbnailsArray) {
       var output = thisThumbnail.getAttribute('output');
-      var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image'); content = appendFlashVars(content);
+      var content = thisThumbnail.getAttribute('content') || thisThumbnail.getAttribute('image');// content = appendFlashVars(content);
       /*if (!output && content.match(/\.mp4$/i)) {output = 'video';} else*/
       if (!output && content.match(/(rtmp:\/\/|\.m3u8)/i)) {output = 'object';}
       else if (!output && content.match(/\.(jpg|gif|png|bmp|tga|webp)$/i)) {output = 'img';}
@@ -214,6 +214,7 @@
         outputFrame.style.display = 'block';
         if (output == 'video') {videoSource.setAttribute(outputAttr, content); videoOutput.load(); videoOutput.play();}
         else if (output == 'object') {
+          content = appendFlashVars(content, 'rtmp');
           resetContentOutputs();
           setTimeout(function(){
             // objectFlashvars.setAttribute('value', 'uid=content_object&'+objectSourceKey+'='+content+'&poster=http://atr.ua/assets/279dff17/live.png' + '&auto=play');
@@ -221,7 +222,10 @@
             outputFrame.style.display = 'block';
           }, 10);
         }
-        else {outputFrame.setAttribute(outputAttr, content);}
+        else {
+          content = appendFlashVars(content);
+          outputFrame.setAttribute(outputAttr, content);
+        }
         activeThumbnail = thisThumbnail; activeOutput = outputFrame;
         activeContent = content;
       }
