@@ -56,7 +56,7 @@
     forEach(temporary, function(index, self) {self.remove();});
     forEach(backgroundsArray, function(index, self) {self.remove();});
 
-    if (outputs) iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = '';
+    if (outputs) {iframeOutput.src = ''; /* objectOutput.data = ''; */ objectFlashvars.value = ''; imgOutput.src = ''; videoSource.src = '';}
 
     return clone;
   }
