@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.2
+// @version      2.1.3
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -212,8 +212,6 @@
             // objectFlashvars.setAttribute('value', 'uid=content_object&'+objectSourceKey+'='+content+'&poster=http://atr.ua/assets/279dff17/live.png' + '&auto=play');
             objectFlashvars.setAttribute('value', objectSourceKey+'='+content);
             outputFrame.style.display = 'block';
-            // uppodSend('content_object', 'play');
-            // outputFrame.sendToUppod('play');
           }, 10);
         }
         else {outputFrame.setAttribute(outputAttr, content);}
@@ -248,9 +246,14 @@
         spoiler.style.display = 'block';
         var activeThumbnails = spoiler.querySelectorAll('.thumbnail'); forEach(activeThumbnails, function(index, self) {
           var image = self.querySelector('img'); if (!image) {
-            image = document.createElement('img'); var imageSrc = self.getAttribute('image') || self.getAttribute('content');
-            image.setAttribute('src', imageSrc);
+            image = document.createElement('img'); var imageSrc = self.getAttribute('image'); var contentSrc = self.getAttribute('content');
+            image.setAttribute('src', imageSrc || contentSrc);
             self.appendChild(image);
+
+            var text, type;
+            if (contentSrc.match(/rtmp:\/\//i)) {text = document.createElement('p'); type = 'rtmp'; text.innerHTML += type; self.appendChild(text);}
+            else if (contentSrc.match(/\.m3u8/i)) {text = document.createElement('p'); type = 'm3u8'; text.innerHTML += type; self.appendChild(text);}
+            else if (contentSrc.match(/youtube.com\/embed/i)) {text = document.createElement('p'); type = 'YouTube'; text.innerHTML += type; self.appendChild(text);}
           }
         });
         galleryList = createGalleryList(spoiler);
@@ -260,7 +263,7 @@
 
     function onKeyDown(e) {
       e = e || window.event;
-      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90, fKey = 70;
+      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90, fKey = 70, qKey = 81;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
 
       var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
@@ -289,6 +292,11 @@
           activeOutput.webkitRequestFullScreen();
         }
       }*/
+      else if (activeSpoiler && e.keyCode == qKey) {
+        var buttonTextShow = document.head.querySelector('style.buttonTextShow');
+        if (buttonTextShow) {buttonTextShow.remove();}
+        else {addGlobalStyle('.spoilertop > p, .thumbnail > p {display: block;}', 'temporary buttonTextShow');}
+      }
       e.preventDefault();
     }
 
