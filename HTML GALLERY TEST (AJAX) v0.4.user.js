@@ -292,7 +292,7 @@
           activeOutput.webkitRequestFullScreen();
         }
       }*/
-      else if (activeSpoiler && e.keyCode == qKey) {
+      else if (/* activeSpoiler && */ e.keyCode == qKey) {
         var buttonTextShow = document.head.querySelector('style.buttonTextShow');
         if (buttonTextShow) {buttonTextShow.remove();}
         else {addGlobalStyle('.spoilertop > p, .thumbnail > p {display: block;}', 'temporary buttonTextShow');}
