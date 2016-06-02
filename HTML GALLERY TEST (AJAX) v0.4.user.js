@@ -268,7 +268,7 @@
             if (contentSrc.match(/rtmp:\/\//i)) {text = document.createElement('p'); type = 'rtmp'; text.innerHTML += type; self.appendChild(text);}
             else if (contentSrc.match(/\.m3u8/i)) {text = document.createElement('p'); type = 'm3u8'; text.innerHTML += type; self.appendChild(text);}
             else if (contentSrc.match(/youtube.com\/embed/i)) {text = document.createElement('p'); type = 'YouTube'; text.innerHTML += type; self.appendChild(text);}
-            else {var title = self.getAttribute('title'); if (title) {text = document.createElement('p'); text.innerHTML += title; self.appendChild(text);}}
+            // else {var title = self.getAttribute('title'); if (title) {text = document.createElement('p'); text.innerHTML += title; self.appendChild(text);}}
           }
         });
         galleryList = createGalleryList(spoiler);
