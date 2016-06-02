@@ -45,7 +45,10 @@
     var temporary = clone.querySelectorAll('.temporary');
 
     clone.removeAttribute('style');
-    forEach(spoilerButtonsArray, function(index, self) {self.removeAttribute('style');});
+    forEach(spoilerButtonsArray, function(index, self) {
+      self.removeAttribute('style');
+      var text = self.querySelector('p'); if (text) text.remove();
+    });
     forEach(spoilersArray, function(index, self) {self.removeAttribute('style');});
     forEach(thumbnailsArray, function(index, self) {
       self.removeAttribute('style');
@@ -265,6 +268,7 @@
             if (contentSrc.match(/rtmp:\/\//i)) {text = document.createElement('p'); type = 'rtmp'; text.innerHTML += type; self.appendChild(text);}
             else if (contentSrc.match(/\.m3u8/i)) {text = document.createElement('p'); type = 'm3u8'; text.innerHTML += type; self.appendChild(text);}
             else if (contentSrc.match(/youtube.com\/embed/i)) {text = document.createElement('p'); type = 'YouTube'; text.innerHTML += type; self.appendChild(text);}
+            else {var title = self.getAttribute('title'); if (title) {text = document.createElement('p'); text.innerHTML += title; self.appendChild(text);}}
           }
         });
         galleryList = createGalleryList(spoiler);
@@ -323,6 +327,8 @@
         image = document.createElement('img'); var imageSrc = self.getAttribute('image');
         image.setAttribute('src', imageSrc);
         self.appendChild(image);
+
+        var title = self.getAttribute('title'); if (title) {var text = document.createElement('p'); text.innerHTML += title; self.appendChild(text);}
       }
     });
     forEach(spoilersArray, function(index, self) {
