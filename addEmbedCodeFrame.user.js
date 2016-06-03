@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -67,6 +67,12 @@ function appendFrame(targetFrame, appendPosition, appendToFrame) {
   }
 }
 
+function addGlobalStyle(css, cssClass) {
+  var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
+  var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+  if (cssClass) style.setAttribute('class', cssClass);
+  head.appendChild(style);
+}
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
