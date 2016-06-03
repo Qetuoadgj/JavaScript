@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML GALLERY TEST (AJAX) v0.4
 // @namespace    none
-// @version      2.1.5
+// @version      2.2.0
 // @author       Æegir
 // @description  try to take over the world!
 // @match        file:///*/2.0.4.html
@@ -103,6 +103,11 @@
     element.className = element.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
   }
 
+  String.prototype.Capitalize = function() {
+    function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
+    return this.split(' ').map(capFirst).join(' ');
+  };
+
   document.addEventListener("DOMContentLoaded", function() {
     // GLOBAL VARIABLES
     var spoilerButtonsArray = document.querySelectorAll('#galleries > .spoilertop');
@@ -117,12 +122,118 @@
     var objectSourceKey = objectOutput.querySelector('param[name="sourceKey"]');
     if (objectSourceKey) objectSourceKey = objectSourceKey.value;
     var galleryList = [];
-    var activeSpoiler, activeThumbnail, activeOutput;
+    var activeSpoilerButton, activeSpoiler, activeThumbnail, activeOutput;
     var backgroundsArray = document.querySelectorAll('.background'); backgroundsArray = asArray(backgroundsArray);
     var outputsMinimized;
     var activeContent;
+    var refreshDocument;
 
     // DOCUMENT FUNCTIONS
+    function initPromptFrame(reset) {
+      var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
+
+      var frame = document.getElementById('promptFrame');
+      frame.style.display = 'block';
+      var contentInput, imageInput, sourceURLInput, titleInput, codeInput, okButton, cancelButton;
+
+      contentInput = frame.querySelector('#promptFrameContent');
+      imageInput = frame.querySelector('#promptFrameImage');
+      sourceURLInput = frame.querySelector('#promptFrameSourceURL');
+      titleInput = frame.querySelector('#promptFrameTitle');
+      codeInput = frame.querySelector('#promptFrameCode');
+      okButton = frame.querySelector('#promptFrameOkButton');
+      cancelButton = frame.querySelector('#promptFrameCancelButton');
+
+      var content, thumbnail, sourceURL, title, code;
+
+      var clearInputs = function(){
+        titleInput.value = ''; imageInput.value = ''; contentInput.value = ''; sourceURLInput.value = '';
+        codeInput.value = '<div class="thumbnail" title="" image="" content="" url=""></div>';
+      };
+
+      if (reset) {
+        clearInputs();
+      } else {
+        titleInput.value = 'เรื่องจริงหรือนิยาย - S.D.F【OFFICIAL MV】 - YouTube';
+        imageInput.value = 'https://i.ytimg.com/vi/UCNBv7sLwuI/mqdefault.jpg';
+        contentInput.value = 'https://www.youtube.com/embed/UCNBv7sLwuI?start=0';
+        sourceURLInput.value = 'https://www.youtube.com/watch?v=UCNBv7sLwuI';
+        codeInput.value ='<div class="thumbnail" title="เรื่องจริงหรือนิยาย - S.D.F【OFFICIAL MV】 - YouTube" image="https://i.ytimg.com/vi/UCNBv7sLwuI/mqdefault.jpg" content="https://www.youtube.com/embed/UCNBv7sLwuI?start=0" url="https://www.youtube.com/watch?v=UCNBv7sLwuI"></div>';
+      }
+
+      var getEmbedCode = function() {
+        content = contentInput.value.trim();
+        thumbnail = (imageInput.value || '').trim();
+        sourceURL = (sourceURLInput.value || '').trim();
+        title = (titleInput.value || '').trim();
+        code = codeInput.value.trim();
+
+        pageURL = sourceURL;
+        title = title.Capitalize();
+
+        var embedCode = '<div class="thumbnail"';
+        if (content !== pageURL) embedCode += ' title="'+title+'"';
+        if (thumbnail && thumbnail !== content) embedCode += ' image="'+thumbnail+'"';
+        embedCode += ' content="'+content+'"';
+        if (content !== pageURL) embedCode +=' url="'+pageURL+'"';
+        embedCode += '></div>';
+
+        return embedCode;
+      };
+
+      var onKeyPress = function(target) {
+        if (target == codeInput) {
+          // <div class="thumbnail" title="" image="" content="" url=""></div>
+          contentInput.value = codeInput.value.replace(/.*content="(.*?)".*/i, '$1');
+          imageInput.value = codeInput.value.replace(/.*image="(.*?)".*/i, '$1');
+          sourceURLInput.value = codeInput.value.replace(/.*url="(.*?)".*/i, '$1');
+          titleInput.value = codeInput.value.replace(/.*title="(.*?)".*/i, '$1');
+        } else {
+          codeInput.value = getEmbedCode();
+        }
+      };
+
+      var eventList = ["keydown", "keyup"];
+      var inputList = [titleInput, imageInput, contentInput, sourceURLInput, codeInput];
+
+      eventList.forEach(function(event){
+        inputList.forEach(function(input){
+          input.addEventListener(event,function(){onKeyPress(input);},false);
+        });
+      });
+
+      var clicked = 0;
+      var promptFrameSubmit = function() {
+        if (!activeSpoiler || clicked > 0) return false;
+
+        var embedCode = getEmbedCode();
+
+        if (content && content !== '' && code.match(/<div.*<\/div>/i)) {
+          var newElement = document.createElement('div');
+          activeSpoiler.appendChild(document.createTextNode("\n"));
+          activeSpoiler.appendChild(newElement);
+          newElement.outerHTML = embedCode;
+          frame.removeAttribute('style');
+          clicked += 1;
+        }
+
+        thumbnailsArray = document.querySelectorAll('#previews > .spoilerbox > .thumbnail');
+        forEach(thumbnailsArray, function(index, self) {
+          self.addEventListener("click", function(){showContent(self, thumbnailsArray);}, false);
+        });
+        activeSpoilerButton.click();
+        activeSpoilerButton.click();
+      };
+
+      var promptFrameCancel = function() {
+        clearInputs();
+        frame.removeAttribute('style');
+      };
+
+      okButton.addEventListener("click", promptFrameSubmit, false);
+      cancelButton.addEventListener("click", promptFrameCancel, false);
+    }
+
     function buttonClicked(button, buttonsArray, unclick) {
       if (unclick) {forEach(buttonsArray, function(index, self) {self.style.removeProperty('opacity');});} else {
         forEach(buttonsArray, function(index, self) {self.style.opacity = '0.125';}); button.style.removeProperty('opacity');
@@ -273,32 +384,36 @@
         });
         galleryList = createGalleryList(spoiler);
         activeSpoiler = spoiler;
+        activeSpoilerButton = thisButton;
       }
     }
 
     function onKeyDown(e) {
       e = e || window.event;
-      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90, fKey = 70, qKey = 81;
+      var cKey = 67, delKey = 46, lArrowKey = 37, rArrowKey = 39, escKey = 27, sKey = 83, zKey = 90, fKey = 70, qKey = 81, gKey = 71;
       var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
 
-      var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
+      var targetType = e.target.tagName.toLowerCase();
 
-      if (e.keyCode == escKey) { // Escape
-        hideContent();
-      } else if (e.keyCode == lArrowKey) {
-        changeContent(galleryList,-1); // Left Arrow
-      } else if (e.keyCode == rArrowKey) {
-        changeContent(galleryList); // Right Arrow
-      } else if ((hovered || activeThumbnail) && e.keyCode == delKey) { // Delete
-        if (activeThumbnail) {commentElement(activeThumbnail); changeContent(galleryList);} else if (hovered) {commentElement(hovered);}
-        galleryList = createGalleryList(activeSpoiler);
-      } else if (activeSpoiler && ctrlDown && e.keyCode == cKey) { // Control + C
-        copyToClipboard(activeSpoiler);
-      } else if (ctrlDown && e.keyCode == sKey) { // Control + S
-        downloadCurrentDocument(document.documentElement);
-      } else if (activeOutput && e.keyCode == zKey) {
-        minimizeContentOutputs();
-      }/* else if (activeOutput && e.keyCode == fKey) {
+      if (!(targetType == 'input' || targetType == 'textarea')) {
+        var hovered; if (activeSpoiler) hovered = activeSpoiler.querySelector('.thumbnail:hover');
+
+        if (e.keyCode == escKey) { // Escape
+          hideContent();
+        } else if (e.keyCode == lArrowKey) {
+          changeContent(galleryList,-1); // Left Arrow
+        } else if (e.keyCode == rArrowKey) {
+          changeContent(galleryList); // Right Arrow
+        } else if ((hovered || activeThumbnail) && e.keyCode == delKey) { // Delete
+          if (activeThumbnail) {commentElement(activeThumbnail); changeContent(galleryList);} else if (hovered) {commentElement(hovered);}
+          galleryList = createGalleryList(activeSpoiler);
+        } else if (activeSpoiler && ctrlDown && e.keyCode == cKey) { // Control + C
+          copyToClipboard(activeSpoiler);
+        } else if (ctrlDown && e.keyCode == sKey) { // Control + S
+          downloadCurrentDocument(document.documentElement);
+        } else if (activeOutput && e.keyCode == zKey) {
+          minimizeContentOutputs();
+        }/* else if (activeOutput && e.keyCode == fKey) {
         if (activeOutput.requestFullScreen) {
           activeOutput.requestFullScreen();
         } else if (activeOutput.mozRequestFullScreen) {
@@ -306,19 +421,24 @@
         } else if (activeOutput.webkitRequestFullScreen) {
           activeOutput.webkitRequestFullScreen();
         }
-      }*/
-      else if (/* activeSpoiler && */ e.keyCode == qKey) {
-        var buttonTextShow = document.head.querySelector('style.buttonTextShow');
-        if (buttonTextShow) {buttonTextShow.remove();}
-        else {addGlobalStyle('.spoilertop > p, .thumbnail > p {display: block;}', 'temporary buttonTextShow');}
+        }*/
+        else if (e.keyCode == qKey) {
+          var buttonTextShow = document.head.querySelector('style.buttonTextShow');
+          if (buttonTextShow) {buttonTextShow.remove();}
+          else {addGlobalStyle('.spoilertop > p, .thumbnail > p {display: block;}', 'temporary buttonTextShow');}
+        } else if (e.keyCode == gKey) {
+          initPromptFrame(true);
+        }
+        e.preventDefault();
       }
-      e.preventDefault();
     }
 
     // document.addEventListener("keydown", function(e) {onKeyDown(e);});
     document.onkeydown =  function(e) {
       onKeyDown(e);
     };
+
+    // document.querySelector('#promptFrame').onkeydown =  function(e) {};
 
     forEach(spoilerButtonsArray, function(index, self) {
       var spoiler_id = self.getAttribute('spoiler'); var spoiler = document.getElementById(spoiler_id);
