@@ -228,6 +228,7 @@
       // promptFramePlayers.style.float = 'left';
       promptFramePlayers.style.margin='10px 0px 0px 0px';
       promptFramePlayers.style.padding='5px';
+      promptFramePlayers.style.border = '1px solid gray';
       embedFrame.appendChild(promptFramePlayers);
 
       var options = ['Способ переименования', 'Из названия файла', 'Серия #'];
