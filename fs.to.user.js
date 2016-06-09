@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -215,16 +215,20 @@
       if (optimized && !download) {playlistButton.innerHTML = 'Плейлист (.MP4)';} else {playlistButton.innerHTML = 'Плейлист';}
       playlistButton.addEventListener("click", function(){if (optimized) {CreateFileList(false);} else {CreateFileList(true);}}, false);
       embedFrame.appendChild(playlistButton);
+      playlistButton.style.border = '1px solid gray';
+      playlistButton.style.backgroundColor = 'white';
 
       var downloadButton = document.createElement('button');
       downloadButton.style.width = 'auto'; downloadButton.style.height = '30px'; downloadButton.style.padding = '0px 10px'; downloadButton.style.margin = '0px 5px';
       if (optimized && download) {downloadButton.innerHTML = 'Скачать (.MP4)';} else {downloadButton.innerHTML = 'Скачать';}
       downloadButton.addEventListener("click", function(){if (optimized) {CreateFileList(false, true);} else {CreateFileList(true, true);}}, false);
       embedFrame.appendChild(downloadButton);
+      downloadButton.style.border = '1px solid gray';
+      downloadButton.style.backgroundColor = 'white';
 
       var promptFramePlayers = document.createElement('select');
       promptFramePlayers.style.width = '200px';
-      promptFramePlayers.style.height = 'auto';
+      promptFramePlayers.style.height = '30px';
       // promptFramePlayers.style.float = 'left';
       promptFramePlayers.style.margin='10px 0px 0px 0px';
       promptFramePlayers.style.padding='5px';
