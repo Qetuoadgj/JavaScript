@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -191,6 +191,7 @@
     targetFrame = document.querySelector('div.b-section-banner-wrap'); if (targetFrame){targetFrame.parentNode.remove();} // http://fs.to/video/films/
   }
 
+  var titleMethod; // global
   function CreateFileList(optimized, download) {
     var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
     var targetFrame, embedFrameMargin, embedLinkMargin, embedFrameBackgroundColor;
@@ -200,54 +201,6 @@
       var title = pageTitle.replace(/^.{1} /i, '').Capitalize();
 
       var oldEmbedFrame = document.getElementById("ShowEmbedCode_Frame"); if (oldEmbedFrame) {oldEmbedFrame.remove();}
-
-      var fileList = document.querySelectorAll('ul.filelist.m-current > li[style="display: block;"]'), i; var embedCode = '', downloadList = '';
-      for (i = 0; i < fileList.length; ++i) {
-        if (i < 1) embedCode = '#EXTM3U\n';
-        var currentFile = fileList[i];
-
-        var videoFileName = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-text').innerHTML;
-        var videoSrc = currentFile.querySelector('a.b-file-new__link-material-download').href; // http://fs.to/get/dl/6jw5v7ukmbavhet3ej06nzjny.0.1139013157.974127405.1461975755/numb3rs.s02e04.360.mp4
-        if (optimized) {
-          if (download) {
-            videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/dl/$1.mp4');
-            videoSrc = videoSrc + '/' + videoFileName.replace(/(.*)\..+$/i, '$1.mp4'); // http://fs.to/get/dl/6jw5v7snhgjr2duwah1x9y5iu.mp4/numb3rs.s02e04.360.mp4
-            videoSrc = encodeURI(videoSrc);
-          } else {
-            videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/playvideo/$1.mp4');
-            videoSrc = videoSrc + '?' + videoFileName.replace(/(.*)\..+$/i, '$1.mp4'); // http://fs.to/get/playvideo/6jw5v7snhgjr2duwah1x9y5iu.mp4?numb3rs.s02e04.360.mp4
-          }
-        } else {
-          videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/dl/$1/$2.$3'); // http://fs.to/get/dl/6jw5v7snhgjr2duwah1x9y5iu/numb3rs.s02e04.360.mp4
-        }
-
-        var serieNumber = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-series-num');
-        if (serieNumber) {
-          var videoTitle = serieNumber.innerHTML;
-          title = title.replace(/(.*): .*$/i, '$1'); title = title.replace(/Сериал (.*)/i, '$1'); title = title.replace(/ \(.+Сезон.*\)/i, '');
-          var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
-          videoTitle = videoFileName.replace(/.*S\d+E\d+(.*)/i, '$1');
-          videoTitle = videoTitle.replace(/(.*)\..*/, '$1');
-          videoTitle = videoTitle.replace(/(.*)\[.*/, '$1');
-          videoTitle = videoTitle.replaceAll('.-.', ' ');
-          videoTitle = videoTitle.replaceAll('.+.', ' ');
-          videoTitle = videoTitle.replaceAll('+-+', ' ');
-          videoTitle = videoTitle.replaceAll('+', ' ');
-          videoTitle = videoTitle.replaceAll('.', ' ');
-          videoTitle = videoTitle.replaceAll('_', ' ');
-          videoTitle = videoTitle.replace(/\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720)\b/ig, '');
-          videoTitle = videoTitle.replace(/^\s+/, '');
-          videoTitle = videoTitle.replace(/^-/, '');
-          videoTitle = videoTitle.replace(/\s+$/, '');
-          videoTitle = videoTitle.replace(/\s+/g, ' ');
-          videoTitle = videoTitle.replace(/^\s+/, '');
-          videoTitle = serieNumber.innerHTML.replace('Серия ', '') + '. ' + videoTitle;
-          if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';}
-        } else {
-          title = title.replace(/(.*): .*$/i, '$1');
-          if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="",'+title+'\n'+videoSrc) + '\n';}
-        }
-      }
 
       var embedFrame = document.createElement('div');
       embedFrame.setAttribute('id', 'ShowEmbedCode_Frame');
@@ -269,6 +222,24 @@
       downloadButton.addEventListener("click", function(){if (optimized) {CreateFileList(false, true);} else {CreateFileList(true, true);}}, false);
       embedFrame.appendChild(downloadButton);
 
+      var promptFramePlayers = document.createElement('select');
+      promptFramePlayers.style.width = '200px';
+      promptFramePlayers.style.height = 'auto';
+      // promptFramePlayers.style.float = 'left';
+      promptFramePlayers.style.margin='10px 0px 0px 0px';
+      promptFramePlayers.style.padding='5px';
+      embedFrame.appendChild(promptFramePlayers);
+
+      var options = ['Способ переименования', 'Из названия файла', 'Серия #'];
+      var num; for (num = 0; num < options.length; ++num) {
+        var selectOption = document.createElement('option');
+        selectOption.text = options[num];
+        selectOption.value = options[num];
+        promptFramePlayers.appendChild(selectOption);
+      }
+
+      promptFramePlayers.value = titleMethod || options[0];
+
       var textFrame = parent.document.createElement('textarea');
       textFrame.setAttribute('id', 'embedCodeTextFrame');
       textFrame.style.display = 'block'; textFrame.style.border = 'none';
@@ -276,8 +247,70 @@
       textFrame.style['background-color'] = 'transparent'; textFrame.style.width = '100%';
       textFrame.style['font-size'] = '12px'; textFrame.style.color = 'grey';
       textFrame.setAttribute('readonly', 'readonly'); textFrame.setAttribute('onclick', 'this.focus(); this.select();');
-      if (download) {textFrame.value = downloadList;} else {textFrame.value = embedCode;}
-      embedFrame.appendChild(textFrame); textFrameAutoHeight(textFrame);
+      embedFrame.appendChild(textFrame);
+
+      var generatePlaylist = function() {
+        titleMethod = promptFramePlayers.value;
+
+        var fileList = document.querySelectorAll('ul.filelist.m-current > li[style="display: block;"]'), i; var embedCode = '', downloadList = '';
+        for (i = 0; i < fileList.length; ++i) {
+          if (i < 1) embedCode = '#EXTM3U\n';
+          var currentFile = fileList[i];
+
+          var videoFileName = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-text').innerHTML;
+          var videoSrc = currentFile.querySelector('a.b-file-new__link-material-download').href; // http://fs.to/get/dl/6jw5v7ukmbavhet3ej06nzjny.0.1139013157.974127405.1461975755/numb3rs.s02e04.360.mp4
+          if (optimized) {
+            if (download) {
+              videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/dl/$1.mp4');
+              videoSrc = videoSrc + '/' + videoFileName.replace(/(.*)\..+$/i, '$1.mp4'); // http://fs.to/get/dl/6jw5v7snhgjr2duwah1x9y5iu.mp4/numb3rs.s02e04.360.mp4
+              videoSrc = encodeURI(videoSrc);
+            } else {
+              videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/playvideo/$1.mp4');
+              videoSrc = videoSrc + '?' + videoFileName.replace(/(.*)\..+$/i, '$1.mp4'); // http://fs.to/get/playvideo/6jw5v7snhgjr2duwah1x9y5iu.mp4?numb3rs.s02e04.360.mp4
+            }
+          } else {
+            videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/dl/$1/$2.$3'); // http://fs.to/get/dl/6jw5v7snhgjr2duwah1x9y5iu/numb3rs.s02e04.360.mp4
+          }
+
+          var serieNumber = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-series-num');
+          if (serieNumber) {
+            var videoTitle = serieNumber.innerHTML;
+            title = title.replace(/(.*): .*$/i, '$1'); title = title.replace(/Сериал (.*)/i, '$1'); title = title.replace(/ \(.+Сезон.*\)/i, '');
+            var seasonNumberDigit = videoFileName.replace(/.*S(\d+)E\d+.*/i, '$1');
+            var serieNumberDigit = videoFileName.replace(/.*S\d+E(\d+).*/i, '$1');
+            var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
+            if (titleMethod == options[0] || titleMethod == options[1]) {
+              videoTitle = videoFileName.replace(/.*S\d+E\d+(.*)/i, '$1');
+              videoTitle = videoTitle.replace(/(.*)\..*/, '$1');
+              videoTitle = videoTitle.replace(/(.*)\[.*/, '$1');
+              videoTitle = videoTitle.replaceAll('.-.', ' ');
+              videoTitle = videoTitle.replaceAll('.+.', ' ');
+              videoTitle = videoTitle.replaceAll('+-+', ' ');
+              videoTitle = videoTitle.replaceAll('+', ' ');
+              videoTitle = videoTitle.replaceAll('.', ' ');
+              videoTitle = videoTitle.replaceAll('_', ' ');
+              videoTitle = videoTitle.replace(/\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720|Web-DL)\b/ig, '');
+              videoTitle = videoTitle.replace(/^\s+/, '');
+              videoTitle = videoTitle.replace(/^-/, '');
+              videoTitle = videoTitle.replace(/\s+$/, '');
+              videoTitle = videoTitle.replace(/\s+/g, ' ');
+              videoTitle = videoTitle.replace(/^\s+/, '');
+              videoTitle = serieNumber.innerHTML.replace('Серия ', '') + '. ' + videoTitle;
+            } else if (titleMethod == options[2]) {
+              videoTitle = serieNumber.innerHTML;
+            }
+            if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';}
+          } else {
+            title = title.replace(/(.*): .*$/i, '$1');
+            if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="",'+title+'\n'+videoSrc) + '\n';}
+          }
+        }
+
+        if (download) {textFrame.value = downloadList;} else {textFrame.value = embedCode;}
+        textFrameAutoHeight(textFrame);
+      };
+      generatePlaylist();
+      promptFramePlayers.addEventListener("change", function(){generatePlaylist();}, false);
     }
   }
 
