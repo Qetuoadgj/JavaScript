@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -203,6 +203,7 @@
 
       var fileList = document.querySelectorAll('ul.filelist.m-current > li[style="display: block;"]'), i; var embedCode = '', downloadList = '';
       for (i = 0; i < fileList.length; ++i) {
+        if (i < 1) embedCode = '#EXTM3U\n';
         var currentFile = fileList[i];
 
         var videoFileName = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-text').innerHTML;
