@@ -179,7 +179,7 @@
     var html = document.querySelector('html'); html.innerHTML = '';
     var body = document.querySelector('body'); body.appendChild(videoFrame);
     // addGlobalStyle('video {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}');
-    addGlobalStyle('video {width: 100%;}');
+    addGlobalStyle('video {position: fixed; width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
     MouseWheelAudioControl(videoFrame, 5);
     videoFrame.play();
     videoFrame.volume = 0.5;
