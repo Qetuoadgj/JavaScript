@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.0.9
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -143,6 +143,7 @@
     var volumeText = document.createElement('div');
     volumeText.style.color = 'yellow'; volumeText.style['font-size'] = '72px';
     volumeText.style.position = 'absolute'; volumeText.style['z-index'] = 2147483647; // Always on TOP
+    volumeText.style.top = '0px'; volumeText.style.left = '0px';
     media.parentNode.insertBefore(volumeText, media.nextSibling);
 
     var MouseWheelAudioHandler = function(e) {
