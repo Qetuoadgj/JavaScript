@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         youtube.com
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        https://www.youtube.com/watch?*
@@ -13,40 +13,25 @@
   'use strict';
 
   // Your code here...
-  /*
-  function WaitForElement(elementSelector, execFunction, delay, tries) {
-    delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true;
-    setTimeout(function WaitForElementCycle() {
-      if (tries) {keepRun = (cycle < tries);}
-      if (keepRun) {
-        // alert('cycle = ' + cycle);
-        if ( document.querySelector(elementSelector) ) {
-          if (execFunction && (typeof execFunction == "function")) {return execFunction();}
-        } else {
-          setTimeout(WaitForElementCycle, delay);
+  function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries) {
+    if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
+      cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
+      setTimeout(function waitForElementCycle() {
+        if (maxTries) {keepRun = (cycleCount < maxTries);}
+        if (keepRun) {
+          element = document.querySelector(elementSelector);
+          if (attributeName) {
+            if (element) {value = element.getAttribute(attributeName);}
+            if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          } else {
+            if (element) {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          }
+          cycleCount += 1;
         }
-        cycle += 1;
-      }
-    }, delay);
+      }, cycleDelay);
+    }
   }
 
-  function WaitForAttribute(elementSelector, attributeName, execFunction, delay, tries) {
-    delay = delay || 10; tries = tries || 100; var cycle = 0; var keepRun = true; var value;
-    setTimeout(function WaitForAttributeCycle() {
-      if (tries) {keepRun = (cycle < tries);}
-      if (keepRun) {
-        // alert('cycle = ' + cycle);
-        if ( document.querySelector(elementSelector) ){value = document.querySelector(elementSelector).getAttribute(attributeName);}
-        if ( value && value !== '' ) {
-          if (execFunction && (typeof execFunction == "function")) {return execFunction();}
-        } else {
-          setTimeout(WaitForAttributeCycle, delay);
-        }
-        cycle += 1;
-      }
-    }, delay);
-  }
-  */
   String.prototype.Capitalize = function() {
     return this.split(' ').map(capFirst).join(' ');
     function capFirst(str) {
@@ -143,8 +128,18 @@
     }
   }
 
-  // WaitForAttribute('meta[property="og:video:url"]', 'content', ShowEmbedCode_MainFunction, 1000, 30);
-  // WaitForElement('span#clipconverter > a > button', ClipConverterFixStyle, 1000, 30);
+  function nthParent(element, num) {
+    if (!element) return false;
+    var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
+    return element;
+  }
+
+  function MagicOptionsFixStyle() {
+    var panel = nthParent(document.querySelector('div[title="Magic Options"]'), 2);
+    if (panel) panel.style.position = 'inherit';
+  }
+
+  waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, 250, 30);
+  waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, 250, 30);
   ShowEmbedCode_MainFunction();
-  ClipConverterFixStyle();
 })();
