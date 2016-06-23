@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -107,7 +107,7 @@ function addEmbedCodeFrame(parentDocument) {
     var contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
     */
 
-  contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
+  contentTitle = contentTitle || pageTitle.replace(/^.{1} /i, '').Capitalize();
 
   if (!embedCodeText) {
     embedCodeText = '<div class="thumbnail"';
@@ -163,9 +163,14 @@ function addEmbedCodeFrame(parentDocument) {
 
 function changeQualityButton(elementSelector, parentDocument) {
   parentDocument = parentDocument || document;
-
   var qualityButton = parentDocument.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
+}
+
+function nthParent(element, num) {
+  if (!element) return false;
+  var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
+  return element;
 }
 // ====================================================================================================================
 // })();
