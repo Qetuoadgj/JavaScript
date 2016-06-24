@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -17,7 +17,6 @@
 // ====================================================================================================================
 // DEFAULT GLOBAL FUNCTIONS
 function getElementComputedStyle(elementObject, propertyName) {return window.getComputedStyle(elementObject, null).getPropertyValue(propertyName);}
-
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 
 String.prototype.Capitalize = function() {
@@ -74,7 +73,20 @@ function addGlobalStyle(css, cssClass) {
   head.appendChild(style);
 }
 
+function addClass(element, cssClass){
+  var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
+  if (re.test(element.className)) return;
+  element.className = (element.className + " " + cssClass).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+}
+function removeClass(element, cssClass){
+  var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
+  element.className = element.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+}
+
 function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
+function asArray(list) {return Array.prototype.slice.call(list);}
+function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
+function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
