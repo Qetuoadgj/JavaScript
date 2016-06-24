@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -73,6 +73,8 @@ function addGlobalStyle(css, cssClass) {
   if (cssClass) style.setAttribute('class', cssClass);
   head.appendChild(style);
 }
+
+function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
