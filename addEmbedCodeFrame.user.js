@@ -87,6 +87,12 @@ function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++)
 function asArray(list) {return Array.prototype.slice.call(list);}
 function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
 function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
+
+function nthParent(element, num) {
+  if (!element) return false;
+  var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
+  return element;
+}
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
@@ -179,12 +185,6 @@ function changeQualityButton(elementSelector, parentDocument) {
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
-}
-
-function nthParent(element, num) {
-  if (!element) return false;
-  var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
-  return element;
 }
 // ====================================================================================================================
 // })();
