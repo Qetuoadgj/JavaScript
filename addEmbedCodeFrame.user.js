@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.0.9
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -185,6 +185,23 @@ function changeQualityButton(elementSelector, parentDocument) {
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
+}
+
+function addKeyComboCtrlC(preventDefault) {
+  var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
+  var textFrame = oldEmbedCodeFrame.querySelector('textarea');
+  var onKeyDown = function(e) {
+    e = e || window.event;
+    var cKey = 67;
+    var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+
+    // var targetType = e.target.tagName.toLowerCase();
+    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey) {
+      textFrame.select(); document.execCommand('copy');
+      if (preventDefault) e.preventDefault();
+    }
+  };
+  document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 }
 // ====================================================================================================================
 // })();
