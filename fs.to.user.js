@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.0
+// @version      1.1.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -163,6 +163,7 @@
       volumeText.style['-webkit-transition'] = ''; // Safari
       volumeText.style.opacity = 1; setTimeout(volumeTextFade, 2000);
 
+      e.preventDefault();
       return false;
     };
 
