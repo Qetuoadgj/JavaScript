@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.1
+// @version      1.1.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -71,7 +71,7 @@
 
     targetFrame = parent.document.querySelector('.l-footer-inner-inner');
     videoSrc = document.querySelector('video#player.b-aplayer__html5-desktop.m-hidden').src; // http://n34.filecdn.to/ff/NzA5MWJlMDkzNWVlMjMyOWZlOGRjNDNiOGNiMTE0MTB8ZnN0b3w2MjI0MjQ2MzR8MTAwMDB8MnwwfDl8MzR8OWJjM2IxMWVhZmZmNDIyYjQ2MDRjZjExNjQwYTVhZjV8MHwxODpzLjI5Omh8MHwxMzg0NDI0NzMwfDE0NjA3MjU1NDkuNDAxNg,,/playvideo_6jw5v7snhgjr2duwah1x9y5iu.0.1765758616.2185543202.1460722207.mp4
-    videoSrc = videoSrc.replace(/.*playvideo_(.*)\.\d\.\d+.\d+.\d+\.(.+)$/i, 'http://fs.to/get/playvideo/$1.$2'); // http://fs.to/get/playvideo/6jw5v7snhgjr2duwah1x9y5iu.mp4
+    videoSrc = videoSrc.replace(/.*playvideo_(.*?)\.\d\.\d+.\d+.\d+\.(.+)$/i, 'http://fs.to/get/playvideo/$1.$2'); // http://fs.to/get/playvideo/6jw5v7snhgjr2duwah1x9y5iu.mp4
 
     // targetFrame.style.margin = '0px';
     embedFrameMargin = '10px 0px';
