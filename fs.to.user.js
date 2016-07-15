@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.2
+// @version      1.1.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -266,6 +266,16 @@
 
           var videoFileName = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-text').innerHTML;
           var videoSrc = currentFile.querySelector('a.b-file-new__link-material-download').href; // http://fs.to/get/dl/6jw5v7ukmbavhet3ej06nzjny.0.1139013157.974127405.1461975755/numb3rs.s02e04.360.mp4
+
+          var makeLinksDirect = function() {
+            var watchLink = currentFile.querySelector('a.b-file-new__link-material');
+            var watchSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/playvideo/$1.mp4');
+            watchSrc = watchSrc + '?' + videoFileName.replace(/(.*)\..+$/i, '$1.mp4'); // http://fs.to/get/playvideo/6jw5v7snhgjr2duwah1x9y5iu.mp4?numb3rs.s02e04.360.mp4
+            watchLink.href = watchSrc;
+            watchLink.setAttribute('target', '_blank');
+          };
+          makeLinksDirect();
+
           if (optimized) {
             if (download) {
               videoSrc = videoSrc.replace(/.*fs.to\/get\/dl\/(.*)\.\d\.\d+\.\d+\.\d+\/(.+)\.(.+)$/i, 'http://fs.to/get/dl/$1.mp4');
