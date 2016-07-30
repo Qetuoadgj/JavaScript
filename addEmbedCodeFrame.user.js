@@ -73,12 +73,12 @@ function addGlobalStyle(css, cssClass) {
   head.appendChild(style);
 }
 
-function addClass(element, cssClass){
+function addClass(element, cssClass) {
   var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
   if (re.test(element.className)) return;
   element.className = (element.className + " " + cssClass).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
 }
-function removeClass(element, cssClass){
+function removeClass(element, cssClass) {
   var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
   element.className = element.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
 }
