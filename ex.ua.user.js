@@ -87,8 +87,7 @@
         player_list_array = player_list_array.replace(/"/g, "'");
         player_list_array = 'new Array('+player_list_array+')';
         player_list_array = eval(player_list_array);
-        var tmpArray = [];
-        var playList = [];
+        var tmpArray = [], playList = [];
 
         forEach(player_info_array, function(index, self) {
           var position = self.pos;
@@ -109,8 +108,6 @@
       };
 
       generatePlaylist();
-
-      alert(embedCode);
     }
   }
   CreateFileList();
