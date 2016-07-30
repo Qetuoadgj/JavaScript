@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.3
+// @version      1.1.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -143,7 +143,8 @@
     var volumeText = document.createElement('div');
     volumeText.style.color = 'yellow'; volumeText.style['font-size'] = '72px';
     volumeText.style.position = 'absolute'; volumeText.style['z-index'] = 2147483647; // Always on TOP
-    volumeText.style.top = '0px'; volumeText.style.left = '0px';
+    // volumeText.style.top = '0px'; volumeText.style.left = '0px';
+    volumeText.style.top = '0px'; volumeText.style.left = '18px';
     media.parentNode.insertBefore(volumeText, media.nextSibling);
 
     var MouseWheelAudioHandler = function(e) {
@@ -177,10 +178,11 @@
 
   function ResizeVideo() {
     var videoFrame = document.querySelector('body > video'); //videoFrame.style.width = '100%';
-    var html = document.querySelector('html'); html.innerHTML = '';
-    var body = document.querySelector('body'); body.appendChild(videoFrame);
+    // var html = document.querySelector('html'); html.innerHTML = '';
+    // var body = document.querySelector('body'); body.appendChild(videoFrame);
     // addGlobalStyle('video {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}');
-    addGlobalStyle('video {position: fixed; width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
+    // addGlobalStyle('video {position: fixed; width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
+    addGlobalStyle('video {width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
     MouseWheelAudioControl(videoFrame, 5);
     videoFrame.play();
     videoFrame.volume = 0.5;
