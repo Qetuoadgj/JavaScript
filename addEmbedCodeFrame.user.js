@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.1
+// @version      1.1.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -89,6 +89,7 @@ var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
+var posters = [];
 // ====================================================================================================================
 
 // DEFAULT LOCAL FUNCTIONS
@@ -159,6 +160,11 @@ function addEmbedCodeFrame(parentDocument) {
     embedCodePoster.setAttribute('src', posterURL);
     embedCodeFrame.appendChild(embedCodePoster);
     embedCodePoster.addEventListener("click", mainFunction, false);
+    var index; for (index = 0; index < posters.length; ++index) {
+      if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
+        embedCodePoster.setAttribute('src', options[index]);
+      }
+    }
   }
 }
 function changeQualityButton(elementSelector, parentDocument) {
