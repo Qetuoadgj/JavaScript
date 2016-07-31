@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.2
+// @version      1.1.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -160,9 +160,10 @@ function addEmbedCodeFrame(parentDocument) {
     embedCodePoster.setAttribute('src', posterURL);
     embedCodeFrame.appendChild(embedCodePoster);
     embedCodePoster.addEventListener("click", mainFunction, false);
+    posters = posters || []; // global value
     var index; for (index = 0; index < posters.length; ++index) {
       if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
-        embedCodePoster.setAttribute('src', options[index]);
+        embedCodePoster.setAttribute('src', posters[index]);
       }
     }
   }
