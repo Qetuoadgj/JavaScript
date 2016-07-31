@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/SERVICES.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/addEmbedCodeFrame.user.js
 // @run-at       document-end
 // @noframes
