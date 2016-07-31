@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.0
+// @version      1.1.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -8,22 +8,14 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/addEmbedCodeFrame.user.js
 // ==/UserScript==
 
-// (function() {
-//   'use strict';
-
-// Your code here...
-// alert('loaded');
-
-// ====================================================================================================================
 // DEFAULT GLOBAL FUNCTIONS
+// ====================================================================================================================
 function getElementComputedStyle(elementObject, propertyName) {return window.getComputedStyle(elementObject, null).getPropertyValue(propertyName);}
 function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
-
 String.prototype.Capitalize = function() {
   function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
   return this.split(' ').map(capFirst).join(' ');
 };
-
 function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
     cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
@@ -42,7 +34,6 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
     }, cycleDelay);
   }
 }
-
 function waitForCondition(condition, funcToRun, cycleDelay, maxTries) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
     cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
@@ -55,7 +46,6 @@ function waitForCondition(condition, funcToRun, cycleDelay, maxTries) {
     }, cycleDelay);
   }
 }
-
 function appendFrame(targetFrame, appendPosition, appendToFrame) {
   if (appendPosition == 'after') {
     appendToFrame.parentNode.insertBefore(targetFrame, appendToFrame.nextSibling);
@@ -65,14 +55,12 @@ function appendFrame(targetFrame, appendPosition, appendToFrame) {
     appendToFrame.appendChild(targetFrame);
   }
 }
-
 function addGlobalStyle(css, cssClass) {
   var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
   var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
   if (cssClass) style.setAttribute('class', cssClass);
   head.appendChild(style);
 }
-
 function addClass(element, cssClass) {
   var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
   if (re.test(element.className)) return;
@@ -82,12 +70,10 @@ function removeClass(element, cssClass) {
   var re = new RegExp("(^|\\s)" + cssClass + "(\\s|$)", "g");
   element.className = element.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
 }
-
 function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 function asArray(list) {return Array.prototype.slice.call(list);}
 function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
 function commentElement(element) {var code = element.outerHTML; element.outerHTML = ('<!-- '+code+' -->');}
-
 function nthParent(element, num) {
   if (!element) return false;
   var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
@@ -96,36 +82,31 @@ function nthParent(element, num) {
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
+// ====================================================================================================================
 var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 var mainFunction = function(){alert('mainFunction() was not redefined!');};
 var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
+// ====================================================================================================================
 
 // DEFAULT LOCAL FUNCTIONS
+// ====================================================================================================================
 function addEmbedCodeFrame(parentDocument) {
   parentDocument = parentDocument || document;
 
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   if (oldEmbedCodeFrame) oldEmbedCodeFrame.remove();
 
-  /*
-    var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
+  // contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
+  // posterURL = document.querySelector('span[itemprop="thumbnail"] > link').href;
+  // appendToFrame = document.querySelector('div.player');
+  // appendPosition = 'after';
 
-    var createLink = true, createPoster = true;
-
-    var contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
-    var posterURL = document.querySelector('span[itemprop="thumbnail"] > link').href;
-    var appendToFrame = document.querySelector('div.player');
-    var appendPosition = 'after';
-
-    // embedCodeFrame_Margin = '0px 0px 10px 0px';
-    // embedCodeLink_Margin = '5px 0px';
-    // embedCodeFrame_BackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
-
-    var contentTitle = pageTitle.replace(/^.{1} /i, '').Capitalize();
-    */
+  // embedCodeFrame_Margin = '0px 0px 10px 0px';
+  // embedCodeLink_Margin = '5px 0px';
+  // embedCodeFrame_BackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
 
   contentTitle = contentTitle || pageTitle.replace(/^.{1} /i, '').Capitalize();
 
@@ -180,13 +161,11 @@ function addEmbedCodeFrame(parentDocument) {
     embedCodePoster.addEventListener("click", mainFunction, false);
   }
 }
-
 function changeQualityButton(elementSelector, parentDocument) {
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(elementSelector);
   qualityButton.addEventListener("click", mainFunction, false);
 }
-
 function addKeyComboCtrlC(preventDefault) {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   var textFrame = oldEmbedCodeFrame.querySelector('textarea');
@@ -204,4 +183,3 @@ function addKeyComboCtrlC(preventDefault) {
   document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 }
 // ====================================================================================================================
-// })();
