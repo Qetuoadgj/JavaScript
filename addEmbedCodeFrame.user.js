@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.4
+// @version      1.1.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -88,6 +88,19 @@ function getAttributeInIframe(iframe, innerElementSelector, attribute) {
     return result;
   }
 }
+String.prototype.regExp = function() {
+  // return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+  var string = this.replace(/[.\/]/g, "\\$&");
+  string = string.replace(/\*/g, ".*");
+  return string;
+};
+String.prototype.matchLink = function(link, flags) {
+  flags = flags || '';
+  link = link.replace(/[.\/]/g, "\\$&");
+  link = link.replace(/\*/g, ".*");
+  var re = new RegExp(link, flags);
+  return this.match(re);
+};
 // ====================================================================================================================
 
 // DEFAULT GLOBAL VARIABLES
