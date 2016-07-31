@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -18,8 +18,18 @@
 // @match        http://hdpoz.com/*
 // @match        http://spankbang.com/*/video/*
 // @match        http://www.babesandstars.com/*/*/*/
-
+// @match        http://www.xvideos.com/video*
+// @match        http://www.pornhub.com/view_video.php?viewkey=*
 // ==/UserScript==
+
+/* PATTERNS
+
+else if (
+  pageURL.matchLink('')
+) {
+}
+
+*/
 
 (function() {
   'use strict';
@@ -148,5 +158,40 @@
     };
     waitForElement('.my_gallery', false, mainFunction, 1000, 30);
     if (test) alert('test: 5');
+  }
+
+  else if (
+    pageURL.matchLink('http://www.xvideos.com/video*')
+  ) {
+    mainFunction = function() {
+      contentURL = document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
+      posterURL = document.querySelector('meta[property="og:image"]').content;
+      appendToFrame = document.querySelector('#video-player-bg');
+      appendPosition = 'after';
+      embedCodeFrame_BackgroundColor = getElementComputedStyle(document.body, 'background-color');
+      addEmbedCodeFrame();
+      addKeyComboCtrlC(true);
+      clearTimeout();
+    };
+    var mainFrame = document.querySelector('div#content');
+    mainFrame.style['max-width'] = '640px';
+    waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
+    if (test) alert('test: 6');
+  }
+
+  else if (
+    pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')
+  ) {
+    mainFunction = function() {
+      contentURL = document.querySelector('meta[name="twitter:player"]').content;
+      posterURL = document.querySelector('meta[name="twitter:image"]').content;
+      appendToFrame = document.querySelector('.video-actions-container');
+      appendPosition = 'before';
+      addEmbedCodeFrame();
+      addKeyComboCtrlC(true);
+      clearTimeout();
+    };
+    waitForElement('meta[name="twitter:player"]', 'content', mainFunction, 1000, 30);
+    if (test) alert('test: 7');
   }
 })();
