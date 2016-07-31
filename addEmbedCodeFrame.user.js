@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.3
+// @version      1.1.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -78,6 +78,15 @@ function nthParent(element, num) {
   if (!element) return false;
   var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
   return element;
+}
+function getAttributeInIframe(iframe, innerElementSelector, attribute) {
+  if (iframe) {
+    var innerDoc, innerElement, result;
+    innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    if (innerDoc) innerElement = innerDoc.querySelector(innerElementSelector);
+    if (innerElement) result = innerElement.getAttribute(attribute);
+    return result;
+  }
 }
 // ====================================================================================================================
 
