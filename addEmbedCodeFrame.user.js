@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.6
+// @version      1.1.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -100,6 +100,13 @@ String.prototype.matchLink = function(link, flags) {
   link = link.replace(/\*/g, ".*");
   var re = new RegExp(link, flags);
   return this.match(re);
+};
+String.prototype.replaceAll = function(find, replace) {
+  var str = this;
+  while (str.indexOf(find) > -1) {
+    str = str.replace(find, replace);
+  }
+  return str;
 };
 // ====================================================================================================================
 
