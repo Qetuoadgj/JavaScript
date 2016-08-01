@@ -5,7 +5,7 @@
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
-// @downloadURL  -https://github.com/Qetuoadgj/JavaScript/raw/master/SERVICES.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/YouTube.com.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/addEmbedCodeFrame.user.js
 // @run-at       document-end
 // @noframes
