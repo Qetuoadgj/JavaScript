@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.5
+// @version      1.1.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -155,6 +155,7 @@ function addEmbedCodeFrame(parentDocument) {
   textFrame.style.border = 'none';
   textFrame.style['background-color'] = 'transparent';
   textFrame.style.width = '100%';
+  textFrame.style['max-width'] = '100%';
   textFrame.style.rows = '2';
   textFrame.style.overflow = 'hidden';
   textFrame.style['font-size'] = '12px';
