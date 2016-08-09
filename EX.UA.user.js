@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.UA
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -52,6 +52,12 @@
         var groupTitle = pageTitle.replace('@ EX.UA', '');
         if (index < 1) embedCodeText = '#EXTM3U\n';
         embedCodeText = embedCodeText + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';
+        if (index < 1) {
+          if (player_list_array.length == 1) {
+            createLink = true;
+            contentURL = videoSrc;
+          }
+        }
       });
 
       addEmbedCodeFrame();
