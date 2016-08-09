@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -36,6 +36,16 @@ else if (
 
   var test = false;
   // var test = true;
+
+  // addEmbedCodeFrame.user.js GLOBAL VARIABLES
+  // ====================================================================================================================
+  // contentTitle = false;
+  // embedCodeText = false;
+  // createLink = true;
+  // createPoster = true;
+  // textAreaAutoHeight = false;
+  // embedCodeTextRefresh = true;
+  // ====================================================================================================================
 
   if (
     pageURL.matchLink('http://porndoe.com/video/*')
@@ -122,7 +132,6 @@ else if (
       embedCodeFrame_Margin = '0.2% 0px';
       changeQualityButton('div.jw-group.jw-controlbar-right-group.jw-reset');
       changeQualityButton('nav > ul.right_set');
-      // embedCodeText = false;
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
       clearTimeout();
@@ -151,8 +160,8 @@ else if (
       });
       appendToFrame = gallery;
       appendPosition = 'after';
+      textAreaAutoHeight = true;
       addEmbedCodeFrame();
-      auto_grow(document.getElementById("oldEmbedCodeFrame").querySelector('textarea'));
       addKeyComboCtrlC(true);
       clearTimeout();
     };
@@ -174,7 +183,7 @@ else if (
       clearTimeout();
     };
     var mainFrame = document.querySelector('div#content');
-    mainFrame.style['max-width'] = '640px';
+    mainFrame.style['max-width'] = '1280px';
     waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
     if (test) alert('test: 6');
   }
