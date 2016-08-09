@@ -179,7 +179,7 @@ function addEmbedCodeFrame(parentDocument) {
   textArea.value = embedCodeText;
   embedCodeFrame.appendChild(textArea);
   textArea.autoHeight(textAreaFloatMin, textAreaFloatMax);
-  textArea.addEventListener("resize", this.autoHeight(textAreaFloatMin, textAreaFloatMax));
+  textArea.addEventListener("resize", textArea.autoHeight(textAreaFloatMin, textAreaFloatMax));
 
   if (createLink) {
     var embedCodeLink = parentDocument.createElement('a');
