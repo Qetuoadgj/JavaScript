@@ -112,7 +112,6 @@ Element.prototype.autoHeight = function(floatMin, floatMax) {
   this.style.height = h;
   if (!floatMin) this.style.minHeight = h;
   if (!floatMax) this.style.maxHeight = h;
-  this.addEventListener("resize", this.autoHeight(floatMin, floatMax));
 };
 // ====================================================================================================================
 
@@ -125,6 +124,7 @@ var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
 var posters = [];
+var textAreaFloatMin = true, textAreaFloatMax = true;
 // ====================================================================================================================
 
 // DEFAULT LOCAL FUNCTIONS
@@ -178,7 +178,8 @@ function addEmbedCodeFrame(parentDocument) {
   textArea.setAttribute('onclick', 'this.focus(); this.select();');
   textArea.value = embedCodeText;
   embedCodeFrame.appendChild(textArea);
-  textArea.autoHeight(true, true);
+  textArea.autoHeight(textAreaFloatMin, textAreaFloatMax);
+  textArea.addEventListener("resize", this.autoHeight(textAreaFloatMin, textAreaFloatMax));
 
   if (createLink) {
     var embedCodeLink = parentDocument.createElement('a');
