@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.7
+// @version      1.1.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -157,20 +157,21 @@ function addEmbedCodeFrame(parentDocument) {
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
   appendFrame(embedCodeFrame, appendPosition, appendToFrame);
 
-  var textFrame = parentDocument.createElement('textarea');
-  textFrame.style.display = 'block';
-  textFrame.style.border = 'none';
-  textFrame.style['background-color'] = 'transparent';
-  textFrame.style.width = '100%';
-  textFrame.style['max-width'] = '100%';
-  textFrame.style.rows = '2';
-  textFrame.style.overflow = 'hidden';
-  textFrame.style['font-size'] = '12px';
-  textFrame.style.color = 'grey';
-  textFrame.setAttribute('readonly', 'readonly');
-  textFrame.setAttribute('onclick', 'this.focus(); this.select();');
-  textFrame.value = embedCodeText;
-  embedCodeFrame.appendChild(textFrame); // auto_grow(textFrame);
+  var textArea = parentDocument.createElement('textarea');
+  textArea.setAttribute('id', (embedCodeFrame.getAttribute('id') || '') + '_TextArea');
+  textArea.style.display = 'block';
+  textArea.style.border = 'none';
+  textArea.style['background-color'] = 'transparent';
+  textArea.style.width = '100%';
+  textArea.style['max-width'] = '100%';
+  textArea.style.rows = '2';
+  textArea.style.overflow = 'hidden';
+  textArea.style['font-size'] = '12px';
+  textArea.style.color = 'grey';
+  textArea.setAttribute('readonly', 'readonly');
+  textArea.setAttribute('onclick', 'this.focus(); this.select();');
+  textArea.value = embedCodeText;
+  embedCodeFrame.appendChild(textArea); // auto_grow(textArea);
 
   if (createLink) {
     var embedCodeLink = parentDocument.createElement('a');
@@ -205,7 +206,7 @@ function changeQualityButton(elementSelector, parentDocument) {
 }
 function addKeyComboCtrlC(preventDefault) {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
-  var textFrame = oldEmbedCodeFrame.querySelector('textarea');
+  var textArea = oldEmbedCodeFrame.querySelector('textarea');
   var onKeyDown = function(e) {
     e = e || window.event;
     var cKey = 67;
@@ -213,7 +214,7 @@ function addKeyComboCtrlC(preventDefault) {
 
     // var targetType = e.target.tagName.toLowerCase();
     if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey) {
-      textFrame.select(); document.execCommand('copy');
+      textArea.select(); document.execCommand('copy');
       if (preventDefault) e.preventDefault();
     }
   };
