@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.9
+// @version      1.2.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -112,6 +112,7 @@ Element.prototype.autoHeight = function(floatMin, floatMax) {
   this.style.height = h;
   if (!floatMin) this.style.minHeight = h;
   if (!floatMax) this.style.maxHeight = h;
+  this.addEventListener("resize", this.autoHeight(floatMin, floatMax));
 };
 // ====================================================================================================================
 
