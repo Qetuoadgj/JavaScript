@@ -176,7 +176,8 @@ function addEmbedCodeFrame(parentDocument) {
   textArea.setAttribute('readonly', 'readonly');
   textArea.setAttribute('onclick', 'this.focus(); this.select();');
   textArea.value = embedCodeText;
-  embedCodeFrame.appendChild(textArea); // auto_grow(textArea);
+  embedCodeFrame.appendChild(textArea);
+  textArea.autoHeight(true, true);
 
   if (createLink) {
     var embedCodeLink = parentDocument.createElement('a');
