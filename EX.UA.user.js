@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.UA
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -19,13 +19,21 @@
   var test = false;
   // var test = true;
 
+  // addEmbedCodeFrame.user.js GLOBAL VARIABLES
+  // ====================================================================================================================
+  // contentTitle = false;
+  embedCodeText = false;
+  createLink = false;
+  createPoster = false;
+  textAreaAutoHeight = true;
+  embedCodeTextRefresh = false;
+  // ====================================================================================================================
+
   if (
     pageURL.matchLink('http://www.ex.ua/*')
   ) {
     mainFunction = function() {
       var tmpArray = [], playList = [];
-      createLink = false;
-      createPoster = false;
       appendToFrame = document.querySelector('#body_element');
       appendPosition = 'append';
 
@@ -47,7 +55,6 @@
       });
 
       addEmbedCodeFrame();
-      auto_grow(document.getElementById("oldEmbedCodeFrame").querySelector('textarea'));
       addKeyComboCtrlC(true);
       clearTimeout();
     };
