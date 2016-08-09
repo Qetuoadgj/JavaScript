@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.1
+// @version      1.2.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -123,7 +123,8 @@ var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
 var posters = [];
-var textAreaAutoHeight = true, textAreaFixedHeight = false;
+var textAreaAutoHeight = false, textAreaFixedHeight = false;
+var embedCodeTextRefresh = true;
 // ====================================================================================================================
 
 // DEFAULT LOCAL FUNCTIONS
@@ -145,7 +146,7 @@ function addEmbedCodeFrame(parentDocument) {
 
   contentTitle = contentTitle || pageTitle.replace(/^.{1} /i, '').Capitalize();
 
-  if (!embedCodeText) {
+  if (!embedCodeText || embedCodeTextRefresh) {
     embedCodeText = '<div class="thumbnail"';
     if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
     if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
