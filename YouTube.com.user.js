@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.0
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -23,7 +23,7 @@
     pageURL.matchLink('https://www.youtube.com/watch?*')
   ) {
     mainFunction = function() {
-      contentURL = document.querySelector('meta[property="og:video:url"]').content;
+      contentURL = document.querySelector('meta[property="og:url"]').content;
       contentURL = contentURL.replace(/(.*)[?].*/i, '$1') + '?start=0';
       posterURL = document.querySelector('meta[property="og:image"]').content;
       posterURL = posterURL.replace(/(.*)\/.*default.jpg$/i, '$1/mqdefault.jpg');
@@ -49,7 +49,7 @@
       var panel = nthParent(document.querySelector('div[title="Magic Options"]'), 2);
       if (panel) panel.style.position = 'inherit';
     };
-    waitForElement('meta[property="og:video:url"]', 'content', mainFunction, 1000, 30);
+    waitForElement('meta[property="og:url"]', 'content', mainFunction, 1000, 30);
     waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, 250, 30);
     waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, 250, 30);
     if (test) alert('test: 1');
