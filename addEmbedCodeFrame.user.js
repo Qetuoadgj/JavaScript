@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.1.8
+// @version      1.1.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -11,7 +11,6 @@
 // DEFAULT GLOBAL FUNCTIONS
 // ====================================================================================================================
 function getElementComputedStyle(elementObject, propertyName) {return window.getComputedStyle(elementObject, null).getPropertyValue(propertyName);}
-function auto_grow(element) {element.style.height = "5px"; element.style.height = element.scrollHeight - 5 + "px";}
 String.prototype.Capitalize = function() {
   function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
   return this.split(' ').map(capFirst).join(' ');
@@ -107,6 +106,12 @@ String.prototype.replaceAll = function(find, replace) {
     str = str.replace(find, replace);
   }
   return str;
+};
+Element.prototype.autoHeight = function(floatMin, floatMax) {
+  var h = this.scrollHeight + 'px';
+  this.style.height = h;
+  if (!floatMin) this.style.minHeight = h;
+  if (!floatMax) this.style.maxHeight = h;
 };
 // ====================================================================================================================
 
