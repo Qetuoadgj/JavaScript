@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -20,6 +20,7 @@
 // @match        http://www.babesandstars.com/*/*/*/
 // @match        http://www.xvideos.com/video*
 // @match        http://www.pornhub.com/view_video.php?viewkey=*
+// @match        http://www.eporner.com/hd-porn/*/*/
 // ==/UserScript==
 
 /* PATTERNS
@@ -43,7 +44,7 @@ else if (
   // embedCodeText = false;
   // createLink = true;
   // createPoster = true;
-  // textAreaAutoHeight = false;
+  textAreaAutoHeight = false;
   // embedCodeTextRefresh = true;
   // ====================================================================================================================
 
@@ -174,6 +175,12 @@ else if (
   ) {
     mainFunction = function() {
       contentURL = document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
+
+      forEach(document.scripts, function(index, self) {
+        var text = self.text;
+        contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL;
+      });
+
       posterURL = document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('#video-player-bg');
       appendPosition = 'after';
@@ -203,4 +210,22 @@ else if (
     waitForElement('meta[name="twitter:player"]', 'content', mainFunction, 1000, 30);
     if (test) alert('test: 7');
   }
+
+  else if (
+    pageURL.matchLink('http://www.eporner.com/hd-porn/*/*/')
+  ) {
+    mainFunction = function() {
+      contentURL = document.querySelector('#EPvideo_html5_api').src;
+      posterURL = document.querySelector('meta[property="og:image"]').content;
+      appendToFrame = document.querySelector('#cutscenes');
+      appendPosition = 'before';
+      changeQualityButton('.vjs-control-bar > .vjs-icon-hd > .vjs-menu > .vjs-menu-content');
+      addEmbedCodeFrame();
+      addKeyComboCtrlC(true);
+      clearTimeout();
+    };
+    waitForElement('#EPvideo_html5_api', 'src', mainFunction, 1000, 30);
+    if (test) alert('test: 8');
+  }
+
 })();
