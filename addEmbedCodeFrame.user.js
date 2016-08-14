@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.2
+// @version      1.2.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -106,6 +106,12 @@ String.prototype.replaceAll = function(find, replace) {
     str = str.replace(find, replace);
   }
   return str;
+};
+String.prototype.format = function() {
+  var args = arguments;
+  return this.replace(/{(\d+)}/g, function(match, number) {
+    return typeof args[number] != 'undefined' ? args[number]: match;
+  });
 };
 Element.prototype.autoHeight = function(fixedHeight) {
   var h = this.scrollHeight + 'px';
