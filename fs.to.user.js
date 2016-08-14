@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.6
+// @version      1.1.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -203,6 +203,7 @@
   }
 
   var titleMethod; // global
+  var groupTitleText; // global
   function CreateFileList(optimized, download) {
     var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
     var targetFrame, embedFrameMargin, embedLinkMargin, embedFrameBackgroundColor;
@@ -237,24 +238,35 @@
       downloadButton.style.border = '1px solid gray';
       downloadButton.style.backgroundColor = 'white';
 
-      var promptFramePlayers = document.createElement('select');
-      promptFramePlayers.style.width = '200px';
-      promptFramePlayers.style.height = '30px';
-      // promptFramePlayers.style.float = 'left';
-      promptFramePlayers.style.margin='10px 0px 0px 0px';
-      promptFramePlayers.style.padding='5px';
-      promptFramePlayers.style.border = '1px solid gray';
-      embedFrame.appendChild(promptFramePlayers);
+      var promptFrameRename = document.createElement('select');
+      promptFrameRename.style.width = '200px';
+      promptFrameRename.style.height = '30px';
+      // promptFrameRename.style.float = 'left';
+      promptFrameRename.style.margin='10px 0px 0px 0px';
+      promptFrameRename.style.padding='5px';
+      promptFrameRename.style.border = '1px solid gray';
+      embedFrame.appendChild(promptFrameRename);
 
       var options = ['Способ переименования', 'Из названия файла', 'Серия #'];
       var num; for (num = 0; num < options.length; ++num) {
         var selectOption = document.createElement('option');
         selectOption.text = options[num];
         selectOption.value = options[num];
-        promptFramePlayers.appendChild(selectOption);
+        promptFrameRename.appendChild(selectOption);
       }
 
-      promptFramePlayers.value = titleMethod || options[0];
+      promptFrameRename.value = titleMethod || options[0];
+
+      var groupTitleFrame = document.createElement('input');
+      groupTitleFrame.style.width = '280px';
+      groupTitleFrame.style.height = '18px';
+      groupTitleFrame.style.margin = '0px 5px 0px';
+      groupTitleFrame.style.padding = '5px';
+      groupTitleFrame.style.border = '1px solid gray';
+      groupTitleFrame.placeholder = 'Изменить название группы';
+      embedFrame.appendChild(groupTitleFrame);
+
+      if (groupTitleText) groupTitleFrame.value = groupTitleText.trim();
 
       var textFrame = parent.document.createElement('textarea');
       textFrame.setAttribute('id', 'embedCodeTextFrame');
@@ -266,7 +278,7 @@
       embedFrame.appendChild(textFrame);
 
       var generatePlaylist = function() {
-        titleMethod = promptFramePlayers.value;
+        titleMethod = promptFrameRename.value;
 
         var fileList = document.querySelectorAll('ul.filelist.m-current > li[style="display: block;"]'), i; var embedCode = '', downloadList = '';
         for (i = 0; i < fileList.length; ++i) {
@@ -305,6 +317,7 @@
             var seasonNumberDigit = videoFileName.replace(/.*S(\d+)E\d+.*/i, '$1');
             var serieNumberDigit = videoFileName.replace(/.*S\d+E(\d+).*/i, '$1');
             var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
+            if (groupTitleFrame.value) groupTitle = groupTitleFrame.value;
             if (titleMethod == options[0] || titleMethod == options[1]) {
               videoTitle = videoFileName.replace(/.*S\d+E\d+(.*)/i, '$1');
               videoTitle = videoTitle.replace(/(.*)\..*/, '$1');
@@ -332,7 +345,7 @@
             var date = document.querySelector('#contentInner > div.l-content-center > div.b-tab-item > div:nth-child(1) > div > div.l-center > div.item-info > table > tbody > tr:nth-child(2) > td:nth-child(2) > a > span').innerHTML.trim();
             title = '{0} / {1} ({2})'.format(name, origName, date); // Доктор Ноу / Dr. No (1962)
             // title = title.replace(/(.*): .*$/i, '$1');
-            if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="",'+title+'\n'+videoSrc) + '\n';}
+            if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+(groupTitleFrame.value || '')+'",'+title+'\n'+videoSrc) + '\n';}
           }
         }
 
@@ -340,7 +353,12 @@
         textFrameAutoHeight(textFrame);
       };
       generatePlaylist();
-      promptFramePlayers.addEventListener("change", function(){generatePlaylist();}, false);
+      promptFrameRename.addEventListener("change", function(){generatePlaylist();}, false);
+      groupTitleFrame.addEventListener("change", function(){
+        groupTitleFrame.value = groupTitleFrame.value.trim();
+        groupTitleText = groupTitleFrame.value;
+        generatePlaylist();
+      }, false);
     }
   }
 
