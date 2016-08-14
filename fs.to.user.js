@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         fs.to
-// @version      1.1.5
+// @version      1.1.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://fs.to/video/*
@@ -63,6 +63,13 @@
     if (cssClass) style.setAttribute('class', cssClass);
     head.appendChild(style);
   }
+
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined' ? args[number]: match;
+    });
+  };
 
   function ShowEmbedCode() {
     var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
@@ -320,7 +327,11 @@
             }
             if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';}
           } else {
-            title = title.replace(/(.*): .*$/i, '$1');
+            var name = document.querySelector('.b-tab-item__title-inner > span[itemprop="name"]').innerHTML.trim();
+            var origName = document.querySelector('.b-tab-item__title-inner > div[itemprop="alternativeHeadline"]').innerHTML.trim();
+            var date = document.querySelector('#contentInner > div.l-content-center > div.b-tab-item > div:nth-child(1) > div > div.l-center > div.item-info > table > tbody > tr:nth-child(2) > td:nth-child(2) > a > span').innerHTML.trim();
+            title = '{0} / {1} ({2})'.format(name, origName, date); // Доктор Ноу / Dr. No (1962)
+            // title = title.replace(/(.*): .*$/i, '$1');
             if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="",'+title+'\n'+videoSrc) + '\n';}
           }
         }
