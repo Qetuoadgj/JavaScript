@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -21,6 +21,7 @@
 // @match        http://www.xvideos.com/video*
 // @match        http://www.pornhub.com/view_video.php?viewkey=*
 // @match        http://www.eporner.com/hd-porn/*/*/
+// @match        http://www.tube8.com/*/*/*/*
 // ==/UserScript==
 
 /* PATTERNS
@@ -176,9 +177,21 @@ else if (
     mainFunction = function() {
       contentURL = document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
 
+      var isHD = true;
+      if (!isHD) {
+        var parametermenu = document.querySelectorAll('.parameter_element_txt');
+        forEach(parametermenu, function(index, self) {
+          if (!isHD) {
+            var text = self.innerHTML;
+            isHD = isHD || (text == '720p') || (text == '1080p');
+          }
+        });
+      }
+
       forEach(document.scripts, function(index, self) {
         var text = self.text;
-        contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL;
+        if (isHD) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
+        else contentURL = text.match('html5player.setVideoUrlHigh') ? text.match(/html5player\.setVideoUrlHigh\('(.*?)'\)/i)[1] : contentURL; // HQ
       });
 
       posterURL = document.querySelector('meta[property="og:image"]').content;
@@ -228,4 +241,21 @@ else if (
     if (test) alert('test: 8');
   }
 
+  else if (
+    pageURL.matchLink('http://www.tube8.com/*/*/*/*')
+  ) {
+    mainFunction = function() {
+      var data = flashvars;
+      contentURL = data.quality_1080p || data.quality_720p || data.quality_480p || data.quality_360p || data.quality_180p; // direct
+      contentURL = page_params.embedCode ? page_params.embedCode.match(/.*src="(.*?)".*/i)[1] : contentURL; // embed
+      posterURL = data.image_url;
+      appendToFrame = document.querySelector('.underplayer_wrap');
+      appendPosition = 'before';
+      addEmbedCodeFrame();
+      addKeyComboCtrlC(true);
+      clearTimeout();
+    };
+    waitForCondition(function(){return flashvars;}, mainFunction, 1000, 30);
+    if (test) alert('test: 9');
+  }
 })();
