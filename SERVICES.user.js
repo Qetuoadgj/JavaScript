@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -177,16 +177,19 @@ else if (
     mainFunction = function() {
       contentURL = document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
 
-      var isHD = true;
+      var isHD = !true;
       if (!isHD) {
         var parametermenu = document.querySelectorAll('.parameter_element_txt');
         forEach(parametermenu, function(index, self) {
           if (!isHD) {
             var text = self.innerHTML;
             isHD = isHD || (text == '720p') || (text == '1080p');
+            if (isHD) self.parentNode.click();
           }
         });
       }
+
+      isHD = true;
 
       forEach(document.scripts, function(index, self) {
         var text = self.text;
