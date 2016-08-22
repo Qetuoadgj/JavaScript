@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.10
+// @version      1.0.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -175,28 +175,26 @@ else if (
     pageURL.matchLink('http://www.xvideos.com/video*')
   ) {
     mainFunction = function() {
-      contentURL = document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
-
-      var isHD = !true;
-      if (!isHD) {
-        var parametermenu = document.querySelectorAll('.parameter_element_txt');
-        forEach(parametermenu, function(index, self) {
+      var autoHD, isHD = false, forceHLS = false;
+      autoHD = true;
+      if (autoHD || !isHD) {
+        var menuElements = document.querySelectorAll('.parameter_element_txt');
+        forEach(menuElements, function(index, self) {
           if (!isHD) {
             var text = self.innerHTML;
-            isHD = (text == '1080p HD') || (text == '720p HD') || isHD;
+            isHD = (text == '1080p') || (text == '720p') || isHD;
+            // alert(text+': isHD = '+isHD);
             if (isHD) self.parentNode.click();
           }
         });
       }
-
-      isHD = true;
-
+      forceHLS = true;
       forEach(document.scripts, function(index, self) {
         var text = self.text;
-        if (isHD) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
+        if (isHD || forceHLS) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
         else contentURL = text.match('html5player.setVideoUrlHigh') ? text.match(/html5player\.setVideoUrlHigh\('(.*?)'\)/i)[1] : contentURL; // HQ
       });
-
+      contentURL = contentURL || document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
       posterURL = document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('#video-player-bg');
       appendPosition = 'after';
