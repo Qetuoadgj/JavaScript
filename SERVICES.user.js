@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.9
+// @version      1.0.10
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
