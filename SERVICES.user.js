@@ -183,7 +183,7 @@ else if (
         forEach(parametermenu, function(index, self) {
           if (!isHD) {
             var text = self.innerHTML;
-            isHD = isHD || (text == '720p') || (text == '1080p');
+            isHD = (text == '1080p HD') || (text == '720p HD') || isHD;
             if (isHD) self.parentNode.click();
           }
         });
