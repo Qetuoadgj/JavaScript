@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.0.11
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -175,20 +175,25 @@ else if (
     pageURL.matchLink('http://www.xvideos.com/video*')
   ) {
     mainFunction = function() {
-      var autoHD, isHD = false, forceHLS = false;
+      var autoHD = false, isHD = false, forceHLS = false;
       autoHD = true;
-      if (autoHD || !isHD) {
-        var menuElements = document.querySelectorAll('.parameter_element_txt');
-        forEach(menuElements, function(index, self) {
-          if (!isHD) {
-            var text = self.innerHTML;
-            isHD = (text == '1080p') || (text == '720p') || isHD;
-            // alert(text+': isHD = '+isHD);
-            if (isHD) self.parentNode.click();
-          }
-        });
-      }
       forceHLS = true;
+      var menuElements = document.querySelectorAll('.parameter_element_txt');
+      forEach(menuElements, function(index, self) {
+        if (!isHD) {
+          var text = self.innerHTML;
+          isHD = (text == '1080p') || (text == '720p');
+          // alert(text+': isHD = '+isHD);
+          if (isHD && autoHD) {
+            var forcedElement = document.querySelector('.parameterelmt_forced');
+            var HDButton = self.parentNode;
+            var HDButtonTimer = setTimeout(function(){
+              HDButton.click();
+              if (HDButton == forcedElement) clearTimeout(HDButtonTimer);
+            }, 500);
+          }
+        }
+      });
       forEach(document.scripts, function(index, self) {
         var text = self.text;
         if (isHD || forceHLS) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
@@ -203,6 +208,7 @@ else if (
       addKeyComboCtrlC(true);
       clearTimeout();
     };
+
     var mainFrame = document.querySelector('div#content');
     mainFrame.style['max-width'] = '1280px';
     waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
