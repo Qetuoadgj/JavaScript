@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.3.0
+// @version      1.3.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -82,6 +82,7 @@ function nthParent(element, num) {
   var i; for (i = 0; i < num; ++i) {element = element.parentNode;}
   return element;
 }
+/*
 function getAttributeInIframe(iframe, innerElementSelector, attribute) {
   if (iframe) {
     var innerDoc, innerElement, result;
@@ -91,6 +92,7 @@ function getAttributeInIframe(iframe, innerElementSelector, attribute) {
     return result;
   }
 }
+*/
 String.prototype.regExp = function() {
   // return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
   var string = this.replace(/[.\/]/g, "\\$&");
@@ -251,16 +253,6 @@ function getHDButton(menuElements, hdOptions) {
     }
   }
 }
-/*
-function pressHDButton(btnToClick, checkFunc, interval) {
-  interval = interval || 500;
-  var pressButtonTimer = setTimeout(function(){
-    btnToClick.click();
-    var activated = checkFunc();
-    if (activated) clearTimeout(pressButtonTimer);
-  }, interval);
-}
-*/
 function pressHDButton(btnToClick, checkFunc, interval) {
   interval = interval || 500; var maxTries = false;
   var cycleCount = 0; setTimeout(function pressHDButtonCycle() {
