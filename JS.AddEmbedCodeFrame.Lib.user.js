@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -16,6 +16,7 @@ var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
 var embedCodeText;
 var posters = [];
+var qualityButtons = [];
 var textAreaAutoHeight = false, textAreaFixedHeight = false;
 var embedCodeTextRefresh = true;
 
@@ -100,14 +101,19 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
       }
     }
   }
+
+  qualityButtons = qualityButtons || []; // global value
+  qualityButtons.forEach(function(item, index, array){
+    if (item) qualityButton.addEventListener("click", callerFunction, false);
+  });
 }
 
-function changeQualityButton(buttonSelector, callerFunction, parentDocument) {
+/*function changeQualityButton(buttonSelector, callerFunction, parentDocument) {
   if (!buttonSelector) return;
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(buttonSelector);
   qualityButton.addEventListener("click", callerFunction, false);
-}
+}*/
 
 function addKeyComboCtrlC(preventDefault) {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
