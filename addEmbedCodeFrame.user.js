@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.4
+// @version      1.2.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -236,5 +236,23 @@ function addKeyComboCtrlC(preventDefault) {
     }
   };
   document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+}
+function AutoHD(menuElements, hdOptions, hdCheck) {
+  var HD = false;
+  for (var index = 0; index < menuElements.length; index++) {
+    if (!HD) {
+      var menuElement = menuElements[index];
+      var elementText = menuElement.innerHTML;
+      HD = (hdOptions.indexOf(elementText) !== -1);
+      if (HD) {
+        // alert(elementText+': HD = '+HD);
+        var pressButtonTimer = setTimeout(function(){
+          menuElement.click();
+          var activated = hdCheck(menuElement);
+          if (activated) clearTimeout(pressButtonTimer);
+        }, 500);
+      }
+    }
+  }
 }
 // ====================================================================================================================
