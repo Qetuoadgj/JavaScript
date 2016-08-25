@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.7
+// @version      1.2.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -237,33 +237,23 @@ function addKeyComboCtrlC(preventDefault) {
   };
   document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 }
-function isHD(menuElements, hdOptions) {
-  var HD = false;
+function getHDButton(menuElements, hdOptions) {
+  var isHD = false;
   for (var index = 0; index < menuElements.length; index++) {
-    if (!HD) {
+    if (!isHD) {
       var menuElement = menuElements[index];
       var elementText = menuElement.innerHTML;
-      HD = (hdOptions.indexOf(elementText) !== -1);
-      if (HD) return true;
+      isHD = (hdOptions.indexOf(elementText) !== -1);
+      if (isHD) return [menuElement, elementText, index];
     }
   }
 }
-function AutoHD(menuElements, hdOptions, hdCheck, btnToClick) {
-  var HD = false;
-  for (var index = 0; index < menuElements.length; index++) {
-    if (!HD) {
-      var menuElement = menuElements[index];
-      var elementText = menuElement.innerHTML;
-      HD = (hdOptions.indexOf(elementText) !== -1);
-      if (HD) {
-        // alert(elementText+': HD = '+HD);
-        var pressButtonTimer = setTimeout(function(){
-          if (btnToClick) {btnToClick.click();} else {menuElement.click();}
-          var activated = hdCheck(menuElement);
-          if (activated) clearTimeout(pressButtonTimer);
-        }, 500);
-      }
-    }
-  }
+function pressHDButton(btnToClick, checkFunc, interval) {
+  interval = interval || 500;
+  var pressButtonTimer = setTimeout(function(){
+    btnToClick.click();
+    var activated = checkFunc();
+    if (activated) clearTimeout(pressButtonTimer);
+  }, interval);
 }
 // ====================================================================================================================
