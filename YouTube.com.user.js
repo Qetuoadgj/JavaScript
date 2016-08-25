@@ -27,7 +27,7 @@
   var ClipConverterFixStyle = function() {
     var buttons = document.querySelectorAll('span#clipconverter > a > button');
     for (var index = 0; index < buttons.length; index++) {
-      var button = buttons[buttons];
+      var button = buttons[index];
       var span = button.querySelector('span');
       if (!span) {
         var text = button.innerHTML;
