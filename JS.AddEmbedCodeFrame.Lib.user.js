@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -103,6 +103,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 }
 
 function changeQualityButton(buttonSelector, callerFunction, parentDocument) {
+  if (!buttonSelector) return;
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(buttonSelector);
   qualityButton.addEventListener("click", callerFunction, false);
