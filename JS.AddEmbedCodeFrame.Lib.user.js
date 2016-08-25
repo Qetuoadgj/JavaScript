@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -99,5 +99,57 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
         embedCodePoster.setAttribute('src', posters[index]);
       }
     }
+  }
+}
+
+function changeQualityButton(buttonSelector, parentDocument) {
+  parentDocument = parentDocument || document;
+  var qualityButton = parentDocument.querySelector(buttonSelector);
+  qualityButton.addEventListener("click", mainFunction, false);
+}
+
+function addKeyComboCtrlC(preventDefault) {
+  var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
+  var textArea = oldEmbedCodeFrame.querySelector('textarea');
+  var onKeyDown = function(e) {
+    e = e || window.event;
+    var cKey = 67;
+    var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+    // var targetType = e.target.tagName.toLowerCase();
+    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey) {
+      textArea.select(); document.execCommand('copy');
+      if (preventDefault) e.preventDefault();
+    }
+  };
+  document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+}
+
+function getHDButton(menuElements, hdOptions) {
+  var isHD = false;
+  for (var index = 0; index < menuElements.length; index++) {
+    if (!isHD) {
+      var menuElement = menuElements[index];
+      var elementText = menuElement.innerHTML;
+      isHD = (hdOptions.indexOf(elementText) != -1);
+      // alert('elementText: '+elementText+'\nisHD: '+isHD);
+      if (isHD) return [menuElement, elementText, index];
+    }
+  }
+}
+
+function pressHDButton(btnToClick, checkFunc, delay, tries) {
+  if (checkFunc && (typeof checkFunc).toLowerCase() == "function") {
+    delay = delay || 1000; tries = tries || 5; // defaults
+    var iteration = function(count) {
+      var keepRun = tries ? (count < tries) : true;
+      if (keepRun) {
+        // alert('count: '+(count+1)+'\ntries: '+tries);
+        btnToClick.click();
+        var result = checkFunc();
+        // alert('result: '+result);
+        if (result) return; else setTimeout(iteration, delay, ++count);
+      }
+    };
+    var init = setTimeout(iteration, delay, 0);
   }
 }
