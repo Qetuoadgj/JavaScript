@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.3
+// @version      1.2.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -15,13 +15,14 @@ String.prototype.Capitalize = function() {
   function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
   return this.split(' ').map(capFirst).join(' ');
 };
-function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries) {
+function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries, parentDocument) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
+    parentDocument = parentDocument || document;
     cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
     setTimeout(function waitForElementCycle() {
       if (maxTries) {keepRun = (cycleCount < maxTries);}
       if (keepRun) {
-        element = document.querySelector(elementSelector);
+        element = parentDocument.querySelector(elementSelector);
         if (attributeName) {
           if (element) {value = element.getAttribute(attributeName);}
           if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
