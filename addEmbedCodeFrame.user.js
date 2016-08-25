@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.5
+// @version      1.2.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -237,7 +237,7 @@ function addKeyComboCtrlC(preventDefault) {
   };
   document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 }
-function AutoHD(menuElements, hdOptions, hdCheck) {
+function AutoHD(menuElements, hdOptions, hdCheck, btnToClick) {
   var HD = false;
   for (var index = 0; index < menuElements.length; index++) {
     if (!HD) {
@@ -247,7 +247,7 @@ function AutoHD(menuElements, hdOptions, hdCheck) {
       if (HD) {
         // alert(elementText+': HD = '+HD);
         var pressButtonTimer = setTimeout(function(){
-          menuElement.click();
+          if (btnToClick) {btnToClick.click();} else {menuElement.click();}
           var activated = hdCheck(menuElement);
           if (activated) clearTimeout(pressButtonTimer);
         }, 500);
