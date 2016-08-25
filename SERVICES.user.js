@@ -111,7 +111,7 @@ else if (
         var menuElements, hdOptions, hdButton, btnToClick;
         menuElements = parentDocument.querySelectorAll('#player_controlbar_hd > .jwoption');
         hdOptions = ['1080p', '720p'];
-        hdButton = getHDButton2(menuElements, hdOptions)[0];
+        hdButton = getHDButton(menuElements, hdOptions)[0];
         btnToClick = hdButton;
         var checkPressed = function(option){return btnToClick.classList.contains('active');};
         pressHDButton(btnToClick, checkPressed, 500);
