@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.9
+// @version      1.3.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -15,32 +15,36 @@ String.prototype.Capitalize = function() {
   function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
   return this.split(' ').map(capFirst).join(' ');
 };
-function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries, parentDocument) {
+function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries, iframeElementSelector) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
-    cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
-    setTimeout(function waitForElementCycle() {
-      if (maxTries) {keepRun = (cycleCount < maxTries);}
+    cycleDelay = cycleDelay || 1000; maxTries = maxTries || 5;
+    var cycleCount = 0; setTimeout(function waitForElementCycle() {
+      var keepRun = maxTries ? (cycleCount < maxTries) : true; ++cycleCount;
+      // alert('cycleCount: '+cycleCount+'\nmaxTries: '+maxTries+'\nkeepRun: '+keepRun);
       if (keepRun) {
-        element = parentDocument ? parentDocument.querySelector(elementSelector) : document.querySelector(elementSelector);
+        var iframeElement = iframeElementSelector ? document.querySelector(iframeElementSelector) : null;
+        var parentDocument = iframeElementSelector ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : null;
+        var element = iframeElementSelector ? parentDocument.querySelector(elementSelector) : element = document.querySelector(elementSelector);
         if (attributeName) {
-          if (element) {value = element.getAttribute(attributeName);}
-          if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
+          var attributeValue = element ? element.getAttribute(attributeName) : null;
+          // alert('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\nelement: '+element+'\nattributeValue: '+attributeValue);
+          if (attributeValue && attributeValue !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         } else {
+          // alert('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\nelement: '+element);
           if (element) {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
         }
-        cycleCount += 1;
       }
     }, cycleDelay);
   }
 }
 function waitForCondition(condition, funcToRun, cycleDelay, maxTries) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
-    cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
-    setTimeout(function waitForConditionCycle() {
-      if (maxTries) {keepRun = (cycleCount < maxTries);}
+    cycleDelay = cycleDelay || 1000; maxTries = maxTries || 5;
+    var cycleCount = 0; setTimeout(function waitForConditionCycle() {
+      var keepRun = maxTries ? (cycleCount < maxTries) : true; ++cycleCount;
+      // alert('cycleCount: '+cycleCount+'\nmaxTries: '+maxTries+'\nkeepRun: '+keepRun);
       if (keepRun) {
         if (condition()) {return funcToRun();} else {setTimeout(waitForConditionCycle, cycleDelay);}
-        cycleCount += 1;
       }
     }, cycleDelay);
   }
@@ -247,12 +251,26 @@ function getHDButton(menuElements, hdOptions) {
     }
   }
 }
+/*
 function pressHDButton(btnToClick, checkFunc, interval) {
   interval = interval || 500;
   var pressButtonTimer = setTimeout(function(){
     btnToClick.click();
     var activated = checkFunc();
     if (activated) clearTimeout(pressButtonTimer);
+  }, interval);
+}
+*/
+function pressHDButton(btnToClick, checkFunc, interval) {
+  interval = interval || 500; var maxTries = false;
+  var cycleCount = 0; setTimeout(function pressHDButtonCycle() {
+    var keepRun = maxTries ? (cycleCount < maxTries) : true; ++cycleCount;
+    // alert('cycleCount: '+cycleCount+'\nmaxTries: '+maxTries+'\nkeepRun: '+keepRun);
+    if (keepRun) {
+      btnToClick.click();
+      var activated = checkFunc();
+      if (!activated) setTimeout(pressHDButtonCycle, interval);
+    }
   }, interval);
 }
 // ====================================================================================================================
