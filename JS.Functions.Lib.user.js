@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.1
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none

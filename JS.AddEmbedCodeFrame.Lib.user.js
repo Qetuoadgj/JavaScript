@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.5
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
