@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.3.2
+// @version      1.3.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -23,8 +23,8 @@ function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, m
       // alert('cycleCount: '+cycleCount+'\nmaxTries: '+maxTries+'\nkeepRun: '+keepRun);
       if (keepRun) {
         var iframeElement = iframeElementSelector ? document.querySelector(iframeElementSelector) : null;
-        var parentDocument = iframeElementSelector ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : null;
-        var element = iframeElementSelector ? parentDocument.querySelector(elementSelector) : element = document.querySelector(elementSelector);
+        var parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : null;
+        var element = parentDocument ? parentDocument.querySelector(elementSelector) : document.querySelector(elementSelector);
         if (attributeName) {
           var attributeValue = element ? element.getAttribute(attributeName) : null;
           // alert('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\nelement: '+element+'\nattributeValue: '+attributeValue);
