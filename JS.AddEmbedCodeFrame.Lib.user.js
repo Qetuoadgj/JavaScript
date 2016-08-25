@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -104,7 +104,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 
   qualityButtons = qualityButtons || []; // global value
   qualityButtons.forEach(function(item, index, array){
-    if (item) qualityButton.addEventListener("click", callerFunction, false);
+    if (item) item.addEventListener("click", callerFunction, false);
   });
 }
 
