@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.3.1
+// @version      1.3.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -248,7 +248,8 @@ function getHDButton(menuElements, hdOptions) {
     if (!isHD) {
       var menuElement = menuElements[index];
       var elementText = menuElement.innerHTML;
-      isHD = (hdOptions.indexOf(elementText) !== -1);
+      isHD = (hdOptions.indexOf(elementText) != -1);
+      // alert('elementText: '+elementText+'\nisHD: '+isHD);
       if (isHD) return [menuElement, elementText, index];
     }
   }
