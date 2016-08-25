@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -100,4 +100,13 @@ Element.prototype.append = function(appendToFrame, appendPosition) {
   if (appendPosition == 'after') appendToFrame.parentNode.insertBefore(this, appendToFrame.nextSibling);
   else if (appendPosition == 'before') appendToFrame.parentNode.insertBefore(this, appendToFrame);
   else if (!appendPosition || appendPosition == 'append') appendToFrame.appendChild(this);
+};
+
+Element.prototype.nthParentNode = function(num) {
+  var parent;
+  for (var i = 0; i < num.length; ++i) {
+    parent = parent || this;
+    parent = parent.parentNode;
+  }
+  return parent;
 };
