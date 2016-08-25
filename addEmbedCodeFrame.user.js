@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         addEmbedCodeFrame
-// @version      1.2.8
+// @version      1.2.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        none
@@ -17,12 +17,11 @@ String.prototype.Capitalize = function() {
 };
 function waitForElement(elementSelector, attributeName, funcToRun, cycleDelay, maxTries, parentDocument) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
-    parentDocument = parentDocument || document;
     cycleDelay = cycleDelay || 10; maxTries = maxTries || 100; var cycleCount = 0, keepRun = true; var element, value;
     setTimeout(function waitForElementCycle() {
       if (maxTries) {keepRun = (cycleCount < maxTries);}
       if (keepRun) {
-        element = parentDocument.querySelector(elementSelector);
+        element = parentDocument ? parentDocument.querySelector(elementSelector) : document.querySelector(elementSelector);
         if (attributeName) {
           if (element) {value = element.getAttribute(attributeName);}
           if (value && value !== '') {return funcToRun();} else {setTimeout(waitForElementCycle, cycleDelay);}
