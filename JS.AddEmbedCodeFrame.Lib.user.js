@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -102,10 +102,10 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
   }
 }
 
-function changeQualityButton(buttonSelector, parentDocument) {
+function changeQualityButton(buttonSelector, callerFunction, parentDocument) {
   parentDocument = parentDocument || document;
   var qualityButton = parentDocument.querySelector(buttonSelector);
-  qualityButton.addEventListener("click", mainFunction, false);
+  qualityButton.addEventListener("click", callerFunction, false);
 }
 
 function addKeyComboCtrlC(preventDefault) {
