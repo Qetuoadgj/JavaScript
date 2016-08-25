@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         SERVICES
-// @version      1.1.0
+// @version      1.1.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -60,7 +60,6 @@ else if (
       changeQualityButton('.jw-icon-hd');
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('video.jw-video', 'src', mainFunction, 1000, 30);
     if (test) alert('test: 1');
@@ -80,7 +79,6 @@ else if (
       appendPosition = 'after';
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
     if (test) alert('test: 2');
@@ -92,32 +90,33 @@ else if (
     pageURL.matchLink('http://hdpoz.com/*') ||
     pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
-    var iframeElement = document.querySelector('.videoContainer > iframe');
+    var iframeElement, parentDocument;
     mainFunction = function() {
-      if (iframeElement) {
-        contentURL = getAttributeInIframe(iframeElement, 'video', 'src');
-        var innerDoc = iframeElement.contentDocument || iframeElement.contentWindow.document;
-        changeQualityButton('.jwhd', innerDoc);
-      } else {
-        contentURL = document.querySelector('#player_media > video').src;
-        changeQualityButton('.jwhd');
-      }
+      contentURL = parentDocument.querySelector('video').src;
+      changeQualityButton('.jwhd', parentDocument);
       posterURL = document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('#video');
       appendPosition = 'after';
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     if (
       pageURL.matchLink('sexix.net/video') ||
       pageURL.matchLink('hdpoz.com/HD')
     ) {
-      if (iframeElement) {
-        waitForCondition(function(){return getAttributeInIframe(iframeElement, 'video', 'src');}, mainFunction, 1000, 30);
-      } else {
-        waitForElement('#player_media > video', 'src', mainFunction, 1000, 30);
-      }
+      // waitForElement('video', 'src', mainFunction, 1000, 3, '.videoContainer > iframe');
+      waitForElement('video', 'src', function(){
+        iframeElement = document.querySelector('.videoContainer > iframe');
+        parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : document;
+        var menuElements, hdOptions, hdButton, btnToClick;
+        menuElements = parentDocument.querySelectorAll('#player_controlbar_hd > .jwoption');
+        hdOptions = ['1080p', '720p'];
+        hdButton = getHDButton2(menuElements, hdOptions)[0];
+        btnToClick = hdButton;
+        var checkPressed = function(option){return btnToClick.classList.contains('active');};
+        pressHDButton(btnToClick, checkPressed, 500);
+        mainFunction();
+      }, 1000, 30, '.videoContainer > iframe');
     }
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
     if (test) alert('test: 3');
@@ -136,7 +135,6 @@ else if (
       changeQualityButton('nav > ul.right_set');
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
     if (test) alert('test: 4');
@@ -165,7 +163,6 @@ else if (
       textAreaAutoHeight = true;
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('.my_gallery', false, mainFunction, 1000, 30);
     if (test) alert('test: 5');
@@ -174,29 +171,12 @@ else if (
   else if (
     pageURL.matchLink('http://www.xvideos.com/video*')
   ) {
+    var forceHLS = true;
+    var menuElements, hdOptions, hdButton, btnToClick;
     mainFunction = function() {
-      var autoHD = false, isHD = false, forceHLS = false;
-      autoHD = true;
-      forceHLS = true;
-      var menuElements = document.querySelectorAll('.parameter_element_txt');
-      forEach(menuElements, function(index, self) {
-        if (!isHD) {
-          var text = self.innerHTML;
-          isHD = (text == '1080p') || (text == '720p');
-          // alert(text+': isHD = '+isHD);
-          if (isHD && autoHD) {
-            var forcedElement = document.querySelector('.parameterelmt_forced');
-            var HDButton = self.parentNode;
-            var HDButtonTimer = setTimeout(function(){
-              HDButton.click();
-              if (HDButton == forcedElement) clearTimeout(HDButtonTimer);
-            }, 500);
-          }
-        }
-      });
       forEach(document.scripts, function(index, self) {
         var text = self.text;
-        if (isHD || forceHLS) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
+        if (hdButton || forceHLS) contentURL = text.match('html5player.setVideoHLS') ? text.match(/html5player\.setVideoHLS\('(.*?)'\)/i)[1] : contentURL; // HD
         else contentURL = text.match('html5player.setVideoUrlHigh') ? text.match(/html5player\.setVideoUrlHigh\('(.*?)'\)/i)[1] : contentURL; // HQ
       });
       contentURL = contentURL || document.querySelector('#tabEmbed > input').value.replace(/.*src="(.*?)".*/i, '$1');
@@ -206,12 +186,18 @@ else if (
       embedCodeFrame_BackgroundColor = getElementComputedStyle(document.body, 'background-color');
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
-
-    var mainFrame = document.querySelector('div#content');
-    mainFrame.style['max-width'] = '1280px';
-    waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 30);
+    waitForElement('meta[property="og:image"]', 'content', function(){
+      menuElements = document.querySelectorAll('.parameter_element_txt');
+      hdOptions = ['1080p', '720p'];
+      hdButton = getHDButton(menuElements, hdOptions)[0];
+      btnToClick = hdButton.parentNode;
+      var checkPressed = function(option){return btnToClick.classList.contains('parameterelmt_forced');};
+      pressHDButton(btnToClick, checkPressed, 500);
+      mainFunction();
+    }, 1000, 30, false);
+    // var mainFrame = document.querySelector('div#content');
+    // mainFrame.style['max-width'] = '1280px';
     if (test) alert('test: 6');
   }
 
@@ -225,7 +211,6 @@ else if (
       appendPosition = 'before';
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('meta[name="twitter:player"]', 'content', mainFunction, 1000, 30);
     if (test) alert('test: 7');
@@ -242,7 +227,6 @@ else if (
       changeQualityButton('.vjs-control-bar > .vjs-icon-hd > .vjs-menu > .vjs-menu-content');
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForElement('#EPvideo_html5_api', 'src', mainFunction, 1000, 30);
     if (test) alert('test: 8');
@@ -260,7 +244,6 @@ else if (
       appendPosition = 'before';
       addEmbedCodeFrame();
       addKeyComboCtrlC(true);
-      clearTimeout();
     };
     waitForCondition(function(){return flashvars;}, mainFunction, 1000, 30);
     if (test) alert('test: 9');
