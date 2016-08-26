@@ -16,6 +16,19 @@
 (function() {
   'use strict';
 
+  /* JS.AddEmbedCodeFrame.Lib.user.js GLOBAL VARIABLES
+  // ====================================================================================================================
+  var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
+  var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
+  var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
+  var contentTitle;
+  var embedCodeText;
+  var posters = [];
+  var qualityButtons = [];
+  var textAreaAutoHeight = false, textAreaFixedHeight = false;
+  var embedCodeTextRefresh = true;
+  */
+
   var mainFunction = function() {
     contentURL = document.querySelector('meta[property="og:url"]').content.replace(/(.*)[?].*/i, '$1') + '?start=0';
     posterURL = document.querySelector('meta[property="og:image"]').content.replace(/(.*)\/.*default.jpg$/i, '$1/mqdefault.jpg');

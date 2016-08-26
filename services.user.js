@@ -94,7 +94,7 @@
       posterURL = document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('#video');
       appendPosition = 'after';
-      qualityButtons = [document.querySelector('.jwhd')];
+      qualityButtons = [parentDocument.querySelector('.jwhd')];
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
