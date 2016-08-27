@@ -1,11 +1,28 @@
 // ==UserScript==
-// @name         JS.AddEmbedCodeFrame.Lib
+// @name         services
 // @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
+// @noframes
+// @run-at       document-end
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.Functions.Lib.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/JS.AddEmbedCodeFrame.Lib.js
+// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.AddEmbedCodeFrame.Lib.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/services.js
+// @match        http://porndoe.com/video/*
+// @match        http://www.porntrex.com/video/*/*
+// @match        http://sexix.net/video*
+// @match        http://i.sexix.net/video*
+// @match        http://sexix.net/*
+// @match        http://hdpoz.com/HD*
+// @match        http://i.hdpoz.com/HD*
+// @match        http://hdpoz.com/*
+// @match        http://spankbang.com/*/video/*
+// @match        http://www.babesandstars.com/*/*/*/
+// @match        http://www.xvideos.com/video*
+// @match        http://www.pornhub.com/view_video.php?viewkey=*
+// @match        http://www.eporner.com/hd-porn/*/*/
+// @match        http://www.tube8.com/*/*/*/*
 // ==/UserScript==
 
 // DEFAULT GLOBAL VARIABLES
