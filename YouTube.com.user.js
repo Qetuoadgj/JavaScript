@@ -53,7 +53,7 @@
     var panel = document.querySelector('div[title="Magic Options"]').nthParentNode(2);
     if (panel) panel.style.position = 'inherit';
   };
-  waitForElement('meta[property="og:url"]', 'content', mainFunction, 1000, 5, false);
-  waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, 250, 20, false);
-  waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, 250, 20, false);
+  waitForElement('meta[property="og:url"]', 'content', mainFunction, 10, 100, false);
+  waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, 10, 100, false);
+  waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, 10, 100, false);
 })();
