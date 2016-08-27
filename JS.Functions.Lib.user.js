@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.0
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -20,9 +20,18 @@ function addGlobalStyle(css, cssClass) {
   head.appendChild(style);
 }
 
-function waitForElement(elementSelector, attrName, funcToRun, delay, tries, iframeSelector) {
+function waitForElement(elementSelector, attrName, funcToRun, delay, tries, iframeSelector, timerGroup) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
     delay = delay || 1000; tries = tries || 5; // defaults
+    var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
+    var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
+    var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
+      var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
+      if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
+    };
+    var clearTimers = function(timerGroup) {
+      if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]);}
+    };
     var iteration = function(count) {
       var keepRun = tries ? (count < tries) : true;
       if (keepRun) {
@@ -33,26 +42,36 @@ function waitForElement(elementSelector, attrName, funcToRun, delay, tries, ifra
             attrValue = targetElement ? targetElement.getAttribute(attrName) : null,
             result = attrName ? attrValue : targetElement;
         // alert(attrName ? (iframeSelector ? ('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument) : '' + '\ntargetElement: '+targetElement+'\nattrValue: '+attrValue) : 'iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\ntargetElement: '+targetElement);
-        if (result) return funcToRun(); else setTimeout(iteration, delay, ++count);
+        if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+        // console.log('ID: '+ID+', try: '+(count+1));
       }
     };
-    var init = setTimeout(iteration, delay, 0);
+    iteration(0); // 1st iteration
   }
 }
 
-function waitForCondition(funcToTest, funcToRun, delay, tries) {
+function waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup) {
   if ((funcToTest && (typeof funcToTest).toLowerCase() == "function") && (funcToRun && (typeof funcToRun).toLowerCase() == "function")) {
     delay = delay || 1000; tries = tries || 5; // defaults
+    var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
+    var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
+    var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
+      var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
+      if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
+    };
+    var clearTimers = function(timerGroup) {
+      if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]);}
+    };
     var iteration = function(count) {
       var keepRun = tries ? (count < tries) : true;
       if (keepRun) {
         // alert('count: '+(count+1)+'\ntries: '+tries);
         var result = funcToTest();
-        // alert('result: '+result);
-        if (result) return funcToRun(); else setTimeout(iteration, delay, ++count);
+        if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+        // console.log('ID: '+ID+', try: '+(count+1));
       }
     };
-    var init = setTimeout(iteration, delay, 0);
+    iteration(0); // 1st iteration
   }
 }
 
