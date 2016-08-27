@@ -66,5 +66,5 @@
     addKeyComboCtrlC(true);
   };
 
-  mainFunction();
+  waitForCondition(function(){return typeof player_info != 'undefined';}, mainFunction, delay, tries, false);
 })();
