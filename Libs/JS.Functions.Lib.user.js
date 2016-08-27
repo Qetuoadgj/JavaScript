@@ -124,10 +124,7 @@ Element.prototype.append = function(appendToFrame, appendPosition) {
 };
 
 Element.prototype.nthParentNode = function(num) {
-  var parent;
-  for (var i = 0; i < num; ++i) {
-    parent = parent || this;
-    parent = parent.parentNode;
-  }
+  var parent = this;
+  for (var i = 0; i < num; ++i) {parent = parent.parentNode;}
   return parent;
 };
