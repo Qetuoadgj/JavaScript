@@ -29,7 +29,14 @@
   var embedCodeTextRefresh = true;
   */
 
-  var mainFunction = function() {
+  // THIS FILE GLOBAL VARIABLES
+  // ====================================================================================================================
+  var mainFunction;
+  var delay = 1000,
+      tries = 5;
+  // ====================================================================================================================
+
+  mainFunction = function() {
     contentURL = document.querySelector('meta[property="og:url"]').content.replace(/(.*)[?].*/i, '$1') + '?start=0';
     posterURL = document.querySelector('meta[property="og:image"]').content.replace(/(.*)\/.*default.jpg$/i, '$1/mqdefault.jpg');
     appendToFrame = document.querySelector('#watch-description');
@@ -53,7 +60,7 @@
     var panel = document.querySelector('div[title="Magic Options"]').nthParentNode(2);
     if (panel) panel.style.position = 'inherit';
   };
-  waitForElement('meta[property="og:url"]', 'content', mainFunction, 10, 100, false);
-  waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, 10, 100, false);
-  waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, 10, 100, false);
+  waitForElement('meta[property="og:url"]', 'content', mainFunction, delay, tries, false);
+  waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, delay, tries, false);
+  waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, delay, tries, false);
 })();
