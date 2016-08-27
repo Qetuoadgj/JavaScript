@@ -6,9 +6,9 @@
 // @grant        none
 // @noframes
 // @run-at       document-end
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.Functions.Lib.user.js
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.AddEmbedCodeFrame.Lib.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/services.user.js
+// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.Functions.Lib.js
+// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.AddEmbedCodeFrame.Lib.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/services.js
 // @match        http://porndoe.com/video/*
 // @match        http://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
@@ -28,7 +28,7 @@
 (function() {
   'use strict';
 
-  /* JS.AddEmbedCodeFrame.Lib.user.js GLOBAL VARIABLES
+  /* JS.AddEmbedCodeFrame.Lib.js GLOBAL VARIABLES
   // ====================================================================================================================
   var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
   var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
@@ -46,7 +46,7 @@
   var mainFunction;
   var iframeElement, parentDocument;
   var delay = 1000,
-      tries = 5;
+      tries = 15;
   // ====================================================================================================================
 
   if (
