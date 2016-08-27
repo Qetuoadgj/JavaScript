@@ -6,8 +6,8 @@
 // @grant        none
 // @noframes
 // @run-at       document-end
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.Functions.Lib.js
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JS.AddEmbedCodeFrame.Lib.js
+// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JSFunctionsLib.js
+// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/JSAddEmbedCodeFrameLib.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/services.js
 // @match        http://porndoe.com/video/*
 // @match        http://www.porntrex.com/video/*/*
