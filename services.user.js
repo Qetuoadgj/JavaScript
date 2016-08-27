@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         services
-// @version      1.0.0
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -45,6 +45,8 @@
   // ====================================================================================================================
   var mainFunction;
   var iframeElement, parentDocument;
+  var delay = 1000,
+      tries = 5;
   // ====================================================================================================================
 
   if (
@@ -59,7 +61,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('video.jw-video', 'src', mainFunction, 1000, 5, false);
+    waitForElement('video.jw-video', 'src', mainFunction, delay, tries, false);
   }
 
   else if (
@@ -77,7 +79,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 5, false);
+    waitForElement('meta[property="og:image"]', 'content', mainFunction, delay, tries, false);
   }
 
   else if (
@@ -87,6 +89,7 @@
     pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
+    var timerGroup1 = [];
     mainFunction = function() {
       iframeElement = document.querySelector('.videoContainer > iframe');
       parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : document;
@@ -97,13 +100,14 @@
       qualityButtons = [parentDocument.querySelector('.jwhd')];
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
+      timerGroup1 = null;
     };
     if (
       pageURL.matchLink('sexix.net/video') ||
       pageURL.matchLink('hdpoz.com/HD')
     ) {
-      waitForElement('video', 'src', mainFunction, 1000, 5, false);
-      waitForElement('video', 'src', mainFunction, 1000, 5, '.videoContainer > iframe');
+      waitForElement('video', 'src', mainFunction, delay, tries, false, timerGroup1);
+      waitForElement('video', 'src', mainFunction, delay, tries, '.videoContainer > iframe', timerGroup1);
       /*waitForElement(
         'video', 'src',
         function() {
@@ -117,7 +121,7 @@
           var checkPressed = function(option){return btnToClick.classList.contains('active');};
           pressHDButton(btnToClick, checkPressed, 500);
           mainFunction();
-        }, 1000, 5, '.videoContainer > iframe'
+        }, delay, tries, '.videoContainer > iframe'
       );*/
     }
   }
@@ -136,7 +140,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 5, false);
+    waitForElement('meta[property="og:image"]', 'content', mainFunction, delay, tries, false);
   }
 
   else if (
@@ -164,7 +168,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('.my_gallery', false, mainFunction, 1000, 5, false);
+    waitForElement('.my_gallery', false, mainFunction, delay, tries, false);
   }
 
   else if (
@@ -186,7 +190,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    // waitForElement('meta[property="og:image"]', 'content', mainFunction, 1000, 5, false);
+    // waitForElement('meta[property="og:image"]', 'content', mainFunction, delay, tries, false);
     waitForElement(
       'meta[property="og:image"]', 'content',
       function(){
@@ -201,7 +205,7 @@
         }
         mainFunction();
       },
-      1000, 5, false
+      delay, tries, false
     );
   }
 
@@ -216,7 +220,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('meta[name="twitter:player"]', 'content', mainFunction, 1000, 5, false);
+    waitForElement('meta[name="twitter:player"]', 'content', mainFunction, delay, tries, false);
   }
 
   else if (
@@ -231,7 +235,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('#EPvideo_html5_api', 'src', mainFunction, 1000, 5, false);
+    waitForElement('#EPvideo_html5_api', 'src', mainFunction, delay, tries, false);
   }
 
   else if (
@@ -247,7 +251,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForCondition(function(){return flashvars;}, mainFunction, 1000, 5, false);
+    waitForCondition(function(){return flashvars;}, mainFunction, delay, tries, false);
   }
 
 })();
