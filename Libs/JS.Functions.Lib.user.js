@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -128,3 +128,41 @@ Element.prototype.nthParentNode = function(num) {
   for (var i = 0; i < num; ++i) {parent = parent.parentNode;}
   return parent;
 };
+
+function MouseWheelAudioControl(media, step) {
+  step = step || 1;
+
+  var volumeText = document.createElement('div');
+  volumeText.style.color = 'yellow'; volumeText.style['font-size'] = '72px';
+  volumeText.style.position = 'absolute'; volumeText.style['z-index'] = 2147483647; // Always on TOP
+  volumeText.style.top = '0px'; volumeText.style.left = '0px';
+  media.parentNode.insertBefore(volumeText, media.nextSibling);
+
+  var MouseWheelAudioHandler = function(e) {
+    // cross-browser wheel delta
+    e = window.event || e; // old IE support
+    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+    var vol =  Math.max(0, Math.min(100, media.volume*100 + delta*step)); vol = Math.floor(vol/step)*step; vol = vol/100;
+    media.volume = vol;
+    volumeText.textContent = (function(){if(Math.round(vol*100) > 0){return Math.round(vol*100);}else{return 'Выкл.';}})();
+
+    function volumeTextFade(){
+      volumeText.style.opacity = 0;
+      volumeText.style.transition = 'opacity 2s';
+      volumeText.style['-webkit-transition'] = 'opacity 2s'; // Safari
+    }
+    volumeText.style.transition = '';
+    volumeText.style['-webkit-transition'] = ''; // Safari
+    volumeText.style.opacity = 1; setTimeout(volumeTextFade, 2000);
+
+    e.preventDefault();
+    return false;
+  };
+
+  if (media.addEventListener) {
+    media.addEventListener("mousewheel", MouseWheelAudioHandler, false); // IE9, Chrome, Safari, Opera
+    media.addEventListener("DOMMouseScroll", MouseWheelAudioHandler, false); // Firefox
+  } else {
+    media.attachEvent("onmousewheel", MouseWheelAudioHandler); // IE 6/7/8
+  }
+}
