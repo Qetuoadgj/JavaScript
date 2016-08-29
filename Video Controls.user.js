@@ -10,6 +10,7 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Video%20Controls.user.js
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.ex.ua/show/*/*/*.mp4
+// @match        http://*.porndoe.com/movie/*/*/*/*/*/*/*.mp4?*
 // ==/UserScript==
 
 (function() {
