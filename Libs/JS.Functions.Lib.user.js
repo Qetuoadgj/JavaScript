@@ -132,10 +132,15 @@ Element.prototype.nthParentNode = function(num) {
 function MouseWheelAudioControl(media, step) {
   step = step || 1;
 
+  var fontSize = 72;
+
   var volumeText = document.createElement('div');
-  volumeText.style.color = 'yellow'; volumeText.style['font-size'] = '72px';
-  volumeText.style.position = 'absolute'; volumeText.style['z-index'] = 2147483647; // Always on TOP
-  volumeText.style.top = '0px'; volumeText.style.left = '0px';
+  volumeText.style.color = 'yellow';
+  volumeText.style['font-size'] = fontSize+'px';
+  volumeText.style.position = 'absolute';
+  volumeText.style['z-index'] = 2147483647; // Always on TOP
+  volumeText.style.top = '0px';
+  volumeText.style.left = (fontSize/4)+'px';
   media.parentNode.insertBefore(volumeText, media.nextSibling);
 
   var MouseWheelAudioHandler = function(e) {
