@@ -146,19 +146,28 @@ function getHDButton(menuElements, hdOptions) {
   }
 }
 
-function pressHDButton(btnToClick, checkFunc, delay, tries) {
+function pressHDButton(btnToClick, checkFunc, delay, tries, timerGroup) {
   if (checkFunc && (typeof checkFunc).toLowerCase() == "function") {
-    delay = delay || 1000; tries = tries || 5; // defaults
+    delay = delay || 1000; //tries = tries || 5; // defaults
+    var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
+    var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
+    var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
+      var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
+      if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
+    };
+    var clearTimers = function(timerGroup) {
+      if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]);}
+    };
     var iteration = function(count) {
       var keepRun = tries ? (count < tries) : true;
       if (keepRun) {
         // alert('count: '+(count+1)+'\ntries: '+tries);
         btnToClick.click();
         var result = checkFunc();
-        // alert('result: '+result);
-        if (result) return; else setTimeout(iteration, delay, ++count);
+        if (result) {clearTimers(timerGroup); return true;} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+        // console.log('ID: '+ID+', try: '+(count+1));
       }
     };
-    var init = setTimeout(iteration, delay, 0);
+    iteration(0); // 1st iteration
   }
 }

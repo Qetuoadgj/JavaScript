@@ -24,7 +24,7 @@ function addGlobalStyle(css, cssClass) {
 
 function waitForElement(elementSelector, attrName, funcToRun, delay, tries, iframeSelector, timerGroup) {
   if (funcToRun && (typeof funcToRun).toLowerCase() == "function") {
-    delay = delay || 1000; tries = tries || 5; // defaults
+    delay = delay || 1000; //tries = tries || 5; // defaults
     var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
     var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
     var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
@@ -54,7 +54,7 @@ function waitForElement(elementSelector, attrName, funcToRun, delay, tries, ifra
 
 function waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup) {
   if ((funcToTest && (typeof funcToTest).toLowerCase() == "function") && (funcToRun && (typeof funcToRun).toLowerCase() == "function")) {
-    delay = delay || 1000; tries = tries || 5; // defaults
+    delay = delay || 1000; //tries = tries || 5; // defaults
     var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
     var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
     var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
