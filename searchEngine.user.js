@@ -30,9 +30,12 @@
 
   var queriesList = [
     'http://sexix.net/?s='+'%s',
+    'http://hdpoz.com/?s='+'%s',
     'http://www.porntrex.com/search?search_query='+'%s'+'&search_type=videos',
-    'http://porndoe.com/search?keywords=%s',
-    'http://www.eporner.com/search/%s/',
+    'http://porndoe.com/search?keywords='+'%s',
+    'http://www.eporner.com/search/'+'%s'+'/',
+    'http://www.pornerbros.com/search?q='+'%s',
+    'http://wixvi.cc/?s='+'%s',
   ];
 
   var linksList = [];
@@ -47,7 +50,6 @@
     // d.style['border-style'] = 'solid';
 
     d.style.position = 'relative';
-
     d.style.height = Math.ceil(fontSize*2)+'px';
     document.body.appendChild(d);
 
@@ -66,7 +68,7 @@
     var a = document.createElement('a');
     a.style.display = 'table-cell';
     a.style["vertical-align"] = 'middle';
-    a.style["padding-left"] = i.offsetWidth + 5;
+    a.style["padding-left"] = Math.ceil(fontSize*1.25)+'px';//i.offsetWidth + 5;
     a.style['font-size'] = fontSize+'px';
     a.style.color = '#086081';
     a.style.width = 'auto';
