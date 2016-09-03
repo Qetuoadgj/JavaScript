@@ -36,6 +36,7 @@
     'http://www.eporner.com/search/'+'%s'+'/',
     'http://www.pornerbros.com/search?q='+'%s',
     'http://wixvi.cc/?s='+'%s',
+    'http://www.babesandstars.com/search/?t=models&q='+'%s',
   ];
 
   var linksList = [];
@@ -101,6 +102,15 @@
     }
   };
 
-  searchField.onkeydown = function(e){onKeyPress(linksList, e);};
-  searchField.onkeyup = function(e){onKeyPress(linksList, e);};
+  // searchField.onkeydown = function(e){onKeyPress(linksList, e);};
+  // searchField.onkeyup = function(e){onKeyPress(linksList, e);};
+
+  var eventList = ['keydown', 'keyup', 'change'];
+  var inputList = [searchField];
+
+  inputList.forEach(function(input){
+    eventList.forEach(function(event){
+      input.addEventListener(event,function(){onKeyPress(linksList, event);},false);
+    });
+  });
 })();
