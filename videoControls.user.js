@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Video Controls
+// @name         videoControls
 /// @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @version      1.0.0
 // @description  Pure JavaScript version.
@@ -7,7 +7,7 @@
 // @grant        none
 // @run-at       document-end
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Video%20Controls.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/videoControls.user.js
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.ex.ua/show/*/*/*.mp4
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
