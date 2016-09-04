@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -40,7 +40,7 @@ function waitForElement(elementSelector, attrName, funcToRun, delay, tries, ifra
         // alert('count: '+(count+1)+'\ntries: '+tries);
         var iframeElement = iframeSelector ? document.querySelector(iframeSelector) : null,
             parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : null,
-            targetElement = parentDocument ? parentDocument.querySelector(elementSelector) : document.querySelector(elementSelector),
+            targetElement = parentDocument ? parentDocument.querySelectorAll(elementSelector)[0] : document.querySelectorAll(elementSelector)[0],
             attrValue = targetElement ? targetElement.getAttribute(attrName) : null,
             result = attrName ? attrValue : targetElement;
         // alert(attrName ? (iframeSelector ? ('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument) : '' + '\ntargetElement: '+targetElement+'\nattrValue: '+attrValue) : 'iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\ntargetElement: '+targetElement);
