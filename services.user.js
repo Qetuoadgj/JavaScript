@@ -25,6 +25,7 @@
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
 // @match        http://www.sex.com/picture/*-*/
+// @match        http://www.pichunter.com/gallery/*/*
 // ==/UserScript==
 
 (function() {
@@ -280,4 +281,34 @@
     };
     waitForElement('.image_frame img', 'src', mainFunction, delay, tries, false, false);
   }
+
+  else if (
+    pageURL.matchLink('http://www.pichunter.com/gallery/*/*')
+  ) {
+    embedCodeTextRefresh = false;
+    mainFunction = function() {
+      var gallery, images = [];
+      gallery = document.querySelector('#gallery > .flex-images');
+      images = gallery.querySelectorAll('img');
+      pageURL = pageURL.replace(/(.*?)#.*/, '$1');
+      forEach(images, function(index, self) {
+        contentURL = self.parentNode.href;
+        posterURL = self.src.replace('_o.jpg', '_i.jpg');
+        contentTitle = ''; //pageTitle.replace(/^.{1} /i, '').Capitalize();
+        if (embedCodeText) {embedCodeText = embedCodeText + '\n' + '<div class="thumbnail"';} else {embedCodeText = '<div class="thumbnail"';}
+        if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
+        if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
+        embedCodeText += ' content="'+contentURL+'"';
+        if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
+        embedCodeText += '></div>';
+      });
+      appendToFrame = gallery;
+      appendPosition = 'after';
+      textAreaAutoHeight = true;
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('#gallery', false, initFunction, delay, tries, false);
+  }
+
 })();
