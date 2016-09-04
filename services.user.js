@@ -23,6 +23,8 @@
 // @match        http://www.pornhub.com/view_video.php?viewkey=*
 // @match        http://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
+// @match        http://juicygif.com/public/Gif/*.html/*
+// @match        http://www.sex.com/picture/*-*/
 // ==/UserScript==
 
 (function() {
@@ -54,6 +56,7 @@
   var initFunction = function(){mainFunction();};
   var delay = 1000,
       tries = 15;
+  var mainFunctionTG = [];
   // ====================================================================================================================
 
   if (
@@ -97,7 +100,7 @@
     pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
-    var timerGroup1 = [];
+    mainFunctionTG = [];
     setAutoHD = function() {
       menuElements = parentDocument.querySelectorAll('#player_controlbar_hd > .jwoption');
       hdOptions = ['1080p', '720p'];
@@ -114,15 +117,15 @@
       qualityButtons = [parentDocument.querySelector('.jwhd')];
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
-      timerGroup1 = null;
+      mainFunctionTG = null;
     };
     if (
       pageURL.matchLink('sexix.net/video') ||
       pageURL.matchLink('hdpoz.com/HD')
     ) {
       initFunction = function(){setParentDocument('.videoContainer > iframe'); setAutoHD(); mainFunction();};
-      waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, timerGroup1);
-      waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', timerGroup1);
+      waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
+      waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
     }
   }
 
@@ -246,4 +249,35 @@
     waitForCondition(function(){return flashvars;}, initFunction, delay, tries, false);
   }
 
+  else if (
+    pageURL.matchLink('http://juicygif.com/public/Gif/*.html/*')
+  ) {
+    mainFunction = function() {
+      pageURL = pageURL.replace(/(.*html).*/i, '$1');
+      contentURL = document.querySelector('img[itemprop="contentUrl"]').src;
+      posterURL = contentURL;
+      // posterURL = document.querySelector('div[itemprop="thumbnailUrl"]').innerText.replace('normal_', 'thumb_').trim();
+      appendToFrame = document.querySelector('div.img');
+      appendPosition = 'after';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('img[itemprop="contentUrl"]', 'src', initFunction, delay, tries, false);
+  }
+
+  else if (
+    pageURL.matchLink('http://www.sex.com/picture/*-*/')
+  ) {
+    mainFunction = function() {
+      contentURL = document.querySelector('.image_frame img').src;
+      contentURL = contentURL.replace(/(.*?)\?.*/, '$1');
+      posterURL = document.querySelector('meta[itemprop="thumbnail"]').content;
+      appendToFrame = document.querySelector('.image_frame');
+      appendPosition = 'after';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+      mainFunctionTG = null;
+    };
+    waitForElement('.image_frame img', 'src', mainFunction, delay, tries, false, false);
+  }
 })();
