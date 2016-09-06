@@ -24,8 +24,9 @@
 // @match        http://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
-// @match        http://www.sex.com/picture/*-*/
+// @match        http://www.sex.com/picture/*/
 // @match        http://www.pichunter.com/gallery/*/*
+// @match        http://www.imagefap.com/pictures/6115310/*view=2
 // ==/UserScript==
 
 (function() {
@@ -267,7 +268,7 @@
   }
 
   else if (
-    pageURL.matchLink('http://www.sex.com/picture/*-*/')
+    pageURL.matchLink('http://www.sex.com/picture/*/')
   ) {
     mainFunction = function() {
       contentURL = document.querySelector('.image_frame img').src;
@@ -293,6 +294,35 @@
       pageURL = pageURL.replace(/(.*?)#.*/, '$1');
       forEach(images, function(index, self) {
         contentURL = self.parentNode.href;
+        posterURL = self.src.replace('_o.jpg', '_i.jpg');
+        contentTitle = ''; //pageTitle.replace(/^.{1} /i, '').Capitalize();
+        if (embedCodeText) {embedCodeText = embedCodeText + '\n' + '<div class="thumbnail"';} else {embedCodeText = '<div class="thumbnail"';}
+        if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
+        if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
+        embedCodeText += ' content="'+contentURL+'"';
+        if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
+        embedCodeText += '></div>';
+      });
+      appendToFrame = gallery;
+      appendPosition = 'after';
+      textAreaAutoHeight = true;
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('#gallery', false, initFunction, delay, tries, false);
+  }
+
+  else if (
+    pageURL.matchLink('http://www.imagefap.com/pictures/6115310/*view=2')
+  ) {
+    embedCodeTextRefresh = false;
+    mainFunction = function() {
+      var gallery, images = [];
+      gallery = document.querySelector('#gallery');
+      images = gallery.querySelectorAll('td > a > img');
+      pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
+      forEach(images, function(index, self) {
+        contentURL = self.src.replace('/thumb/', '/full/');
         posterURL = self.src.replace('_o.jpg', '_i.jpg');
         contentTitle = ''; //pageTitle.replace(/^.{1} /i, '').Capitalize();
         if (embedCodeText) {embedCodeText = embedCodeText + '\n' + '<div class="thumbnail"';} else {embedCodeText = '<div class="thumbnail"';}
