@@ -317,13 +317,41 @@
   ) {
     embedCodeTextRefresh = false;
     mainFunction = function() {
-      var gallery, images = [];
-      gallery = document.querySelector('#gallery');
-      images = gallery.querySelectorAll('td > a > img');
+      var imagesArray = [];
+      var thumbsArray = [];
+
+      var userID = document.querySelector('#menubar > table > tbody > tr:nth-child(2) > td:nth-child(1) > a').href;
+      userID = userID.replace(/.*user=(.*)/i, '$1');
+
+      var galleryID = document.querySelector('#galleryid_input').value;
+
+      var imageNames = document.querySelectorAll('td > font > i');
+      forEach(imageNames, function(index, self) {
+        var image = self.innerText;
+        imagesArray.push(image);
+      });
+
+      var imageIDs = document.querySelectorAll('#gallery > form > table > tbody > tr > td');
+      forEach(imageIDs, function(index, self) {
+        var imageID = self.id;
+        var image = imagesArray[index];
+        var imageURL = 'http://x.imagefapusercontent.com/u/' + userID + '/' + galleryID + '/' + imageID + '/' + image;
+        imagesArray[index] = imageURL;
+      });
+
+      var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
+      forEach(thumbs, function(index, self) {
+        var thumbURL = self.src;
+        // thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/images/mini/$1');
+        thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
+        thumbsArray.push(thumbURL);
+      });
+
       pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
-      forEach(images, function(index, self) {
-        contentURL = self.src.replace('/thumb/', '/full/');
-        posterURL = self.src.replace('_o.jpg', '_i.jpg');
+
+      forEach(thumbsArray, function(index, self) {
+        contentURL = imagesArray[index];
+        posterURL = self;
         contentTitle = ''; //pageTitle.replace(/^.{1} /i, '').Capitalize();
         if (embedCodeText) {embedCodeText = embedCodeText + '\n' + '<div class="thumbnail"';} else {embedCodeText = '<div class="thumbnail"';}
         if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
@@ -332,7 +360,8 @@
         if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
         embedCodeText += '></div>';
       });
-      appendToFrame = gallery;
+
+      appendToFrame = document.querySelector('#gallery');
       appendPosition = 'after';
       textAreaAutoHeight = true;
       addEmbedCodeFrame(mainFunction);
