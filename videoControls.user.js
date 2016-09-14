@@ -12,6 +12,7 @@
 // @match        http://*.ex.ua/show/*/*/*.mp4
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
 // @match        http://*.eporner.com/*/*/*-*p.mp4
+// @match        http://mcloud.hdporncollections.com/*.mp4
 // ==/UserScript==
 
 (function() {

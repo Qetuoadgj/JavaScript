@@ -27,6 +27,7 @@
 // @match        http://www.sex.com/picture/*/
 // @match        http://www.pichunter.com/gallery/*/*
 // @match        http://www.imagefap.com/pictures/6115310/*view=2
+// @match        http://www.hdporncollections.com/*/
 // ==/UserScript==
 
 (function() {
@@ -370,4 +371,19 @@
     waitForElement('#gallery', false, initFunction, delay, tries, false);
   }
 
+
+  else if (
+    pageURL.matchLink('http://www.hdporncollections.com/*/')
+  ) {
+    mainFunction = function() {
+      document.querySelector('.jwdisplayIcon').click();
+      contentURL = document.querySelector('.jwvideo > video').src;
+      posterURL = document.querySelector('meta[property="og:image"]').content;
+      appendToFrame = document.querySelector('#video');
+      appendPosition = 'after';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('.jwvideo > video', 'src', initFunction, delay, null, false);
+  }
 })();
