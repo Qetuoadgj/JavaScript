@@ -37,6 +37,8 @@
   // ====================================================================================================================
 
   mainFunction = function() {
+    var canBeEmbed = document.querySelector('link[itemprop="embedURL"]');
+    if (!canBeEmbed) return;
     var flashvars = '?' +
         'start=0' +'&'+    // Start time
         'autoplay=1' +'&'+ // Enable Autoplay
