@@ -37,7 +37,14 @@
   // ====================================================================================================================
 
   mainFunction = function() {
-    contentURL = document.querySelector('meta[property="og:url"]').content.replace(/(.*)[?].*/i, '$1') + '?start=0';
+    var flashvars = '?' +
+        'start=0' +'&'+    // Start time
+        'autoplay=1' +'&'+ // Enable Autoplay
+        'hd=1' +'&'+       // Watch in HD
+        'iv_load_policy=3' // Disable Annotations
+    ;
+    pageURL = document.querySelector('meta[itemprop="videoId"]').content.replace(/(.*)/i, 'https://www.youtube.com/watch/$1');
+    contentURL = document.querySelector('meta[itemprop="videoId"]').content.replace(/(.*)/i, 'https://www.youtube.com/embed/$1') + flashvars;
     posterURL = document.querySelector('meta[property="og:image"]').content.replace(/(.*)\/.*default.jpg$/i, '$1/mqdefault.jpg');
     appendToFrame = document.querySelector('#watch-description');
     appendPosition = 'after';
