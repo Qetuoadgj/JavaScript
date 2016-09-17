@@ -8,7 +8,7 @@
 // @noframes
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/services.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/services.user.js
 // @match        http://porndoe.com/video/*
 // @match        http://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
