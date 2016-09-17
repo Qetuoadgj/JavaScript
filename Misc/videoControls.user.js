@@ -7,7 +7,7 @@
 // @grant        none
 // @run-at       document-end
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/videoControls.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/videoControls.user.js
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.ex.ua/show/*/*/*.mp4
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
