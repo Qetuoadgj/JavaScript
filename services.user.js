@@ -28,6 +28,7 @@
 // @match        http://www.pichunter.com/gallery/*/*
 // @match        http://www.imagefap.com/pictures/6115310/*view=2
 // @match        http://www.hdporncollections.com/*/
+// @match        http://konachan.com/post/show*
 // ==/UserScript==
 
 (function() {
@@ -385,5 +386,25 @@
       addKeyComboCtrlC(true);
     };
     waitForElement('.jwvideo > video', 'src', initFunction, delay, null, false);
+  }
+
+  else if (
+    pageURL.matchLink('http://konachan.com/post/show*')
+  ) {
+    mainFunction = function() {
+      addGlobalStyle( '#image {max-width: 100%; max-height: 100%; width: auto; height: auto;}');
+      var preview_url;
+      forEach(document.querySelectorAll('#post-view > script'), function(index, self) {
+        var text = self.text;
+        preview_url = text.match('"preview_url":"(.*?)"')[1].replace(/\\\//g, '/');
+      });
+      contentURL = document.querySelector('#image').src;
+      posterURL = preview_url;
+      appendToFrame = document.querySelector('#image');
+      appendPosition = 'after';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('#image', 'src', initFunction, delay, null, false);
   }
 })();
