@@ -422,6 +422,8 @@
         if (e.keyCode == lArrowKey) {previous_page.click();} else if (e.keyCode == rArrowKey) {next_page.click();}
       };
       document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+      var links =  document.querySelectorAll('a.thumb');
+      forEach(links, function(index, self) {self.target='_blank';});
     };
     waitForElement('a.next_page', null, initFunction, delay, tries, null);
   }
