@@ -172,7 +172,10 @@ function MouseWheelAudioControl(media, step) {
   }
 }
 
-function msgbox(title, message, width, height, time) {
+function msgbox(title, message, time, width, height) {
+  width = width || 250;
+  height = height || 120;
+
   var padding = 10;
   var w = width - padding*2,
       h = height - padding*2;
@@ -198,7 +201,7 @@ function msgbox(title, message, width, height, time) {
   };
 
   var fade = function(e, t) {
-    // t = (t < 2000) ? 2000 : t;
+    t = (t < 2000) ? 2000 : t;
 
     d.style.transition = '';
     d.style['-webkit-transition'] = ''; // Safari
@@ -222,6 +225,8 @@ function msgbox(title, message, width, height, time) {
   var d = document.createElement('div');
   d.style.display = 'table';
   d.style.position = 'fixed';
+  d.style.right = 10 + 'px';
+  d.style.bottom = 10 + 'px';
   d.style.maxWidth = 90 + '%';
   d.style.maxHeight = 90 + '%';
   // d.style.padding = padding + 'px';
@@ -233,8 +238,8 @@ function msgbox(title, message, width, height, time) {
   d.style.zIndex = 2147483647;
   document.body.appendChild(d);
 
-  d.style.top = 50 + 'px';
-  centerX(d);
+  // d.style.top = 50 + 'px';
+  // centerX(d);
 
   if (title) {
     var titleElement = document.createElement('p');
