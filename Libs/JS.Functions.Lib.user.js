@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -170,4 +170,93 @@ function MouseWheelAudioControl(media, step) {
   } else {
     media.attachEvent("onmousewheel", MouseWheelAudioHandler); // IE 6/7/8
   }
+}
+
+function msgbox(title, message, width, height, time) {
+  var padding = 10;
+  var w = width - padding*2,
+      h = height - padding*2;
+
+  var centerX = function(e, fix) {
+    var transform = e.style.transform;
+    transform = transform + (fix ? 'translateY(0.5px) translateX(-50%)' : 'translateX(-50%)');
+    e.style.left = 50 + '%';
+    e.style['-ms-transform'] = transform;
+    e.style['-moz-transform'] = transform;
+    e.style['-webkit-transform'] = transform;
+    e.style.transform = transform;
+  };
+
+  var centerY = function(e, fix) {
+    var transform = e.style.transform;
+    transform = transform + (fix ? 'translateX(0.5px) translateY(-50%)' : 'translateY(-50%)');
+    e.style.top = 50 + '%';
+    e.style['-ms-transform'] = transform;
+    e.style['-moz-transform'] = transform;
+    e.style['-webkit-transform'] = transform;
+    e.style.transform = transform;
+  };
+
+  var fade = function(e, t) {
+    // t = (t < 2000) ? 2000 : t;
+
+    d.style.transition = '';
+    d.style['-webkit-transition'] = ''; // Safari
+    d.style.opacity = 1;
+
+    var fadeOut = function() {
+      e.style.transition = 'opacity 2s';
+      e.style['-webkit-transition'] = 'opacity 2s'; // Safari
+      e.style.opacity = 0;
+    };
+
+    if (t > 2000) {
+      setTimeout(fadeOut, 2000);
+      setTimeout(function(){e.remove();}, t);
+    } else {
+      setTimeout(fadeOut, 500);
+      setTimeout(function(){e.remove();}, t);
+    }
+  };
+
+  var d = document.createElement('div');
+  d.style.display = 'table';
+  d.style.position = 'fixed';
+  d.style.maxWidth = 90 + '%';
+  d.style.maxHeight = 90 + '%';
+  // d.style.padding = padding + 'px';
+  d.style.width = w + 'px';
+  d.style.height = 'auto';
+  d.style.minHeight = h + 'px';
+  d.style.backgroundColor = 'white';
+  d.style.border = '2px solid black';
+  d.style.zIndex = 2147483647;
+  document.body.appendChild(d);
+
+  d.style.top = 50 + 'px';
+  centerX(d);
+
+  if (title) {
+    var titleElement = document.createElement('p');
+    titleElement.style.borderBottom = '1px solid black';
+    titleElement.style.margin = 0;
+    titleElement.style.padding = (padding/2) + 'px';
+    titleElement.style.background = '#4CAF50';
+    titleElement.style.color = 'white';
+    titleElement.innerText = title;
+    d.appendChild(titleElement);
+  }
+
+  if (message) {
+    var messageElement = document.createElement('p');
+    messageElement.style.margin = 0;
+    messageElement.style.padding = (padding/2) + 'px';
+    messageElement.style.display = 'table-row';
+    messageElement.style.textAlign = 'center';
+    messageElement.style.verticalAlign = 'middle';
+    messageElement.innerText = message;
+    d.appendChild(messageElement);
+  }
+
+  if (time) fade(d, time);
 }
