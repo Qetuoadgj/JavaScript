@@ -135,7 +135,8 @@ function MouseWheelAudioControl(media, step) {
   var fontSize = 72;
 
   var volumeText = document.createElement('div');
-  volumeText.style.color = 'yellow !important';
+  // volumeText.style.color = 'yellow !important';
+  volumeText.style.setProperty('color', 'yellow', 'important');
   volumeText.style['font-size'] = fontSize+'px';
   volumeText.style.position = 'absolute';
   volumeText.style['z-index'] = 2147483647; // Always on TOP
@@ -233,7 +234,8 @@ function msgbox(title, message, time, width, height) {
   d.style.height = 'auto';
   d.style.minHeight = h + 'px';
   d.style.backgroundColor = 'white';
-  d.style.color = 'black !important';
+  // d.style.color = 'black !important';
+  d.style.setProperty('color', 'black', 'important');
   d.style.border = '2px solid black';
   d.style.zIndex = 2147483647;
   document.body.appendChild(d);
@@ -247,7 +249,8 @@ function msgbox(title, message, time, width, height) {
     titleElement.style.margin = 0;
     titleElement.style.padding = (padding/2) + 'px';
     titleElement.style.background = '#4CAF50';
-    titleElement.style.color = 'white !important';
+    // titleElement.style.color = 'white !important';
+    titleElement.style.setProperty('color', 'white', 'important');
     titleElement.innerText = title;
     d.appendChild(titleElement);
   }
@@ -264,5 +267,4 @@ function msgbox(title, message, time, width, height) {
   }
 
   if (time) fade(d, time);
-  alert(2222222222222222222222222222222222)
 }
