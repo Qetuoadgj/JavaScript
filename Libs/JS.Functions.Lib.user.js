@@ -232,7 +232,7 @@ function msgbox(title, message, time, width, height) {
   d.style.width = w + 'px';
   d.style.height = 'auto';
   d.style.minHeight = h + 'px';
-  d.style.backgroundColor = 'white';
+  d.style.backgroundColor = 'green';
   d.style.color = 'black !important';
   d.style.border = '2px solid black';
   d.style.zIndex = 2147483647;
