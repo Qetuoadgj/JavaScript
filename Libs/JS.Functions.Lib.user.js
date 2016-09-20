@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.5
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -232,7 +232,7 @@ function msgbox(title, message, time, width, height) {
   d.style.width = w + 'px';
   d.style.height = 'auto';
   d.style.minHeight = h + 'px';
-  d.style.backgroundColor = 'green';
+  d.style.backgroundColor = 'white';
   d.style.color = 'black !important';
   d.style.border = '2px solid black';
   d.style.zIndex = 2147483647;
