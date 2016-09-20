@@ -189,7 +189,6 @@ function msgbox(title, message, time, width, height) {
     e.style['-webkit-transform'] = transform;
     e.style.transform = transform;
   };
-
   var centerY = function(e, fix) {
     var transform = e.style.transform;
     transform = transform + (fix ? 'translateX(0.5px) translateY(-50%)' : 'translateY(-50%)');
@@ -234,6 +233,7 @@ function msgbox(title, message, time, width, height) {
   d.style.height = 'auto';
   d.style.minHeight = h + 'px';
   d.style.backgroundColor = 'white';
+  d.style.color = 'black';
   d.style.border = '2px solid black';
   d.style.zIndex = 2147483647;
   document.body.appendChild(d);
