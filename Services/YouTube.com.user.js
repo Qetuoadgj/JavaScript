@@ -38,7 +38,7 @@
 
   mainFunction = function() {
     var canBeEmbed = document.querySelector('link[itemprop="embedURL"]');
-    if (!canBeEmbed) return;
+    if (!canBeEmbed) return msgbox('YouTube', 'This video can not be embed!', 3000, 250, 120);
     var flashvars = '?' +
         'start=0' +'&'+    // Start time
         'autoplay=1' +'&'+ // Enable Autoplay
