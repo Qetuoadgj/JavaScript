@@ -233,9 +233,7 @@ function msgbox(title, message, time, width, height) {
   d.style.width = w + 'px';
   d.style.height = 'auto';
   d.style.minHeight = h + 'px';
-  d.style.backgroundColor = 'white';
-  // d.style.color = 'black !important';
-  d.style.setProperty('color', 'black', 'important');
+  d.style.setProperty('background', 'white', 'important');
   d.style.border = '2px solid black';
   d.style.zIndex = 2147483647;
   document.body.appendChild(d);
@@ -248,8 +246,7 @@ function msgbox(title, message, time, width, height) {
     titleElement.style.borderBottom = '1px solid black';
     titleElement.style.margin = 0;
     titleElement.style.padding = (padding/2) + 'px';
-    titleElement.style.background = '#4CAF50';
-    // titleElement.style.color = 'white !important';
+    titleElement.style.setProperty('background', '#4CAF50', 'important');
     titleElement.style.setProperty('color', 'white', 'important');
     titleElement.innerText = title;
     d.appendChild(titleElement);
@@ -262,6 +259,7 @@ function msgbox(title, message, time, width, height) {
     messageElement.style.display = 'table-row';
     messageElement.style.textAlign = 'center';
     messageElement.style.verticalAlign = 'middle';
+    messageElement.style.setProperty('color', 'black', 'important');
     messageElement.innerText = message;
     d.appendChild(messageElement);
   }
