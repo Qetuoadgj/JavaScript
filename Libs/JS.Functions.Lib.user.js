@@ -264,4 +264,5 @@ function msgbox(title, message, time, width, height) {
   }
 
   if (time) fade(d, time);
+  alert(2222222222222222222222222222222222)
 }
