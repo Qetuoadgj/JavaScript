@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -128,6 +128,21 @@ Element.prototype.nthParentNode = function(num) {
   var parent = this;
   for (var i = 0; i < num; ++i) {parent = parent.parentNode;}
   return parent;
+};
+
+var getCleanVideo = function(videoSrc, posterSrc) {
+  var video = document.createElement('video');
+  video.setAttribute('src', videoSrc);
+  if (posterSrc) video.setAttribute('poster', posterSrc);
+  video.setAttribute('controls', '');
+  video.setAttribute('webkitallowfullscreen', '');
+  video.setAttribute('mozallowfullscreen', '');
+  video.setAttribute('allowfullscreen', '');
+  document.documentElement.innerHTML = '';
+  document.body.appendChild(video);
+  addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+  addGlobalStyle('body {margin: 0; background: black;}');
+  return video;
 };
 
 function addMouseWheelAudioControl(media, step) {
@@ -273,3 +288,26 @@ function msgbox(title, message, time, width, height) {
 
   if (time) fade(d, time);
 }
+
+var addOpenInNewTabProperty = function(selector) {
+  selector = selector || 'a';
+  var linksArray = document.querySelectorAll(selector);
+  // alert(selector+'\n'+linksArray.length);
+  linksArray.forEach(function(link, index) {
+    var href = link.href;
+    if (href) link.setAttribute('target', '_blank');
+  });
+};
+
+var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
+  var previous_page_btn = document.querySelectorAll(prevPageSelector)[0];
+  var next_page_btn = document.querySelectorAll(nextPageSelector)[0];
+  var onKeyUp = function(e) {
+    e = e || window.event;
+    var lArrowKey = 37, rArrowKey = 39;
+    var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+    if (e.keyCode == lArrowKey) previous_page_btn.click();
+    else if (e.keyCode == rArrowKey) next_page_btn.click();
+  };
+  document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+};
