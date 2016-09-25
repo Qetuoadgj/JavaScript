@@ -7,9 +7,8 @@
 // @grant        none
 // @run-at       document-end
 // @noframes
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/VideoCulinary.ru.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        http://www.videoculinary.ru/recipe/*
 // ==/UserScript==
 

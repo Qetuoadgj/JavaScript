@@ -9,6 +9,7 @@
 // @noframes
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/FS.to.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        http://fs.to/video/*
 // @match        http://*.filecdn.to/*/*
 // ==/UserScript==
@@ -240,7 +241,7 @@
       var videoFrame = document.querySelector('body > video');
       videoFrame.play();
       videoFrame.volume = 0.5;
-      MouseWheelAudioControl(videoFrame, 5);
+      addMouseWheelAudioControl(videoFrame, 5);
     };
     waitForElement('body > video', false, ResizeVideo, delay, tries, false);
   }

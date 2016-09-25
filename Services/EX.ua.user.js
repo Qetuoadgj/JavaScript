@@ -10,6 +10,7 @@
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/EX.ua.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        http://www.ex.ua/*
 // ==/UserScript==
 
