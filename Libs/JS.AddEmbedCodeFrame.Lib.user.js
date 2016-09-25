@@ -8,6 +8,7 @@
 // @grant        none
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Libs
 // ==/UserScript==
 
 // DEFAULT GLOBAL VARIABLES

@@ -7,6 +7,7 @@
 // @exclude      http://*
 // @grant        none
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Libs
 // ==/UserScript==
 
 // GLOBAL FUNCTIONS
@@ -129,47 +130,53 @@ Element.prototype.nthParentNode = function(num) {
   return parent;
 };
 
-function MouseWheelAudioControl(media, step) {
-  step = step || 1;
-
+function addMouseWheelAudioControl(media, step) {
+  step = (step === 0) ? 0 : (step || 1);
   var fontSize = 72;
 
   var volumeText = document.createElement('div');
-  // volumeText.style.color = 'yellow !important';
   volumeText.style.setProperty('color', 'yellow', 'important');
-  volumeText.style['font-size'] = fontSize+'px';
+  volumeText.style['font-size'] = fontSize + 'px';
   volumeText.style.position = 'absolute';
   volumeText.style['z-index'] = 2147483647; // Always on TOP
   volumeText.style.top = '0px';
-  volumeText.style.left = (fontSize/4)+'px';
+  volumeText.style.left = (fontSize/4) + 'px';
   media.parentNode.insertBefore(volumeText, media.nextSibling);
 
-  var MouseWheelAudioHandler = function(e) {
-    // cross-browser wheel delta
-    e = window.event || e; // old IE support
-    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-    var vol =  Math.max(0, Math.min(100, media.volume*100 + delta*step)); vol = Math.floor(vol/step)*step; vol = vol/100;
-    media.volume = vol;
-    volumeText.textContent = (function(){if(Math.round(vol*100) > 0){return Math.round(vol*100);}else{return 'Выкл.';}})();
-
-    function volumeTextFade(){
-      volumeText.style.opacity = 0;
-      volumeText.style.transition = 'opacity 2s';
-      volumeText.style['-webkit-transition'] = 'opacity 2s'; // Safari
+  var mouseWheelAudioHandler = function(e) {
+    if (step !== 0) {
+      // cross-browser wheel delta
+      e = window.event || e; // old IE support
+      var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+      var vol =  Math.max(0, Math.min(100, media.volume*100 + delta*step));
+      vol = Math.floor(vol/step)*step;
+      vol = vol/100;
+      media.volume = vol;
     }
-    volumeText.style.transition = '';
-    volumeText.style['-webkit-transition'] = ''; // Safari
-    volumeText.style.opacity = 1; setTimeout(volumeTextFade, 2000);
+    var volumeTextFade = function(fadeDelay) {
+      fadeDelay = fadeDelay || 2000;
+      var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+      function textFadeStart(show) {
+        var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+        volumeText.style.opacity = show ? 1 : 0;
+        volumeText.style.transition = transition;
+        volumeText.style['-webkit-transition'] = transition; // Safari
+      }
+      textFadeStart(true);
+      setTimeout(textFadeStart, fadeDelaySeconds*1000);
+    };
+
+    volumeTextFade(2000);
+    volumeText.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
 
     e.preventDefault();
-    return false;
   };
 
   if (media.addEventListener) {
-    media.addEventListener("mousewheel", MouseWheelAudioHandler, false); // IE9, Chrome, Safari, Opera
-    media.addEventListener("DOMMouseScroll", MouseWheelAudioHandler, false); // Firefox
+    media.addEventListener("mousewheel", mouseWheelAudioHandler, false); // IE9, Chrome, Safari, Opera
+    media.addEventListener("DOMMouseScroll", mouseWheelAudioHandler, false); // Firefox
   } else {
-    media.attachEvent("onmousewheel", MouseWheelAudioHandler); // IE 6/7/8
+    media.attachEvent("onmousewheel", mouseWheelAudioHandler); // IE 6/7/8
   }
 }
 
