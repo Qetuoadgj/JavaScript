@@ -64,29 +64,6 @@
   var delay = 1000,
       tries = 15;
   var mainFunctionTG = [];
-
-  var addOpenInNewTabProperty = function(selector) {
-    selector = selector || 'a';
-    var linksArray = document.querySelectorAll(selector);
-    // alert(selector+'\n'+linksArray.length);
-    linksArray.forEach(function(link, index) {
-      var href = link.href;
-      if (href) link.setAttribute('target', '_blank');
-    });
-  };
-
-  var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
-    var previous_page_btn = document.querySelectorAll(prevPageSelector)[0];
-    var next_page_btn = document.querySelectorAll(nextPageSelector)[0];
-    var onKeyUp = function(e) {
-      e = e || window.event;
-      var lArrowKey = 37, rArrowKey = 39;
-      var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
-      if (e.keyCode == lArrowKey) previous_page_btn.click();
-      else if (e.keyCode == rArrowKey) next_page_btn.click();
-    };
-    document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
-  };
   // ====================================================================================================================
 
   if (

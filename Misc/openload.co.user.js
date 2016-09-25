@@ -12,30 +12,51 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://openload.co/embed/*
 // @match        https://openload.co/f/*
+// @match        https://www.pornhub.com/embed/*
 // ==/UserScript==
 
 (function() {
   'use strict';
 
-  // https://openload.co/embed/pM1MQGKY7z4/
-  // document.querySelector("#videooverlay").remove();
-  // document.querySelector(".title").remove();
-  // document.querySelector(".logocontainer").remove();
-  var video = document.querySelector("#olvideo_html5_api").cloneNode(true);
-  var poster = video.poster;
-  var srclink = "/stream/" + document.querySelector("#streamurl").innerText + "?mime=true";
-  video = document.createElement('video');
-  video.setAttribute('src', srclink);
-  // video.setAttribute('poster', poster);
-  video.setAttribute('controls', '');
-  video.setAttribute('webkitallowfullscreen', '');
-  video.setAttribute('mozallowfullscreen', '');
-  video.setAttribute('allowfullscreen', '');
-  document.documentElement.innerHTML = '';
-  document.body.appendChild(video);
-  addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
-  addGlobalStyle('body {margin: 0; background: black;}');
-  video.play();
-  video.volume = 0.5;
-  addMouseWheelAudioControl(video, 5);
+  // THIS FILE GLOBAL VARIABLES
+  // ====================================================================================================================
+  var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
+  var videoElement, videoSource, videoPoster, videoCleaned;
+  var mainFunction, initFunction = function(){mainFunction();};
+  var delay = 1000, tries = 15;
+  // ====================================================================================================================
+
+  if (
+    pageURL.matchLink('https://openload.co/*')
+  ) {
+    // https://openload.co/embed/pM1MQGKY7z4/
+    mainFunction = function() {
+      videoElement = document.querySelector('#olvideo_html5_api');
+      videoSource = '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
+      videoPoster = null; //video.poster
+      videoCleaned = getCleanVideo(videoSource, videoPoster);
+      videoCleaned.play();
+      videoCleaned.volume = 0.5;
+      addMouseWheelAudioControl(videoCleaned, 5);
+    };
+    waitForElement('#olvideo_html5_api', null, initFunction, delay, tries, null);
+  }
+
+  else if (
+    pageURL.matchLink('https://www.pornhub.com/*')
+  ) {
+    // https://www.pornhub.com/embed/ph55b7a22ed4339
+    mainFunction = function() {
+      // videoElement = document.querySelector('video');
+      videoSource =  document.querySelector('video > source[type="video/mp4"]').src;
+      // videoSource = videoSource.replace('cdn-d-vid-embed', 'cdn-d-vid-public');
+      // videoSource = videoSource.replace('/vl_480P_339', '/vl_720P_549');
+      videoPoster = null; //video.poster
+      videoCleaned = getCleanVideo(videoSource, videoPoster);
+      videoCleaned.play();
+      videoCleaned.volume = 0.5;
+      addMouseWheelAudioControl(videoCleaned, 5);
+    };
+    waitForElement('video > source[type="video/mp4"]', 'src', initFunction, delay, tries, null);
+  }
 })();
