@@ -8,6 +8,7 @@
 // @run-at       document-end
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/videoControls.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.ex.ua/show/*/*/*.mp4
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
@@ -22,8 +23,7 @@
     var videoFrame = document.querySelector('body > video');
     videoFrame.play();
     videoFrame.volume = 0.5;
-    MouseWheelAudioControl(videoFrame, 5);
+    addMouseWheelAudioControl(videoFrame, 5);
   }
-
   waitForElement('body > video', false, LaunchVideo, 250, 30);
 })();

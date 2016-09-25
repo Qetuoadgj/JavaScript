@@ -9,6 +9,7 @@
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/services.user.js
+// @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        http://porndoe.com/video/*
 // @match        http://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
@@ -20,7 +21,7 @@
 // @match        http://spankbang.com/*/video/*
 // @match        http://www.babesandstars.com/*/*/*/
 // @match        http://www.xvideos.com/video*
-// @match        http://www.pornhub.com/view_video.php?viewkey=*
+// @match        http://www.pornhub.com/*
 // @match        http://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
@@ -29,6 +30,8 @@
 // @match        http://www.imagefap.com/pictures/6115310/*view=2
 // @match        http://www.hdporncollections.com/*/
 // @match        http://konachan.com/post*
+// @match        http://pron.tv/l/*/*
+// @match        http://www.xmoviesforyou.com/*/*/*.html
 // ==/UserScript==
 
 (function() {
@@ -61,6 +64,29 @@
   var delay = 1000,
       tries = 15;
   var mainFunctionTG = [];
+
+  var addOpenInNewTabProperty = function(selector) {
+    selector = selector || 'a';
+    var linksArray = document.querySelectorAll(selector);
+    // alert(selector+'\n'+linksArray.length);
+    linksArray.forEach(function(link, index) {
+      var href = link.href;
+      if (href) link.setAttribute('target', '_blank');
+    });
+  };
+
+  var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
+    var previous_page_btn = document.querySelectorAll(prevPageSelector)[0];
+    var next_page_btn = document.querySelectorAll(nextPageSelector)[0];
+    var onKeyUp = function(e) {
+      e = e || window.event;
+      var lArrowKey = 37, rArrowKey = 39;
+      var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+      if (e.keyCode == lArrowKey) previous_page_btn.click();
+      else if (e.keyCode == rArrowKey) next_page_btn.click();
+    };
+    document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+  };
   // ====================================================================================================================
 
   if (
@@ -88,6 +114,7 @@
         pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb/$1/1.jpg'),
         pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb1/$1/1.jpg'),
         pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb/$1/thumb.jpg'),
+        pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb1/$1/thumb.jpg'),
       ];
       appendToFrame = document.querySelector('.video-container');
       appendPosition = 'after';
@@ -104,15 +131,24 @@
     pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
-    mainFunctionTG = [];
+    var iframeE = document.querySelector('.videoContainer > iframe');
+    var iframeS = iframeE ? iframeE.src : null;
+    if (iframeE && iframeS) iframeE.src = iframeS.replace(/http:\/\/.*sexix.net\/v\.php/i, 'http://'+pageHost+'/v.php');
+
     setAutoHD = function() {
       menuElements = parentDocument.querySelectorAll('#player_controlbar_hd > .jwoption');
       hdOptions = ['1080p', '720p'];
       hdButtonData = getHDButton(menuElements, hdOptions);
       hdButton = hdButtonData ? hdButtonData[0] : null;
-      checkPressed = function(){return hdButton.classList.contains('active');};
+      checkPressed = function(){
+        var ok = hdButton.classList.contains('active');
+        if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+        return ok;
+      };
       pressHDButton(hdButton, checkPressed, 500, 30);
     };
+
+    mainFunctionTG = [];
     mainFunction = function() {
       contentURL = parentDocument.querySelector('video').src;
       posterURL = document.querySelector('meta[property="og:image"]').content;
@@ -123,6 +159,7 @@
       addKeyComboCtrlC(true);
       mainFunctionTG = null;
     };
+
     if (
       pageURL.matchLink('sexix.net/video') ||
       pageURL.matchLink('hdpoz.com/HD')
@@ -131,6 +168,8 @@
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
     }
+
+    addOpenInNewTabProperty('.clip-link, .entry-title > a');
   }
 
   else if (
@@ -187,7 +226,12 @@
       hdOptions = ['1080p', '720p'];
       hdButtonData = getHDButton(menuElements, hdOptions);
       hdButton = hdButtonData ? hdButtonData[0] : null;
-      checkPressed = function(){return hdButton.parentNode.classList.contains('active');};
+      // checkPressed = function(){return hdButton.parentNode.classList.contains('active');};
+      checkPressed = function(){
+        var ok = hdButton.parentNode.classList.contains('parameterelmt_forced');
+        if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+        return ok;
+      };
       pressHDButton(hdButton, checkPressed, 500, 30);
     };
     mainFunction = function() {
@@ -209,17 +253,21 @@
   }
 
   else if (
-    pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')
+    pageURL.matchLink('http://www.pornhub.com/*')
   ) {
-    mainFunction = function() {
-      contentURL = document.querySelector('meta[name="twitter:player"]').content;
-      posterURL = document.querySelector('meta[name="twitter:image"]').content;
-      appendToFrame = document.querySelector('.video-actions-container');
-      appendPosition = 'before';
-      addEmbedCodeFrame(mainFunction);
-      addKeyComboCtrlC(true);
-    };
-    waitForElement('meta[name="twitter:player"]', 'content', initFunction, delay, tries, false);
+    addOpenInNewTabProperty('.phimage a');
+    addPageControlKeys('.page_previous.alpha > a', '.page_next.omega > a');
+    if (pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')) {
+      mainFunction = function() {
+        contentURL = document.querySelector('meta[name="twitter:player"]').content;
+        posterURL = document.querySelector('meta[name="twitter:image"]').content;
+        appendToFrame = document.querySelector('.video-actions-container');
+        appendPosition = 'before';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('meta[name="twitter:player"]', 'content', initFunction, delay, tries, false);
+    }
   }
 
   else if (
@@ -372,7 +420,6 @@
     waitForElement('#gallery', false, initFunction, delay, tries, false);
   }
 
-
   else if (
     pageURL.matchLink('http://www.hdporncollections.com/*/')
   ) {
@@ -389,42 +436,55 @@
   }
 
   else if (
-    pageURL.matchLink('http://konachan.com/post/show*')
+    pageURL.matchLink('http://konachan.com/post?*')
+  ) {
+    addPageControlKeys('a.previous_page', 'a.next_page');
+    addOpenInNewTabProperty('a.thumb');
+    if (pageURL.matchLink('http://konachan.com/post/show*')) {
+      mainFunction = function() {
+        addGlobalStyle( '#image {max-width: 100%; max-height: 100%; width: auto; height: auto;}');
+        var preview_url;
+        forEach(document.querySelectorAll('#post-view > script'), function(index, self) {
+          var text = self.text;
+          preview_url = text.match('"preview_url":"(.*?)"')[1].replace(/\\\//g, '/');
+        });
+        contentURL = document.querySelector('#image').src;
+        posterURL = preview_url;
+        appendToFrame = document.querySelector('#image');
+        appendPosition = 'after';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('#image', 'src', initFunction, delay, null, false);
+    }
+  }
+
+  else if (
+    pageURL.matchLink('http://pron.tv/l/*/*')
   ) {
     mainFunction = function() {
-      addGlobalStyle( '#image {max-width: 100%; max-height: 100%; width: auto; height: auto;}');
-      var preview_url;
-      forEach(document.querySelectorAll('#post-view > script'), function(index, self) {
-        var text = self.text;
-        preview_url = text.match('"preview_url":"(.*?)"')[1].replace(/\\\//g, '/');
-      });
-      contentURL = document.querySelector('#image').src;
-      posterURL = preview_url;
-      appendToFrame = document.querySelector('#image');
+      contentURL = document.querySelector('#actualPlayer > iframe').src;
+      posterURL = document.querySelector('.blockx img.imgshadow').src;
+      appendToFrame = document.querySelector('.blockx');
+      appendPosition = 'before';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('#actualPlayer > iframe', 'src', initFunction, delay, null, false);
+  }
+
+  else if (
+    pageURL.matchLink('http://www.xmoviesforyou.com/*/*/*.html')
+  ) {
+    mainFunction = function() {
+      textAreaAutoHeight = true;
+      contentURL = document.querySelector('iframe[src^="https://openload.co/"]').src;
+      posterURL = document.querySelector('img.size-full').src;
+      appendToFrame = document.querySelector('iframe[src^="https://openload.co/"]');
       appendPosition = 'after';
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('#image', 'src', initFunction, delay, null, false);
-  }
-
-  else if (
-    pageURL.matchLink('http://konachan.com/post?*')
-  ) {
-    mainFunction = function() {
-      var previous_page = document.querySelector('a.previous_page');
-      var next_page = document.querySelector('a.next_page');
-      var onKeyUp = function(e) {
-        e = e || window.event;
-        var lArrowKey = 37, rArrowKey = 39;
-        var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
-        // var targetType = e.target.tagName.toLowerCase();
-        if (e.keyCode == lArrowKey) {previous_page.click();} else if (e.keyCode == rArrowKey) {next_page.click();}
-      };
-      document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
-      var links =  document.querySelectorAll('a.thumb');
-      forEach(links, function(index, self) {self.target='_blank';});
-    };
-    waitForElement('a.next_page', null, initFunction, delay, tries, null);
+    waitForElement('iframe[src^="https://openload.co/"]', 'src', initFunction, delay, null, false);
   }
 })();
