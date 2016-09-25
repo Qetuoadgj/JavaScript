@@ -10,6 +10,7 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Libs
 // ==/UserScript==
 
+
 // GLOBAL FUNCTIONS
 // ====================================================================================================================
 function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
@@ -100,7 +101,7 @@ String.prototype.matchLink = function(link, flags) {
 Element.prototype.isVisible = function() {return this.offsetWidth > 0 || this.offsetHeight > 0 || this.getClientRects().length > 0;};
 
 Element.prototype.autoHeight = function(fixedHeight) {
-  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : "60px";
+  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : 0; // "60px"
   this.style.height = h;
   if (fixedHeight) this.style.maxHeight = h;
 };
@@ -293,10 +294,10 @@ var addOpenInNewTabProperty = function(selector) {
   selector = selector || 'a';
   var linksArray = document.querySelectorAll(selector);
   // alert(selector+'\n'+linksArray.length);
-  linksArray.forEach(function(link, index) {
-    var href = link.href;
+  for (var i = 0; i < linksArray.length; ++i) {
+    var link = linksArray[i], href = link.href;
     if (href) link.setAttribute('target', '_blank');
-  });
+  }
 };
 
 var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
