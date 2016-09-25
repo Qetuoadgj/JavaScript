@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FS.to
 // @icon         https://www.google.com/s2/favicons?domain=fs.to
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -213,7 +213,7 @@
       generatePlaylist();
     };
 
-    waitForElement('#page-item-viewonline', false, CreateFileList, delay, tries, false);
+    waitForElement('#page-item-viewonline', null, CreateFileList, delay, tries, null);
 
     document.querySelector('body').addEventListener('click', function(event) {
       var targetElement = event.target,
@@ -231,6 +231,13 @@
         G_fileListOutputTextFrame.autoHeight(false);
       }
     });
+
+    var removeAds = function() {
+      var ads = document.querySelectorAll('.b-styled__item-central, .b-styled__content-right');
+      ads.forEach(function(ad, index, arr) {ad.remove();}, false);
+      console.log(ads);
+    };
+    waitForElement('.b-styled__item-central', null, removeAds, delay, tries, null);
   }
 
   else if (
@@ -239,10 +246,11 @@
     var ResizeVideo = function () {
       addGlobalStyle('video {width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
       var videoFrame = document.querySelector('body > video');
-      videoFrame.play();
-      videoFrame.volume = 0.5;
-      addMouseWheelAudioControl(videoFrame, 5);
+      var videoCleaned = getCleanVideo(videoFrame.src, null);
+      videoCleaned.play();
+      videoCleaned.volume = 0.5;
+      addMouseWheelAudioControl(videoCleaned, 5);
     };
-    waitForElement('body > video', false, ResizeVideo, delay, tries, false);
+    waitForElement('body > video', null, ResizeVideo, delay, tries, null);
   }
 })();
