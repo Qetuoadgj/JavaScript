@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -140,6 +140,17 @@ Element.prototype.nthParentNode = function(num) {
   return parent;
 };
 
+Object.prototype.querySelectorAttribute = function(querySelectorAll, attributeName) {
+  var targetElement, attributeValue;
+  var targetElementsArray = this.querySelectorAll(querySelectorAll);
+  for (var i = 0; i < targetElementsArray.length; ++i) {
+    targetElement = targetElementsArray[i];
+    attributeValue = targetElement.getAttribute(attributeName);
+    if (attributeValue) break;
+  }
+  return attributeValue;
+};
+
 var getCleanVideo = function(videoSrc, posterSrc) {
   var video = document.createElement('video');
   video.setAttribute('src', videoSrc);
@@ -232,28 +243,6 @@ function msgbox(title, message, time, width, height) {
     e.style.transform = transform;
   };
 
-  /*var fade = function(e, t) {
-    t = (t < 2000) ? 2000 : t;
-
-    d.style.transition = '';
-    d.style['-webkit-transition'] = ''; // Safari
-    d.style.opacity = 1;
-
-    var fadeOut = function() {
-      e.style.transition = 'opacity 2s';
-      e.style['-webkit-transition'] = 'opacity 2s'; // Safari
-      e.style.opacity = 0;
-    };
-
-    if (t > 2000) {
-      setTimeout(fadeOut, 2000);
-      setTimeout(function(){e.remove();}, t);
-    } else {
-      setTimeout(fadeOut, 500);
-      setTimeout(function(){e.remove();}, t);
-    }
-  };*/
-
   var fade = function(element, fadeDelay) {
     fadeDelay = fadeDelay || 2000;
     var fadeDelaySeconds = Math.floor(fadeDelay/1000);
@@ -335,3 +324,4 @@ var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
   };
   document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
 };
+
