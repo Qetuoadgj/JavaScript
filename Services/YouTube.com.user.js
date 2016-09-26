@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -39,7 +39,7 @@
 
   mainFunction = function() {
     var canBeEmbed = document.querySelector('link[itemprop="embedURL"]');
-    if (!canBeEmbed) return msgbox('YouTube', 'This video can not be embed!', 3000, 250, 120);
+    if (!canBeEmbed) return msgbox('YouTube', 'This video can not be embed!', 2000, 250, 120);
     var flashvars = '?' +
         'start=0' +'&'+    // Start time
         'autoplay=1' +'&'+ // Enable Autoplay
