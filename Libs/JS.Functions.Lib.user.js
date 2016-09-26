@@ -10,7 +10,6 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Libs
 // ==/UserScript==
 
-
 // GLOBAL FUNCTIONS
 // ====================================================================================================================
 function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
