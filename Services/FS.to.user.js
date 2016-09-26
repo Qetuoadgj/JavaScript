@@ -250,6 +250,6 @@
       videoCleaned.volume = 0.5;
       addMouseWheelAudioControl(videoCleaned, 5);
     };
-    waitForElement('video', null, ResizeVideo, delay, tries, null);
+    waitForElement('video, video > source[type="video/mp4"]', 'src', ResizeVideo, delay, tries, null);
   }
 })();
