@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -42,16 +42,21 @@ function waitForElement(elementSelector, attrName, funcToRun, delay, tries, ifra
         // alert('count: '+(count+1)+'\ntries: '+tries);
         var iframeElement = iframeSelector ? document.querySelector(iframeSelector) : null,
             parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : null,
-            targetElementsArray = parentDocument ? parentDocument.querySelectorAll(elementSelector) : document.querySelectorAll(elementSelector)
+            targetElementsArray = parentDocument ? parentDocument.querySelectorAll(elementSelector) : document.querySelectorAll(elementSelector),
+            targetElement, attrValue, result
         ;
         for (var i = 0; i < targetElementsArray.length; ++i) {
-          var targetElement = targetElementsArray[i];
-          var attrValue = targetElement ? targetElement.getAttribute(attrName) : null;
-          var result = attrName ? attrValue : targetElement;
-          // alert(attrName ? (iframeSelector ? ('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument) : '' + '\ntargetElement: '+targetElement+'\nattrValue: '+attrValue) : 'iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\ntargetElement: '+targetElement);
-          if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
-          // console.log('ID: '+ID+', try: '+(count+1));
+          targetElement = targetElementsArray[i];
+          attrValue = targetElement ? targetElement.getAttribute(attrName) : null;
+          result = attrName ? attrValue : targetElement;
+          if (result) break;
         }
+        // alert(attrName ? (iframeSelector ? ('iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument) : '' + '\ntargetElement: '+targetElement+'\nattrValue: '+attrValue) : 'iframeElement: '+iframeElement+'\nparentDocument: '+parentDocument+'\ntargetElement: '+targetElement);
+        if (result) {
+          clearTimers(timerGroup);
+          return funcToRun();
+        } else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+        // console.log('ID: '+ID+', try: '+(count+1));
       }
     };
     iteration(0); // 1st iteration
