@@ -223,7 +223,7 @@ function msgbox(title, message, time, width, height) {
     e.style.transform = transform;
   };
 
-  var fade = function(e, t) {
+  /*var fade = function(e, t) {
     t = (t < 2000) ? 2000 : t;
 
     d.style.transition = '';
@@ -243,6 +243,20 @@ function msgbox(title, message, time, width, height) {
       setTimeout(fadeOut, 500);
       setTimeout(function(){e.remove();}, t);
     }
+  };*/
+
+  var fade = function(element, fadeDelay) {
+    fadeDelay = fadeDelay || 2000;
+    var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+    function fadeStart(show) {
+      var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+      element.style.opacity = show ? 1 : 0;
+      element.style.transition = transition;
+      element.style['-webkit-transition'] = transition; // Safari
+      if (!show) setTimeout(function(){element.remove();}, fadeDelay);
+    }
+    fadeStart(true);
+    setTimeout(fadeStart, fadeDelaySeconds*1000);
   };
 
   var d = document.createElement('div');
