@@ -101,7 +101,8 @@ String.prototype.matchLink = function(link, flags) {
 Element.prototype.isVisible = function() {return this.offsetWidth > 0 || this.offsetHeight > 0 || this.getClientRects().length > 0;};
 
 Element.prototype.autoHeight = function(fixedHeight) {
-  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : (this.clientHeight) + "px"; // "60px"
+  this.style.height = 0;
+  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : "60px";
   this.style.height = h;
   if (fixedHeight) this.style.maxHeight = h;
 };
