@@ -140,9 +140,9 @@ Element.prototype.nthParentNode = function(num) {
   return parent;
 };
 
-Object.prototype.querySelectorAttribute = function(querySelectorAll, attributeName) {
+Object.prototype.querySelectorAttribute = function(elementSelector, attributeName) {
   var targetElement, attributeValue;
-  var targetElementsArray = this.querySelectorAll(querySelectorAll);
+  var targetElementsArray = this.querySelectorAll(elementSelector);
   for (var i = 0; i < targetElementsArray.length; ++i) {
     targetElement = targetElementsArray[i];
     attributeValue = targetElement.getAttribute(attributeName);
