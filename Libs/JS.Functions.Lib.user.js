@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -140,7 +140,7 @@ Element.prototype.nthParentNode = function(num) {
   return parent;
 };
 
-Object.prototype.querySelectorAttribute = function(elementSelector, attributeName) {
+HTMLDocument.prototype.querySelectorAttribute = function(elementSelector, attributeName) {
   var targetElement, attributeValue;
   var targetElementsArray = this.querySelectorAll(elementSelector);
   for (var i = 0; i < targetElementsArray.length; ++i) {
