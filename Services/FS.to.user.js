@@ -243,13 +243,13 @@
     pageURL.matchLink('http://*.filecdn.to/*/*')
   ) {
     var ResizeVideo = function () {
-      addGlobalStyle('video {width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
-      var videoFrame = document.querySelector('body > video');
+      // addGlobalStyle('video {width: 100%; height: 100%; max-height: 100%; max-width: 100%;}');
+      var videoFrame = document.querySelector('video > source[type="video/mp4"]') || document.querySelector('video');
       var videoCleaned = getCleanVideo(videoFrame.src, null);
       videoCleaned.play();
       videoCleaned.volume = 0.5;
       addMouseWheelAudioControl(videoCleaned, 5);
     };
-    waitForElement('body > video', null, ResizeVideo, delay, tries, null);
+    waitForElement('video', null, ResizeVideo, delay, tries, null);
   }
 })();
