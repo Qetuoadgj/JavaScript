@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -101,7 +101,7 @@ String.prototype.matchLink = function(link, flags) {
 Element.prototype.isVisible = function() {return this.offsetWidth > 0 || this.offsetHeight > 0 || this.getClientRects().length > 0;};
 
 Element.prototype.autoHeight = function(fixedHeight) {
-  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : 0; // "60px"
+  var h = (this.scrollHeight > this.clientHeight) ? (this.scrollHeight) + "px" : (this.clientHeight) + "px"; // "60px"
   this.style.height = h;
   if (fixedHeight) this.style.maxHeight = h;
 };
