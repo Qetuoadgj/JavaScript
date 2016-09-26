@@ -235,7 +235,6 @@
     var removeAds = function() {
       var ads = document.querySelectorAll('.b-styled__item-central, .b-styled__content-right');
       ads.forEach(function(ad, index, arr) {ad.remove();}, false);
-      console.log(ads);
     };
     waitForElement('.b-styled__item-central', null, removeAds, delay, tries, null);
   }
