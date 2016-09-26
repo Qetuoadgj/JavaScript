@@ -13,6 +13,8 @@
 // @match        https://openload.co/embed/*
 // @match        https://openload.co/f/*
 // @match        https://www.pornhub.com/embed/*
+// @match        http://porndoe.com/video/embed/*
+// @match        http://www.eporner.com/embed/*
 // ==/UserScript==
 
 (function() {
@@ -22,41 +24,41 @@
   // ====================================================================================================================
   var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
   var videoElement, videoSource, videoPoster, videoCleaned;
-  var mainFunction, initFunction = function(){mainFunction();};
+  var applyVideoSettings = function(){
+    videoCleaned = getCleanVideo(videoSource, videoPoster);
+    videoCleaned.play();
+    videoCleaned.volume = 0.5;
+    addMouseWheelAudioControl(videoCleaned, 5);
+  };
+  var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();};
   var delay = 1000, tries = 15;
+  var videoSourceSelector = 'video > source[type="video/mp4"], video';
   // ====================================================================================================================
 
-  if (
-    pageURL.matchLink('https://openload.co/*')
-  ) {
-    // https://openload.co/embed/pM1MQGKY7z4/
+  if (pageURL.matchLink('https://openload.co/*')) { // https://openload.co/embed/pM1MQGKY7z4/
     mainFunction = function() {
-      videoElement = document.querySelector('#olvideo_html5_api');
       videoSource = '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
-      videoPoster = null; //video.poster
-      videoCleaned = getCleanVideo(videoSource, videoPoster);
-      videoCleaned.play();
-      videoCleaned.volume = 0.5;
-      addMouseWheelAudioControl(videoCleaned, 5);
+      videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
     };
     waitForElement('#olvideo_html5_api', null, initFunction, delay, tries, null);
   }
 
   else if (
-    pageURL.matchLink('https://www.pornhub.com/*')
+    pageURL.matchLink('https://www.pornhub.com/*') || // https://www.pornhub.com/embed/ph55b7a22ed4339
+    pageURL.matchLink('http://porndoe.com/*') // http://porndoe.com/video/embed/45914/deep-throat-fucking-sasha-grey
   ) {
-    // https://www.pornhub.com/embed/ph55b7a22ed4339
     mainFunction = function() {
-      // videoElement = document.querySelector('video');
-      videoSource =  document.querySelector('video > source[type="video/mp4"]').src;
-      // videoSource = videoSource.replace('cdn-d-vid-embed', 'cdn-d-vid-public');
-      // videoSource = videoSource.replace('/vl_480P_339', '/vl_720P_549');
+      videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
-      videoCleaned = getCleanVideo(videoSource, videoPoster);
-      videoCleaned.play();
-      videoCleaned.volume = 0.5;
-      addMouseWheelAudioControl(videoCleaned, 5);
     };
-    waitForElement('video > source[type="video/mp4"]', 'src', initFunction, delay, tries, null);
+    waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null);
+  }
+
+  else if (pageURL.matchLink('http://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
+    mainFunction = function() {
+      videoSource =  document.querySelectorAttribute('#EPvideo_html5_api', 'src');
+      videoPoster = null; //video.poster
+    };
+    waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, null);
   }
 })();

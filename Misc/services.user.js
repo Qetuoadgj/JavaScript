@@ -11,6 +11,7 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/services.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        http://porndoe.com/video/*
+// @exclude      http://porndoe.com/video/embed/*
 // @match        http://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
 // @match        http://i.sexix.net/video*
@@ -22,6 +23,7 @@
 // @match        http://www.babesandstars.com/*/*/*/
 // @match        http://www.xvideos.com/video*
 // @match        http://www.pornhub.com/*
+// @exclude      https://www.pornhub.com/embed/*
 // @match        http://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
@@ -70,8 +72,9 @@
     pageURL.matchLink('http://porndoe.com/video/*')
   ) {
     mainFunction = function() {
-      contentURL = document.querySelector('video.jw-video').src;
-      posterURL = document.querySelector('meta[property="og:image"]').content;
+      contentURL = document.querySelector('link[itemprop="embedURL"]').href.replace(/(.*?)\?.*/,'$1');
+      contentURL = document.querySelector('video.jw-video').src.replace(/(.*?)\?.*/,'$1');
+      posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('content'); //document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('div.video');
       appendPosition = 'after';
       qualityButtons = [document.querySelector('.jw-icon-hd')];
@@ -79,6 +82,7 @@
       addKeyComboCtrlC(true);
     };
     waitForElement('video.jw-video', 'src', initFunction, delay, tries, false);
+    // waitForElement('link[itemprop="thumbnailUrl"]', 'content', initFunction, delay, tries, false);
   }
 
   else if (
@@ -252,6 +256,7 @@
   ) {
     mainFunction = function() {
       contentURL = document.querySelector('#EPvideo_html5_api').src;
+      contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
       posterURL = document.querySelector('meta[property="og:image"]').content;
       appendToFrame = document.querySelector('#cutscenes');
       appendPosition = 'before';
