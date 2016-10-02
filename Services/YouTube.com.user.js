@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @grant        none
+// @grant        GM_registerMenuCommand
 // @run-at       document-end
 // @noframes
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
@@ -70,7 +70,9 @@
     var panel = document.querySelector('div[title="Magic Options"]').nthParentNode(2);
     if (panel) panel.style.position = 'inherit';
   };
-  waitForElement('meta[property="og:url"]', 'content', mainFunction, delay, tries, false);
+  GM_registerMenuCommand('Show Embed Code', function(){
+    waitForElement('meta[property="og:url"]', 'content', mainFunction, delay, tries, false);
+  }, null);
   waitForElement('span#clipconverter > a > button', false, ClipConverterFixStyle, delay, tries, false);
   waitForElement('div[title="Magic Options"]', false, MagicOptionsFixStyle, delay, tries, false);
 })();
