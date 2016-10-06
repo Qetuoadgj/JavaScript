@@ -34,6 +34,7 @@
 // @match        http://konachan.com/post*
 // @match        http://pron.tv/l/*/*
 // @match        http://www.xmoviesforyou.com/*/*/*.html
+// @match        https://danbooru.donmai.us/posts*
 // ==/UserScript==
 
 (function() {
@@ -468,5 +469,25 @@
       addKeyComboCtrlC(true);
     };
     waitForElement('iframe[src^="https://openload.co/"]', 'src', initFunction, delay, null, false);
+  }
+
+  else if (
+    pageURL.matchLink('https://danbooru.donmai.us/posts')
+  ) {
+    addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+    addOpenInNewTabProperty('article > a');
+    if (pageURL.matchLink('https://danbooru.donmai.us/posts/*')) {
+      mainFunction = function() {
+        contentURL = document.querySelector('#image-container').getAttribute('data-large-file-url');
+        contentURL = contentURL ? ('http://' + pageHost + contentURL) : contentURL;
+        posterURL = document.querySelector('#image-container').getAttribute('data-preview-file-url');
+        posterURL = posterURL ? ('http://' + pageHost + posterURL) : posterURL;
+        appendToFrame = document.querySelector('#image-container');
+        appendPosition = 'after';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('#image-container', 'data-preview-file-url', initFunction, delay, null, false);
+    }
   }
 })();
