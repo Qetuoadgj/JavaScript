@@ -14,6 +14,8 @@
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
 // @match        http://*.eporner.com/*/*/*-*p.mp4
 // @match        http://mcloud.hdporncollections.com/*.mp4
+// @match        http://redirector.rhcdn.net/media/videos/hd/*.mp4
+// @match        http://*.rhcdn.net/media/videos/hd/*.mp4?*
 // ==/UserScript==
 
 (function() {

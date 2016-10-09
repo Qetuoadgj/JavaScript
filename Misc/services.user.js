@@ -425,7 +425,7 @@
     addOpenInNewTabProperty('a.thumb');
     if (pageURL.matchLink('http://konachan.com/post/show*')) {
       mainFunction = function() {
-        addGlobalStyle( '#image {max-width: 100%; max-height: 100%; width: auto; height: auto;}');
+        addGlobalStyle('#image {max-width: 100%; max-height: 100%; width: auto; height: auto;}');
         var preview_url;
         forEach(document.querySelectorAll('#post-view > script'), function(index, self) {
           var text = self.text;
@@ -445,15 +445,17 @@
   else if (
     pageURL.matchLink('http://pron.tv/l/*/*')
   ) {
+    addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
     mainFunction = function() {
-      contentURL = document.querySelector('#actualPlayer > iframe').src;
+      contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
+      // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'http://redirector.rhcdn.net/media/videos/hd/$1.mp4');
       posterURL = document.querySelector('.blockx img.imgshadow').src;
       appendToFrame = document.querySelector('.blockx');
       appendPosition = 'before';
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
-    waitForElement('#actualPlayer > iframe', 'src', initFunction, delay, null, false);
+    waitForElement('#actualPlayer iframe', 'src', initFunction, delay, null, false);
   }
 
   else if (

@@ -15,6 +15,10 @@
 // @match        https://www.pornhub.com/embed/*
 // @match        http://porndoe.com/video/embed/*
 // @match        http://www.eporner.com/embed/*
+// @match        http://www.tube8.com/embed/*
+// @match        http://streamin.to/embed*
+// @match        http://pron.tv/embed/*
+// @match        http://cdn.rhcdn.net/*.html
 // ==/UserScript==
 
 (function() {
@@ -45,7 +49,11 @@
 
   else if (
     pageURL.matchLink('https://www.pornhub.com/*') || // https://www.pornhub.com/embed/ph55b7a22ed4339
-    pageURL.matchLink('http://porndoe.com/*') // http://porndoe.com/video/embed/45914/deep-throat-fucking-sasha-grey
+    pageURL.matchLink('http://www.tube8.com/embed/*') || // http://www.tube8.com/embed/teen/all-a-slut-needs-is-a-reason/31637961/
+    pageURL.matchLink('http://porndoe.com/*') || // http://porndoe.com/video/embed/45914/deep-throat-fucking-sasha-grey
+    pageURL.matchLink('http://streamin.to/*') || // http://streamin.to/embed-zlu0667c26hp-828x480.html
+    // pageURL.matchLink('http://pron.tv/embed/*') || // http://pron.tv/embed/id%3Arws2x9se
+    pageURL.matchLink('http://cdn.rhcdn.net/*.html') // http://cdn.rhcdn.net/6043.html
   ) {
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
