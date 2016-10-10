@@ -71,14 +71,14 @@
   var addHDtext = function(selector) {
     selector = selector || 'a';
     var linksArray = document.querySelectorAll(selector);
-    // alert(selector+'\n'+linksArray.length);
     for (var i = 0; i < linksArray.length; ++i) {
       var link = linksArray[i], thumb = link.parentNode, title = link.title;
-      var quality = title ? title.match('(1080p)') : null;
+      var quality = title ? title.match('(1080)p') || title.match('(720)p') : null;
       if (quality) {
-        link.setAttribute('target', '_blank');
+        quality = quality[1];
         var text = document.createElement('div');
-        text.style.background = 'rgba(255, 0, 0, 0.15)';
+        if (quality == '1080') text.style.background = 'rgba(255, 0, 0, 0.15)';
+        else if (quality == '720') text.style.background = 'rgba(0, 45, 255, 0.25)';
         text.style.zIndex = '10000';
         text.style.position = 'inherit';
         text.style.width = 'auto';
@@ -87,7 +87,7 @@
         text.style.color = 'rgba(0, 253, 255, 0)';
         text.style.padding = '0px 2px';
         text.style.border = '1px solid rgba(255,255,255,0.2)';
-        text.innerText = quality[1];
+        text.innerText = quality+'p';
         thumb.appendChild(text);
         // thumb.appendChild(document.createTextNode("HD"));
       }
@@ -138,6 +138,11 @@
     pageURL.matchLink('http://hdpoz.com/*') || pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
+
+    addPageControlKeys('a.previouspostslink', 'a.nextpostslink');
+    addOpenInNewTabProperty('.clip-link, .entry-title > a');
+    addHDtext('.clip-link');
+
     var iframeE = document.querySelector('.videoContainer > iframe');
     var iframeS = iframeE ? iframeE.src : null;
     if (iframeE && iframeS) iframeE.src = iframeS.replace(/http:\/\/.*sexix.net\/v\.php/i, 'http://'+pageHost+'/v.php');
@@ -175,9 +180,6 @@
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
     }
-
-    addOpenInNewTabProperty('.clip-link, .entry-title > a');
-    addHDtext('.clip-link');
   }
 
   else if (
