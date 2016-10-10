@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         services
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -67,6 +67,33 @@
   var delay = 1000,
       tries = 15;
   var mainFunctionTG = [];
+
+  var addHDtext = function(selector) {
+    selector = selector || 'a';
+    var linksArray = document.querySelectorAll(selector);
+    // alert(selector+'\n'+linksArray.length);
+    for (var i = 0; i < linksArray.length; ++i) {
+      var link = linksArray[i], thumb = link.parentNode, title = link.title;
+      var quality = title ? title.match('(1080p)') : null;
+      if (quality) {
+        link.setAttribute('target', '_blank');
+        var text = document.createElement('div');
+        text.style.background = 'rgba(255, 0, 0, 0.15)';
+        text.style.zIndex = '10000';
+        text.style.position = 'inherit';
+        text.style.width = 'auto';
+        text.style.height = '20px';
+        text.style.float = 'right';
+        text.style.color = 'rgba(0, 253, 255, 0)';
+        text.style.padding = '0px 2px';
+        text.style.border = '1px solid rgba(255,255,255,0.2)';
+        text.innerText = quality[1];
+        thumb.appendChild(text);
+        // thumb.appendChild(document.createTextNode("HD"));
+      }
+    }
+  };
+
   // ====================================================================================================================
 
   if (
@@ -107,10 +134,8 @@
   }
 
   else if (
-    pageURL.matchLink('http://sexix.net/*') ||
-    pageURL.matchLink('http://i.sexix.net/*') ||
-    pageURL.matchLink('http://hdpoz.com/*') ||
-    pageURL.matchLink('http://i.hdpoz.com/*')
+    pageURL.matchLink('http://sexix.net/*') || pageURL.matchLink('http://i.sexix.net/*') ||
+    pageURL.matchLink('http://hdpoz.com/*') || pageURL.matchLink('http://i.hdpoz.com/*')
   ) {
     addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
     var iframeE = document.querySelector('.videoContainer > iframe');
@@ -152,6 +177,7 @@
     }
 
     addOpenInNewTabProperty('.clip-link, .entry-title > a');
+    addHDtext('.clip-link');
   }
 
   else if (
