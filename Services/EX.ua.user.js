@@ -219,6 +219,12 @@
             videoSrc = videoSrc.replace(/.*?\/show\/(.*?)\/.*/i, 'http://www.ex.ua/get/$1'+'?'+videoTitle+'.'+videoFileExt);
           }
         }
+
+        if (player_list_array.length < 2) {
+          videoTitle = groupTitle;
+          groupTitle = null;
+        }
+
         embedCode = embedCode + ('#EXTINF: -1 group-title="'+(G_groupTitleChangeInput.value || groupTitle || '')+'",'+videoTitle+'\n'+videoSrc) + '\n';
         downloadList = downloadList + encodeURI(videoSrc) + '\n';
       });
