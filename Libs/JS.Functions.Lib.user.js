@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -325,3 +325,49 @@ var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
   document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
 };
 
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie() {
+  var user = getCookie("username");
+  if (user !== "") {
+    alert("Welcome again " + user);
+  } else {
+    user = prompt("Please enter your name:", "");
+    if (user !== "" && user !== null) {
+      setCookie("username", user, 365);
+    }
+  }
+}
+
+var useVolumeCookie = function(mediaElementSelector, cookieName) {
+  cookieName = cookieName || 'mediaVolume';
+  var mediaVolume = getCookie('mediaVolume');
+  var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+  for (var i = 0; i < mediaElementsArray.length; ++i) {
+    var mediaElement = mediaElementsArray[i];
+    if (mediaVolume && mediaVolume !== '') mediaElement.volume = mediaVolume;
+    mediaElement.addEventListener("volumechange", function() {
+      setCookie('mediaVolume', mediaElement.volume || 0, 1);
+    }, false);
+  }
+};
