@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         services
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -93,7 +93,6 @@
       }
     }
   };
-
   // ====================================================================================================================
 
   if (
@@ -293,6 +292,7 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
     };
+    initFunction = function(){mainFunction(); useVolumeCookie('#EPvideo_html5_api', null);};
     waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, false);
   }
 
