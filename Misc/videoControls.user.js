@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         videoControls
 /// @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -16,6 +16,7 @@
 // @match        http://mcloud.hdporncollections.com/*.mp4
 // @match        http://redirector.rhcdn.net/media/videos/hd/*.mp4
 // @match        http://*.rhcdn.net/media/videos/hd/*.mp4?*
+// @match        https://*.pornhub.com/videos/*/*/*/*.mp4?*
 // ==/UserScript==
 
 (function() {
@@ -26,6 +27,7 @@
     videoFrame.play();
     videoFrame.volume = 0.5;
     addMouseWheelAudioControl(videoFrame, 5);
+    useVolumeCookie('body > video', null);
   }
   waitForElement('body > video', false, LaunchVideo, 250, 30);
 })();

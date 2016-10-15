@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -19,6 +19,7 @@
 // @match        http://streamin.to/embed*
 // @match        http://pron.tv/embed/*
 // @match        http://cdn.rhcdn.net/*.html
+//// @match        https://hqcollect.me/embed/*
 // ==/UserScript==
 
 (function() {
@@ -33,6 +34,7 @@
     videoCleaned.play();
     videoCleaned.volume = 0.5;
     addMouseWheelAudioControl(videoCleaned, 5);
+    useVolumeCookie('body > video', null);
   };
   var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();};
   var delay = 1000, tries = 15;
@@ -54,6 +56,7 @@
     pageURL.matchLink('http://streamin.to/*') || // http://streamin.to/embed-zlu0667c26hp-828x480.html
     // pageURL.matchLink('http://pron.tv/embed/*') || // http://pron.tv/embed/id%3Arws2x9se
     pageURL.matchLink('http://cdn.rhcdn.net/*.html') // http://cdn.rhcdn.net/6043.html
+    // pageURL.matchLink('https://hqcollect.me/embed/*') // https://hqcollect.me/embed/214394
   ) {
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
