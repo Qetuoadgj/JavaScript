@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.9
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -371,3 +371,29 @@ var useVolumeCookie = function(mediaElementSelector, cookieName) {
     }, false);
   }
 };
+
+function addHDtext(selector) {
+  selector = selector || 'a';
+  var linksArray = document.querySelectorAll(selector);
+  for (var i = 0; i < linksArray.length; ++i) {
+    var link = linksArray[i], thumb = link.parentNode, title = link.title;
+    var quality = title ? title.match('(1080)p') || title.match('(720)p') : null;
+    if (quality) {
+      quality = quality[1];
+      var text = document.createElement('div');
+      if (quality == '1080') text.style.background = 'rgba(255, 0, 0, 0.15)';
+      else if (quality == '720') text.style.background = 'rgba(0, 45, 255, 0.25)';
+      text.style.zIndex = '10000';
+      text.style.position = 'inherit';
+      text.style.width = 'auto';
+      text.style.height = '20px';
+      text.style.float = 'right';
+      text.style.color = 'rgba(0, 253, 255, 0)';
+      text.style.padding = '0px 2px';
+      text.style.border = '1px solid rgba(255,255,255,0.2)';
+      text.innerText = quality+'p';
+      thumb.appendChild(text);
+      // thumb.appendChild(document.createTextNode("HD"));
+    }
+  }
+}

@@ -172,3 +172,16 @@ function pressHDButton(btnToClick, checkFunc, delay, tries, timerGroup) {
     iteration(0); // 1st iteration
   }
 }
+
+/* function setAutoHD() {
+  menuElements = parentDocument.querySelectorAll('#player_controlbar_hd > .jwoption');
+  hdOptions = ['1080p', '720p'];
+  hdButtonData = getHDButton(menuElements, hdOptions);
+  hdButton = hdButtonData ? hdButtonData[0] : null;
+  checkPressed = function(){
+    var ok = hdButton.classList.contains('active');
+    if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+    return ok;
+  };
+  pressHDButton(hdButton, checkPressed, 500, 30);
+} */
