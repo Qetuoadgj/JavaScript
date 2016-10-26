@@ -397,3 +397,21 @@ function addHDtext(selector) {
     }
   }
 }
+
+function downloadFile(filename, text) {
+  var a = document.createElement('a');
+  a.setAttribute('download', filename);
+  a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+
+  /* //noinspection JSDeprecatedSymbols
+    var base64doc = btoa(unescape(encodeURIComponent(text)));
+    a.setAttribute('href', 'data:text/html;base64,' + base64doc); */
+
+  if (document.createEvent) {
+    var event = document.createEvent('MouseEvents'); // document.createEvent("HTMLEvents");
+    event.initEvent('click', true, true);
+    a.dispatchEvent(event);
+  } else {
+    a.click();
+  }
+}
