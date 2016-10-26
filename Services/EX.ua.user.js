@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.ua
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -37,61 +37,10 @@
       tries = 15;
   // ====================================================================================================================
 
-  /*mainFunction = function() {
-    var tmpArray = [], playList = [];
-    createLink = false;
-    createPoster = false;
-    textAreaAutoHeight = true;
-    embedCodeTextRefresh = false;
-    appendToFrame = document.querySelector('#body_element');
-    appendPosition = 'append';
-
-    var player_info_array = player_info;
-    forEach(player_info_array, function(index, self) {
-      // var position = self.pos;
-      var title = self.title;
-      title = title.replace(/(.*)\..*$/g, "$1");
-      tmpArray.push(title);
-    });
-
-    var player_list_array = JSON.parse('['+player_list+']');
-    forEach(player_list_array, function(index, self) {
-      var videoSrc = self.url;
-      var videoTitle = tmpArray[index];
-      var groupTitle = pageTitle.replace('@ EX.UA', '');
-      if (index < 1) embedCodeText = '#EXTM3U\n';
-      embedCodeText = embedCodeText + ('#EXTINF: -1 group-title="'+groupTitle+'",'+videoTitle+'\n'+videoSrc) + '\n';
-    });
-
-    addEmbedCodeFrame(mainFunction);
-    addKeyComboCtrlC(true);
-  };
-
-  waitForCondition(function(){return typeof player_info != 'undefined';}, mainFunction, delay, tries, false);
-  */
-
   var G_titleMethod, G_groupTitleText; // variables
   var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
   var G_namingRules;
   var G_pageTitle;
-
-  function downloadFile(filename, text) {
-    var a = document.createElement('a');
-    a.setAttribute('download', filename);
-    a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-
-    /* //noinspection JSDeprecatedSymbols
-    var base64doc = btoa(unescape(encodeURIComponent(text)));
-    a.setAttribute('href', 'data:text/html;base64,' + base64doc); */
-
-    if (document.createEvent) {
-      var event = document.createEvent('MouseEvents'); // document.createEvent("HTMLEvents");
-      event.initEvent('click', true, true);
-      a.dispatchEvent(event);
-    } else {
-      a.click();
-    }
-  }
 
   var CreateFileList = function(optimized, download) {
     var title = pageTitle.replace(/^.{1} /i, '').capitalize();
@@ -151,7 +100,7 @@
       var groupTitleChangeInput = document.createElement('input');
       groupTitleChangeInput.style.width = '280px';
       groupTitleChangeInput.style.height = '18px';
-      groupTitleChangeInput.style.margin = '0px 5px 0px';
+      groupTitleChangeInput.style.margin = '0px 0px 0px 5px'; // '0px 5px 0px';
       groupTitleChangeInput.style.padding = '5px';
       groupTitleChangeInput.style.border = '1px solid gray';
       groupTitleChangeInput.placeholder = 'Изменить название группы';

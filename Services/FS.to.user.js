@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FS.to
 // @icon         https://www.google.com/s2/favicons?domain=fs.to
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -101,12 +101,31 @@
         var groupTitleChangeInput = document.createElement('input');
         groupTitleChangeInput.style.width = '280px';
         groupTitleChangeInput.style.height = '18px';
-        groupTitleChangeInput.style.margin = '0px 5px 0px';
+        groupTitleChangeInput.style.margin = '0px 0px 0px 5px'; // '0px 5px 0px';
         groupTitleChangeInput.style.padding = '5px';
         groupTitleChangeInput.style.border = '1px solid gray';
         groupTitleChangeInput.placeholder = 'Изменить название группы';
         if (G_groupTitleText) groupTitleChangeInput.value = G_groupTitleText.trim();
         fileListFrame.appendChild(groupTitleChangeInput);
+
+        var downloadFileButton = document.createElement('button');
+        downloadFileButton.style.width = 'auto';
+        downloadFileButton.style.height = '30px';
+        downloadFileButton.style.padding = '0px 10px';
+        downloadFileButton.style.margin = '0px 5px';
+        downloadFileButton.style.border = '1px solid gray';
+        downloadFileButton.style.backgroundColor = 'white';
+        fileListFrame.appendChild(downloadFileButton);
+        downloadFileButton.innerHTML = 'Скачать файл';
+        downloadFileButton.addEventListener("click", function(){
+          var text = G_fileListOutputTextFrame.value;
+          var title = (G_groupTitleText || G_pageTitle)+'.m3u';
+          if (download) {
+            downloadFile(title, text);
+          } else {
+            downloadFile(title, '#EXTM3U\r\n'+text);
+          }
+        }, false);
 
         var outputTextFrame = parent.document.createElement('textarea');
         outputTextFrame.style.display = 'block';
@@ -137,7 +156,7 @@
         var fileList = document.querySelectorAll('ul.filelist.m-current > li[style="display: block;"]');
 
         for (var i = 0; i < fileList.length; ++i) {
-          if (i === 0) embedCode = '#EXTM3U\n';
+          // if (i === 0) embedCode = '#EXTM3U\r\n';
           var currentFile = fileList[i];
           var videoFileName = currentFile.querySelector('a.b-file-new__link-material > span.b-file-new__link-material-filename > span.b-file-new__link-material-filename-text').innerHTML;
           var videoSrc = currentFile.querySelector('a.b-file-new__link-material-download').href; // http://fs.to/get/dl/6jw5v7ukmbavhet3ej06nzjny.0.1139013157.974127405.1461975755/numb3rs.s02e04.360.mp4
