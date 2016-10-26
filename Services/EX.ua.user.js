@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.ua
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -73,6 +73,25 @@
   var G_titleMethod, G_groupTitleText; // variables
   var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
   var G_namingRules;
+  var G_pageTitle;
+
+  function downloadFile(filename, text) {
+    var a = document.createElement('a');
+    a.setAttribute('download', filename);
+    a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+
+    /* //noinspection JSDeprecatedSymbols
+    var base64doc = btoa(unescape(encodeURIComponent(text)));
+    a.setAttribute('href', 'data:text/html;base64,' + base64doc); */
+
+    if (document.createEvent) {
+      var event = document.createEvent('MouseEvents'); // document.createEvent("HTMLEvents");
+      event.initEvent('click', true, true);
+      a.dispatchEvent(event);
+    } else {
+      a.click();
+    }
+  }
 
   var CreateFileList = function(optimized, download) {
     var title = pageTitle.replace(/^.{1} /i, '').capitalize();
@@ -139,6 +158,25 @@
       if (G_groupTitleText) groupTitleChangeInput.value = G_groupTitleText.trim();
       fileListFrame.appendChild(groupTitleChangeInput);
 
+      var downloadFileButton = document.createElement('button');
+      downloadFileButton.style.width = 'auto';
+      downloadFileButton.style.height = '30px';
+      downloadFileButton.style.padding = '0px 10px';
+      downloadFileButton.style.margin = '0px 5px';
+      downloadFileButton.style.border = '1px solid gray';
+      downloadFileButton.style.backgroundColor = 'white';
+      fileListFrame.appendChild(downloadFileButton);
+      downloadFileButton.innerHTML = 'Скачать файл';
+      downloadFileButton.addEventListener("click", function(){
+        var text = G_fileListOutputTextFrame.value;
+        var title = (G_groupTitleText || G_pageTitle)+'.m3u';
+        if (download) {
+          downloadFile(title, text);
+        } else {
+          downloadFile(title, '#EXTM3U\r\n'+text);
+        }
+      }, false);
+
       var outputTextFrame = parent.document.createElement('textarea');
       outputTextFrame.style.display = 'block';
       outputTextFrame.style.border = 'none';
@@ -187,6 +225,7 @@
         var videoCategory =  document.querySelector('#body_element > a > h2').innerText;
         console.log('videoCategory = '+videoCategory);
         var groupTitle = pageTitle.replace(' - '+videoCategory+' @ EX.UA', '').replace(toNone, '').replace(toSpace, ' ').replace(/\s+/, ' ').trim();
+        G_pageTitle = groupTitle;
         console.log('groupTitle = '+groupTitle);
 
         var fileID = videoSrc.replace( /.*?\/show\/(.*?)\/.*/i, '$1'); // http://www.ex.ua/show/79891775/2ee54dd5a98002dda2e91b49441d210b.mp4 --> 79891775
