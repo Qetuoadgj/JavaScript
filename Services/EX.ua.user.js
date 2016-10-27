@@ -8,7 +8,6 @@
 // @run-at       document-end
 // @noframes
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
-// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/EX.ua.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        http://www.ex.ua/*
@@ -17,22 +16,9 @@
 (function() {
   'use strict';
 
-  /* JS.AddEmbedCodeFrame.Lib.user.js GLOBAL VARIABLES
-  // ====================================================================================================================
-  var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
-  var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
-  var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
-  var contentTitle;
-  var embedCodeText;
-  var posters = [];
-  var qualityButtons = [];
-  var textAreaAutoHeight = false, textAreaFixedHeight = false;
-  var embedCodeTextRefresh = true;
-  */
-
   // THIS FILE GLOBAL VARIABLES
   // ====================================================================================================================
-  var mainFunction;
+  var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
   var delay = 1000,
       tries = 15;
   // ====================================================================================================================

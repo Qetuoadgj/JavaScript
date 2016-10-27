@@ -17,23 +17,11 @@
 (function() {
   'use strict';
 
-  /* JS.AddEmbedCodeFrame.Lib.user.js GLOBAL VARIABLES
-  // ====================================================================================================================
-  var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
-  var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
-  var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
-  var contentTitle;
-  var embedCodeText;
-  var posters = [];
-  var qualityButtons = [];
-  var textAreaAutoHeight = false, textAreaFixedHeight = false;
-  var embedCodeTextRefresh = true;
-  */
-
   // THIS FILE GLOBAL VARIABLES
   // ====================================================================================================================
   var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
-  var delay = 1000, tries = 15;
+  var delay = 1000,
+      tries = 15;
   // ====================================================================================================================
 
   if (
@@ -42,6 +30,7 @@
     var G_titleMethod, G_groupTitleText; // variables
     var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
     var G_namingRules;
+    var G_pageTitle;
 
     var CreateFileList = function(optimized, download) {
       var title = pageTitle.replace(/^.{1} /i, '').capitalize();
@@ -195,6 +184,7 @@
               var serieNumberDigit = videoFileName.replace(/.*S\d+E(\d+).*/i, '$1');
               var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
               if (G_groupTitleChangeInput.value) groupTitle = G_groupTitleChangeInput.value;
+              G_pageTitle = groupTitle;
               if (G_titleMethod == G_namingRules[0] || G_titleMethod == G_namingRules[1]) {
                 var toSpace = /\s+|\.|\+|\_|^-|[\.\+][\.\+]|[\.\-][\.\-]/gi;
                 var toNone = /\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720|Web-DL)\b|^-/gi;
