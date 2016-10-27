@@ -10,6 +10,13 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/videoControls.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://*.googlevideo.com/videoplayback?id=*
+// @match        http://*.ex.ua/show/*/*/*.mp4
+// @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4?*
+// @match        http://*.eporner.com/*/*/*-*p.mp4
+// @match        http://mcloud.hdporncollections.com/*.mp4
+// @match        http://redirector.rhcdn.net/media/videos/hd/*.mp4
+// @match        http://*.rhcdn.net/media/videos/hd/*.mp4?*
+// @match        https://*.pornhub.com/videos/*/*/*/*.mp4?*
 // ==/UserScript==
 
 (function() {
