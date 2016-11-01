@@ -361,13 +361,13 @@ function checkCookie() {
 
 var useVolumeCookie = function(mediaElementSelector, cookieName) {
   cookieName = cookieName || 'mediaVolume';
-  var mediaVolume = getCookie('mediaVolume');
+  var mediaVolume = getCookie(cookieName);
   var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
   for (var i = 0; i < mediaElementsArray.length; ++i) {
     var mediaElement = mediaElementsArray[i];
     if (mediaVolume && mediaVolume !== '') mediaElement.volume = mediaVolume;
     mediaElement.addEventListener("volumechange", function() {
-      setCookie('mediaVolume', mediaElement.volume || 0, 1);
+      setCookie(cookieName, mediaElement.volume || 0, 1);
     }, false);
   }
 };
