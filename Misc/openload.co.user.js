@@ -101,7 +101,7 @@
       }
       waitGroup = null;
     };
-    waitForCondition(function(){return getSource;}, mainFunction, delay, tries, null, waitGroup);
+    waitForCondition(getSource, mainFunction, delay, tries, null, waitGroup);
   }
 
   else if (
