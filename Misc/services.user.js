@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         services
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -477,6 +477,7 @@
     mainFunction = function() {
       contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
       // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'http://redirector.rhcdn.net/media/videos/hd/$1.mp4');
+      // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'https://cdn.redtraffic.xyz/hls/$1.mp4/index.m3u8');
       posterURL = document.querySelector('.blockx img.imgshadow').src;
       appendToFrame = document.querySelector('.blockx');
       appendPosition = 'before';
