@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -38,6 +38,23 @@
   var videoElement, videoSource, videoPoster, videoCleaned;
   var videoSourceSelector = 'video > source[type="video/mp4"], video';
   var waitGroup = []; // waitForElement() timers group.
+
+  var getCleanVideo = function(videoSrc, posterSrc) {
+    var video = document.createElement('video');
+    video.setAttribute('src', videoSrc);
+    if (posterSrc) video.setAttribute('poster', posterSrc);
+    video.setAttribute('controls', '');
+    video.setAttribute('webkitallowfullscreen', '');
+    video.setAttribute('mozallowfullscreen', '');
+    video.setAttribute('allowfullscreen', '');
+    document.documentElement.innerHTML = '';
+    document.body.appendChild(video);
+    addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+    addGlobalStyle('body {margin: 0; background: black;}');
+    return video;
+  };
+
+
   function applyVideoSettings() {
     videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
     // videoPoster = null; //video.poster
@@ -50,6 +67,8 @@
   }
   var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();}, getSource;
   var delay = 1000, tries = 15;
+  var playButtonSelector;
+  var clickPlay = function(){var p = document.querySelector(playButtonSelector); p.click(); waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);};
   // ====================================================================================================================
 
   if (pageURL.matchLink('https://openload.co/*')) { // https://openload.co/embed/pM1MQGKY7z4/
@@ -93,7 +112,7 @@
     mainFunction = function() {
       var videoSource = getSource();
       if (videoSource.match('/index.m3u8')) {
-        window.open(videoSource, '_self');
+        window.open('chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#'+videoSource, '_self');
       } else {
         videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
         videoPoster = null; //video.poster
@@ -108,12 +127,11 @@
     pageURL.matchLink('https://hqcollect.me/embed/*') // https://hqcollect.me/embed/214394
   ) {
     mainFunction = function() {
-      var p = document.querySelector('div.fp-ui'); // play button
-      p.click();
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
     };
-    waitForElement('div.fp-ui', null, initFunction, delay, tries, null, waitGroup);
+    playButtonSelector = 'div.fp-ui';
+    waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
   }
 
   else {
