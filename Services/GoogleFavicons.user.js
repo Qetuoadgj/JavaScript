@@ -34,7 +34,7 @@
         i.style.right = '0';
         // i.style.width = '50%';
         i.style.height = '16px';
-        i.style.margin = '0px 3px 0px 0px';
+        i.style.margin = '0px 4px 0px 0px';
         i.src = 'https://www.google.com/s2/favicons?domain=' + host;
         i.className = 'favicon';
 
