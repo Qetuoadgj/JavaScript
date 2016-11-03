@@ -25,8 +25,8 @@
       var host = a.href.replace(/.*https?:\/\//, '').replace(/\/.*$/,'');
 
       var i = document.createElement('img');
-      // i.style.position = 'absolute';
-      i.style.top = '0';
+      i.style.position = 'relative';
+      i.style.top = '1px';
       i.style.bottom = '0';
       i.style.left = '0';
       i.style.right = '0';
