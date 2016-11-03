@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         services
-// @version      1.0.3
+// @icon         https://www.google.com/s2/favicons?domain=pornhub.com
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
