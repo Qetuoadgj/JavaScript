@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -19,6 +19,7 @@
 // @match        http://pron.tv/embed/*
 // @match        http://cdn.rhcdn.net/*.html
 // @match        https://hqcollect.me/embed/*
+// @match        https://daxab.com/embed/*
 
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4*

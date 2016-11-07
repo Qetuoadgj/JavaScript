@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -36,6 +36,7 @@
 // @match        http://pron.tv/l/*/*
 // @match        http://www.xmoviesforyou.com/*/*/*.html
 // @match        https://danbooru.donmai.us/posts*
+// @match        https://biqle.ru/watch/*
 // ==/UserScript==
 
 (function() {
@@ -521,5 +522,19 @@
       };
       waitForElement('#image-container', 'data-preview-file-url', initFunction, delay, null, false);
     }
+  }
+
+  else if (
+    pageURL.matchLink('https://biqle.ru/watch/*')
+  ) {
+    mainFunction = function() {
+      contentURL = document.querySelector('iframe').src;
+      posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').href;
+      appendToFrame = document.querySelector('.heading');
+      appendPosition = 'before';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+    };
+    waitForElement('iframe', 'src', initFunction, delay, null, false);
   }
 })();
