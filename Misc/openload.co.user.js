@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -20,6 +20,7 @@
 // @match        http://cdn.rhcdn.net/*.html
 // @match        https://hqcollect.me/embed/*
 // @match        https://daxab.com/embed/*
+// @match        https://www.bitporno.sx/embed/*
 
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4*
@@ -54,7 +55,6 @@
     addGlobalStyle('body {margin: 0; background: black;}');
     return video;
   };
-
 
   function applyVideoSettings() {
     videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
@@ -133,6 +133,18 @@
     };
     playButtonSelector = 'div.fp-ui';
     waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
+  }
+
+  else if (
+    pageURL.matchLink('https://www.bitporno.sx/embed/*') // https://www.bitporno.sx/embed/WEKddpz0
+  ) {
+    mainFunction = function() {
+      videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
+      videoPoster = null; //video.poster
+    };
+    playButtonSelector = 'input[type="image"]';
+    waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
+    waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);
   }
 
   else {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.0.5
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -37,6 +37,8 @@
 // @match        http://www.xmoviesforyou.com/*/*/*.html
 // @match        https://danbooru.donmai.us/posts*
 // @match        https://biqle.ru/watch/*
+// @match        https://biqle.ru/*
+// @match        https://www.bitporno.sx/?v=*
 // ==/UserScript==
 
 (function() {
@@ -95,6 +97,33 @@
       }
     }
   };
+  addHDtext = function(selector, color) {
+    selector = selector || 'a';
+    var linksArray = document.querySelectorAll(selector);
+    for (var i = 0; i < linksArray.length; ++i) {
+      var link = linksArray[i], thumb = link.parentNode, title = link.title || link.innerText;
+      var quality = title ? title.match('(1080)p?') || title.match('(720)p?') : null;
+      if (quality) {
+        quality = quality[1];
+        var text = document.createElement('div');
+        if (quality == '1080') text.style.background = 'rgba(255, 0, 0, 0.15)';
+        else if (quality == '720') text.style.background = 'rgba(0, 45, 255, 0.25)';
+        text.style.zIndex = 2147483647; // '10000';
+        text.style.position = 'absolute'; // 'inherit'
+        text.style.width = 'auto';
+        text.style.height = '20px';
+        text.style.float = 'right';
+        if (color) text.style.color = color; // 'rgba(0, 253, 255, 0)';
+        text.style.padding = '0px 2px';
+        text.style.border = '1px solid rgba(255,255,255,0.2)';
+        text.innerText = quality+'p';
+        // thumb.appendChild(text);
+        thumb.insertBefore(text, thumb.firstChild);
+        // thumb.appendChild(document.createTextNode("HD"));
+        text.style.right = '0';
+      }
+    }
+  };
   // ====================================================================================================================
 
   if (
@@ -142,7 +171,7 @@
 
     addPageControlKeys('a.previouspostslink', 'a.nextpostslink');
     addOpenInNewTabProperty('.clip-link, .entry-title > a');
-    addHDtext('.clip-link');
+    addHDtext('.clip-link', 'rgba(0, 253, 255, 0)');
 
     var iframeE = document.querySelector('.videoContainer > iframe');
     var iframeS = iframeE ? iframeE.src : null;
@@ -475,7 +504,7 @@
   else if (
     pageURL.matchLink('http://pron.tv/l/*/*')
   ) {
-    addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
+    // addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
     mainFunction = function() {
       contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
       // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'http://redirector.rhcdn.net/media/videos/hd/$1.mp4');
@@ -525,16 +554,39 @@
   }
 
   else if (
-    pageURL.matchLink('https://biqle.ru/watch/*')
+    pageURL.matchLink('https://biqle.ru/*')
   ) {
-    mainFunction = function() {
-      contentURL = document.querySelector('iframe').src;
-      posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').href;
-      appendToFrame = document.querySelector('.heading');
-      appendPosition = 'before';
-      addEmbedCodeFrame(mainFunction);
-      addKeyComboCtrlC(true);
-    };
-    waitForElement('iframe', 'src', initFunction, delay, null, false);
+    addHDtext('.video-title', 'rgba(255, 255, 255, 1)');
+    if (
+      pageURL.matchLink('https://biqle.ru/watch/*')
+    ) {
+      mainFunction = function() {
+        contentURL = document.querySelector('iframe').src;
+        posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').href;
+        appendToFrame = document.querySelector('.heading');
+        appendPosition = 'before';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('iframe', 'src', initFunction, delay, null, false);
+    }
+  }
+
+  else if (
+    pageURL.matchLink('https://www.bitporno.sx/*')
+  ) {
+    if (
+      pageURL.matchLink('https://www.bitporno.sx/?*v=*')
+    ) {
+      mainFunction = function() {
+        contentURL = document.querySelector('#embed_code').value.match(/.*src="(.*?)".*/i)[1];
+        posterURL = document.querySelector('meta[property="og:image"]').content;
+        appendToFrame = document.querySelector('#like-up');
+        appendPosition = 'before';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('#embed_code', false, initFunction, delay, null, false);
+    }
   }
 })();
