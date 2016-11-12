@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -17,6 +17,7 @@
 // @match        http://sexix.net/video*
 // @match        http://i.sexix.net/video*
 // @match        http://sexix.net/*
+// @match        http://sexiz.net/*
 // @match        http://hdpoz.com/HD*
 // @match        http://i.hdpoz.com/HD*
 // @match        http://hdpoz.com/*
@@ -209,6 +210,33 @@
       initFunction = function(){setParentDocument('.videoContainer > iframe'); setAutoHD(); mainFunction();};
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
+    }
+  }
+
+  else if (
+    pageURL.matchLink('http://sexiz.net/*')
+  ) {
+    addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
+
+    addPageControlKeys('a.previouspostslink', 'a.nextpostslink');
+    addOpenInNewTabProperty('.clip-link, .entry-title > a');
+    addHDtext('.clip-link', 'rgba(0, 253, 255, 0)');
+
+    mainFunctionTG = [];
+    mainFunction = function() {
+      contentURL = document.querySelectorAttribute('video, video > source', 'src');
+      posterURL = ''; //document.querySelector('meta[property="og:image"]').content;
+      appendToFrame = document.querySelector('#video');
+      appendPosition = 'after';
+      addEmbedCodeFrame(mainFunction);
+      addKeyComboCtrlC(true);
+      mainFunctionTG = null;
+    };
+
+    if (
+      pageURL.matchLink('sexiz.net/*/')
+    ) {
+      waitForElement('video, video > source', 'src', initFunction, delay, tries, false, mainFunctionTG);
     }
   }
 
@@ -507,6 +535,7 @@
     // addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
     mainFunction = function() {
       contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
+      if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
       // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'http://redirector.rhcdn.net/media/videos/hd/$1.mp4');
       // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'https://cdn.redtraffic.xyz/hls/$1.mp4/index.m3u8');
       posterURL = document.querySelector('.blockx img.imgshadow').src;
@@ -561,7 +590,7 @@
       pageURL.matchLink('https://biqle.ru/watch/*')
     ) {
       mainFunction = function() {
-        contentURL = document.querySelector('iframe').src;
+        contentURL = document.querySelector('iframe').src + '/RD';
         posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').href;
         appendToFrame = document.querySelector('.heading');
         appendPosition = 'before';

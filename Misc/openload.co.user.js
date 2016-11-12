@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -20,6 +20,7 @@
 // @match        http://cdn.rhcdn.net/*.html
 // @match        https://hqcollect.me/embed/*
 // @match        https://daxab.com/embed/*
+// @match        https://biqle.ru/RD/*
 // @match        https://www.bitporno.sx/embed/*
 
 // @match        https://*.googlevideo.com/videoplayback?id=*
@@ -145,6 +146,22 @@
     playButtonSelector = 'input[type="image"]';
     waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
     waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);
+  }
+
+  else if (
+    pageURL.matchLink('https://daxab.com/embed/*') || // https://daxab.com/embed/-59740963_456244433 | https://daxab.com/embed/-59740963_456244433/RD
+    pageURL.matchLink('https://biqle.ru/RD/*') // pseudo redirection page
+  ) {
+    var url;
+    if (pageURL.matchLink('https://daxab.com/embed/*/RD')) { // redirect to https://biqle.ru (pseudo redirection page)
+      url = pageURL.replace(/\/RD$/, '');
+      window.location = 'https://biqle.ru/RD/'+url;
+    } else if (pageURL.matchLink('https://biqle.ru/RD/*')) { // redirect back to embed video page
+      url = pageURL.replace('https://biqle.ru/RD/', '');
+      window.location = url;
+    } else if (pageURL.matchLink('https://daxab.com/embed/*')) { // play embed video
+      waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, null, waitGroup);
+    }
   }
 
   else {
