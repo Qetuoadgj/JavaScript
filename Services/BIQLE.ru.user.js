@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         BIQLE.ru
 // @icon         https://www.google.com/s2/favicons?domain=biqle.ru
-// @version      1.0.8
+// @version      1.0.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
 // @run-at       document-start
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/biqle.ru.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/BIQLE.ru.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        https://biqle.ru/RD/*
 // @match        https://daxab.com/embed/*/RD
