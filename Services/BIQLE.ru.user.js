@@ -80,7 +80,7 @@
     useVolumeCookie('body > video', null);
     waitGroup = null;
   }
-  
+
   // ====================================================================================================================
 
   // redirect to https://biqle.ru (pseudo redirection page)
@@ -99,6 +99,7 @@
   // redirect back to embed video page
   else if (pageURL.matchLink('^https://biqle.ru/RD/*')) { // https://biqle.ru/RD/https://daxab.com/embed/-37492055_456242005
     // document.head.innerHTML = null; document.body.innerHTML = null;
+    document.open(); // empty document
     window.location = pageURL.replace('https://biqle.ru/RD/', '');
   }
 
