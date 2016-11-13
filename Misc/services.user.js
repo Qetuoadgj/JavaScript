@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -37,8 +37,10 @@
 // @match        http://pron.tv/l/*/*
 // @match        http://www.xmoviesforyou.com/*/*/*.html
 // @match        https://danbooru.donmai.us/posts*
-// @match        https://biqle.ru/watch/*
-// @match        https://biqle.ru/*
+
+/// @match        https://biqle.ru/watch/*
+/// @match        https://biqle.ru/*
+
 // @match        https://www.bitporno.sx/?v=*
 // ==/UserScript==
 
