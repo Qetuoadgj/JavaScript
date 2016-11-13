@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.ua
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -56,7 +56,7 @@
   else if (
     pageURL.matchLink('http://www.ex.ua/*')
   ) {
-    var G_titleMethod, G_groupTitleText; // variables
+    var G_titleMethod, G_groupTitleText, G_groupTitle; // variables
     var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
     var G_namingRules;
     var G_pageTitle;
@@ -101,7 +101,7 @@
         var namingRulesSelectMenu = document.createElement('select');
         namingRulesSelectMenu.style.width = '200px';
         namingRulesSelectMenu.style.height = '30px';
-        namingRulesSelectMenu.style.margin='10px 0px 0px 0px';
+        // namingRulesSelectMenu.style.margin='10px 0px 0px 0px';
         namingRulesSelectMenu.style.padding='5px';
         namingRulesSelectMenu.style.border = '1px solid gray';
         fileListFrame.appendChild(namingRulesSelectMenu);
@@ -125,6 +125,8 @@
         groupTitleChangeInput.placeholder = 'Изменить название группы';
         if (G_groupTitleText) groupTitleChangeInput.value = G_groupTitleText.trim();
         fileListFrame.appendChild(groupTitleChangeInput);
+        groupTitleChangeInput.setAttribute('type', 'search');
+        groupTitleChangeInput.style.height = 18+18/3*2+'px';
 
         var downloadFileButton = document.createElement('button');
         downloadFileButton.style.width = 'auto';
@@ -168,7 +170,7 @@
 
       var generatePlaylist = function() {
         var embedCode = '', downloadList = '';
-        var toNone = /\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720|Web-DL)\b|^-/gi;
+        var toNone = /(360p|480p|720p|1080p|BDRip|DVDRip|Sub|Rus|Eng|Ukr|720|Web-DL)\b|^-|\s+@\sEX.UA|[|]+/gi;
         var toSpace = /\s+|\.|\+|\_|^-|[\.\+][\.\+]|[\.\-][\.\-]/gi;
 
         G_titleMethod = G_namingRulesSelectMenu.value;
@@ -193,6 +195,7 @@
           var videoCategory =  document.querySelectorAll('#body_element > a > h2, #body_element > table > tbody > tr > td > h1')[0].innerText;
           console.log('videoCategory = '+videoCategory);
           var groupTitle = pageTitle.replace(' - '+videoCategory+' @ EX.UA', '').replace(toNone, '').replace(toSpace, ' ').replace(/\s+/, ' ').trim();
+          groupTitle = groupTitle.replace(/(\s+\/)+$/, '');
           G_pageTitle = groupTitle;
           console.log('groupTitle = '+groupTitle);
 
@@ -230,6 +233,8 @@
           if (player_list_array.length < 2) {
             videoTitle = groupTitle;
             groupTitle = null;
+          } else {
+            G_groupTitle = groupTitle;
           }
 
           embedCode = embedCode + ('#EXTINF: -1 group-title="'+(G_groupTitleChangeInput.value || groupTitle || '')+'",'+videoTitle+'\n'+videoSrc) + '\n';
@@ -239,7 +244,7 @@
 
         var formList = function() {
           if (download) {G_fileListOutputTextFrame.value = downloadList;} else {G_fileListOutputTextFrame.value = embedCode;}
-          G_fileListOutputTextFrame.autoHeight(false);
+          // G_fileListOutputTextFrame.autoHeight(false);
         }(); //formList(), immediately invoked
       };
 
@@ -254,7 +259,13 @@
 
       generatePlaylist();
     };
-    waitForCondition(function(){return typeof player_info != 'undefined';}, CreateFileList(true, false), delay, tries, false);
+    var initFunction = function(){
+      CreateFileList(true, false);
+      if (G_groupTitle) G_groupTitleChangeInput.value = G_groupTitle;
+      console.log('G_groupTitle: '+G_groupTitle);
+      G_fileListOutputTextFrame.autoHeight(false);
+    };
+    waitForCondition(function(){return typeof player_info != 'undefined';}, initFunction, delay, tries, false);
 
     var stopAutoplay = function() {
       document.querySelector('#fox_player_html5_api').src = '';
