@@ -42,6 +42,7 @@
     var G_titleMethod, G_groupTitleText, G_groupTitle; // variables
     var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
     var G_namingRules;
+    var G_pageTitle;
 
     var CreateFileList = function(optimized, download) {
       var title = pageTitle.replace(/^.{1} /i, '').capitalize();
@@ -198,7 +199,7 @@
               var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
               if (G_groupTitleChangeInput.value) groupTitle = G_groupTitleChangeInput.value;
               G_groupTitle = groupTitle;
-              console.log('G_groupTitle: '+G_groupTitle);
+              console.log('groupTitle = '+groupTitle);
               if (G_titleMethod == G_namingRules[0] || G_titleMethod == G_namingRules[1]) {
                 var toSpace = /\s+|\.|\+|\_|^-|[\.\+][\.\+]|[\.\-][\.\-]/gi;
                 var toNone = /\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720|Web-DL)\b|^-/gi;
@@ -214,6 +215,8 @@
               var origName = document.querySelector('.b-tab-item__title-inner > div[itemprop="alternativeHeadline"]').innerHTML.trim();
               var date = document.querySelector('#contentInner > div.l-content-center > div.b-tab-item > div:nth-child(1) > div > div.l-center > div.item-info > table > tbody > tr:nth-child(2) > td:nth-child(2) > a > span').innerHTML.trim();
               title = '{0} / {1} ({2})'.format(name, origName, date); // Доктор Ноу / Dr. No (1962)
+              G_pageTitle = title;
+              console.log('G_pageTitle = '+G_pageTitle);
               if (download) {downloadList = downloadList + videoSrc + '\n';} else {embedCode = embedCode + ('#EXTINF: -1 group-title="'+(G_groupTitleChangeInput.value || '')+'",'+title+'\n'+videoSrc) + '\n';}
             }
           }(); //prepareTitles(), immediately invoked
