@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.ua
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -196,6 +196,7 @@
           console.log('videoCategory = '+videoCategory);
           var groupTitle = pageTitle.replace(' - '+videoCategory+' @ EX.UA', '').replace(toNone, '').replace(toSpace, ' ').replace(/\s+/, ' ').trim();
           groupTitle = groupTitle.replace(/(\s+\/)+$/, '');
+          groupTitle = groupTitle.replace(/(.* \/ .* \(.*?\)).*/, '$1');
           G_pageTitle = groupTitle;
           console.log('groupTitle = '+groupTitle);
 
