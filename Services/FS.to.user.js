@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FS.to
 // @icon         https://www.google.com/s2/favicons?domain=fs.to
-// @version      1.0.3
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -39,7 +39,7 @@
   if (
     pageURL.matchLink('http://fs.to/video/*')
   ) {
-    var G_titleMethod, G_groupTitleText; // variables
+    var G_titleMethod, G_groupTitleText, G_groupTitle; // variables
     var G_fileListFrame, G_namingRulesSelectMenu, G_groupTitleChangeInput, G_fileListOutputTextFrame; // elements
     var G_namingRules;
 
@@ -197,6 +197,8 @@
               var serieNumberDigit = videoFileName.replace(/.*S\d+E(\d+).*/i, '$1');
               var groupTitle = videoFileName.replace(/.*S(\d+)E\d+.*/i, title +' (Сезон $1)');
               if (G_groupTitleChangeInput.value) groupTitle = G_groupTitleChangeInput.value;
+              G_groupTitle = groupTitle;
+              console.log('G_groupTitle: '+G_groupTitle);
               if (G_titleMethod == G_namingRules[0] || G_titleMethod == G_namingRules[1]) {
                 var toSpace = /\s+|\.|\+|\_|^-|[\.\+][\.\+]|[\.\-][\.\-]/gi;
                 var toNone = /\b(360p|480p|720p|1080p|BDRip|DVDRip|Rus|Eng|Ukr|720|Web-DL)\b|^-/gi;
@@ -222,6 +224,8 @@
         }(); //formList(), immediately invoked
       };
 
+      generatePlaylist();
+
       var attachEvents = function() {
         G_namingRulesSelectMenu.addEventListener("change", function(){generatePlaylist();}, false);
         G_groupTitleChangeInput.addEventListener("change", function(){
@@ -231,10 +235,15 @@
         }, false);
       }(); // attachEvents(), immediately invoked
 
-      generatePlaylist();
+      if (G_groupTitle) G_groupTitleChangeInput.value = G_groupTitle;
     };
 
-    waitForElement('#page-item-viewonline', null, CreateFileList, delay, tries, null);
+    var initFunction = function(){
+      CreateFileList(true, false);
+      // G_fileListOutputTextFrame.autoHeight(false);
+    };
+
+    waitForElement('#page-item-viewonline', null, initFunction, delay, tries, null); // waitForElement('#page-item-viewonline', null, CreateFileList, delay, tries, null);
 
     document.querySelector('body').addEventListener('click', function(event) {
       var targetElement = event.target,

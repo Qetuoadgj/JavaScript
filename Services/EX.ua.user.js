@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EX.ua
 // @icon         https://www.google.com/s2/favicons?domain=ex.ua
-// @version      1.0.7
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -196,7 +196,7 @@
           console.log('videoCategory = '+videoCategory);
           var groupTitle = pageTitle.replace(' - '+videoCategory+' @ EX.UA', '').replace(toNone, '').replace(toSpace, ' ').replace(/\s+/, ' ').trim();
           groupTitle = groupTitle.replace(/(\s+\/)+$/, '');
-          groupTitle = groupTitle.replace(/(.* \/ .* \(.*?\)).*/, '$1');
+          groupTitle = groupTitle.replace(/(.*? \/ .*? \(.*?\)).*/, '$1');
           G_pageTitle = groupTitle;
           console.log('groupTitle = '+groupTitle);
 
@@ -236,6 +236,7 @@
             groupTitle = null;
           } else {
             G_groupTitle = groupTitle;
+            console.log('G_groupTitle: '+G_groupTitle);
           }
 
           embedCode = embedCode + ('#EXTINF: -1 group-title="'+(G_groupTitleChangeInput.value || groupTitle || '')+'",'+videoTitle+'\n'+videoSrc) + '\n';
@@ -249,6 +250,8 @@
         }(); //formList(), immediately invoked
       };
 
+      generatePlaylist();
+
       var attachEvents = function() {
         G_namingRulesSelectMenu.addEventListener("change", function(){generatePlaylist();}, false);
         G_groupTitleChangeInput.addEventListener("change", function(){
@@ -258,12 +261,10 @@
         }, false);
       }(); // attachEvents(), immediately invoked
 
-      generatePlaylist();
+      if (G_groupTitle) G_groupTitleChangeInput.value = G_groupTitle;
     };
     var initFunction = function(){
       CreateFileList(true, false);
-      if (G_groupTitle) G_groupTitleChangeInput.value = G_groupTitle;
-      console.log('G_groupTitle: '+G_groupTitle);
       G_fileListOutputTextFrame.autoHeight(false);
     };
     waitForCondition(function(){return typeof player_info != 'undefined';}, initFunction, delay, tries, false);
