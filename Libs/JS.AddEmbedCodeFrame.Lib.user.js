@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.0
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -57,7 +57,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
   embedCodeFrame.style['word-wrap'] = "break-word";
   if (embedCodeFrame_Margin) embedCodeFrame.style.margin = embedCodeFrame_Margin;
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
-  embedCodeFrame.append(appendToFrame, appendPosition);
+  embedCodeFrame.appendElement(appendToFrame, appendPosition);
 
   var textArea = parentDocument.createElement('textarea');
   textArea.setAttribute('id', (embedCodeFrame.getAttribute('id') || '') + '_TextArea');
@@ -131,7 +131,7 @@ function addKeyComboCtrlC(preventDefault) {
       if (preventDefault) e.preventDefault();
     }
   };
-  document.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+  window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 }
 
 function getHDButton(menuElements, hdOptions) {

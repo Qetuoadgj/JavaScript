@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -128,10 +128,10 @@ Element.prototype.removeClass = function(cssClass) {
 
 Element.prototype.getComputedProperty = function(propertyName) {return window.getComputedStyle(this, null).getPropertyValue(propertyName);};
 
-Element.prototype.appendElement = function(appendToFrame, appendPosition) {
-  if (appendPosition == 'after') appendToFrame.parentNode.insertBefore(this, appendToFrame.nextSibling);
-  else if (appendPosition == 'before') appendToFrame.parentNode.insertBefore(this, appendToFrame);
-  else if (!appendPosition || appendPosition == 'append') appendToFrame.appendChild(this);
+Element.prototype.appendElement = function(targetFrame, appendPosition) {
+  if (appendPosition == 'after') targetFrame.parentNode.insertBefore(this, targetFrame.nextSibling);
+  else if (appendPosition == 'before') targetFrame.parentNode.insertBefore(this, targetFrame);
+  else if (!appendPosition || appendPosition == 'append') targetFrame.appendChild(this);
 };
 
 Element.prototype.nthParentNode = function(num) {
