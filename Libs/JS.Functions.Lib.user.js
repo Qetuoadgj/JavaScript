@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -128,7 +128,7 @@ Element.prototype.removeClass = function(cssClass) {
 
 Element.prototype.getComputedProperty = function(propertyName) {return window.getComputedStyle(this, null).getPropertyValue(propertyName);};
 
-Element.prototype.append = function(appendToFrame, appendPosition) {
+Element.append = function(appendToFrame, appendPosition) {
   if (appendPosition == 'after') appendToFrame.parentNode.insertBefore(this, appendToFrame.nextSibling);
   else if (appendPosition == 'before') appendToFrame.parentNode.insertBefore(this, appendToFrame);
   else if (!appendPosition || appendPosition == 'append') appendToFrame.appendChild(this);
@@ -322,7 +322,7 @@ var addPageControlKeys = function(prevPageSelector, nextPageSelector) {
     if (e.keyCode == lArrowKey) previous_page_btn.click();
     else if (e.keyCode == rArrowKey) next_page_btn.click();
   };
-  document.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+  window.addEventListener("keyup", function(e){onKeyUp(e);}, false);
 };
 
 function setCookie(cname, cvalue, exdays) {
