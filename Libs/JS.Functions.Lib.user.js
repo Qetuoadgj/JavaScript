@@ -128,7 +128,7 @@ Element.prototype.removeClass = function(cssClass) {
 
 Element.prototype.getComputedProperty = function(propertyName) {return window.getComputedStyle(this, null).getPropertyValue(propertyName);};
 
-Element.append = function(appendToFrame, appendPosition) {
+Element.prototype.appendElement = function(appendToFrame, appendPosition) {
   if (appendPosition == 'after') appendToFrame.parentNode.insertBefore(this, appendToFrame.nextSibling);
   else if (appendPosition == 'before') appendToFrame.parentNode.insertBefore(this, appendToFrame);
   else if (!appendPosition || appendPosition == 'append') appendToFrame.appendChild(this);
