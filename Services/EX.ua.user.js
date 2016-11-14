@@ -74,7 +74,7 @@
         fileListFrame.style.display = "block";
         fileListFrame.style['word-wrap'] = "break-word";
         // fileListFrame.style.width = document.querySelector('div.l-content-wrap').offsetWidth - 20 + 'px';
-        fileListFrame.append(appendToFrame, appendPosition);
+        fileListFrame.appendElement(appendToFrame, appendPosition);
 
         var playlistButton = document.createElement('button');
         playlistButton.style.width = 'auto';
