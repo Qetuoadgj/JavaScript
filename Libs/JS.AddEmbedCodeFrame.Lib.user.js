@@ -53,7 +53,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 
   var embedCodeFrame = parentDocument.createElement('div');
   embedCodeFrame.setAttribute('id', 'oldEmbedCodeFrame');
-  embedCodeFrame.style.display = 'block !important';
+  embedCodeFrame.style.setProperty('display', 'block', 'important');
   embedCodeFrame.style['word-wrap'] = 'break-word';
   if (embedCodeFrame_Margin) embedCodeFrame.style.margin = embedCodeFrame_Margin;
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
@@ -61,7 +61,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 
   var textArea = parentDocument.createElement('textarea');
   textArea.setAttribute('id', (embedCodeFrame.getAttribute('id') || '') + '_TextArea');
-  textArea.style.display = 'block !important';
+  textArea.style.setProperty('display', 'block', 'important');
   textArea.style.border = 'none';
   textArea.style['background-color'] = 'transparent';
   textArea.style.width = '100%';
@@ -92,7 +92,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
   }
   if (createPoster)  {
     var embedCodePoster = parentDocument.createElement('img');
-    embedCodePoster.style.display = 'block !important';
+    embedCodePoster.style.setProperty('display', 'block', 'important');
     embedCodePoster.style['max-height'] = '120px';
     embedCodePoster.setAttribute('src', posterURL);
     embedCodeFrame.appendChild(embedCodePoster);
