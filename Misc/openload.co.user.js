@@ -11,7 +11,7 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://openload.co/embed/*
 // @match        https://openload.co/f/*
-// @match        https://www.pornhub.com/embed/*
+/// @match        https://www.pornhub.com/embed/*
 // @match        http://porndoe.com/video/embed/*
 // @match        http://www.eporner.com/embed/*
 // @match        http://www.tube8.com/embed/*
@@ -81,6 +81,13 @@
       videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
     };
     waitForElement('#olvideo_html5_api', null, initFunction, delay, tries, null, waitGroup);
+  }
+  
+  else if (
+    pageURL.matchLink('https://www.pornhub.com/embed/*/HD_1080p') || // https://www.pornhub.com/embed/384102535/HD_720p
+    pageURL.matchLink('https://www.pornhub.com/embed/*/HD_720p')
+  ) {
+    window.location = 'http://www.pornhub.com/view_video.php?viewkey='+'/'+pageURL.replace(/.*\/embed\/(.*?)\/.*/, '$1'); // http://www.pornhub.com/view_video.php?viewkey=384102535
   }
 
   else if (

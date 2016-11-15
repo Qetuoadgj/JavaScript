@@ -24,8 +24,8 @@
 // @match        http://spankbang.com/*/video/*
 // @match        http://www.babesandstars.com/*/*/*/
 // @match        http://www.xvideos.com/video*
-// @match        http://www.pornhub.com/*
-// @exclude      https://www.pornhub.com/embed/*
+/// @match        http://www.pornhub.com/*
+/// @exclude      https://www.pornhub.com/embed/*
 // @match        http://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
@@ -330,6 +330,8 @@
     if (pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')) {
       mainFunction = function() {
         contentURL = document.querySelector('meta[name="twitter:player"]').content;
+        if (typeof player_quality_1080p !== 'undefined') contentURL += '/HD_1080p';
+        else if (typeof player_quality_720p !== 'undefined') contentURL += '/HD_720p';
         posterURL = document.querySelector('meta[name="twitter:image"]').content;
         appendToFrame = document.querySelector('.video-actions-container');
         appendPosition = 'before';
