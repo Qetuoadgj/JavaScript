@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BIQLE.ru
 // @icon         https://www.google.com/s2/favicons?domain=biqle.ru
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -33,7 +33,8 @@
     for (var i = 0; i < linksArray.length; ++i) {
       var link = linksArray[i], thumb = link.parentNode, title = link.title || link.innerText;
       var quality = title ? title.match('(1080)p?') || title.match('(720)p?') : null;
-      if (quality) {
+      var hdIcon = thumb.querySelector('.hd_icon');
+      if (quality && !hdIcon) {
         quality = quality[1];
         var text = document.createElement('div');
         if (quality == '1080') text.style.background = 'rgba(255, 0, 0, 0.15)';
@@ -51,6 +52,7 @@
         thumb.insertBefore(text, thumb.firstChild);
         // thumb.appendChild(document.createTextNode("HD"));
         text.style.right = '0';
+        text.className = 'hd_icon';
       }
     }
   }
@@ -104,7 +106,21 @@
   }
 
   else if (pageURL.matchLink('^https://biqle.ru/*')) {
-    addHDtext('.video-title', 'rgba(255, 255, 255, 1)');
+    var handleNewElements = function(target) {
+      var targetClassName = 'video-item';
+      var parsedClassName = 'no_hd_icon';
+      if (target.classList && target.classList.contains(targetClassName) && !target.classList.contains(parsedClassName)) {
+        addHDtext('.video-title', 'rgba(255, 255, 255, 1)');
+        addOpenInNewTabProperty('.video-item > a');
+        target.addClass(parsedClassName);
+      }
+    };
+    document.addEventListener('DOMNodeInserted', function(event){handleNewElements(event.target);} , false);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      addHDtext('.video-title', 'rgba(255, 255, 255, 1)');
+      addOpenInNewTabProperty('.video-item > a');
+    });
+
     if (pageURL.matchLink('https://biqle.ru/watch/*')) {
       mainFunction = function() {
         contentURL = document.querySelector('iframe').src + '/RD';
@@ -114,7 +130,9 @@
         addEmbedCodeFrame(mainFunction);
         addKeyComboCtrlC(true);
       };
-      waitForElement('iframe', 'src', mainFunction, delay, tries, false, false);
+      document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+        waitForElement('iframe', 'src', mainFunction, delay, tries, false, false);
+      });
     }
   }
 })();
