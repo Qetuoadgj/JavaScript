@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -53,15 +53,15 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 
   var embedCodeFrame = parentDocument.createElement('div');
   embedCodeFrame.setAttribute('id', 'oldEmbedCodeFrame');
-  embedCodeFrame.style.display = "block";
-  embedCodeFrame.style['word-wrap'] = "break-word";
+  embedCodeFrame.style.display = 'block !important';
+  embedCodeFrame.style['word-wrap'] = 'break-word';
   if (embedCodeFrame_Margin) embedCodeFrame.style.margin = embedCodeFrame_Margin;
   if (embedCodeFrame_BackgroundColor) embedCodeFrame.style.backgroundColor = embedCodeFrame_BackgroundColor;
   embedCodeFrame.appendElement(appendToFrame, appendPosition);
 
   var textArea = parentDocument.createElement('textarea');
   textArea.setAttribute('id', (embedCodeFrame.getAttribute('id') || '') + '_TextArea');
-  textArea.style.display = 'block';
+  textArea.style.display = 'block !important';
   textArea.style.border = 'none';
   textArea.style['background-color'] = 'transparent';
   textArea.style.width = '100%';
@@ -92,7 +92,7 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
   }
   if (createPoster)  {
     var embedCodePoster = parentDocument.createElement('img');
-    embedCodePoster.style.display = 'block';
+    embedCodePoster.style.display = 'block !important';
     embedCodePoster.style['max-height'] = '120px';
     embedCodePoster.setAttribute('src', posterURL);
     embedCodeFrame.appendChild(embedCodePoster);
