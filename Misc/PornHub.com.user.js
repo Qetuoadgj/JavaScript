@@ -55,8 +55,7 @@
     // mainFunctionTG = null;
   }
   // ====================================================================================================================
-
-  // redirect to pseudo redirection page
+  /* // redirect to pseudo redirection page
   if (
     pageURL.match(/^https:\/\/www.pornhub.com\/embed\/.*?\?EmbedHD$/) // https://www.pornhub.com/embed/384102535?EmbedHD
   ) {
@@ -74,12 +73,12 @@
       console.log('VideoURL: '+VideoURL);
       window.location = VideoURL;
     });
-  }
+  } */
 
   // play HD or LQ Embed video
-  else if (
-    pageURL.matchLink('http://cdn-d-vid-public.pornhub.com/videos/*/*/*/*.mp4[?]*') || // http://cdn-d-vid-public.pornhub.com/videos/201507/17/53029121/vl_720_972k_53029121.mp4?ttl=1479173454&ri=2252800&rs=1216&hash=810dfc9325538b92012b2a437365118b
-    pageURL.matchLink('http://*.rncdn3.com/videos/*/*/*/*.mp4[?]*') || // http://ic.25197200.037f74.6.c3605.d.rncdn3.com/videos/201507/17/53029121/vl_720_972k_53029121.mp4?ipa=37.25.114.58&rs=152&ri=2200&s=1479168721&e=1479175921&h=12ea825d2bd1b86557cc6c3402f7e6d4
+  if (
+    // pageURL.matchLink('http://cdn-d-vid-public.pornhub.com/videos/*/*/*/*.mp4[?]*') || // http://cdn-d-vid-public.pornhub.com/videos/201507/17/53029121/vl_720_972k_53029121.mp4?ttl=1479173454&ri=2252800&rs=1216&hash=810dfc9325538b92012b2a437365118b
+    // pageURL.matchLink('http://*.rncdn3.com/videos/*/*/*/*.mp4[?]*') || // http://ic.25197200.037f74.6.c3605.d.rncdn3.com/videos/201507/17/53029121/vl_720_972k_53029121.mp4?ipa=37.25.114.58&rs=152&ri=2200&s=1479168721&e=1479175921&h=12ea825d2bd1b86557cc6c3402f7e6d4
     pageURL.matchLink('https://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/384102535
   ) {
     mainFunction = function() {
@@ -100,8 +99,8 @@
       if (pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')) {
         mainFunction = function() {
           contentURL = document.querySelector('meta[name="twitter:player"]').content;
-          if (typeof player_quality_1080p !== 'undefined') contentURL += '?'+'EmbedHD';
-          else if (typeof player_quality_720p !== 'undefined') contentURL += '?'+'EmbedHD';
+          // if (typeof player_quality_1080p !== 'undefined') contentURL += '?'+'EmbedHD';
+          // else if (typeof player_quality_720p !== 'undefined') contentURL += '?'+'EmbedHD';
           posterURL = document.querySelector('meta[name="twitter:image"]').content;
           appendToFrame = document.querySelector('.video-actions-container');
           appendPosition = 'before';
