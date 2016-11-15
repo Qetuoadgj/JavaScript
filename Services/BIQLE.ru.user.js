@@ -25,7 +25,7 @@
   var videoElement, videoSource, videoPoster, videoCleaned;
   var mainFunction, initFunction = function(){mainFunction();};
   var delay = 1000, tries = 15;
-  var mainFunctionTG = [];
+  // var mainFunctionTG = [];
 
   function addHDtext(selector, color) {
     selector = selector || 'a';
@@ -78,7 +78,7 @@
     videoCleaned.volume = 0.5;
     addMouseWheelAudioControl(videoCleaned, 5);
     useVolumeCookie('body > video', null);
-    waitGroup = null;
+    // mainFunctionTG = null;
   }
 
   // ====================================================================================================================
