@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -360,14 +360,19 @@ function checkCookie() {
 }
 
 var useVolumeCookie = function(mediaElementSelector, cookieName) {
-  cookieName = cookieName || 'mediaVolume';
-  var mediaVolume = getCookie(cookieName);
+  cookieName = cookieName || 'media';
+  var volumeCookie = cookieName+'Volume';
+  var mediaVolume = getCookie(volumeCookie);
+  var mutedCookie = cookieName+'Muted';
+  var mediaMuted = getCookie(mutedCookie);
   var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
   for (var i = 0; i < mediaElementsArray.length; ++i) {
     var mediaElement = mediaElementsArray[i];
     if (mediaVolume && mediaVolume !== '') mediaElement.volume = mediaVolume;
-    mediaElement.addEventListener("volumechange", function() {
-      setCookie(cookieName, mediaElement.volume || 0, 1);
+    if (mediaMuted && mediaMuted !== '') mediaElement.muted = mediaMuted;
+    mediaElement.addEventListener('volumechange', function() {
+      setCookie(volumeCookie, mediaElement.volume || 0, 1);
+      setCookie(mutedCookie, mediaElement.muted || false, 1);
     }, false);
   }
 };
