@@ -365,15 +365,19 @@ var useVolumeCookie = function(mediaElementSelector, cookieName) {
   var mediaVolume = getCookie(volumeCookie);
   var mutedCookie = cookieName+'Muted';
   var mediaMuted = getCookie(mutedCookie);
+  if (mediaMuted == 'false') mediaMuted = false; // normalize
   var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
   for (var i = 0; i < mediaElementsArray.length; ++i) {
     var mediaElement = mediaElementsArray[i];
-    if (mediaVolume && mediaVolume !== '') mediaElement.volume = mediaVolume;
-    if (mediaMuted && mediaMuted !== '') mediaElement.muted = mediaMuted;
+    if (mediaVolume) mediaElement.volume = mediaVolume;
+    mediaElement.muted = mediaMuted;
     mediaElement.addEventListener('volumechange', function() {
       setCookie(volumeCookie, mediaElement.volume || 0, 1);
-      setCookie(mutedCookie, mediaElement.muted || false, 1);
+      setCookie(mutedCookie, mediaElement.muted, 1);
     }, false);
+    console.log('mediaElement: ' + mediaElement);
+    console.log('volumeCookie: ' + volumeCookie + ' = ' + getCookie(volumeCookie));
+    console.log('mutedCookie: ' + mutedCookie + ' = ' + getCookie(mutedCookie));
   }
 };
 
