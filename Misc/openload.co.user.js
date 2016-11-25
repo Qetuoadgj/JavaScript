@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.0.9
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -14,6 +14,7 @@
 // @match        https://www.pornhub.com/embed/*
 // @match        http://porndoe.com/video/embed/*
 // @match        http://www.eporner.com/embed/*
+// @match        https://www.eporner.com/embed/*
 // @match        http://www.tube8.com/embed/*
 // @match        http://streamin.to/embed*
 // @match        http://pron.tv/embed/*
@@ -96,7 +97,7 @@
     waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);
   }
 
-  else if (pageURL.matchLink('http://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
+  else if (pageURL.matchLink('http://www.eporner.com/*') || pageURL.matchLink('https://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute('#EPvideo_html5_api', 'src');
       videoPoster = null; //video.poster

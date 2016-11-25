@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.0.9
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -42,6 +42,8 @@
 /// @match        https://biqle.ru/*
 
 // @match        https://www.bitporno.sx/?v=*
+
+// @match        https://vipergirls.to/threads/*/page*
 // ==/UserScript==
 
 (function() {
@@ -537,6 +539,7 @@
     pageURL.matchLink('http://pron.tv/l/*/*')
   ) {
     // addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
+    addGlobalStyle('#player-and-details {height: 480px;}');
     mainFunction = function() {
       contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
       if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
@@ -622,4 +625,56 @@
       waitForElement('#embed_code', false, initFunction, delay, null, false);
     }
   }
+
+  else if (
+    pageURL.matchLink('https://vipergirls.to/*')
+  ) {
+    addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+    console.log(pageURL.matchLink('https://vipergirls.to/threads/*/page*'));
+    if (
+      pageURL.matchLink('https://vipergirls.to/threads/*/page*')
+    ) {
+      embedCodeTextRefresh = false;
+      mainFunction = function() {
+        var imagesArray = [];
+        var thumbsArray = [];
+
+        var thumbs = document.querySelectorAll('.postcontent > a > img');
+        // console.log(thumbs);
+
+        forEach(thumbs, function(index, self) {
+          var thumbURL = self.src;
+          // console.log(thumbURL);
+          // http://t6.imgchili.com/27208/27208100_dawsonmiller_yellow_.jpg --> http://i6.imgchili.net/27208/27208100_dawsonmiller_yellow_.jpg
+          var imageURL = thumbURL.replace(/http:\/\/t(.*?)\.imgchili.com\//i, 'http://i$1.imgchili.net/');
+          // console.log(imageURL);
+          thumbsArray.push(thumbURL);
+          imagesArray.push(imageURL);
+        });
+
+        pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
+
+        forEach(thumbsArray, function(index, self) {
+          contentURL = imagesArray[index];
+          posterURL = self;
+          contentTitle = ''; //pageTitle.replace(/^.{1} /i, '').Capitalize();
+          if (embedCodeText) {embedCodeText = embedCodeText + '\n' + '<div class="thumbnail"';} else {embedCodeText = '<div class="thumbnail"';}
+          if (contentURL !== pageURL) embedCodeText += ' title="'+contentTitle+'"';
+          if (posterURL && posterURL !== contentURL) embedCodeText += ' image="'+posterURL+'"';
+          embedCodeText += ' content="'+contentURL+'"';
+          if (contentURL !== pageURL) embedCodeText +=' url="'+pageURL+'"';
+          embedCodeText += '></div>';
+        });
+
+        appendToFrame = document.querySelector('.navlinks');
+        appendPosition = 'before';
+        textAreaAutoHeight = true;
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('.navlinks', false, initFunction, delay, tries, false);
+    }
+  }
+
+
 })();
