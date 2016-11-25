@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         PornHub.com
+// @name         ph.com
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
 // @version      1.0.0
 // @description  Pure JavaScript version.
@@ -8,7 +8,7 @@
 // @run-at       document-start
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.AddEmbedCodeFrame.Lib.user.js
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/PornHub.com.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/ph.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        http://www.pornhub.com/*
 // @match        https://www.pornhub.com/embed/*
