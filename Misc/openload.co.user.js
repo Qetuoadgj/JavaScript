@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.1.0
+// @version      1.1.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -25,6 +25,9 @@
 /// @match        https://biqle.ru/RD/*
 
 // @match        https://www.bitporno.sx/embed/*
+
+// @match        http://www.porn.com/videos/embed/*
+// @match        http://www.porn.com/videos/*?EMBED
 
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4*
@@ -165,6 +168,33 @@
     } else if (pageURL.matchLink('https://daxab.com/embed/*')) { // play embed video
       waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, null, waitGroup);
     }
+  }
+
+  else if (pageURL.matchLink('http://www.porn.com/videos/embed/*[?]*')) { // http://www.porn.com/videos/embed/29282?http://www.porn.com/download/480/29282.mp4
+    mainFunction = function() {
+      var url = pageURL.replace(/.*[?](.*)/, '$1');
+      videoSource = url;
+      videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
+    };
+    waitForElement(videoSourceSelector, null, initFunction, delay, tries, null, waitGroup);
+  }
+
+  else if (pageURL.matchLink('http://www.porn.com/videos/*[?]EMBED')) { // http://www.porn.com/videos/horny-cock-sluts-aggressively-pull-off-plumber-s-clothes-29282?EMBED
+    mainFunction = function() {
+      var scriptsArray = document.scripts;
+      for (var i = 0; i < document.scripts.length; ++i) {
+        var script = document.scripts[i];
+        var text = script.text;
+        if (text.match('window.ActivitySocketURI')) {
+          var hqUrl = text.match(/id:"hq",url:"(.*?)"/i)[1];
+          videoSource = hqUrl;
+          console.log('videoSource: '+videoSource);
+          break;
+        }
+      }
+      videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
+    };
+    initFunction();
   }
 
   else {

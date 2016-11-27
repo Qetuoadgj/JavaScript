@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.0
+// @version      1.1.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -44,6 +44,9 @@
 // @match        https://www.bitporno.sx/?v=*
 
 // @match        https://vipergirls.to/threads/*/page*
+
+// @match        http://www.porn.com/videos/*
+// @exclude      http://www.porn.com/videos/embed/*
 // ==/UserScript==
 
 (function() {
@@ -676,5 +679,24 @@
     }
   }
 
-
+  else if (
+    pageURL.matchLink('http://www.porn.com/*')
+  ) {
+    if (
+      pageURL.matchLink('http://www.porn.com/videos/*') // http://www.porn.com/videos/horny-cock-sluts-aggressively-pull-off-plumber-s-clothes-29282
+    ) {
+      mainFunction = function() {
+        // contentURL = document.querySelector('textarea[name="share"]').value.match(/.*src="(.*?)".*/i)[1];
+        // var a = document.querySelector('.dlRow > a'); console.log(a.href);
+        // contentURL = contentURL + '?' + a.href;
+        contentURL = pageURL + '?' + 'EMBED';
+        posterURL = document.querySelector('input[value*="img src="]').value.match(/.*img src="(.*?)".*/i)[1];
+        appendToFrame = document.querySelector('#player');
+        appendPosition = 'after';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('textarea[name="share"]', false, initFunction, delay, null, false);
+    }
+  }
 })();
