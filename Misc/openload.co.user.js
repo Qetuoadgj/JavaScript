@@ -186,8 +186,9 @@
         var script = document.scripts[i];
         var text = script.text;
         if (text.match('window.ActivitySocketURI')) {
+          var hdUrl = text.match(/id:"hd",url:"(.*?)"/i)[1];
           var hqUrl = text.match(/id:"hq",url:"(.*?)"/i)[1];
-          videoSource = hqUrl;
+          videoSource = hdUrl ? hdUrl : hqUrl;
           console.log('videoSource: '+videoSource);
           break;
         }
