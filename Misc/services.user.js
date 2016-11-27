@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.1
+// @version      1.1.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -689,7 +689,7 @@
         // contentURL = document.querySelector('textarea[name="share"]').value.match(/.*src="(.*?)".*/i)[1];
         // var a = document.querySelector('.dlRow > a'); console.log(a.href);
         // contentURL = contentURL + '?' + a.href;
-        contentURL = pageURL + '?' + 'EMBED';
+        contentURL = pageURL.replace(/(.*?)[?].*/, '$1') + '?' + 'EMBED';
         posterURL = document.querySelector('input[value*="img src="]').value.match(/.*img src="(.*?)".*/i)[1];
         appendToFrame = document.querySelector('#player');
         appendPosition = 'after';

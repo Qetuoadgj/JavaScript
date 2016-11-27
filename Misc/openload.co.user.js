@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.1.1
+// @version      1.1.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -186,9 +186,9 @@
         var script = document.scripts[i];
         var text = script.text;
         if (text.match('window.ActivitySocketURI')) {
-          var hdUrl = text.match(/id:"hd",url:"(.*?)"/i)[1];
-          var hqUrl = text.match(/id:"hq",url:"(.*?)"/i)[1];
-          videoSource = hdUrl ? hdUrl : hqUrl;
+          var hdUrl = text.match(/id:"hd",url:"(.*?)"/i);
+          var hqUrl = text.match(/id:"hq",url:"(.*?)"/i);
+          videoSource = hdUrl ? hdUrl[1] : hqUrl[1];
           console.log('videoSource: '+videoSource);
           break;
         }
