@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.2
+// @version      1.1.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -26,7 +26,7 @@
 // @match        http://www.xvideos.com/video*
 // @match        http://www.pornhub.com/*
 // @exclude      https://www.pornhub.com/embed/*
-// @match        http://www.eporner.com/hd-porn/*/*/
+// @match        https://www.eporner.com/hd-porn/*/*/
 // @match        http://www.tube8.com/*/*/*/*
 // @match        http://juicygif.com/public/Gif/*.html/*
 // @match        http://www.sex.com/picture/*/
@@ -34,7 +34,7 @@
 // @match        http://www.imagefap.com/pictures/6115310/*view=2
 // @match        http://www.hdporncollections.com/*/
 // @match        http://konachan.com/post*
-// @match        http://pron.tv/l/*/*
+// @match        http://pron.tv/*
 // @match        http://www.xmoviesforyou.com/*/*/*.html
 // @match        https://danbooru.donmai.us/posts*
 
@@ -330,7 +330,7 @@
   else if (
     pageURL.matchLink('http://www.pornhub.com/*')
   ) {
-    addOpenInNewTabProperty('.phimage a');
+    // addOpenInNewTabProperty('.phimage a');
     addPageControlKeys('.page_previous.alpha > a', '.page_next.omega > a');
     if (pageURL.matchLink('http://www.pornhub.com/view_video.php[?]viewkey=*')) {
       mainFunction = function() {
@@ -348,7 +348,7 @@
   }
 
   else if (
-    pageURL.matchLink('http://www.eporner.com/hd-porn/*/*/')
+    pageURL.matchLink('http[s]?://www.eporner.com/hd-porn/*/*/')
   ) {
     mainFunction = function() {
       contentURL = document.querySelector('#EPvideo_html5_api').src;
@@ -539,22 +539,35 @@
   }
 
   else if (
-    pageURL.matchLink('http://pron.tv/l/*/*')
+    pageURL.matchLink('http://pron.tv/*')
   ) {
-    // addGlobalStyle('#actualPlayer {padding-bottom: 20px;}');
-    addGlobalStyle('#player-and-details {height: 480px;}');
-    mainFunction = function() {
-      contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
-      if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
-      // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'http://redirector.rhcdn.net/media/videos/hd/$1.mp4');
-      // if (contentURL.matchLink('http://cdn.rhcdn.net/*.html')) contentURL = contentURL.replace(/.*cdn.rhcdn.net\/(.*?).html/i, 'https://cdn.redtraffic.xyz/hls/$1.mp4/index.m3u8');
-      posterURL = document.querySelector('.blockx img.imgshadow').src;
-      appendToFrame = document.querySelector('.blockx');
-      appendPosition = 'before';
-      addEmbedCodeFrame(mainFunction);
-      addKeyComboCtrlC(true);
-    };
-    waitForElement('#actualPlayer iframe', 'src', initFunction, delay, null, false);
+    var favoriteHoster = getCookie('favoriteHoster');
+    if (!favoriteHoster || favoriteHoster === "") {
+      var favoriteHosterDefaults = '['+
+          '{"hosterel":"stardocs.google.com"}'+','+
+          '{"hosterel":"stardrive.google.com"}'+','+
+          '{"hosterel":"staropenload.co"},'+','+
+          '{"hosterel":"stareporner.com"},'+','+
+          '{"hosterel":"starsexix.net"},'+','+
+          '{"hosterel":"staropenload.io"}'+','+
+          ']';
+      setCookie('favoriteHoster', favoriteHosterDefaults, 1);
+    }
+    if (
+      pageURL.matchLink('http://pron.tv/l/*/*')
+    ) {
+      addGlobalStyle('#player-and-details {height: 480px;}');
+      mainFunction = function() {
+        contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
+        if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
+        posterURL = document.querySelector('.blockx img.imgshadow').src;
+        appendToFrame = document.querySelector('.blockx');
+        appendPosition = 'before';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement('#actualPlayer iframe', 'src', initFunction, delay, null, false);
+    }
   }
 
   else if (
