@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.1.3
+// @version      1.1.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
-// @run-at       document-end
+// @run-at       document-start
 // @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/openload.co.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
@@ -66,11 +66,13 @@
     document.documentElement.innerHTML = '';
     // document.removeChild(document.documentElement); // clear document
     document.body.appendChild(video);
-    if (inIframe()) {
+    /* if (inIframe()) {
       addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
     } else {
       addGlobalStyle('video {position: absolute; width: auto; height: auto; max-height: 100%; max-width: 100%; background: black; transform: translate(-50%, -50%); top: 50%; left: 50%;}');
-    }
+    } */
+    addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+    // addGlobalStyle('video {transform: translate(-50%, -50%); top: 50%; left: 50%;}');
     addGlobalStyle('body {margin: 0; background: black;}');
     return video;
   };
@@ -86,7 +88,7 @@
     waitGroup = null;
   }
   var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();}, getSource;
-  var delay = 1000, tries = 15;
+  var delay = 10, tries = 1500;
   var playButtonSelector;
   var clickPlay = function(){var p = document.querySelector(playButtonSelector); p.click(); waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);};
   // ====================================================================================================================
@@ -96,7 +98,9 @@
       videoSource = '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
       videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
     };
-    waitForElement('#olvideo_html5_api', null, initFunction, delay, tries, null, waitGroup);
+    // document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+    waitForElement('#streamurl', false, initFunction, delay, tries, false, waitGroup);
+    // });
   }
 
   else if (
@@ -109,20 +113,24 @@
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
     };
-    waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, false, waitGroup);
+    });
   }
 
-  else if (pageURL.matchLink('http://www.eporner.com/*') || pageURL.matchLink('https://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
+  else if (pageURL.matchLink('http[s]?://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute('#EPvideo_html5_api', 'src');
       videoPoster = null; //video.poster
     };
-    waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, false, waitGroup);
+    });
   }
 
   else if (
     // pageURL.matchLink('http://pron.tv/embed/*') || // http://pron.tv/embed/id%3Arws2x9se
-    pageURL.matchLink('http://cdn.rhcdn.net/*.html') // http://cdn.rhcdn.net/6043.html
+    pageURL.matchLink('http://cdn.rhcdn.net/*.html')  // http://cdn.rhcdn.net/6043.html
   ) {
     getSource = function() {
       var source = player ? player.playerInfo.options.source : document.querySelectorAttribute(videoSourceSelector, 'src');
@@ -140,31 +148,40 @@
       }
       waitGroup = null;
     };
-    waitForCondition(getSource, mainFunction, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForCondition(getSource, mainFunction, delay, tries, false, waitGroup);
+    });
   }
 
   else if (
     pageURL.matchLink('https://hqcollect.me/embed/*') // https://hqcollect.me/embed/214394
   ) {
+    playButtonSelector = 'div.fp-ui';
     mainFunction = function() {
       videoSource = document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
     };
-    playButtonSelector = 'div.fp-ui';
-    waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement(playButtonSelector, false, clickPlay, delay, tries, false, waitGroup);
+    });
   }
 
   else if (
     pageURL.matchLink('https://www.bitporno.sx/embed/*') || // https://www.bitporno.sx/embed/WEKddpz0
     pageURL.matchLink('https://www.bitporno.com/embed/*')   // https://www.bitporno.com/embed/uu25seLu
   ) {
+    videoSourceSelector = '.jw-media > video';
+    playButtonSelector = 'input[type="image"]';
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
+      videoPoster = document.querySelector('.jw-preview.jw-reset').style.backgroundImage.replace(/url\("(.*?)"\)/, '$1');
+      console.log('videoPoster: '+videoPoster);
     };
-    playButtonSelector = 'input[type="image"]';
-    waitForElement(playButtonSelector, null, clickPlay, delay, tries, null, waitGroup);
-    waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement(playButtonSelector, false, clickPlay, delay, tries, false, waitGroup);
+      waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, false, waitGroup);
+    });
   }
 
   else if (
@@ -179,7 +196,9 @@
       url = pageURL.replace('https://biqle.ru/RD/', '');
       window.location = url;
     } else if (pageURL.matchLink('https://daxab.com/embed/*')) { // play embed video
-      waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, null, waitGroup);
+      document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+        waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
+      });
     }
   }
 
@@ -189,7 +208,9 @@
       videoSource = url;
       videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
     };
-    waitForElement(videoSourceSelector, null, initFunction, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement(videoSourceSelector, false, initFunction, delay, tries, false, waitGroup);
+    });
   }
 
   else if (pageURL.matchLink('http://www.porn.com/videos/*[?]EMBED')) { // http://www.porn.com/videos/horny-cock-sluts-aggressively-pull-off-plumber-s-clothes-29282?EMBED
@@ -212,6 +233,8 @@
   }
 
   else {
-    waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, null, waitGroup);
+    document.addEventListener("DOMContentLoaded", function() { // @run-at document-end sumulation
+      waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
+    });
   }
 })();
