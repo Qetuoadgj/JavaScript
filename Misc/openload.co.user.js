@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.1.2
+// @version      1.1.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -25,6 +25,7 @@
 /// @match        https://biqle.ru/RD/*
 
 // @match        https://www.bitporno.sx/embed/*
+// @match        https://www.bitporno.com/embed/*
 
 // @match        http://www.porn.com/videos/embed/*
 // @match        http://www.porn.com/videos/*?EMBED
@@ -48,6 +49,12 @@
   var videoSourceSelector = 'video > source[type="video/mp4"], video';
   var waitGroup = []; // waitForElement() timers group.
 
+  function inIframe() {
+    var inIframe = window.self !== window.top;
+    console.log('inIframe: '+inIframe);
+    return inIframe;
+  }
+
   var getCleanVideo = function(videoSrc, posterSrc) {
     var video = document.createElement('video');
     video.setAttribute('src', videoSrc);
@@ -57,8 +64,13 @@
     video.setAttribute('mozallowfullscreen', '');
     video.setAttribute('allowfullscreen', '');
     document.documentElement.innerHTML = '';
+    // document.removeChild(document.documentElement); // clear document
     document.body.appendChild(video);
-    addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+    if (inIframe()) {
+      addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+    } else {
+      addGlobalStyle('video {position: absolute; width: auto; height: auto; max-height: 100%; max-width: 100%; background: black; transform: translate(-50%, -50%); top: 50%; left: 50%;}');
+    }
     addGlobalStyle('body {margin: 0; background: black;}');
     return video;
   };
@@ -135,7 +147,7 @@
     pageURL.matchLink('https://hqcollect.me/embed/*') // https://hqcollect.me/embed/214394
   ) {
     mainFunction = function() {
-      videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
+      videoSource = document.querySelectorAttribute(videoSourceSelector, 'src');
       videoPoster = null; //video.poster
     };
     playButtonSelector = 'div.fp-ui';
@@ -143,7 +155,8 @@
   }
 
   else if (
-    pageURL.matchLink('https://www.bitporno.sx/embed/*') // https://www.bitporno.sx/embed/WEKddpz0
+    pageURL.matchLink('https://www.bitporno.sx/embed/*') || // https://www.bitporno.sx/embed/WEKddpz0
+    pageURL.matchLink('https://www.bitporno.com/embed/*')   // https://www.bitporno.com/embed/uu25seLu
   ) {
     mainFunction = function() {
       videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
