@@ -17,8 +17,9 @@
   // Your code here...
   var link = document.querySelector('meta[property="og:url"]');
   var url = link ? link.content : null;
-  if (url) {
-    document.open(); // empty document
+  if (url && url !== location.href) {
+    // document.open(); // empty document
     window.location = url;
   }
+  console.log('URL: '+url);
 })();
