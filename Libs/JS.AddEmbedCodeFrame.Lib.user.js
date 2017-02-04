@@ -121,16 +121,20 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
 function addKeyComboCtrlC(preventDefault, ignoreSelections) {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   var textArea = oldEmbedCodeFrame.querySelector('textarea');
-  var selectedText = window.getSelection().toString();
-  selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
   var onKeyDown = function(e) {
     e = e || window.event;
     var cKey = 67;
     var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
     // var targetType = e.target.tagName.toLowerCase();
-    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey && !selectedText) {
-      textArea.select(); document.execCommand('copy');
-      if (preventDefault) e.preventDefault();
+    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey) {
+      var selectedText = window.getSelection().toString();
+      selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
+      // selectedText = selectedText ? window.getSelection().toString() : false;
+      // console.log('selectedText: '+selectedText);
+      if (!selectedText) {
+        textArea.select(); document.execCommand('copy');
+        if (preventDefault) e.preventDefault();
+      }
     }
   };
   window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
