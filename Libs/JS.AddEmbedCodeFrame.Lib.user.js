@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -118,15 +118,17 @@ function addEmbedCodeFrame(callerFunction, parentDocument) {
   qualityButton.addEventListener("click", callerFunction, false);
 }*/
 
-function addKeyComboCtrlC(preventDefault) {
+function addKeyComboCtrlC(preventDefault, ignoreSelections) {
   var oldEmbedCodeFrame = document.getElementById("oldEmbedCodeFrame");
   var textArea = oldEmbedCodeFrame.querySelector('textarea');
+  var selectedText = window.getSelection().toString();
+  selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
   var onKeyDown = function(e) {
     e = e || window.event;
     var cKey = 67;
     var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
     // var targetType = e.target.tagName.toLowerCase();
-    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey) {
+    if (oldEmbedCodeFrame && ctrlDown && e.keyCode == cKey && !selectedText) {
       textArea.select(); document.execCommand('copy');
       if (preventDefault) e.preventDefault();
     }
