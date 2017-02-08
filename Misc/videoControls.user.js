@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         videoControls
 // @icon         http://www.worldleathercongress2015.com/images/media_video.png
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -11,6 +11,7 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://*.googlevideo.com/videoplayback?id=*
 // @match        http://*.ex.ua/show/*/*/*.mp4
+// @match        http://videos.cdn.nudeflix.com/*/*.mp4
 // ==/UserScript==
 
 (function() {

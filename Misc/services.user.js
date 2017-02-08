@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.3
+// @version      1.1.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -47,6 +47,10 @@
 
 // @match        http://www.porn.com/videos/*
 // @exclude      http://www.porn.com/videos/embed/*
+
+// @match        http://hd.xtapes.to/*
+
+// @match        http://www.nudeflix.com/dvd/*/*
 // ==/UserScript==
 
 (function() {
@@ -73,7 +77,7 @@
   var setParentDocument, setAutoHD;
   setParentDocument = function(iframeSelector) {
     iframeElement = document.querySelector(iframeSelector);
-    parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : document;
+    parentDocument = iframeElement ? (iframeElement.contentDocument || iframeElement.contentWindow.document) : document.documentElement;
   };
   var initFunction = function(){mainFunction();};
   var delay = 1000,
@@ -132,6 +136,7 @@
       }
     }
   };
+  var videoSourceSelector = 'video > source[type="video/mp4"], video';
   // ====================================================================================================================
 
   if (
@@ -208,6 +213,12 @@
       addEmbedCodeFrame(mainFunction);
       addKeyComboCtrlC(true);
       mainFunctionTG = null;
+
+      var video = parentDocument.querySelector('video');
+      video.addEventListener( "loadedmetadata", function (e) {
+        var width = this.videoWidth, height = this.videoHeight;
+        console.log('video: '+video.src+' ['+width+'x'+height+']');
+      }, false );
     };
 
     if (
@@ -710,6 +721,33 @@
         addKeyComboCtrlC(true);
       };
       waitForElement('textarea[name="share"]', false, initFunction, delay, null, false);
+    }
+  }
+
+  else if (
+    pageURL.matchLink('http://hd.xtapes.to/*')
+  ) {
+    document.oncontextmenu=null;
+    document.ondragstart=null;
+    document.body.onselectstart=null;
+    document.body.onmousedown=null;
+  }
+
+  else if (
+    pageURL.matchLink('http://www.nudeflix.com/*')
+  ) {
+    if (
+      pageURL.matchLink('http://www.nudeflix.com/dvd/*/*') // http://www.nudeflix.com/dvd/big-tit-cream-pie-filling/christina-jolie-brunette-beauty-will-definitely-make-this-st
+    ) {
+      mainFunction = function() {
+        contentURL = document.querySelectorAttribute(videoSourceSelector, 'src');
+        posterURL = document.querySelector('.video-player-poster').style.backgroundImage.match(/"(.*?)"/i)[1];
+        appendToFrame = document.querySelector('#video-player-mount');
+        appendPosition = 'after';
+        addEmbedCodeFrame(mainFunction);
+        addKeyComboCtrlC(true);
+      };
+      waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
     }
   }
 })();
