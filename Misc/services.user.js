@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.6
+// @version      1.1.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -136,6 +136,27 @@
       }
     }
   };
+
+  var fixSearch = function(searchFields) {
+    // console.log('searchFields = '+searchFields);
+    var eventList = ['keydown', 'keyup', 'change'];
+    var inputList = searchFields; // [searchField];
+    inputList.forEach(function(input){
+      // console.log('input = '+input);
+      eventList.forEach(function(event){
+        input.addEventListener(event,function(e){
+          e = e || window.event;
+          if (e.type == 'change') {
+            var query = input.value;
+            query = query.replace(/[-_\.\+]+/g, ' ').replace(/^\s+|\s+$/g, '');
+            input.value = query.toTitleCase(true);
+            // console.log('input.value = '+input.value);
+          }
+        },false);
+      });
+    });
+  };
+
   var videoSourceSelector = 'video > source[type="video/mp4"], video';
   // ====================================================================================================================
 
@@ -229,6 +250,8 @@
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
       waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
     }
+    var searchFields = document.querySelectorAll('input.search-text');
+    fixSearch(searchFields);
   }
 
   else if (
