@@ -670,7 +670,7 @@
       mainFunction = function() {
         contentURL = document.querySelector('#embed_code').value.match(/.*src="(.*?)".*/i)[1];
         posterURL = document.querySelector('meta[property="og:image"]').content;
-        appendToFrame = document.querySelector('#like-up');
+        appendToFrame = document.querySelector('div.small_content');
         appendPosition = 'before';
         addEmbedCodeFrame(mainFunction);
         addKeyComboCtrlC(true);
