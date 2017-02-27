@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         videoControls
 // @icon         http://www.worldleathercongress2015.com/images/media_video.png
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -13,6 +13,8 @@
 // @match        http://*.ex.ua/show/*/*/*.mp4
 // @match        http://videos.cdn.nudeflix.com/*/*.mp4
 // @match        http://*.porndoe.com/movie/*/*/*/*.mp4
+// @match        https://www.bitporno.sx/embed/*
+// @match        https://www.bitporno.com/embed/*
 // ==/UserScript==
 
 (function() {

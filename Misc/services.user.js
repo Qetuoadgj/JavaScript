@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.1.7
+// @version      1.1.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -42,6 +42,7 @@
 /// @match        https://biqle.ru/*
 
 // @match        https://www.bitporno.sx/?v=*
+// @match        https://www.bitporno.com/?v=*
 
 // @match        https://vipergirls.to/threads/*/page*
 
@@ -659,10 +660,12 @@
   }
 
   else if (
-    pageURL.matchLink('https://www.bitporno.sx/*')
+    pageURL.matchLink('https://www.bitporno.sx/*') ||
+    pageURL.matchLink('https://www.bitporno.com/*')
   ) {
     if (
-      pageURL.matchLink('https://www.bitporno.sx/?*v=*')
+      pageURL.matchLink('https://www.bitporno.sx/?*v=*') ||
+      pageURL.matchLink('https://www.bitporno.com/?*v=*') // https://www.bitporno.com/?v=kI44xwQ9
     ) {
       mainFunction = function() {
         contentURL = document.querySelector('#embed_code').value.match(/.*src="(.*?)".*/i)[1];
