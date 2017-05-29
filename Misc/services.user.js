@@ -589,7 +589,7 @@
 	else if (
 		pageURL.matchLink('http://pron.tv/*')
 	) {
-		var links = document.querySelectorAll('.search-result-thumbnail, .imgshadow.lazy-load');
+		var links = document.querySelectorAll('.search-result-thumbnail, .lazy-load');
 		forEach(links, function(index, self) {
 			var link = self;
 			var image = self.src ? self : link.querySelector('img');
