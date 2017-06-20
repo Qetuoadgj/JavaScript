@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.Functions.Lib
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -261,7 +261,7 @@ function msgbox(title, message, time, width, height) {
   d.style.display = 'table';
   d.style.position = 'fixed';
   d.style.right = 10 + 'px';
-  d.style.bottom = 10 + 'px';
+  d.style.bottom = 22 + 'px';
   d.style.maxWidth = 90 + '%';
   d.style.maxHeight = 90 + '%';
   // d.style.padding = padding + 'px';
