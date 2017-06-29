@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.2.2
+// @version      1.2.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -58,6 +58,8 @@
 // @match        https://xhamster.com/*
 
 // @match        http://18onlygirls.ru/*
+
+// @match        http://yespornplease.com/*
 // ==/UserScript==
 
 (function() {
@@ -207,8 +209,8 @@
 	}
 
 	else if (
-		pageURL.matchLink('http://sexix.net/*') || pageURL.matchLink('http://i.sexix.net/*') ||
-		pageURL.matchLink('http://hdpoz.com/*') || pageURL.matchLink('http://i.hdpoz.com/*')
+		pageURL.matchLink('https?://sexix.net/*') || pageURL.matchLink('https?://i.sexix.net/*') ||
+		pageURL.matchLink('https?://hdpoz.com/*') || pageURL.matchLink('https?://i.hdpoz.com/*')
 	) {
 		addGlobalStyle('.clip > img {position: relative; width: 140px; z-index: 10000;}');
 
@@ -225,12 +227,14 @@
 			hdOptions = ['1080p', '720p'];
 			hdButtonData = getHDButton(menuElements, hdOptions);
 			hdButton = hdButtonData ? hdButtonData[0] : null;
-			checkPressed = function(){
-				var ok = hdButton.classList.contains('active');
-				if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
-				return ok;
-			};
-			pressHDButton(hdButton, checkPressed, 500, 30);
+			if (hdButton) {
+				checkPressed = function(){
+					var ok = hdButton.classList.contains('active');
+					if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+					return ok;
+				};
+				pressHDButton(hdButton, checkPressed, 500, 30);
+			}
 		};
 
 		mainFunctionTG = [];
@@ -248,6 +252,7 @@
 			video.addEventListener( "loadedmetadata", function (e) {
 				var width = this.videoWidth, height = this.videoHeight;
 				console.log('video: '+video.src+' ['+width+'x'+height+']');
+				msgbox('Video', 'Size: '+(width+' x '+height), 3000, 250, 120);
 			}, false );
 		};
 
@@ -256,8 +261,8 @@
 			pageURL.matchLink('hdpoz.com/HD')
 		) {
 			initFunction = function(){setParentDocument('.videoContainer > iframe'); setAutoHD(); mainFunction();};
-			waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, false, mainFunctionTG);
-			waitForElement('#player_controlbar_hd > .active', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
+			waitForElement('#player_controlbar_hd > .active, #player_controlbar_hd', false, initFunction, delay, tries, false, mainFunctionTG);
+			waitForElement('#player_controlbar_hd > .active, #player_controlbar_hd', false, initFunction, delay, tries, '.videoContainer > iframe', mainFunctionTG);
 		}
 		var searchFields = document.querySelectorAll('input.search-text');
 		fixSearch(searchFields);
@@ -618,15 +623,27 @@
 			});
 		}, delay, null, false);
 		var favoriteHoster = getCookie('favoriteHoster');
+		favoriteHoster = false;
 		if (!favoriteHoster || favoriteHoster === "") {
-			var favoriteHosterDefaults = '['+
-				'{"hosterel":"stardocs.google.com"}'+','+
-				'{"hosterel":"stardrive.google.com"}'+','+
-				'{"hosterel":"staropenload.co"},'+','+
-				'{"hosterel":"stareporner.com"},'+','+
-				'{"hosterel":"starsexix.net"},'+','+
-				'{"hosterel":"staropenload.io"}'+','+
-				']';
+			var favoriteHosters = [], favoriteHosterDefaults = '';
+			var prefix = '{"hosterel":"star', postfix = '"}', hosters = [
+				'drive.google.com',
+				'docs.google.com',
+				'openload.co',
+				'penload.io',
+				'bitporno.com',
+				'eporner.com',
+				'sexix.net',
+			];
+			forEach(hosters, function(index, self) {
+				favoriteHosters[index] = prefix+self+postfix;
+			});
+			forEach(favoriteHosters, function(index, self) {
+				favoriteHosterDefaults += self;
+			});
+			favoriteHosterDefaults = '['+favoriteHosterDefaults+']';
+			favoriteHosterDefaults = favoriteHosterDefaults.replace(/"}{"/g,'"},{"');
+			console.log(favoriteHosterDefaults);
 			setCookie('favoriteHoster', favoriteHosterDefaults, 1);
 		}
 		if (
@@ -636,6 +653,12 @@
 			mainFunction = function() {
 				contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
 				if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
+				else if (contentURL.matchLink('https?://yespornplease.com/view/*')) {
+					// http://yespornplease.com/view/741577353?utm=pron
+					// http://e.yespornplease.com/e/741577353/width-650/height-400/autoplay-1
+					contentURL = contentURL.replace(/.*\/view\/(.*?)[?].*/i, 'http://e.yespornplease.com/e/$1/width-650/height-400/autoplay-0');
+					contentURL = contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
+				}
 				posterURL = document.querySelector('.blockx img.imgshadow').src;
 				appendToFrame = document.querySelector('.blockx');
 				appendPosition = 'before';
@@ -851,5 +874,26 @@
 				// console.log(imageSrc);
 			}
 		});
+	}
+
+	else if (
+		pageURL.matchLink('http://yespornplease.com/*')
+	) {
+		if (
+			pageURL.matchLink('http://yespornplease.com/view/*') // http://yespornplease.com/view/741577353
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
+				contentURL = contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
+				posterURL = (document.querySelector('meta[name="thumbnail"]') ?
+							 document.querySelector('meta[name="thumbnail"]').content :
+							 document.querySelector('meta[property="og:image"]').content);
+				appendToFrame = document.querySelector('.video-tags');
+				appendPosition = 'before';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('#video_embed_code', false, initFunction, delay, null, false);
+		}
 	}
 })();
