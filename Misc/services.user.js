@@ -888,6 +888,9 @@
 				posterURL = (document.querySelector('meta[name="thumbnail"]') ?
 							 document.querySelector('meta[name="thumbnail"]').content :
 							 document.querySelector('meta[property="og:image"]').content);
+				contentTitle = (document.querySelector('meta[property="og:title"]') ?
+								document.querySelector('meta[property="og:title"]').content :
+								contentTitle.replace(' Watch Online For Free - YesPornPlease', ''));
 				appendToFrame = document.querySelector('.video-tags');
 				appendPosition = 'before';
 				addEmbedCodeFrame(mainFunction);
