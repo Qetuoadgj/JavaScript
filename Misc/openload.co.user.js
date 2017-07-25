@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.1.9
+// @version      1.2.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -148,6 +148,19 @@
 		return inIframe;
 	}
 
+	var CtrlC_FocusParent = function() {
+		var onKeyDown = function(e) {
+			e = e || window.event;
+			var cKey = 67;
+			var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+			// var targetType = e.target.tagName.toLowerCase();
+			if (ctrlDown && e.keyCode == cKey) {
+				parent.focus();
+			}
+		};
+		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+	};
+
 	var getCleanVideo = function(videoSrc, posterSrc) {
 		var video = document.createElement('video');
 		video.setAttribute('src', videoSrc);
@@ -173,11 +186,12 @@
 		video.addEventListener( "loadedmetadata", function (e) {
 			var width = this.videoWidth, height = this.videoHeight;
 			console.log('video: '+video.src+' ['+width+'x'+height+']');
-			var msg = msgbox('Video', 'Size: '+(width+' x '+height), 2000, 250, 120);
+			var msg = msgbox('Video', 'Size: '+(width+' x '+height)+'\n'+pageHost, 2000, 250, 120);
 			msg.style.right = 0 + 'px';
 			msg.style.bottom = 32 + 'px';
 		}, false );
 
+		CtrlC_FocusParent();
 		return video;
 	};
 
