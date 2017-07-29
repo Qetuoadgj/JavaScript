@@ -18,24 +18,20 @@
 	'use strict';
 
 	// Your code here...
-	function addGlobalStyle(css, cssClass) {
-		var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
-		var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
-		if (cssClass) style.setAttribute('class', cssClass);
-		head.appendChild(style);
-	}
+	var G_styleName = 'YouTube_Style';
 	var Fix_Guide_Style = function() {
-		var styleName = 'YouTube_Style';
-		var width = 300;
+		// .guide-channels-list a.guide-item {'width: 184px'};
+		// #guide-container > div {'width: 194px'};
+		// #appbar-guide-menu {'width: 194px'};
+		var width = 194+20;
 		addGlobalStyle(
-			'.guide-channels-list a.guide-item {width: '+(width-30)+'px;}'+
-			'#guide-container > div {width: '+(width-20)+'px;}'+
-			'#appbar-guide-menu {width: '+(width)+'px;}'+
-			'#guide {z-index: 2147483647 !important; position: absolute;}'+
-			'.guide-item .display-name {width:'+(width-100)+'px !important;}'+
-			'.guide-count-value {color: white;}',
-			styleName
+			'.guide-channels-list a.guide-item {width: '+(width-10)+'px;}'+     // 184
+			'#guide-container > div {width: '+(width)+'px;}'+                   // 194
+			'#appbar-guide-menu {width: '+(230+width-194)+'px;}'+               // 230
+			'#guide .display-name.no-count {width: '+(140+width-194-30)+'px;}', // 140 (-30)
+			G_styleName
 		);
+		addGlobalStyle('.guide-count-value {color: white;}', G_styleName);
 	}();
 	var Fix_ClipConverter_Style = function() {
 		var buttons = document.querySelectorAll('#clipconverter button');
@@ -49,4 +45,5 @@
 			button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
 		}
 	}();
+	var Fix_MagicOptions_Style = function() {addGlobalStyle('#watch7-content div {position: inherit;}',G_styleName);}();
 })();
