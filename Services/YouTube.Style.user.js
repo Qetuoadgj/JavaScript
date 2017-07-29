@@ -20,10 +20,7 @@
 	// Your code here...
 	var G_styleName = 'YouTube_Style';
 	var Fix_Guide_Style = function() {
-		// .guide-channels-list a.guide-item {'width: 184px'};
-		// #guide-container > div {'width: 194px'};
-		// #appbar-guide-menu {'width: 194px'};
-		var width = 194+20;
+		var width = 194 + 20;                                                   // 194
 		addGlobalStyle(
 			'.guide-channels-list a.guide-item {width: '+(width-10)+'px;}'+     // 184
 			'#guide-container > div {width: '+(width)+'px;}'+                   // 194
