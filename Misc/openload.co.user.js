@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.2.0
+// @version      1.2.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -42,6 +42,11 @@
 
 // @match        http://e.yespornplease.com/e/*
 // @match        http://vshare.io/v/*
+
+// @match        http://www.miscopy.com/?*video_embed*
+// @match        https://vidoza.net/embed-*
+
+// @match        http://www.txxx.com/embed/*
 // ==/UserScript==
 
 (function() {
@@ -365,6 +370,30 @@
 		mainFunction = function() {
 			videoSource = flashvars.video_url;
 			videoPoster = flashvars.preview_url;
+		};
+		initFunction();
+	}
+
+	else if (pageURL.matchLink('https?://www.txxx.com/embed/*')) { // http://www.txxx.com/embed/4042421?promo=13876
+		mainFunction = function() {
+			var scriptsArray = document.scripts;
+			for (var i = 0; i < document.scripts.length; ++i) {
+				var script = document.scripts[i];
+				var text = script.text;
+				if (text.match('var video_url="(.*)"')) {
+					var video_url = text.match(/var video_url="(.*)"/i),
+						video_alt_url = text.match(/var video_alt_url="(.*)"/i),
+						m3u8_url =  text.match(/var m3u8_url="(.*)"/i);
+					videoSource = (
+						video_url ? video_url[1] :
+						video_alt_url ? video_alt_url[1] :
+						m3u8_url ? m3u8_url[1] : null );
+					console.log('videoSource: '+videoSource);
+					break;
+				}
+			}
+			videoSource = Dpww3Dw64(videoSource);
+			videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
 		};
 		initFunction();
 	}

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.2.4
+// @version      1.2.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -12,6 +12,7 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/services.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        http://porndoe.com/video/*
+// @match        https://porndoe.com/video/*
 // @exclude      http://porndoe.com/video/embed/*
 // @match        http://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
@@ -60,6 +61,11 @@
 // @match        http://18onlygirls.ru/*
 
 // @match        http://yespornplease.com/*
+
+// @match        http://xxvideoss.org/*
+// @match        http://porntube4k.net/*
+
+// @match        http://www.gameofporn.net/video/*
 // ==/UserScript==
 
 (function() {
@@ -171,21 +177,53 @@
 	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 	// ====================================================================================================================
 
+	// if (
+	// 	pageURL.matchLink('https?://porndoe.com/video/*')
+	// ) {
+	// 	mainFunction = function() {
+	// 		contentURL = document.querySelector('link[itemprop="embedURL"]').href.replace(/(.*?)\?.*/,'$1');
+	// 		contentURL = document.querySelector('video.jw-video').src.replace(/(.*?)\?.*/,'$1');
+	// 		posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('content'); //document.querySelector('meta[property="og:image"]').content;
+	// 		appendToFrame = document.querySelector('div.video');
+	// 		appendPosition = 'after';
+	// 		qualityButtons = [document.querySelector('.jw-icon-hd')];
+	// 		addEmbedCodeFrame(mainFunction);
+	// 		addKeyComboCtrlC(true);
+	// 	};
+	// 	waitForElement('video.jw-video', 'src', initFunction, delay, tries, false);
+	// 	// waitForElement('link[itemprop="thumbnailUrl"]', 'content', initFunction, delay, tries, false);
+	// }
+
 	if (
-		pageURL.matchLink('http://porndoe.com/video/*')
+		pageURL.matchLink('https?://porndoe.com/*')
 	) {
-		mainFunction = function() {
-			contentURL = document.querySelector('link[itemprop="embedURL"]').href.replace(/(.*?)\?.*/,'$1');
-			contentURL = document.querySelector('video.jw-video').src.replace(/(.*?)\?.*/,'$1');
-			posterURL = document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('content'); //document.querySelector('meta[property="og:image"]').content;
-			appendToFrame = document.querySelector('div.video');
-			appendPosition = 'after';
-			qualityButtons = [document.querySelector('.jw-icon-hd')];
-			addEmbedCodeFrame(mainFunction);
-			addKeyComboCtrlC(true);
-		};
-		waitForElement('video.jw-video', 'src', initFunction, delay, tries, false);
-		// waitForElement('link[itemprop="thumbnailUrl"]', 'content', initFunction, delay, tries, false);
+		if (
+			pageURL.matchLink('https?://porndoe.com/video/*')
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('#ink').value.trim(); //.match(/.*src="(.*?)".*/i)[1];
+				// contentURL = document.querySelector('video').src; //.match(/.*src="(.*?)".*/i)[1];
+				posterURL = (
+					document.querySelector('a[href="'+pageURL+'"] > img') ?
+					document.querySelector('a[href="'+pageURL+'"] > img').src :
+
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+
+					document.querySelector('meta[property="og:image"]') ?
+					document.querySelector('meta[property="og:image"]').content :
+
+					document.querySelector('meta[name="og:image"]').content ?
+					document.querySelector('meta[name="og:image"]').content :
+					null
+				);
+				appendToFrame = document.querySelector('.videoplayer-section');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('video', 'src', initFunction, delay, null, false);
+		}
 	}
 
 	else if (
@@ -230,7 +268,7 @@
 			if (hdButton) {
 				checkPressed = function(){
 					var ok = hdButton.classList.contains('active');
-					if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+					if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML+'\n'+pageHost, 3000, 250, 120);}
 					return ok;
 				};
 				pressHDButton(hdButton, checkPressed, 500, 30);
@@ -252,7 +290,7 @@
 			video.addEventListener( "loadedmetadata", function (e) {
 				var width = this.videoWidth, height = this.videoHeight;
 				console.log('video: '+video.src+' ['+width+'x'+height+']');
-				msgbox('Video', 'Size: '+(width+' x '+height), 3000, 250, 120);
+				msgbox('Video', 'Size: '+(width+' x '+height)+'\n'+pageHost, 3000, 250, 120);
 			}, false );
 		};
 
@@ -352,7 +390,7 @@
 			// checkPressed = function(){return hdButton.parentNode.classList.contains('active');};
 			checkPressed = function(){
 				var ok = hdButton.parentNode.classList.contains('parameterelmt_forced');
-				if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML, 3000, 250, 120);}
+				if (ok) {msgbox('Auto HD', 'HD option: '+hdButton.innerHTML+'\n'+pageHost, 3000, 250, 120);}
 				return ok;
 			};
 			pressHDButton(hdButton, checkPressed, 500, 30);
@@ -383,6 +421,8 @@
 		if (pageURL.matchLink('http[s]?://www.pornhub.com/view_video.php[?]viewkey=*')) {
 			mainFunction = function() {
 				contentURL = document.querySelector('meta[name="twitter:player"]').content;
+				var link = document.querySelector('link[rel="canonical"]');
+				pageURL = link ? link.href : pageURL;
 				// if (typeof player_quality_1080p !== 'undefined') contentURL += '/HD_1080p';
 				// else if (typeof player_quality_720p !== 'undefined') contentURL += '/HD_720p';
 				posterURL = document.querySelector('meta[name="twitter:image"]').content;
@@ -630,10 +670,12 @@
 				'drive.google.com',
 				'docs.google.com',
 				'openload.co',
-				'penload.io',
+				'openload.io',
 				'bitporno.com',
 				'eporner.com',
-				'sexix.net',
+				// 'sexix.net',
+				'vidoza.net',
+				'txxx.com',
 			];
 			forEach(hosters, function(index, self) {
 				favoriteHosters[index] = prefix+self+postfix;
@@ -689,6 +731,10 @@
 	) {
 		addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
 		addOpenInNewTabProperty('article > a');
+		forEach(document.querySelectorAll('a.search-tag'), function(index, self) {
+			var href = self.href + '+limit%3A50&';
+			self.href = href;
+		});
 		if (pageURL.matchLink('https://danbooru.donmai.us/posts/*')) {
 			mainFunction = function() {
 				contentURL = document.querySelector('#image-container').getAttribute('data-large-file-url');
@@ -885,9 +931,11 @@
 			mainFunction = function() {
 				contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
 				contentURL = contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
-				posterURL = (document.querySelector('meta[name="thumbnail"]') ?
-							 document.querySelector('meta[name="thumbnail"]').content :
-							 document.querySelector('meta[property="og:image"]').content);
+				posterURL = (
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+					document.querySelector('meta[property="og:image"]').content
+				);
 				/* contentTitle = (document.querySelector('.pull-left > h4') ?
 								document.querySelector('.pull-left > h4').innerText.trim() :
 								contentTitle.replace(' Watch Online For Free - YesPornPlease', ''));
@@ -900,4 +948,86 @@
 			waitForElement('#video_embed_code', false, initFunction, delay, null, false);
 		}
 	}
+
+	else if (
+		pageURL.matchLink('http://xxvideoss.org/*')
+	) {
+		if (
+			pageURL.matchLink('http://xxvideoss.org/*/') // http://xxvideoss.org/sambuca-masturbating-beauty/
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('iframe').src;
+				posterURL = (
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+					document.querySelector('meta[property="og:image"]').content
+				);
+				appendToFrame = document.querySelector('ul.tab-content');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('http://porntube4k.net/*')
+	) {
+		if (
+			pageURL.matchLink('http://porntube4k.net/*/*/')
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('iframe').src;
+				posterURL = (
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+
+					document.querySelector('meta[property="og:image"]') ?
+					document.querySelector('meta[property="og:image"]').content :
+
+					document.querySelector('meta[name="og:image"]').content ?
+					document.querySelector('meta[name="og:image"]').content :
+					null
+				);
+				appendToFrame = document.querySelector('div.video_player');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.gameofporn.net/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.gameofporn.net/video/*')
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('iframe').src;
+				posterURL = (
+					document.querySelector('a[href="'+pageURL+'"] > img') ?
+					document.querySelector('a[href="'+pageURL+'"] > img').src :
+
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+
+					document.querySelector('meta[property="og:image"]') ?
+					document.querySelector('meta[property="og:image"]').content :
+
+					document.querySelector('meta[name="og:image"]').content ?
+					document.querySelector('meta[name="og:image"]').content :
+					null
+				);
+				appendToFrame = document.querySelector('#playbox');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
 })();
