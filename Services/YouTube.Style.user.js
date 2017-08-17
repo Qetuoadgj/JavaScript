@@ -42,5 +42,8 @@
 			button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
 		}
 	}();
-	var Fix_MagicOptions_Style = function() {addGlobalStyle('#watch7-content div {position: inherit;}',G_styleName);}();
+	var Fix_MagicOptions_Style = function() {
+		addGlobalStyle('#watch7-content div {position: inherit;}',G_styleName); // Bottom Bar
+		addGlobalStyle('div#ma-cin-panel:hover {opacity: 1;} div#ma-cin-panel {opacity: 0.1;}',G_styleName); // Magic Options Screen Button
+	}();
 })();
