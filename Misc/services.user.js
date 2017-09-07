@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.2.6
+// @version      1.3.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -66,6 +66,14 @@
 // @match        http://porntube4k.net/*
 
 // @match        http://www.gameofporn.net/video/*
+// @match        https://www.playvids.com/v/*
+
+// @match        http://streamxxx.tv/*
+// @match        http://www.schoolgirlfuck.net/*
+
+// @match        https://yourporn.sexy/post/*
+
+// @match        https://allerotika.net/clip/*
 // ==/UserScript==
 
 (function() {
@@ -173,8 +181,11 @@
 	};
 
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
+	var MONTH = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
+
+	var getAbsoluteUrl = (function(){var a; return function(url){if(!a) a = document.createElement('a'); a.href = url; return a.href; };})();
 	// ====================================================================================================================
 
 	// if (
@@ -443,6 +454,14 @@
 			pageURL.matchLink('http[s]?://www.eporner.com/hd-porn/*/*/')
 		) {
 			mainFunction = function() {
+				var val = 0;
+				document.querySelectorAll('.vjs-menu-item-text').forEach(function(e) {
+					var size = e.innerText.match(/(\d+)p/);
+					if (size) val = Math.max(val, size[1]);
+				});
+				contentTitle = document.title;
+				var titleShort = document.querySelector('meta[property="og:title"]').content;
+				if (val !== 0) contentTitle = contentTitle.replace(titleShort, titleShort + ' [' + val + 'p]');
 				contentURL = document.querySelector('#EPvideo_html5_api').src;
 				contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
 				posterURL = document.querySelector('meta[property="og:image"]').content;
@@ -702,7 +721,7 @@
 					contentURL = contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
 				}
 				posterURL = document.querySelector('.blockx img.imgshadow').src;
-				appendToFrame = document.querySelector('.blockx');
+				appendToFrame = document.querySelector('#linkdetails-similars');
 				appendPosition = 'before';
 				addEmbedCodeFrame(mainFunction);
 				addKeyComboCtrlC(true);
@@ -968,6 +987,25 @@
 				addKeyComboCtrlC(true);
 			};
 			waitForElement('iframe', 'src', initFunction, delay, null, false);
+			if (typeof jQuery == 'undefined') {
+				var styleFix = (
+					'<script src="http://xxvideoss.org/wp-includes/js/wp-emoji-release.min.js?ver=4.8" type="text/javascript" defer=""></script>'+
+					'<link rel="stylesheet" id="bootstrap_tab-css" href="http://xxvideoss.org/wp-content/plugins/easy-responsive-tabs/assets/css/bootstrap_tab.min.css?ver=4.8" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="bootstrap_dropdown-css" href="http://xxvideoss.org/wp-content/plugins/easy-responsive-tabs/assets/css/bootstrap_dropdown.min.css?ver=4.8" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="ert_tab_icon_css-css" href="http://xxvideoss.org/wp-content/plugins/easy-responsive-tabs/assets/css/res_tab_icon.css?ver=4.8" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="wp-pagenavi-css" href="http://xxvideoss.org/wp-content/plugins/wp-pagenavi/pagenavi-css.css?ver=2.70" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="dp-fonts-css" href="http://fonts.googleapis.com/css?family=Arimo%3A400%2C700%7CDroid+Serif%3A400%2C700%7COpen+Sans%3A600%2C700&amp;ver=4.8" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="dp-style-css" href="http://xxvideoss.org/wp-content/themes/detube/style.css?ver=1.4.3" type="text/css" media="all">'+
+					'<link rel="stylesheet" id="dp-responsive-css" href="http://xxvideoss.org/wp-content/themes/detube/responsive.css?ver=1.4.3" type="text/css" media="all">'+
+					'<script type="text/javascript" src="http://xxvideoss.org/wp-includes/js/jquery/jquery.js?ver=1.12.4"></script>'+
+					'<script type="text/javascript" src="http://xxvideoss.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1"></script>'+
+					'<script type="text/javascript" src="http://xxvideoss.org/wp-content/themes/detube/js/modernizr.min.js?ver=2.6.2"></script>'+
+					'<script type="text/javascript" src="http://xxvideoss.org/wp-content/themes/detube/js/jquery.plugins.min.js?ver=1.4.6"></script>'+
+					'<link rel="https://api.w.org/" href="http://xxvideoss.org/wp-json/">'
+				);
+				document.head.innerHTML = document.head.innerHTML + styleFix;
+				console.log('styleFix applied for: ' + pageURL);
+			}
 		}
 	}
 
@@ -1027,6 +1065,134 @@
 				addKeyComboCtrlC(true);
 			};
 			waitForElement('iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.playvids.com/')
+	) {
+		if (
+			pageURL.matchLink('https?://www.playvids.com/v/*')
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('div[itemprop="video"] > link[itemprop="embedURL"]').getAttribute('content');
+				var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-index="1"]');
+				if (maxQualityButton) {
+					contentURL = contentURL + '?quality=' + maxQualityButton.dataset.quality;
+					maxQualityButton.click();
+				}
+				posterURL = document.querySelector('div[itemprop="video"] > link[itemprop="thumbnailUrl"]').getAttribute('content');
+				pageURL = document.querySelector('div[itemprop="video"] > link[itemprop="url"]').getAttribute('href');
+				appendToFrame = document.querySelector('div[itemprop="video"]');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('#mediaPlayerQualityList > .item[data-index="1"]', null, initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://streamxxx.tv/*')
+	) {
+		if (
+			pageURL.matchLink('https?://streamxxx.tv/*') // http://streamxxx.tv/porn-fidelity-katrina-jade-animal-instincts-2017hd/
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector('.webwarez .responsive-tabs__panel--active > iframe').getAttribute('src');
+				posterURL = document.querySelector('div.novideo > p:nth-child(1) > strong > a > img').getAttribute('src');
+				pageURL = document.querySelector('link[rel="canonical"]').getAttribute('href');
+				appendToFrame = document.querySelector('div.webwarezvideo > div > div');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+				qualityButtons = document.querySelector('.webwarez .responsive-tabs__list__item[id^=tablist1-]');
+			};
+			waitForElement('.webwarez .responsive-tabs__panel--active > iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.schoolgirlfuck.net/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.schoolgirlfuck.net/*/') // http://www.schoolgirlfuck.net/fakeagent-e575-lovita-fate/
+		) {
+			mainFunction = function() {
+				// var dateString = document.querySelector('div.single-views span').innerText; // "September 4, 2017"
+				// var dateArray = dateString.match(/(\w+?) (\d+), (\d+)/);
+				// var dateYear = dateArray[3], dateMonth = dateArray[1], dateDay = dateArray[2];
+				// var MONTH = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+				// var monthNum;
+				// forEach(MONTH, function(index, name) {
+				// 	if (dateMonth.toLowerCase() == name.toLowerCase()) {
+				// 		monthNum = index+1 < 10 ? '0'+(index+1) : index+1;
+				// 		return;
+				// 	}
+				// });
+				// var title = document.querySelector('.singletitle').innerText.trim().replace(/\s+/g, '-');
+				//
+				var xmlFile = document.querySelector('link[rel="alternate"]').href; //'http://www.schoolgirlfuck.net/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.schoolgirlfuck.net%2Fpassion-hd-ava-taylor-upskirt-opportunity%2F&format=xml';
+				var links = document.querySelectorAll('link[rel="alternate"]');
+				forEach(links, function(index, link) {
+					if (link.href.match('format=xml')) {
+						xmlFile = link.href;
+						console.log('xmlFile: '+xmlFile);
+						return;
+					}
+				});
+				var request = new XMLHttpRequest(); request.open("GET", xmlFile, false); request.send(); var xml = request.responseXML;
+				var thumbnail_url = xml.querySelector("thumbnail_url").innerHTML;
+				//
+				contentURL = document.querySelector('iframe').getAttribute('src');
+				posterURL = thumbnail_url; // 'http://www.schoolgirlfuck.net/wp-content/uploads/'+dateYear+'/'+monthNum+'/'+title+'-210x147.jpg';
+				// http://www.schoolgirlfuck.net/wp-content/uploads/2017/9/FakeAgent-E575-Lovita-Fate-210x147.jpg
+				// http://www.schoolgirlfuck.net/wp-content/uploads/2017/09/FakeAgent-E575-Lovita-Fate-210x147.jpg
+				pageURL = document.querySelector('link[rel="canonical"]').getAttribute('href');
+				appendToFrame = document.querySelector('div.VideoInformation');
+				appendPosition = 'before';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('iframe', 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://yourporn.sexy/*')
+	) {
+		if (
+			pageURL.matchLink('https://yourporn.sexy/post/*.html') // https://yourporn.sexy/post/59ad08cc83ab7.html
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+				pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
+				appendToFrame = document.querySelector('div.comments_area');
+				appendPosition = 'before';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://allerotika.net/*')
+	) {
+		if (
+			pageURL.matchLink('https?://allerotika.net/clip/*') // https://allerotika.net/clip/2010912.html
+		) {
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				posterURL = getAbsoluteUrl(document.querySelector(videoSourceSelector).poster);
+				// pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
+				appendToFrame = document.querySelector('div.published');
+				appendPosition = 'before';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
 		}
 	}
 

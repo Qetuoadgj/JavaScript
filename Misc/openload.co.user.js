@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.2.1
+// @version      1.2.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -11,6 +11,9 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        https://openload.co/embed/*
 // @match        https://openload.co/f/*
+// @match        https://oload.tv/f/*
+// @match        https://oload.tv/f/*
+// @match        https://oload.tv/embed/*
 // @match        https://www.pornhub.com/embed/*
 // @match        http://porndoe.com/video/embed/*
 // @match        http://www.eporner.com/embed/*
@@ -47,6 +50,13 @@
 // @match        https://vidoza.net/embed-*
 
 // @match        http://www.txxx.com/embed/*
+
+// @match        https://www.playvids.com/embed/*
+
+// @match       https://drive.google.com/file/d/*/preview?*
+
+// @match       https://*.trafficdeposit.com/bvideo/*/*/*/*.mp4
+// @match       https://*.atlas.cdnity.net/-*_*/
 // ==/UserScript==
 
 (function() {
@@ -58,6 +68,20 @@
 	var videoElement, videoSource, videoPoster, videoCleaned;
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
 	var waitGroup = []; // waitForElement() timers group.
+
+	function getDomain(url, subdomain) {
+		subdomain = subdomain || false;
+		url = url.replace(/(https?:\/\/)?(www.)?/i, '');
+		url = url.replace(/(.*?)\/.*/i, '$1');
+		if (!subdomain) {
+			url = url.split('.');
+			url = url.slice(url.length - 2).join('.');
+		}
+		if (url.indexOf('/') !== -1) {
+			return url.split('/')[0];
+		}
+		return url;
+	}
 
 	function msgbox(title, message, time, width, height) {
 		width = width || 250;
@@ -166,6 +190,52 @@
 		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 	};
 
+	function showMsgBox(video) {
+		var width = video.videoWidth, height = video.videoHeight;
+		console.log('video: '+video.src+' ['+width+'x'+height+']');
+		var msg = msgbox('Video', 'Size: '+(width+' x '+height)+'\n'+getDomain(pageURL), 2000, 250, 120);
+		msg.style.right = 0 + 'px';
+		msg.style.bottom = 32 + 'px';
+	}
+
+	var X_Key_ShowMsgBox = function(video) {
+		var onKeyDown = function(e) {
+			e = e || window.event;
+			var xKey = 88;
+			var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+			// var targetType = e.target.tagName.toLowerCase();
+			if (e.keyCode == xKey) {
+				video.focus();
+				showMsgBox(video);
+			}
+		};
+		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+	};
+
+	var addVideoControlShortcuts = function(video) {
+		var onKeyDown = function(e) {
+			e = e || window.event;
+			var lArrow = 37, rArrow = 39, kSpace = 32;
+			var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+			// var targetType = e.target.tagName.toLowerCase();
+			if (e.keyCode == lArrow) {
+				video.focus();
+				video.currentTime = video.currentTime - 5;
+			}
+			if (e.keyCode == rArrow) {
+				video.focus();
+				video.currentTime = video.currentTime + 5;
+			}
+			if (e.keyCode == kSpace) {
+				video.focus();
+				video.currentTime = video.pause();
+			}
+		};
+		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
+	};
+
+
+
 	var getCleanVideo = function(videoSrc, posterSrc) {
 		var video = document.createElement('video');
 		video.setAttribute('src', videoSrc);
@@ -188,15 +258,11 @@
 		// addGlobalStyle('video {transform: translate(-50%, -50%); top: 50%; left: 50%;}');
 		addGlobalStyle('body {margin: 0; background: black;}');
 
-		video.addEventListener( "loadedmetadata", function (e) {
-			var width = this.videoWidth, height = this.videoHeight;
-			console.log('video: '+video.src+' ['+width+'x'+height+']');
-			var msg = msgbox('Video', 'Size: '+(width+' x '+height)+'\n'+pageHost, 2000, 250, 120);
-			msg.style.right = 0 + 'px';
-			msg.style.bottom = 32 + 'px';
-		}, false );
+		video.addEventListener("loadedmetadata",function(e){showMsgBox(video);},false);
+		X_Key_ShowMsgBox(video);
 
 		CtrlC_FocusParent();
+		addVideoControlShortcuts(video);
 		return video;
 	};
 
@@ -220,7 +286,8 @@
 		videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
 		// videoPoster = null; //video.poster
 		videoCleaned = getCleanVideo(videoSource, videoPoster);
-		videoCleaned.play();
+		// videoCleaned.play();
+		videoCleaned.autoplay = false; // videoCleaned.preload = "none";
 		videoCleaned.volume = 0.5;
 		addMouseWheelAudioControl(videoCleaned, 5);
 		useVolumeCookie('body > video', null);
@@ -232,7 +299,7 @@
 	var clickPlay = function(){var p = document.querySelector(playButtonSelector); p.click(); waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);};
 	// ====================================================================================================================
 
-	if (pageURL.matchLink('https://openload.co/*')) { // https://openload.co/embed/pM1MQGKY7z4/
+	if (pageURL.matchLink('https://openload.co/*') || pageURL.matchLink('https://oload.tv/*')) { // https://openload.co/embed/pM1MQGKY7z4/
 		mainFunction = function() {
 			videoSource = '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
 			videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
@@ -396,6 +463,47 @@
 			videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
 		};
 		initFunction();
+	}
+
+	else if (pageURL.matchLink('https?://vidoza.net/embed-*')) { // https://vidoza.net/embed-hjpqtb45ooie.html
+		mainFunction = function() {
+			var scriptsArray = document.scripts;
+			for (var i = 0; i < document.scripts.length; ++i) {
+				var script = document.scripts[i];
+				var text = script.text;
+				if (text.match(/{file:.*"(.*.mp4)",label:"\d+p"}/i)) {
+					var video_url = text.match(/{file:.*"(.*.mp4)",label:"\d+p"}/i);
+					videoSource = video_url ? video_url[1] : null;
+					console.log('videoSource: '+videoSource);
+					break;
+				}
+			}
+			videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
+		};
+		initFunction();
+	}
+
+	else if (pageURL.matchLink('https://www.playvids.com/embed/*')) { // https://www.playvids.com/embed/AHfgODSuCP7?quality=720
+		mainFunction = function() {
+			var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-quality]');
+			document.querySelectorAll('#mediaPlayerQualityList > .item[data-quality]').forEach(function(e) {
+				var quality = e.dataset.quality;
+				if (quality > maxQualityButton.dataset.quality) maxQualityButton = e;
+			});
+			if (maxQualityButton) maxQualityButton.click();
+			// videoSource = document.querySelector(videoSourceSelector).getAttribute('src');
+			// videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
+		};
+		// initFunction();
+		waitForElement('#mediaPlayerQualityList > .item[data-index="1"]', null, mainFunction, delay, tries, false, waitGroup);
+	}
+
+	else if (pageURL.matchLink('https://drive.google.com/file/d/*/preview[?]*(start=1|autoplay=1)')) { // https://drive.google.com/file/d/0B8vZ-fFzt8h8Y2VWbVdGQ2dFdzA/preview?start=1&autoplay=1
+		mainFunction = function() {
+			var playButton = document.querySelector('div.drive-viewer-video-preview > img');
+			if (playButton) playButton.click();
+		};
+		waitForElement('.drive-viewer-video-preview-img', 'src', mainFunction, delay, tries, false, waitGroup);
 	}
 
 	else {
