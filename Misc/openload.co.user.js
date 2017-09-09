@@ -57,6 +57,8 @@
 
 // @match       https://*.trafficdeposit.com/bvideo/*/*/*/*.mp4
 // @match       https://*.atlas.cdnity.net/-*_*/
+
+// @match       https://yourporn.sexy/post/*.html
 // ==/UserScript==
 
 (function() {
@@ -68,6 +70,12 @@
 	var videoElement, videoSource, videoPoster, videoCleaned;
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
 	var waitGroup = []; // waitForElement() timers group.
+
+	function clearEvents(old_element) {
+		var new_element = old_element.cloneNode(true);
+		old_element.parentNode.replaceChild(new_element, old_element);
+		return;
+	}
 
 	function getDomain(url, subdomain) {
 		subdomain = subdomain || false;
@@ -277,6 +285,7 @@
 		document.documentElement.innerHTML = '';
 		// document.removeChild(document.documentElement); // clear document
 		document.body.appendChild( media);
+		clearEvents(document.body);
 		var mediaStyle = 'position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;';
 		media.setAttribute('style', mediaStyle);
 		return  media;
@@ -504,6 +513,12 @@
 			if (playButton) playButton.click();
 		};
 		waitForElement('.drive-viewer-video-preview-img', 'src', mainFunction, delay, tries, false, waitGroup);
+	}
+
+	else if (pageURL.matchLink('https://yourporn.sexy/*')) {
+		if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
+			waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
+		}
 	}
 
 	else {

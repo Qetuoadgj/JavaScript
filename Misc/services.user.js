@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.3.1
+// @version      1.3.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -1164,16 +1164,18 @@
 		if (
 			pageURL.matchLink('https://yourporn.sexy/post/*.html') // https://yourporn.sexy/post/59ad08cc83ab7.html
 		) {
-			mainFunction = function() {
-				contentURL = document.querySelector(videoSourceSelector).src;
-				posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
-				pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
-				appendToFrame = document.querySelector('div.comments_area');
-				appendPosition = 'before';
-				addEmbedCodeFrame(mainFunction);
-				addKeyComboCtrlC(true);
-			};
-			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+			if (!pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
+				mainFunction = function() {
+					posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+					pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
+					contentURL = pageURL+'#onlyVideo'; // document.querySelector(videoSourceSelector).src;
+					appendToFrame = document.querySelector('div.comments_area');
+					appendPosition = 'before';
+					addEmbedCodeFrame(mainFunction);
+					addKeyComboCtrlC(true);
+				};
+				waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+			}
 		}
 	}
 
