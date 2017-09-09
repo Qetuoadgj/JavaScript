@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JS.AddEmbedCodeFrame.Lib
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @match        http://tampermonkey.net/*
@@ -14,6 +14,7 @@
 // DEFAULT GLOBAL VARIABLES
 // ====================================================================================================================
 var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
+var shortURL = location.protocol + '//' + location.host + location.pathname;
 var createLink = true, createPoster = true, contentURL, posterURL, appendToFrame, appendPosition;
 var embedCodeFrame_Margin, embedCodeLink_Margin, embedCodeFrame_BackgroundColor;
 var contentTitle;
