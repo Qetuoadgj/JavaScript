@@ -67,6 +67,7 @@
 	// THIS FILE GLOBAL VARIABLES
 	// ====================================================================================================================
 	var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
+	var shortURL = location.protocol + '//' + location.host + location.pathname;
 	var videoElement, videoSource, videoPoster, videoCleaned;
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
 	var waitGroup = []; // waitForElement() timers group.
