@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.3.3
+// @version      1.3.6
 // @description  Pure JavaScript version.
 // @author       Ægir
+// @namespace    Misc_Scripts
 // @grant        none
 // @run-at       document-end
 // @noframes
@@ -14,7 +15,7 @@
 // @match        http://porndoe.com/video/*
 // @match        https://porndoe.com/video/*
 // @exclude      http://porndoe.com/video/embed/*
-// @match        http://www.porntrex.com/video/*/*
+// @match        https://www.porntrex.com/video/*/*
 // @match        http://sexix.net/video*
 // @match        http://i.sexix.net/video*
 // @match        http://sexix.net/*
@@ -239,23 +240,25 @@
 	}
 
 	else if (
-		pageURL.matchLink('http://www.porntrex.com/video/*/*')
+		pageURL.matchLink('https?://www.porntrex.com/*')
 	) {
-		mainFunction = function() {
-			contentURL = pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/mobile_hd_src.php?id=$1');
-			posters = [
-				document.querySelector('meta[property="og:image"]').content,
-				pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb/$1/1.jpg'),
-				pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb1/$1/1.jpg'),
-				pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb/$1/thumb.jpg'),
-				pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'http://www.porntrex.com/media/videos/tmb1/$1/thumb.jpg'),
-			];
-			appendToFrame = document.querySelector('.video-container');
-			appendPosition = 'after';
-			addEmbedCodeFrame(mainFunction);
-			addKeyComboCtrlC(true);
-		};
-		waitForElement('meta[property="og:image"]', 'content', initFunction, delay, tries, false);
+		if (
+			pageURL.matchLink('https?://www.porntrex.com/video/*/*') // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince
+		) {
+			if (!pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+				mainFunction = function() {
+					posterURL = document.querySelector('meta[property="og:image"]').content;
+					// pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
+					// contentURL = pageURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
+					contentURL = shortURL+'#onlyVideo'; // document.querySelector(videoSourceSelector).src;
+					appendToFrame = document.querySelector('.info-holder');
+					appendPosition = 'before';
+					addEmbedCodeFrame(mainFunction);
+					addKeyComboCtrlC(true);
+				};
+				waitForElement('meta[property="og:image"]', 'content', initFunction, delay, null, false);
+			}
+		}
 	}
 
 	else if (
@@ -714,15 +717,35 @@
 			addGlobalStyle('#player-and-details {height: 480px;}');
 			mainFunction = function() {
 				contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
-				if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) contentURL = contentURL + '&hd=1';
+				if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) {
+					contentURL = contentURL + '&hd=1';
+				}
 				else if (contentURL.matchLink('https?://yespornplease.com/view/*')) {
 					// http://yespornplease.com/view/741577353?utm=pron
 					// http://e.yespornplease.com/e/741577353/width-650/height-400/autoplay-1
 					contentURL = contentURL.replace(/.*\/view\/(.*?)[?].*/i, 'http://e.yespornplease.com/e/$1/width-650/height-400/autoplay-0');
 					contentURL = contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
 				}
+				else if (contentURL.matchLink('https?://www.porntrex.com/video/*')) {
+					contentURL = contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
+				}
+
 				posterURL = document.querySelector('.blockx img.imgshadow').src;
 				appendToFrame = document.querySelector('#linkdetails-similars');
+
+				for (const a of document.querySelectorAll("span > b")) {
+					if (a.textContent.includes("Source-Title")) {
+						contentTitle = a.parentNode.nextElementSibling.textContent.replace(/\n/g,'').toTitleCase();
+					}
+				}
+				// var GM_LocalStorage = localStorage.getItem('GM_LocalStorage');
+				// console.log('GM_LocalStorage: ' + GM_LocalStorage);
+				// if (GM_LocalStorage) {
+				// 	contentTitle = contentTitle + ' ['GM_LocalStorage']';
+				// 	alert(contentTitle);
+				// 	// localStorage.removeItem('GM_LocalStorage');
+				// }
+
 				appendPosition = 'before';
 				addEmbedCodeFrame(mainFunction);
 				addKeyComboCtrlC(true);

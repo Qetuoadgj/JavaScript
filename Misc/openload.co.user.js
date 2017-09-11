@@ -59,6 +59,9 @@
 // @match       https://*.atlas.cdnity.net/-*_*/
 
 // @match       https://yourporn.sexy/post/*.html
+
+// @match       https://www.porntrex.com/embed/*
+// @match       https://www.porntrex.com/video/*/*
 // ==/UserScript==
 
 (function() {
@@ -205,6 +208,13 @@
 		var msg = msgbox('Video', 'Size: '+(width+' x '+height)+'\n'+getDomain(pageURL), 2000, 250, 120);
 		msg.style.right = 0 + 'px';
 		msg.style.bottom = 32 + 'px';
+		// var params = {
+		// 	width: width,
+		// 	height: height
+		// };
+		// localStorage.setItem('GM_LocalStorage', width+'x'+height);
+		// var GM_LocalStorage = localStorage.getItem('GM_LocalStorage');
+		// console.log('GM_LocalStorage: '+GM_LocalStorage);
 	}
 
 	var X_Key_ShowMsgBox = function(video) {
@@ -263,15 +273,20 @@
             addGlobalStyle('video {position: absolute; width: auto; height: auto; max-height: 100%; max-width: 100%; background: black; transform: translate(-50%, -50%); top: 50%; left: 50%;}');
         }
 	    */
-		addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
+		addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;' + ' padding: 0; margin: 0; top: 0; left: 0;}');
 		// addGlobalStyle('video {transform: translate(-50%, -50%); top: 50%; left: 50%;}');
 		addGlobalStyle('body {margin: 0; background: black;}');
 
 		video.addEventListener("loadedmetadata",function(e){showMsgBox(video);},false);
-		X_Key_ShowMsgBox(video);
 
+		var l1 = document.body.childNodes.length; while (l1 > 1) { var i1 = document.body.childNodes[1]; document.body.removeChild(i1); l1--; }
+		var l2 = document.head.childNodes.length; while (l2 > 1) { var i2 = document.head.childNodes[1]; document.head.removeChild(i2); l2--; }
+		document.body.appendChild(video);
+		// clearEvents(document.body);
+		X_Key_ShowMsgBox(video);
 		CtrlC_FocusParent();
 		addVideoControlShortcuts(video);
+
 		return video;
 	};
 
@@ -285,14 +300,16 @@
 		media.setAttribute('allowfullscreen', '');
 		document.documentElement.innerHTML = '';
 		// document.removeChild(document.documentElement); // clear document
-		document.body.appendChild( media);
+		// window.location = "about:blank";
+		document.body.appendChild(media);
 		clearEvents(document.body);
-		var mediaStyle = 'position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;';
+		var mediaStyle = 'position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black; padding: 0; margin: 0; top: 0; left: 0;';
 		media.setAttribute('style', mediaStyle);
-		return  media;
+		return media;
 	};
 
 	function applyVideoSettings() {
+		clearEvents(document.body);
 		videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
 		// videoPoster = null; //video.poster
 		videoCleaned = getCleanVideo(videoSource, videoPoster);
@@ -443,14 +460,6 @@
 		waitForElement('iframe', 'src', mainFunction, delay, tries, false, waitGroup);
 	}
 
-	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
-		mainFunction = function() {
-			videoSource = flashvars.video_url;
-			videoPoster = flashvars.preview_url;
-		};
-		initFunction();
-	}
-
 	else if (pageURL.matchLink('https?://www.txxx.com/embed/*')) { // http://www.txxx.com/embed/4042421?promo=13876
 		mainFunction = function() {
 			var scriptsArray = document.scripts;
@@ -518,11 +527,50 @@
 
 	else if (pageURL.matchLink('https://yourporn.sexy/*')) {
 		if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
+			clearEvents(document.body);
 			waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
 		}
 	}
 
-	else {
+	else if (pageURL.matchLink('https?://www.porntrex.com/*')) {
+		if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+			clearEvents(document.body);
+			if (typeof flashvars !== "undefined" && flashvars.video_url) {
+				mainFunction = function() {
+					videoSource = (
+						flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
+						flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
+						flashvars.video_alt_url ? flashvars.video_alt_url :
+						flashvars.video_url
+					);
+					videoPoster = flashvars.preview_url;
+				};
+				initFunction();
+			}
+		}
+		else if (pageURL.matchLink('https?://www.porntrex.com/embed/*')) { // https://www.porntrex.com/embed/162636
+			if (typeof flashvars !== "undefined" && flashvars.video_url) {
+				mainFunction = function() {
+					videoSource = (
+						flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
+						flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
+						flashvars.video_alt_url ? flashvars.video_alt_url :
+						flashvars.video_url
+					);
+					videoPoster = flashvars.preview_url;
+				};
+				initFunction();
+			}
+		}
+	}
+
+	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
+		mainFunction = function() {
+			videoSource = flashvars.video_alt_url ? flashvars.video_alt_url : flashvars.video_url;
+			videoPoster = flashvars.preview_url;
+		};
+		initFunction();
+	} else {
 		waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
 	}
 })();
