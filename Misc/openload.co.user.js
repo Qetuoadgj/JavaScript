@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openload.co
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      1.2.5
+// @version      1.2.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -62,6 +62,8 @@
 
 // @match       https://www.porntrex.com/embed/*
 // @match       https://www.porntrex.com/video/*/*
+
+/// @match       https://daftsex.com/watch/*
 // ==/UserScript==
 
 (function() {
@@ -74,6 +76,30 @@
 	var videoElement, videoSource, videoPoster, videoCleaned;
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
 	var waitGroup = []; // waitForElement() timers group.
+
+	function deleteAllChildren(parentElement) {
+		var l = parentElement.childNodes.length;
+		while (l > 1) {
+			var i = parentElement.childNodes[1];
+			parentElement.removeChild(i);
+			l--;
+		}
+	}
+
+	function keepOnly(keepElement, useClone) {
+		useClone = useClone ? useClone : 1;
+		if (useClone == 1) {
+			console.log('KEEP ONLY [USE CLONE]: '+useClone);
+			var clone = keepElement.cloneNode(true);
+			keepElement.parentNode.replaceChild(clone, keepElement);
+			keepElement = clone;
+		}
+		deleteAllChildren(document.head);
+		deleteAllChildren(document.body);
+		document.body.appendChild(keepElement);
+		console.log('DONE! [KEEP ONLY]: '+keepElement);
+		return keepElement;
+	}
 
 	function clearEvents(old_element) {
 		var new_element = old_element.cloneNode(true);
@@ -253,8 +279,6 @@
 		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 	};
 
-
-
 	var getCleanVideo = function(videoSrc, posterSrc) {
 		var video = document.createElement('video');
 		video.setAttribute('src', videoSrc);
@@ -264,29 +288,15 @@
 		video.setAttribute('mozallowfullscreen', '');
 		video.setAttribute('allowfullscreen', '');
 		document.documentElement.innerHTML = '';
-		// document.removeChild(document.documentElement); // clear document
 		document.body.appendChild(video);
-		/*
-		if (inIframe()) {
-            addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;}');
-        } else {
-            addGlobalStyle('video {position: absolute; width: auto; height: auto; max-height: 100%; max-width: 100%; background: black; transform: translate(-50%, -50%); top: 50%; left: 50%;}');
-        }
-	    */
+		video = keepOnly(video, 1);
 		addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;' + ' padding: 0; margin: 0; top: 0; left: 0;}');
 		// addGlobalStyle('video {transform: translate(-50%, -50%); top: 50%; left: 50%;}');
 		addGlobalStyle('body {margin: 0; background: black;}');
-
 		video.addEventListener("loadedmetadata",function(e){showMsgBox(video);},false);
-
-		var l1 = document.body.childNodes.length; while (l1 > 1) { var i1 = document.body.childNodes[1]; document.body.removeChild(i1); l1--; }
-		var l2 = document.head.childNodes.length; while (l2 > 1) { var i2 = document.head.childNodes[1]; document.head.removeChild(i2); l2--; }
-		document.body.appendChild(video);
-		// clearEvents(document.body);
 		X_Key_ShowMsgBox(video);
 		CtrlC_FocusParent();
 		addVideoControlShortcuts(video);
-
 		return video;
 	};
 
@@ -299,12 +309,14 @@
 		media.setAttribute('mozallowfullscreen', '');
 		media.setAttribute('allowfullscreen', '');
 		document.documentElement.innerHTML = '';
-		// document.removeChild(document.documentElement); // clear document
-		// window.location = "about:blank";
 		document.body.appendChild(media);
-		clearEvents(document.body);
+		media = keepOnly(media, 1);
 		var mediaStyle = 'position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black; padding: 0; margin: 0; top: 0; left: 0;';
 		media.setAttribute('style', mediaStyle);
+		media.addEventListener("loadedmetadata",function(e){showMsgBox(media);},false);
+		X_Key_ShowMsgBox(media);
+		CtrlC_FocusParent();
+		addVideoControlShortcuts(media);
 		return media;
 	};
 
@@ -562,6 +574,12 @@
 				initFunction();
 			}
 		}
+	}
+
+	else if (pageURL.matchLink('https?://daftsex.com/watch/*')) {
+		var video = document.querySelector('iframe');
+		video = keepOnly(video, 1);
+		video.style = 'position: fixed; height: 100%; width: 100%; top: 0; left: 0; margin: 0; padding: 0; background: red;';
 	}
 
 	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
