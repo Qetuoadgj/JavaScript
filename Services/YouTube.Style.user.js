@@ -18,6 +18,7 @@
 
 	// Your code here...
 	var G_ScriptName = 'YouTube.Style';
+	var logged = {};
 
 	function CSS(name, rule, replace) {
 		var css = name ? $('style[name="' + name + '"]')[0] : null, exists = css ? true : false;
@@ -25,7 +26,7 @@
 		if (!exists) $('html > head').append(css);
 		if (name) $(css).attr('name', name);
 		$(css).html($(css).html()+rule);
-		console.log('CSS: ', css);
+		if (!logged[name]) {console.log('CSS: ', css); logged[name] = true;}
 		return css;
 	}
 
@@ -38,6 +39,6 @@
 
 	var Fix_MagicOptions_Style = function() {
 		var style_name = G_ScriptName+'.Fix_MagicOptions_Style';
-		CSS(style_name, ('\n\t'+'#watch7-content > div {position: relative; z-index: 0;}'+'\n'), true);
+		CSS(style_name, ('\n\t'+'#watch7-content > div {position: relative; z-index: 0;}'+'\n'), 1);
 	}();
 })();
