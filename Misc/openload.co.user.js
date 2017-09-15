@@ -14,18 +14,28 @@
 // @match        https://oload.tv/f/*
 // @match        https://oload.tv/f/*
 // @match        https://oload.tv/embed/*
+
 // @match        https://www.pornhub.com/embed/*
-// @match        http://porndoe.com/video/embed/*
+// @match        https://*.pornhub.com/videos/*.mp4?*
+// @match        https://*.phncdn.com/videos/*.mp4?*
+
+// @match        https://porndoe.com/video/embed/*
+// @match        https://*.porndoe.com/movie/*/*/*/*/*/*.mp4*
+
 // @match        http://www.eporner.com/embed/*
 // @match        https://www.eporner.com/embed/*
+// @match        https://*.eporner.com/*.mp4
+
 // @match        http*://www.tube8.com/embed/*
+// @match        https://*.t8cdn.com/*.mp4?*
+
 // @match        http://streamin.to/embed*
 // @match        http://pron.tv/embed/*
 // @match        http://cdn.rhcdn.net/*.html
 // @match        https://hqcollect.me/embed/*
 
-/// @match        https://daxab.com/embed/*
-/// @match        https://biqle.ru/RD/*
+/// @match       https://daxab.com/embed/*
+/// @match       https://biqle.ru/RD/*
 
 // @match        https://www.bitporno.sx/embed/*
 // @match        https://www.bitporno.com/embed/*
@@ -34,12 +44,9 @@
 // @match        http://www.porn.com/videos/*?EMBED
 
 // @match        https://*.googlevideo.com/videoplayback?id=*
-// @match        http://*.porndoe.com/movie/*/*/*/*/*/*.mp4*
-// @match        http://*.eporner.com/*/*/*-*p.mp4
 // @match        http://mcloud.hdporncollections.com/*.mp4
 // @match        http://redirector.rhcdn.net/media/videos/hd/*.mp4
 // @match        http://*.rhcdn.net/media/videos/hd/*.mp4?*
-// @match        https://*.pornhub.com/videos/*/*/*/*.mp4?*
 
 // @match       http://www.camwhores.tv/embed/*
 
@@ -47,21 +54,26 @@
 // @match        http://vshare.io/v/*
 
 // @match        http://www.miscopy.com/?*video_embed*
+
 // @match        https://vidoza.net/embed-*
+// @match        https://*.vidoza.net/*.mp4
 
 // @match        http://www.txxx.com/embed/*
+// @match        http://*.ahcdn.com/*/videos/*.mp4
 
 // @match        https://www.playvids.com/embed/*
+// @match        https://*.userscontent.net/w/*.mp4
 
-// @match       https://drive.google.com/file/d/*/preview?*
+// @match        https://drive.google.com/file/d/*/preview?*
 
-// @match       https://*.trafficdeposit.com/bvideo/*/*/*/*.mp4
-// @match       https://*.atlas.cdnity.net/-*_*/
+// @match        https://*.trafficdeposit.com/bvideo/*/*/*/*.mp4
+// @match        https://*.atlas.cdnity.net/-*_*/
 
-// @match       https://yourporn.sexy/post/*.html
+// @match        https://yourporn.sexy/post/*.html
 
-// @match       https://www.porntrex.com/embed/*
-// @match       https://www.porntrex.com/video/*/*
+// @match        https://www.porntrex.com/embed/*
+// @match        https://www.porntrex.com/video/*/*
+// @match        https://*.porntrex.com/remote_control.php?*.mp4*
 
 /// @match       https://daftsex.com/watch/*
 // ==/UserScript==
@@ -71,40 +83,40 @@
 
 	// THIS FILE GLOBAL VARIABLES
 	// ====================================================================================================================
+	// window.stop();
+
 	var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 	var shortURL = location.protocol + '//' + location.host + location.pathname;
 	var videoElement, videoSource, videoPoster, videoCleaned;
 	var videoSourceSelector = 'video > source[type="video/mp4"], video';
 	var waitGroup = []; // waitForElement() timers group.
 
-	function deleteAllChildren(parentElement) {
-		var l = parentElement.childNodes.length;
-		while (l > 1) {
-			var i = parentElement.childNodes[1];
-			parentElement.removeChild(i);
-			l--;
+	function empty(e) {
+		while (e.firstChild) {
+			e.removeChild(e.firstChild);
 		}
 	}
-
-	function keepOnly(keepElement, useClone) {
-		useClone = useClone ? useClone : 1;
-		if (useClone == 1) {
-			console.log('KEEP ONLY [USE CLONE]: '+useClone);
-			var clone = keepElement.cloneNode(true);
-			keepElement.parentNode.replaceChild(clone, keepElement);
-			keepElement = clone;
-		}
-		deleteAllChildren(document.head);
-		deleteAllChildren(document.body);
-		document.body.appendChild(keepElement);
-		console.log('DONE! [KEEP ONLY]: '+keepElement);
-		return keepElement;
+	function insert(tagName, parentNode, innerHTML) {
+		var e = document.createElement(tagName);
+		if (typeof parentNode == "string") parentNode = document.querySelector(parentNode);
+		parentNode.appendChild(e);
+		if (innerHTML) e.innerHTML = innerHTML;
+		return e;
 	}
-
-	function clearEvents(old_element) {
-		var new_element = old_element.cloneNode(true);
-		old_element.parentNode.replaceChild(new_element, old_element);
-		return;
+	function refine(e) {
+		var clone = e.cloneNode(1);
+		var html = document.documentElement;
+		empty(html);
+		insert('head', html, 0);
+		insert('body', html, 0);
+		document.body.appendChild(clone);
+		return clone;
+	}
+	function maximize(e) {
+		e = refine(e);
+		e.style = "position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black; padding: 0; margin: 0; top: 0; left: 0;";
+		document.body.style = "position: absolute; width: 100%; height: 100%; overflow: hidden; padding: 0; margin: 0; top: 0; left: 0;";
+		return e;
 	}
 
 	function getDomain(url, subdomain) {
@@ -280,6 +292,7 @@
 	};
 
 	var getCleanVideo = function(videoSrc, posterSrc) {
+		if (videoSrc != window.location) window.location = videoSrc;
 		var video = document.createElement('video');
 		video.setAttribute('src', videoSrc);
 		if (posterSrc) video.setAttribute('poster', posterSrc);
@@ -289,10 +302,7 @@
 		video.setAttribute('allowfullscreen', '');
 		document.documentElement.innerHTML = '';
 		document.body.appendChild(video);
-		video = keepOnly(video, 1);
-		addGlobalStyle('video {position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black;' + ' padding: 0; margin: 0; top: 0; left: 0;}');
-		// addGlobalStyle('video {transform: translate(-50%, -50%); top: 50%; left: 50%;}');
-		addGlobalStyle('body {margin: 0; background: black;}');
+		video = maximize(video);
 		video.addEventListener("loadedmetadata",function(e){showMsgBox(video);},false);
 		X_Key_ShowMsgBox(video);
 		CtrlC_FocusParent();
@@ -301,6 +311,7 @@
 	};
 
 	var getCleanMedia = function(mediaSrc, posterSrc, mediaType) {
+		if (mediaSrc != window.location) window.location = mediaSrc;
 		var media = document.createElement(mediaType);
 		media.setAttribute('src', mediaSrc);
 		if (posterSrc)  media.setAttribute('poster', posterSrc);
@@ -310,9 +321,7 @@
 		media.setAttribute('allowfullscreen', '');
 		document.documentElement.innerHTML = '';
 		document.body.appendChild(media);
-		media = keepOnly(media, 1);
-		var mediaStyle = 'position: absolute; width: 100%; height: 100%; max-height: 100%; max-width: 100%; background: black; padding: 0; margin: 0; top: 0; left: 0;';
-		media.setAttribute('style', mediaStyle);
+		media = maximize(media);
 		media.addEventListener("loadedmetadata",function(e){showMsgBox(media);},false);
 		X_Key_ShowMsgBox(media);
 		CtrlC_FocusParent();
@@ -321,7 +330,6 @@
 	};
 
 	function applyVideoSettings() {
-		clearEvents(document.body);
 		videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
 		// videoPoster = null; //video.poster
 		videoCleaned = getCleanVideo(videoSource, videoPoster);
@@ -347,10 +355,10 @@
 	}
 
 	else if (
-		pageURL.matchLink('https://www.pornhub.com/*') || // https://www.pornhub.com/embed/ph55b7a22ed4339
+		pageURL.matchLink('http[s]?://www.pornhub.com/*') || // https://www.pornhub.com/embed/ph55b7a22ed4339
 		pageURL.matchLink('http[s]?://www.tube8.com/embed/*') || // http://www.tube8.com/embed/teen/all-a-slut-needs-is-a-reason/31637961/
-		pageURL.matchLink('http://porndoe.com/*') || // http://porndoe.com/video/embed/45914/deep-throat-fucking-sasha-grey
-		pageURL.matchLink('http://streamin.to/*') // http://streamin.to/embed-zlu0667c26hp-828x480.html
+		pageURL.matchLink('http[s]?://porndoe.com/*') || // http://porndoe.com/video/embed/45914/deep-throat-fucking-sasha-grey
+		pageURL.matchLink('http[s]?://streamin.to/*') // http://streamin.to/embed-zlu0667c26hp-828x480.html
 	) {
 		mainFunction = function() {
 			videoSource =  document.querySelectorAttribute(videoSourceSelector, 'src');
@@ -367,7 +375,7 @@
 		waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, false, waitGroup);
 	}
 
-	else if (
+	/*else if (
 		// pageURL.matchLink('http://pron.tv/embed/*') || // http://pron.tv/embed/id%3Arws2x9se
 		pageURL.matchLink('http://cdn.rhcdn.net/*.html')  // http://cdn.rhcdn.net/6043.html
 	) {
@@ -388,9 +396,9 @@
 			waitGroup = null;
 		};
 		waitForCondition(getSource, mainFunction, delay, tries, false, waitGroup);
-	}
+	}*/
 
-	else if (
+	/*else if (
 		pageURL.matchLink('https://hqcollect.me/embed/*') // https://hqcollect.me/embed/214394
 	) {
 		playButtonSelector = 'div.fp-ui';
@@ -415,7 +423,7 @@
 		};
 		waitForElement(playButtonSelector, false, clickPlay, delay, tries, false, waitGroup);
 		waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, false, waitGroup);
-	}
+	}*/
 
 	else if (
 		pageURL.matchLink('https://daxab.com/embed/*') || // https://daxab.com/embed/-59740963_456244433 | https://daxab.com/embed/-59740963_456244433/RD
@@ -515,6 +523,7 @@
 	}
 
 	else if (pageURL.matchLink('https://www.playvids.com/embed/*')) { // https://www.playvids.com/embed/AHfgODSuCP7?quality=720
+		/*
 		mainFunction = function() {
 			var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-quality]');
 			document.querySelectorAll('#mediaPlayerQualityList > .item[data-quality]').forEach(function(e) {
@@ -522,11 +531,27 @@
 				if (quality > maxQualityButton.dataset.quality) maxQualityButton = e;
 			});
 			if (maxQualityButton) maxQualityButton.click();
-			// videoSource = document.querySelector(videoSourceSelector).getAttribute('src');
-			// videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
 		};
-		// initFunction();
 		waitForElement('#mediaPlayerQualityList > .item[data-index="1"]', null, mainFunction, delay, tries, false, waitGroup);
+		*/
+		mainFunction = function() {
+			var quality = 0, src;
+			var scriptsArray = document.querySelectorAll('.mediaPlayerNoscript');
+			for (var i = 0; i < scriptsArray.length; ++i) {
+				var script = scriptsArray[i];
+				var text = decodeURIComponent(script.innerText);
+				var matches = text.match(/\[video_urls\]\[(.+?)\].*?&/ig);
+				for (i = 0; i < matches.length; ++i) {
+					var match = matches[i];
+					var params = match.match(/\[video_urls\]\[(\d+)p\]=(.*?)&/i);
+					if (params[1] > quality) {
+						src = params[2];
+					}
+				}
+				videoSource = src ? src : null;
+			}
+		};
+		initFunction();
 	}
 
 	else if (pageURL.matchLink('https://drive.google.com/file/d/*/preview[?]*(start=1|autoplay=1)')) { // https://drive.google.com/file/d/0B8vZ-fFzt8h8Y2VWbVdGQ2dFdzA/preview?start=1&autoplay=1
@@ -539,14 +564,12 @@
 
 	else if (pageURL.matchLink('https://yourporn.sexy/*')) {
 		if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
-			clearEvents(document.body);
 			waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
 		}
 	}
 
 	else if (pageURL.matchLink('https?://www.porntrex.com/*')) {
 		if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
-			clearEvents(document.body);
 			if (typeof flashvars !== "undefined" && flashvars.video_url) {
 				mainFunction = function() {
 					videoSource = (
@@ -578,8 +601,7 @@
 
 	else if (pageURL.matchLink('https?://daftsex.com/watch/*')) {
 		var video = document.querySelector('iframe');
-		video = keepOnly(video, 1);
-		video.style = 'position: fixed; height: 100%; width: 100%; top: 0; left: 0; margin: 0; padding: 0; background: red;';
+		video = maximize(video);
 	}
 
 	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
