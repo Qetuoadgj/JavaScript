@@ -35,7 +35,7 @@
 // @match        http://juicygif.com/public/Gif/*.html/*
 // @match        http://www.sex.com/picture/*/
 // @match        http://www.pichunter.com/gallery/*/*
-// @match        http://www.imagefap.com/pictures/6115310/*view=2
+// @match        http://www.imagefap.com/pictures/*/*view=2
 // @match        http://www.hdporncollections.com/*/
 // @match        http://konachan.com/post*
 // @match        http://pron.tv/*
@@ -62,6 +62,7 @@
 // @match        http://18onlygirls.ru/*
 
 // @match        http://yespornplease.com/*
+// @match        https://yespornplease.com/*
 
 // @match        http://xxvideoss.org/*
 // @match        http://porntube4k.net/*
@@ -75,6 +76,14 @@
 // @match        https://yourporn.sexy/post/*
 
 // @match        https://allerotika.net/clip/*
+
+// @match        https://www.porndig.com/videos/*/*
+
+// @match        http://pantporn.com/*
+
+// @match        http://www.camshooker.com/videos/*
+
+// @match        https://xfreehd.com/video/*/*
 // ==/UserScript==
 
 (function() {
@@ -182,7 +191,7 @@
 		});
 	};
 
-	var videoSourceSelector = 'video > source[type="video/mp4"], video';
+	var videoSourceSelector = 'video > source[type="video/mp4"], video, iframe';
 	var MONTH = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
@@ -558,7 +567,7 @@
 	}
 
 	else if (
-		pageURL.matchLink('http://www.imagefap.com/pictures/6115310/*view=2')
+		pageURL.matchLink('http://www.imagefap.com/pictures/*/*view=2') // http://www.imagefap.com/pictures/6115310/?gid=6115310&view=2
 	) {
 		embedCodeTextRefresh = false;
 		mainFunction = function() {
@@ -966,10 +975,10 @@
 	}
 
 	else if (
-		pageURL.matchLink('http://yespornplease.com/*')
+		pageURL.matchLink('https?://yespornplease.com/*')
 	) {
 		if (
-			pageURL.matchLink('http://yespornplease.com/view/*') // http://yespornplease.com/view/741577353
+			pageURL.matchLink('https?://yespornplease.com/view/*') // http://yespornplease.com/view/741577353
 		) {
 			mainFunction = function() {
 				contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
@@ -1100,7 +1109,7 @@
 		) {
 			mainFunction = function() {
 				contentURL = document.querySelector('div[itemprop="video"] > link[itemprop="embedURL"]').getAttribute('content');
-				var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-index="1"]');
+				var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-index]');
 				if (maxQualityButton) {
 					contentURL = contentURL + '?quality=' + maxQualityButton.dataset.quality;
 					maxQualityButton.click();
@@ -1112,7 +1121,7 @@
 				addEmbedCodeFrame(mainFunction);
 				addKeyComboCtrlC(true);
 			};
-			waitForElement('#mediaPlayerQualityList > .item[data-index="1"]', null, initFunction, delay, null, false);
+			waitForElement('#mediaPlayerQualityList > .item[data-index]', null, initFunction, delay, null, false);
 		}
 	}
 
@@ -1215,6 +1224,93 @@
 				// pageURL = getAbsoluteUrl(document.querySelector('meta[property="og:url"]').getAttribute('content', 2));
 				appendToFrame = document.querySelector('div.published');
 				appendPosition = 'before';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.porndig.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.porndig.com/videos/*/*') // https://www.porndig.com/videos/75829/melanie-rios-gigi-rivera-oil-overload-teens.html
+		) {
+			mainFunction = function() {
+				var val = 0;
+				document.querySelectorAll('.post_download_link > span.pull-left').forEach(function(item) {
+					var size = item.innerText.match(/(\d+)/);
+					if (size) val = Math.max(val, size[1]);
+				});
+				contentTitle = document.title;
+				if (val !== 0) contentTitle = contentTitle.replace(contentTitle, contentTitle + ' [' + val + 'p] - ' + pageHost.replace('www.', '')).toTitleCase(true);
+				contentURL = document.querySelector('.video_embed > textarea').value.match(/.*src="(.*?)".*/i)[1];
+				forEach(document.scripts, function(index, script) {
+					var match = script.text.match(/post_thumbnail="(.*?)"/i);
+					if (match) posterURL = match[1];
+				});
+				appendToFrame = document.querySelector('.video_wrapper');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('.video_embed > textarea', false, initFunction, delay, null, false);
+		}
+	}
+
+
+	else if (
+		pageURL.matchLink('https?://pantporn.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://pantporn.com/*') // http://pantporn.com/banging-down-a-therapist-katrina-jade/
+		) {
+			videoSourceSelector = 'iframe[src*="vidoza.net"], iframe[src*="openload.co"]';
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				posterURL = document.querySelector('meta[property="og:image"]').content;
+				appendToFrame = document.querySelector(videoSourceSelector);
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.camshooker.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.camshooker.com/videos/*') // http://www.camshooker.com/videos/7440/vicats-slut-like-masturbating-in-webcam/
+		) {
+			videoSourceSelector = 'iframe[src*="vidoza.net"], iframe[src*="openload.co"]';
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				posterURL = document.querySelector('meta[property="og:image"]').content;
+				appendToFrame = document.querySelector('.player');
+				appendPosition = 'after';
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://xfreehd.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://xfreehd.com/video/*/*') // https://xfreehd.com/video/11960/anka-minetchica-virgin-defloration
+		) {
+			videoSourceSelector = 'video > source';
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				contentURL = document.querySelector('.nv-hdicon') ? contentURL.replace('/iphone/', '/hd/') : contentURL;
+				posterURL = document.querySelector('meta[property="og:image"]').content;
+				appendToFrame = document.querySelector('#wrapper > div.container > div:nth-child(2) > div.col-md-8 > div:nth-child(1)');
+				appendPosition = 'after';
 				addEmbedCodeFrame(mainFunction);
 				addKeyComboCtrlC(true);
 			};

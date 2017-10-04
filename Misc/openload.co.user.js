@@ -17,6 +17,8 @@
 // @match		https://oload.tv/embed/*
 // @match		https://*.oloadcdn.net/dl/l/*
 
+// @match		http://www.miscopy.com/wp-content/uploads/*/*/*
+
 // @match		https://www.pornhub.com/embed/*
 // @match		https://*.pornhub.com/videos/*.mp4?*
 // @match		https://*.phncdn.com/videos/*.mp4?*
@@ -55,6 +57,8 @@
 
 // @match		http://e.yespornplease.com/e/*
 // @match		http://vshare.io/v/*
+// @match		https://vshare.io/v/*
+// @match		https://*.vshare.io/*.mp4
 
 // @match		http://www.miscopy.com/?*video_embed*
 
@@ -69,16 +73,21 @@
 
 // @match		https://drive.google.com/file/d/*/preview?*
 
+// @match		https://yourporn.sexy/post/*.html
 // @match		https://*.trafficdeposit.com/bvideo/*/*/*/*.mp4
 // @match		https://*.atlas.cdnity.net/-*_*/
-
-// @match		https://yourporn.sexy/post/*.html
 
 // @match		https://www.porntrex.com/embed/*
 // @match		https://www.porntrex.com/video/*/*
 // @match		https://*.porntrex.com/remote_control.php?*.mp4*
 
 /// @match		https://daftsex.com/watch/*
+
+// @match		https://videos.porndig.com/player/index*
+// @match		https://*.porndig.com/videos/*.mp4*
+// @match		https://*.ahcdn.com/*/videos/*.mp4
+
+// @match		https://*.xfreehd.com/media/*.mp4
 // ==/UserScript==
 
 (function() {
@@ -88,10 +97,12 @@
 	// ====================================================================================================================
 	// window.stop();
 
+	document.body.style.visibility = 'hidden';
+
 	var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 	var shortURL = location.protocol + '//' + location.host + location.pathname;
 	var videoElement, videoSource, videoPoster, videoCleaned;
-	var videoSourceSelector = 'video > source[type="video/mp4"], video';
+	var videoSourceSelector = 'video, video > source[type="video/mp4"]';
 	var waitGroup = []; // waitForElement() timers group.
 
 	var hosts = {
@@ -99,8 +110,10 @@
 		"phncdn.com" : "pornhub.com",
 		"t8cdn.com" : "tube8.com",
 		"playercdn.net" : "bitporno.com",
-		"ahcdn.com" : "txxx.com",
+		"ahcdn.com" : "txxx.com | porndig.com",
 		"userscontent.net" : "playvids.com",
+		"trafficdeposit.com" : "yourporn.sexy",
+		"cdnity.net" : "yourporn.sexy",
 	};
 
 	function empty(e) {
@@ -247,6 +260,7 @@
 			// var targetType = e.target.tagName.toLowerCase();
 			if (ctrlDown && e.keyCode == cKey) {
 				parent.focus();
+				xonsole.log('document.activeElement:' + document.activeElement);
 			}
 		};
 		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
@@ -343,6 +357,65 @@
 		return media;
 	};
 
+	function addVolumeTextIndicator(media, fontSize) {
+		fontSize = fontSize || 72;
+		var volumeTextIndicator = document.createElement('div');
+		volumeTextIndicator.style.setProperty('color', 'yellow', 'important');
+		volumeTextIndicator.style['font-size'] = fontSize + 'px';
+		volumeTextIndicator.style.position = 'absolute';
+		volumeTextIndicator.style['z-index'] = 2147483647; // Always on TOP
+		volumeTextIndicator.style.top = '0px';
+		volumeTextIndicator.style.left = (fontSize/4) + 'px';
+		media.parentNode.insertBefore(volumeTextIndicator, media.nextSibling);
+		var volumeTextFade = function(fadeDelay) {
+			fadeDelay = fadeDelay || 2000;
+			var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+			function textFadeStart(show) {
+				var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+				volumeTextIndicator.style.opacity = show ? 1 : 0;
+				volumeTextIndicator.style.transition = transition;
+				volumeTextIndicator.style['-webkit-transition'] = transition; // Safari
+			}
+			textFadeStart(true);
+			setTimeout(textFadeStart, fadeDelaySeconds*1000);
+		};
+		var setVolumeText = function() {
+			volumeTextFade(2000);
+			volumeTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
+		};
+		var addEventHandlers = function() {
+			if (media.addEventListener) {
+				media.addEventListener("volumechange", setVolumeText, false); // IE9, Chrome, Safari, Opera
+			} else {
+				media.attachEvent("onvolumechange", setVolumeText); // IE 6/7/8
+			}
+		};
+		setTimeout(addEventHandlers, 10);
+		return volumeTextIndicator;
+	}
+
+	function addMouseWheelAudioControl(media, step) {
+		step = (step === 0) ? 0 : (step || 1);
+		var mouseWheelAudioHandler = function(e) {
+			if (step !== 0) {
+				// cross-browser wheel delta
+				e = window.event || e; // old IE support
+				var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+				var amount = parseInt(delta*step), volume = parseInt(media.volume*100);
+				var value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
+				media.volume = Math.max(0, Math.min(100, value)) / 100;
+			}
+			e.preventDefault();
+		};
+		if (media.addEventListener) {
+			media.addEventListener("mousewheel", mouseWheelAudioHandler, false); // IE9, Chrome, Safari, Opera
+			media.addEventListener("DOMMouseScroll", mouseWheelAudioHandler, false); // Firefox
+		} else {
+			media.attachEvent("onmousewheel", mouseWheelAudioHandler); // IE 6/7/8
+		}
+		var volumeTextIndicator = addVolumeTextIndicator(media, 56);
+	}
+
 	function applyVideoSettings() {
 		videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
 		// videoPoster = null; //video.poster
@@ -350,8 +423,8 @@
 		// videoCleaned.play();
 		videoCleaned.autoplay = false; // videoCleaned.preload = "none";
 		videoCleaned.volume = 0.5;
-		addMouseWheelAudioControl(videoCleaned, 5);
 		useVolumeCookie('body > video', null);
+		addMouseWheelAudioControl(videoCleaned, 5);
 		waitGroup = null;
 	}
 	var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();}, getSource;
@@ -383,10 +456,15 @@
 
 	else if (pageURL.matchLink('http[s]?://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
 		mainFunction = function() {
-			videoSource =  document.querySelectorAttribute('#EPvideo_html5_api', 'src');
+			var video = document.querySelector('video'), videoContent = document.querySelector('meta[itemprop="contentUrl"]'); // https://www.eporner.com/embed/86xEgVrJQD3
+			if (videoContent && video.getAttribute('src').match(/^blob:/i)) {
+				video.addEventListener("loadedmetadata",function(e){initFunction();},false);
+				video.setAttribute('src', videoContent.content);
+			}
+			videoSource = video.getAttribute('src'); //document.querySelectorAttribute('#EPvideo_html5_api', 'src');
 			videoPoster = null; //video.poster
 		};
-		waitForElement('#EPvideo_html5_api', 'src', initFunction, delay, tries, false, waitGroup);
+		waitForElement('#EPvideo_html5_api', 'src', mainFunction, delay, tries, false, waitGroup);
 	}
 
 	/*else if (
@@ -541,8 +619,8 @@
 		mainFunction = function() {
 			var maxQualityButton = document.querySelector('#mediaPlayerQualityList > .item[data-quality]');
 			document.querySelectorAll('#mediaPlayerQualityList > .item[data-quality]').forEach(function(e) {
-				var quality = e.dataset.quality;
-				if (quality > maxQualityButton.dataset.quality) maxQualityButton = e;
+				var quality = Number(e.dataset.quality);
+				if (quality > Number(maxQualityButton.dataset.quality)) maxQualityButton = e;
 			});
 			if (maxQualityButton) maxQualityButton.click();
 		};
@@ -558,10 +636,12 @@
 				for (i = 0; i < matches.length; ++i) {
 					var match = matches[i];
 					var params = match.match(/\[video_urls\]\[(\d+)p\]=(.*?)&/i);
-					if (params[1] > quality) {
+					if (Number(params[1]) > quality) {
 						src = params[2];
+						quality = Number(params[1]);
 					}
 				}
+				console.log('quality: '+quality);
 				videoSource = src ? src : null;
 			}
 		};
@@ -616,6 +696,22 @@
 	else if (pageURL.matchLink('https?://daftsex.com/watch/*')) {
 		var video = document.querySelector('iframe');
 		video = maximize(video);
+	}
+
+	else if (pageURL.matchLink('https://videos.porndig.com/player/index*')) { // https://videos.porndig.com/player/index/178913/1035/13800#
+		mainFunction = function() {
+			var quality = 0, src;
+			document.querySelectorAll('video > source[label]').forEach(function(item) {
+				var q = Number(item.getAttribute('label').match(/\d+/));
+				if (q > quality) {
+					quality = q;
+					src = item.src;
+				}
+			});
+			console.log('quality: '+quality);
+			videoSource = src;
+		};
+		initFunction();
 	}
 
 	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
