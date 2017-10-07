@@ -83,6 +83,8 @@
 		var not_working_cb = document.getElementById("cb_f");
 		if (not_working_cb) not_working_cb.removeAttribute("checked");
 		GM_deleteValue("proxy_list");
+
+		setTimeout(function remove_banner(){var banner = document.querySelector("jdiv.globalClass_ET");if (banner) banner.remove();}, 2000);
 	}
 
 	else if ( pageURL.match("http://spys.one/") ) {
