@@ -89,11 +89,11 @@
 		var quantity_select = document.getElementById("xpp");
 		if (quantity_select) quantity_select.options[2].selected = true; // 100
 
-		var anon_select = document.getElementById("xf1");
-		if (anon_select) anon_select.options[1].selected = true; // ANM & HIA
+		// var anon_select = document.getElementById("xf1");
+		// if (anon_select) anon_select.options[1].selected = true; // ANM & HIA
 
-		var port_select = document.getElementById("xf4");
-		if (port_select) port_select.options[2].selected = true; // 8080
+		// var port_select = document.getElementById("xf4");
+		// if (port_select) port_select.options[2].selected = true; // 8080
 
 		// var main_form = document.querySelector("form[action='/aproxy/']");
 		// if (main_form) main_form.submit();
