@@ -30,7 +30,7 @@
 	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 
 	// Create the event
-	var e_change = new CustomEvent("change");
+	// var e_change = new CustomEvent("change");
 
 	Element.prototype.autoHeight = function(fixedHeight) {
 		this.style.height = 0;
