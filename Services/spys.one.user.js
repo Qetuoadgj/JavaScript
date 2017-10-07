@@ -88,8 +88,14 @@
 	}
 
 	else if ( pageURL.match("http://spys.one/") ) {
-		var quantity_select = document.getElementById("xpp");
-		if (quantity_select) quantity_select.options[2].selected = true; // 100
+		var anon_select = document.getElementById("anmm");
+		if (anon_select) anon_select.options[2].selected = true; // ANM & HIA
+
+		var port_select = document.querySelector("input[name='port']");
+		if (port_select) port_select.value = "8080"; // 8080
+
+		// var quantity_select = document.getElementById("xpp");
+		// if (quantity_select) quantity_select.options[2].selected = true; // 100
 
 		// var anon_select = document.getElementById("xf1");
 		// if (anon_select) anon_select.options[1].selected = true; // ANM & HIA
