@@ -95,8 +95,8 @@
 
 		setTimeout(function remove_banner(){var banner = document.querySelector("jdiv.globalClass_ET");if (banner) banner.remove();}, 2000);
 
-		// var page_background = document.querySelector("div.wrap-container");
-		// if (page_background) page_background.style.background = "#001229";
+		var page_background = document.querySelector("div.wrap-container");
+		if (page_background) page_background.style.background = "floralwhite";
 
 		var green_line = document.querySelector("div.green-line.proxy-line");
 		if (green_line) green_line.remove(); // green_line.style.display = "none";
@@ -106,6 +106,9 @@
 
 		var footer = document.querySelector("footer");
 		if (footer) footer.remove(); // footer.style.display = "none";
+
+		var picture = document.querySelector(".proxy-table__image");
+		if (picture) picture.remove(); // picture.style.display = "none";
 	}
 
 	else if ( pageURL.match("http://spys.one/") ) {
