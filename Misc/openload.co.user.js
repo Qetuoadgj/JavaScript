@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		openload.co
 // @icon		https://www.google.com/s2/favicons?domain=openload.co
-// @version		1.2.6
+// @version		1.2.7
 // @description	Pure JavaScript version.
 // @author		Ægir
 // @grant		none
@@ -9,6 +9,8 @@
 // @require		https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL	https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/openload.co.user.js
 // @homepageURL	https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
+
+// @match		file:///*/HTML/html/video.html*
 
 // @match		https://openload.co/embed/*
 // @match		https://openload.co/f/*
@@ -88,6 +90,11 @@
 // @match		https://*.ahcdn.com/*/videos/*.mp4
 
 // @match		https://*.xfreehd.com/media/*.mp4
+
+/// @match		http://dato.porn/embed-*.html
+
+/// @match		https://*.thevideobee.to:*/*.mp4
+/// @match		https://*.kingvid.tv/*.mp4
 // ==/UserScript==
 
 (function() {
@@ -96,8 +103,6 @@
 	// THIS FILE GLOBAL VARIABLES
 	// ====================================================================================================================
 	// window.stop();
-
-	document.body.style.visibility = 'hidden';
 
 	var pageHost = location.hostname, pageURL = location.href, pageTitle = document.title;
 	var shortURL = location.protocol + '//' + location.host + location.pathname;
@@ -129,6 +134,12 @@
 		return e;
 	}
 	function refine(e) {
+		var doc = document.documentElement; var doc_clone = doc.cloneNode();
+		while (doc.firstChild) {
+			doc_clone.appendChild(doc.lastChild);
+		}
+		doc.parentNode.replaceChild(doc_clone, doc);
+		//
 		var clone = e.cloneNode(1);
 		var html = document.documentElement;
 		empty(html);
@@ -269,7 +280,7 @@
 	function showMsgBox(video) {
 		var width = video.videoWidth, height = video.videoHeight;
 		console.log('video: '+video.src+' ['+width+'x'+height+']');
-		var host = getDomain(pageURL);
+		var host = getDomain(video.src);
 		host = hosts[host] ? host + '\n['+hosts[host]+']' : host;
 		var msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
 		msg.style.right = 0 + 'px';
@@ -312,22 +323,32 @@
 				video.currentTime = video.currentTime + 5;
 			}
 			if (e.keyCode == kSpace) {
-				video.focus();
-				video.currentTime = video.pause();
+				if (video.paused) video.play(); else video.pause();
 			}
+			e.preventDefault();
 		};
 		window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
 	};
 
 	var getCleanVideo = function(videoSrc, posterSrc) {
-		if (videoSrc != window.location) window.location = videoSrc;
-		var video = document.createElement('video');
+		var video;
+		if (videoSrc && videoSrc != window.location) window.location = videoSrc;
+		// else {
+		// 	window.location = "file:///D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/html/video.html?video_url=" + videoSrc;
+		// 	return;
+		// }
+		// else {
+		video = document.createElement('video');
 		video.setAttribute('src', videoSrc);
 		if (posterSrc) video.setAttribute('poster', posterSrc);
 		video.setAttribute('controls', '');
 		video.setAttribute('webkitallowfullscreen', '');
 		video.setAttribute('mozallowfullscreen', '');
 		video.setAttribute('allowfullscreen', '');
+		//
+		// video.setAttribute('x-webkit-airplay', 'allow');
+		// video.setAttribute('webkit-playsinline', '');
+		//
 		document.documentElement.innerHTML = '';
 		document.body.appendChild(video);
 		video = maximize(video);
@@ -335,6 +356,7 @@
 		X_Key_ShowMsgBox(video);
 		CtrlC_FocusParent();
 		addVideoControlShortcuts(video);
+		// }
 		return video;
 	};
 
@@ -342,7 +364,7 @@
 		if (mediaSrc != window.location) window.location = mediaSrc;
 		var media = document.createElement(mediaType);
 		media.setAttribute('src', mediaSrc);
-		if (posterSrc)	media.setAttribute('poster', posterSrc);
+		if (posterSrc) media.setAttribute('poster', posterSrc);
 		media.setAttribute('controls', '');
 		media.setAttribute('webkitallowfullscreen', '');
 		media.setAttribute('mozallowfullscreen', '');
@@ -357,7 +379,18 @@
 		return media;
 	};
 
-	function addVolumeTextIndicator(media, fontSize) {
+	var toHHMMSS = (secs) => {
+		var sec_num = parseInt(secs, 10);
+		var hours   = Math.floor(sec_num / 3600) % 24;
+		var minutes = Math.floor(sec_num / 60) % 60;
+		var seconds = sec_num % 60;
+		return [hours,minutes,seconds]
+			.map(v => v < 10 ? "0" + v : v)
+			.filter((v,i) => v !== "00" || i > 0)
+			.join(":");
+	};
+
+	function addMediaTextIndicator(media, fontSize) {
 		fontSize = fontSize || 72;
 		var volumeTextIndicator = document.createElement('div');
 		volumeTextIndicator.style.setProperty('color', 'yellow', 'important');
@@ -383,11 +416,19 @@
 			volumeTextFade(2000);
 			volumeTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
 		};
+		var setTimeText = function() {
+			volumeTextFade(2000);
+			var duration = media.duration;
+			var currentTime = media.currentTime;
+			volumeTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
+		};
 		var addEventHandlers = function() {
 			if (media.addEventListener) {
 				media.addEventListener("volumechange", setVolumeText, false); // IE9, Chrome, Safari, Opera
+				media.addEventListener("seeking", setTimeText, false); // IE9, Chrome, Safari, Opera
 			} else {
 				media.attachEvent("onvolumechange", setVolumeText); // IE 6/7/8
+				media.attachEvent("onseeking", setTimeText); // IE 6/7/8
 			}
 		};
 		setTimeout(addEventHandlers, 10);
@@ -413,27 +454,91 @@
 		} else {
 			media.attachEvent("onmousewheel", mouseWheelAudioHandler); // IE 6/7/8
 		}
-		var volumeTextIndicator = addVolumeTextIndicator(media, 56);
+		var volumeTextIndicator = addMediaTextIndicator(media, 56);
 	}
 
 	function applyVideoSettings() {
 		videoSource = videoSource || document.querySelectorAttribute(videoSourceSelector, 'src');
 		// videoPoster = null; //video.poster
 		videoCleaned = getCleanVideo(videoSource, videoPoster);
-		// videoCleaned.play();
-		videoCleaned.autoplay = false; // videoCleaned.preload = "none";
-		videoCleaned.volume = 0.5;
-		useVolumeCookie('body > video', null);
-		addMouseWheelAudioControl(videoCleaned, 5);
+		if (videoCleaned) {
+			// videoCleaned.play();
+			videoCleaned.autoplay = false; // videoCleaned.preload = "none";
+			videoCleaned.volume = 0.5;
+			useVolumeCookie('body > video', null);
+			addMouseWheelAudioControl(videoCleaned, 5);
+		}
 		waitGroup = null;
 	}
 	var mainFunction, initFunction = function(){mainFunction(); applyVideoSettings();}, getSource;
 	var delay = 10, tries = 1500;
 	var playButtonSelector;
 	var clickPlay = function(){var p = document.querySelector(playButtonSelector); p.click(); waitForElement(videoSourceSelector, 'src', initFunction, delay, tries, null, waitGroup);};
+	var clickElement = function(querySelector) {
+		var element =  document.querySelector('.jwdisplayIcon');
+		if (element) element.click();
+		return element;
+	};
+
+	var useVolumeCookie = function(mediaElementSelector, cookieName) {
+		cookieName = cookieName || 'media';
+		var volumeCookie = cookieName+'Volume';
+		var mediaVolume = getCookie(volumeCookie);
+		var mutedCookie = cookieName+'Muted';
+		var mediaMuted = getCookie(mutedCookie);
+		if (mediaMuted == 'false') mediaMuted = false; // normalize
+		var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+		for (var i = 0; i < mediaElementsArray.length; ++i) {
+			var mediaElement = mediaElementsArray[i];
+			if (mediaVolume) mediaElement.volume = mediaVolume;
+			mediaElement.muted = mediaMuted;
+			mediaElement.addEventListener('volumechange', function() {
+				setCookie(volumeCookie, mediaElement.volume || 0, 1);
+				setCookie(mutedCookie, mediaElement.muted, 1);
+			}, false);
+			console.log('mediaElement: ',mediaElement);
+			console.log('volumeCookie: ' + volumeCookie + ' = ' + getCookie(volumeCookie));
+			console.log('mutedCookie: ' + mutedCookie + ' = ' + getCookie(mutedCookie));
+		}
+	};
+
+	var useLocalVolumeCookie = function(mediaElementSelector, cookieName) {
+		cookieName = cookieName || 'media';
+		var mediaVolume = localStorage.getItem("media_volume");
+		var mediaMuted = localStorage.getItem("media_muted");
+		if (mediaMuted == "false") mediaMuted = false; // normalize
+		var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+		for (var i = 0; i < mediaElementsArray.length; ++i) {
+			var mediaElement = mediaElementsArray[i];
+			if (mediaVolume) mediaElement.volume = mediaVolume;
+			mediaElement.muted = mediaMuted;
+			mediaElement.addEventListener("volumechange", function() {
+				localStorage.setItem("media_volume", mediaElement.volume || 0);
+				localStorage.setItem("media_muted", mediaElement.muted);
+			}, false);
+			console.log('mediaElement: ', mediaElement);
+			console.log("localStorage.media_volume: ", localStorage.getItem("media_volume"));
+			console.log("localStorage.media_muted: ", localStorage.getItem("media_muted"));
+		}
+	};
+
 	// ====================================================================================================================
 
-	if (pageURL.matchLink('https://openload.co/*') || pageURL.matchLink('https://oload.tv/*')) { // https://openload.co/embed/pM1MQGKY7z4/
+	if (pageURL.matchLink('file:///*/HTML/html/video.html')) { // file:///D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/html/video.html?video_url=https://s2-n5-nl-cdn.eporner.com/28fbeb7d149d7fff46d8abad2a69cc79/59d9a15f010600/1101004-480p.mp4
+		var main_video = document.querySelector("body > video");
+		console.log("main_video: ",main_video);
+
+		main_video.autoplay = false; // videoCleaned.preload = "none";
+		main_video.volume = 0.5;
+		useLocalVolumeCookie("body > video", null);
+
+		addVideoControlShortcuts(main_video);
+		addMouseWheelAudioControl(main_video, 5);
+		X_Key_ShowMsgBox(main_video);
+		main_video.addEventListener("loadedmetadata",function(e){showMsgBox(main_video);},false);
+	}
+
+	else if (pageURL.matchLink('https://openload.co/*') || pageURL.matchLink('https://oload.tv/*')) { // https://openload.co/embed/pM1MQGKY7z4/
 		mainFunction = function() {
 			videoSource = '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
 			videoPoster = null; //document.querySelector('#olvideo_html5_api').poster
@@ -456,13 +561,25 @@
 
 	else if (pageURL.matchLink('http[s]?://www.eporner.com/*')) { // http://www.eporner.com/embed/ddPNLJUuNih/
 		mainFunction = function() {
+			var quality = 0, src;
+			var qualityTable = {};
+			document.querySelectorAll('.vjs-menu-content > .vjs-menu-item').forEach(function(item) { // https://www.eporner.com/embed/HYmQUXbhRrR
+				var button = item.querySelector('.vjs-menu-item-text');
+				var text = button ? button.innerText : '';
+				var q = Number(text.match(/\d+/));
+				if (q > quality) {quality = q; src = item;}
+			});
+			if (src) src.click();
+			console.log('quality: '+quality);
 			var video = document.querySelector('video'), videoContent = document.querySelector('meta[itemprop="contentUrl"]'); // https://www.eporner.com/embed/86xEgVrJQD3
 			if (videoContent && video.getAttribute('src').match(/^blob:/i)) {
 				video.addEventListener("loadedmetadata",function(e){initFunction();},false);
 				video.setAttribute('src', videoContent.content);
+			} else {
+				videoSource = video.getAttribute('src'); //document.querySelectorAttribute('#EPvideo_html5_api', 'src');
+				videoPoster = null; //video.poster
+				applyVideoSettings();
 			}
-			videoSource = video.getAttribute('src'); //document.querySelectorAttribute('#EPvideo_html5_api', 'src');
-			videoPoster = null; //video.poster
 		};
 		waitForElement('#EPvideo_html5_api', 'src', mainFunction, delay, tries, false, waitGroup);
 	}
@@ -714,6 +831,10 @@
 		initFunction();
 	}
 
+	// else if (!document.querySelector('video[src]') && document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button')) {
+	// 	console.log('openload.co.user.js: ','skipped');
+	// }
+
 	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
 		mainFunction = function() {
 			videoSource = flashvars.video_alt_url ? flashvars.video_alt_url : flashvars.video_url;
@@ -721,6 +842,10 @@
 		};
 		initFunction();
 	} else {
+		// if (!document.querySelector('video[src]')) {
+		// 	var clicked = false, clickSelector = '.jwdisplayIcon';  // https://kingvid.tv/embed-kyy73pww38ox.html
+		// 	clicked = clickElement(clickSelector); if (!clicked) {document.addEventListener('DOMNodeInserted', function handleNewElements(event){if (!clicked) clicked = clickElement(clickSelector);} , false);}
+		// }
 		waitForElement(videoSourceSelector, 'src', applyVideoSettings, delay, tries, false, waitGroup);
 	}
 })();
