@@ -53,12 +53,13 @@
 					editor.focus();
 					editor.scrollIntoView();
 				}
-
-				var table = document.getElementById("list");
-				if (table) {
-					table.focus();
-					table.scrollIntoView();
-				}
+				setTimeout(function scroll_to_table(){
+					var table = document.getElementById("list");
+					if (table) {
+						table.focus();
+						table.scrollIntoView();
+					}
+				}, 2000);
 			}
 		}
 		else if ( pageURL.match("http://spys.one/") ) {
@@ -78,6 +79,11 @@
 				editor.value = GM_proxy_list;
 				// editor.focus();
 				// editor.scrollIntoView();
+				var get_iframe_height = setInterval(function(){
+					var height = document.getElementById("global-wrapper").scrollHeight + "px";
+					GM_setValue("proxy_list_height", height);
+					if (GM_getValue("proxy_list_height") != height) console.log("height: ", height);
+				}, 1000);
 			}
 			GM_registerMenuCommand("Check Proxies", function(){check_proxies();}, "c");
 		}
@@ -130,7 +136,7 @@
 			var text = item.innerText;
 			if (text.match(/\d+\.\d+\.\d+\.\d+/)) {
 				ip_list = ip_list + text + "\n";
-				console.log(text);
+				// console.log(text);
 				result = true;
 			}
 		});
@@ -165,10 +171,17 @@
 			proxy_checker.id = "proxy_checker";
 			proxy_checker.src = "https://hidemy.name/ru/proxy-checker/";
 			proxy_checker.style.width = "100%";
-			proxy_checker.style.height = "1000px";
+			proxy_checker.style.height = "0px";
+			proxy_checker.style.overflow = "hidden";
 			proxy_checker.value = ip_list;
 
 			proxy_checker.focus();
+
+			var set_iframe_height = setInterval(function(){
+				var GM_proxy_list_height = GM_getValue("proxy_list_height", 0);
+				proxy_checker.style.height = GM_proxy_list_height;
+			}, 1000);
+			// clearInterval(check_height);
 		}
 	}
 })();
