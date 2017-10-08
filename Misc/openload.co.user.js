@@ -392,35 +392,35 @@
 
 	function addMediaTextIndicator(media, fontSize) {
 		fontSize = fontSize || 72;
-		var volumeTextIndicator = document.createElement('div');
-		volumeTextIndicator.style.setProperty('color', 'yellow', 'important');
-		volumeTextIndicator.style['font-size'] = fontSize + 'px';
-		volumeTextIndicator.style.position = 'absolute';
-		volumeTextIndicator.style['z-index'] = 2147483647; // Always on TOP
-		volumeTextIndicator.style.top = '0px';
-		volumeTextIndicator.style.left = (fontSize/4) + 'px';
-		media.parentNode.insertBefore(volumeTextIndicator, media.nextSibling);
+		var mediaTextIndicator = document.createElement('div');
+		mediaTextIndicator.style.setProperty('color', 'yellow', 'important');
+		mediaTextIndicator.style['font-size'] = fontSize + 'px';
+		mediaTextIndicator.style.position = 'absolute';
+		mediaTextIndicator.style['z-index'] = 2147483647; // Always on TOP
+		mediaTextIndicator.style.top = '0px';
+		mediaTextIndicator.style.left = (fontSize/4) + 'px';
+		media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
 		var volumeTextFade = function(fadeDelay) {
 			fadeDelay = fadeDelay || 2000;
 			var fadeDelaySeconds = Math.floor(fadeDelay/1000);
 			function textFadeStart(show) {
 				var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
-				volumeTextIndicator.style.opacity = show ? 1 : 0;
-				volumeTextIndicator.style.transition = transition;
-				volumeTextIndicator.style['-webkit-transition'] = transition; // Safari
+				mediaTextIndicator.style.opacity = show ? 1 : 0;
+				mediaTextIndicator.style.transition = transition;
+				mediaTextIndicator.style['-webkit-transition'] = transition; // Safari
 			}
 			textFadeStart(true);
 			setTimeout(textFadeStart, fadeDelaySeconds*1000);
 		};
 		var setVolumeText = function() {
 			volumeTextFade(2000);
-			volumeTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
+			mediaTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
 		};
 		var setTimeText = function() {
 			volumeTextFade(2000);
 			var duration = media.duration;
 			var currentTime = media.currentTime;
-			volumeTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
+			mediaTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
 		};
 		var addEventHandlers = function() {
 			if (media.addEventListener) {
@@ -432,7 +432,7 @@
 			}
 		};
 		setTimeout(addEventHandlers, 10);
-		return volumeTextIndicator;
+		return mediaTextIndicator;
 	}
 
 	function addMouseWheelAudioControl(media, step) {
@@ -454,7 +454,7 @@
 		} else {
 			media.attachEvent("onmousewheel", mouseWheelAudioHandler); // IE 6/7/8
 		}
-		var volumeTextIndicator = addMediaTextIndicator(media, 56);
+		var mediaTextIndicator = addMediaTextIndicator(media, 56);
 	}
 
 	function applyVideoSettings() {
