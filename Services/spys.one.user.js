@@ -83,9 +83,21 @@
 		}
 		var not_working_cb = document.getElementById("cb_f");
 		if (not_working_cb) not_working_cb.removeAttribute("checked");
-		GM_deleteValue("proxy_list");
+		// GM_deleteValue("proxy_list");
 
 		setTimeout(function remove_banner(){var banner = document.querySelector("jdiv.globalClass_ET");if (banner) banner.remove();}, 2000);
+
+		// var page_background = document.querySelector("div.wrap-container");
+		// if (page_background) page_background.style.background = "#001229";
+
+		var green_line = document.querySelector("div.green-line.proxy-line");
+		if (green_line) green_line.remove(); // green_line.style.display = "none";
+
+		var details_ports = document.querySelector("div.details-ports");
+		if (details_ports) details_ports.remove(); // details_ports.style.display = "none";
+
+		var footer = document.querySelector("footer");
+		if (footer) footer.remove(); // footer.style.display = "none";
 	}
 
 	else if ( pageURL.match("http://spys.one/") ) {
