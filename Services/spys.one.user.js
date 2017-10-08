@@ -48,6 +48,7 @@
 				check_button.click();
 				var editor = document.getElementById("f_in");
 				if (editor) {
+					var GM_proxy_list = GM_getValue("proxy_list", null);
 					editor.value = GM_proxy_list;
 					editor.focus();
 					editor.scrollIntoView();
