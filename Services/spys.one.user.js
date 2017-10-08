@@ -54,11 +54,13 @@
 					editor.scrollIntoView();
 				}
 				setTimeout(function scroll_to_table(){
-					var table = document.getElementById("list");
-					if (table) {
-						table.focus();
-						table.scrollIntoView();
-					}
+					// var table = document.getElementById("list");
+					// if (table) {
+					// 	table.focus();
+					// 	table.scrollIntoView();
+					// }
+					var progress = document.querySelector(".testing-btn");
+					if (progress) progress.scrollIntoView();
 				}, 2000);
 			}
 		}
