@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         services
 // @icon         https://www.google.com/s2/favicons?domain=pornhub.com
-// @version      1.3.6
+// @version      1.3.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    Misc_Scripts
@@ -84,6 +84,8 @@
 // @match        http://www.camshooker.com/videos/*
 
 // @match        https://xfreehd.com/video/*/*
+
+// @match        http://fuckingsession.com/*
 // ==/UserScript==
 
 (function() {
@@ -197,6 +199,19 @@
 	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 
 	var getAbsoluteUrl = (function(){var a; return function(url){if(!a) a = document.createElement('a'); a.href = url; return a.href; };})();
+
+	function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
+
+	function getVisibleElement(elements) {
+		for (var i = 0; i < elements.length; ++i) {
+			var element = elements[i];
+			console.log(element, 'isVisible: '+isVisible(element));
+			if (isVisible(element)) {
+				return element;
+			}
+		}
+		return;
+	}
 	// ====================================================================================================================
 
 	// if (
@@ -725,7 +740,8 @@
 		) {
 			addGlobalStyle('#player-and-details {height: 480px;}');
 			mainFunction = function() {
-				contentURL = document.querySelectorAll('#actualPlayer iframe')[0].src;
+				var iframes =  document.querySelectorAll('#actualPlayer iframe');
+				contentURL = iframes ? iframes[0].src : null;
 				if (contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) {
 					contentURL = contentURL + '&hd=1';
 				}
@@ -739,7 +755,8 @@
 					contentURL = contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
 				}
 
-				posterURL = document.querySelector('.blockx img.imgshadow').src;
+				var poster = document.querySelector('.blockx img.imgshadow');
+				posterURL = poster ? poster.src : '';
 				appendToFrame = document.querySelector('#linkdetails-similars');
 
 				for (const a of document.querySelectorAll("span > b")) {
@@ -760,6 +777,11 @@
 				addKeyComboCtrlC(true);
 			};
 			waitForElement('#actualPlayer iframe', 'src', initFunction, delay, null, false);
+			var source = document.querySelector('#player-and-details-2 > div.blockx > div.a > center > b:nth-of-type(2)');
+			if (source) {
+				var sourceURL = source.innerText;
+				source.outerHTML = '<a href="//' +sourceURL + '">' + sourceURL + '</a>';
+			}
 		}
 	}
 
@@ -1315,6 +1337,37 @@
 				addKeyComboCtrlC(true);
 			};
 			waitForElement(videoSourceSelector, 'src', initFunction, delay, null, false);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://fuckingsession.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://fuckingsession.com/*/') // http://fuckingsession.com/team-skeet-karissa-kane-tightly-packed-jizz-showers/
+		) {
+			videoSourceSelector = 'iframe[src], #mediaplayer_media > video';
+			mainFunction = function() {
+				contentURL = document.querySelector(videoSourceSelector).src;
+				var elements = document.querySelectorAll('iframe[src], #mediaplayer_media > video');
+				var visibleElement = getVisibleElement(elements);
+				if (visibleElement && !visibleElement.src && document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button')) {
+					document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button').forEach(function(item, index, array){
+						return item.click();
+					});
+				}
+				contentURL = visibleElement ? visibleElement.src : contentURL;
+				posterURL = document.querySelector('meta[property="og:image"]').content;
+				appendToFrame = document.querySelector('#extras');
+				appendPosition = 'before';
+				var sourceButtons = document.querySelectorAll('.GTTabsLinks');
+				sourceButtons.forEach(function(item, index, array){
+					if (item) item.addEventListener("click", mainFunction, false);
+				});
+				addEmbedCodeFrame(mainFunction);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement(videoSourceSelector, false, initFunction, delay, null, false);
 		}
 	}
 
