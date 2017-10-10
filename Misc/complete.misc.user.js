@@ -5,7 +5,12 @@
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
-// @grant        none
+
+/// @grant       none
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_deleteValue
+
 // @run-at       document-start
 
 /// @noframes
@@ -42,6 +47,21 @@
 // @match		 http://*.xfreehd.com/media/*.mp4
 // @match		 https://*.xfreehd.com/media/*.mp4
 
+// @match		 http://e.yespornplease.com/e/*
+// @match		 https://e.yespornplease.com/e/*
+// @match		 http://vshare.io/v/*
+// @match		 https://vshare.io/v/*
+
+// @match		 https://*.googlevideo.com/videoplayback?id=*
+
+// @match		 http://www.pornhub.com/embed/*
+// @match		 https://www.pornhub.com/embed/*
+// @match		 http://www.pornhub.com/view_video.php?viewkey=*
+// @match		 https://www.pornhub.com/view_video.php?viewkey=*
+
+// @match		 http://www.tube8.com/embed/*
+// @match		 https://www.tube8.com/embed/*
+
 // @match		 http://*.mp4
 // @match		 https://*.mp4
 // ==/UserScript==
@@ -61,7 +81,7 @@
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
 	};
 	// ====================================================================================================================
-	var funcToTest, funcToRun, delay = 10, tries = 500, timerGroup = [], waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
+	var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
 		if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
 			delay = delay || 1000; // defaults
 			timerGroup = timerGroup || [];
@@ -102,6 +122,22 @@
 
 	NodeList.prototype.forEach = Array.prototype.forEach; // Source: https://gist.github.com/DavidBruant/1016007
 	HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
+	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
+
+	function injectNode(tagName, parentNode, innerHTML) {
+		var e = document.createElement(tagName);
+		if (typeof parentNode == "string") parentNode = document.querySelector(parentNode);
+		parentNode.appendChild(e);
+		if (innerHTML) e.innerHTML = innerHTML;
+		return e;
+	}
+
+	function getWindowVar(varName) {
+		var script = injectNode('script',  document.head, 'function getVar(varName){return window[varName];}');
+		var result = getVar(varName);
+		script.remove();
+		return result;
+	}
 	// ====================================================================================================================
 	if (
 		pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
@@ -157,6 +193,7 @@
 			window.location.href = refineVideo(contentURL);
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		// document.addEventListener('DOMContentLoaded', funcToRun, false);
 	}
 
 	else if (
@@ -172,7 +209,6 @@
 				window.location.href = refineVideo(contentURL);
 			};
 			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-
 		}
 	}
 
@@ -231,6 +267,77 @@
 	}
 
 	else if (
+		pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
+	) {
+		var getIframeContent = setInterval(function() {
+			var contentURL = GM_getValue('contentURL', null);
+			if (contentURL) {
+				GM_deleteValue('contentURL');
+				window.location.href = refineVideo(contentURL);
+			}
+		}, 10);
+	}
+
+	else if (
+		pageURL.matchLink('https?://vshare.io/v/*') // http://vshare.io/v/e16edd7/width-867/height-491/1 || // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
+	) {
+		funcToTest = function() {
+			return document.querySelector('body video > source[src]') || document.querySelector('body video[src]');
+		};
+		funcToRun = function() {
+			var contentURL = document.querySelector('body video[src]').src;
+			var quality = 0;
+			document.querySelectorAll('body video > source[src]').forEach(function(source) {
+				var res = source.res || source.label;
+				if (res) {
+					var value = Number(text.match(/\d+/));
+					if (value > quality) {quality = value; contentURL = source.src;}
+				}
+			});
+			GM_setValue('contentURL', contentURL);
+			console.log('quality: '+quality);
+			console.log('contentURL: ', contentURL);
+			window.location.href = refineVideo(contentURL);
+		};
+		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.pornhub.com/*')
+	) {
+		if (
+			pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
+			pageURL.match('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
+		) {
+			var handleScripts = function(event) {
+				var contentURL;
+				var flashvars;
+				for (let script of document.scripts) {
+					var text = script.text;
+					var match = text.match(/var flashvars_(.*?) = */i);
+					if (match) {
+						var id = match[1];
+						if (id) flashvars = getWindowVar('flashvars_' + id);
+						if (flashvars) break;
+					}
+				}
+				if (flashvars) {
+					var qualityTable = flashvars.defaultQuality, maxQuality = 0;
+					for (let quality of qualityTable) {
+						maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
+					}
+					if (maxQuality > 0) {
+						console.log('quality: ' + maxQuality);
+						contentURL = flashvars['quality_' + maxQuality + 'p'];
+						window.location.href = refineVideo(contentURL);
+					}
+				}
+			};
+			document.addEventListener('DOMContentLoaded', handleScripts, false);
+		}
+	}
+
+	else if (
 		pageURL.split("?")[0].split("#")[0].endsWith("mp4") // https://b02.xfreehd.com/media/videos/hd/11960.mp4
 	) {
 		var contentURL = pageURL;
@@ -245,6 +352,15 @@
 		funcToRun = function() {
 			var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
 			var posterURL = flashvars.preview_url;
+			var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
+				var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
+				for (let quality of qualitiesTable) {maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;}
+				if (maxQuality > 0) {
+					console.log('quality: ' + maxQuality);
+					contentURL = flashvars['quality_' + maxQuality + 'p'];
+				}
+			};
+			testQualities();
 			console.log('contentURL: ', contentURL);
 			window.location.href = refineVideo(contentURL);
 		};
