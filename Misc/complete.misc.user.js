@@ -18,57 +18,45 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 
-// @require      https://code.jquery.com/jquery-3.2.1.min.js
+/// @require      https://code.jquery.com/jquery-3.2.1.min.js
 
-// @match		 http://www.eporner.com/embed/*
-// @match		 https://www.eporner.com/embed/*
+// @match		 *://www.eporner.com/embed/*
 
-// @match        http://openload.co/embed/*
-// @match        https://openload.co/embed/*
+// @match        *://openload.co/embed/*
+// @match        *://oload.tv/embed/*
 
-// @match        http://yourporn.sexy/post/*.html
-// @match        https://yourporn.sexy/post/*.html
+// @match        *://yourporn.sexy/post/*.html
 
-// @match        http://www.camwhores.tv/embed/*
-// @match        https://www.camwhores.tv/embed/*
+// @match        *://www.camwhores.tv/embed/*
 
-// @match        http://www.bitporno.com/embed/*
-// @match        https://www.bitporno.com/embed/*
+// @match        *://www.bitporno.com/embed/*
 
-// @match		 http://www.porntrex.com/video/*/*
-// @match		 https://www.porntrex.com/video/*/*
+// @match		 *://www.porntrex.com/video/*/*
 
-// @match		 http://drive.google.com/file/d/*/preview?*
-// @match		 https://drive.google.com/file/d/*/preview?*
+// @match		 *://drive.google.com/file/d/*/preview?*
 
-// @match		 http://vidoza.net/embed-*
-// @match		 https://vidoza.net/embed-*
+// @match		 *://vidoza.net/embed-*
 
-// @match		 http://*.xfreehd.com/media/*.mp4
-// @match		 https://*.xfreehd.com/media/*.mp4
+// @match		 *://*.xfreehd.com/media/*.mp4
 
-// @match		 http://e.yespornplease.com/e/*
-// @match		 https://e.yespornplease.com/e/*
-// @match		 http://vshare.io/v/*
-// @match		 https://vshare.io/v/*
+// @match		 *://e.yespornplease.com/e/*
+// @match		 *://vshare.io/v/*
 
-// @match		 https://*.googlevideo.com/videoplayback?id=*
+// @match		 *://*.googlevideo.com/videoplayback?id=*
 
-// @match		 http://www.pornhub.com/embed/*
-// @match		 https://www.pornhub.com/embed/*
-// @match		 http://www.pornhub.com/view_video.php?viewkey=*
-// @match		 https://www.pornhub.com/view_video.php?viewkey=*
+// @match		 *://www.pornhub.com/embed/*
+// @match		 *://www.pornhub.com/view_video.php?viewkey=*
 
-// @match		 http://www.tube8.com/embed/*
-// @match		 https://www.tube8.com/embed/*
+// @match		 *://www.tube8.com/embed/*
 
-// @match		 http://*.mp4
-// @match		 https://*.mp4
+// @match		 *://*.mp4
 // ==/UserScript==
 
 (function() {
 	'use strict';
 	console.clear();
+	document.body.style.background = 'black';
+	document.body.style.display = 'none';
 	// DEFAULT GLOBAL VARIABLES
 	// ====================================================================================================================
 	var pageHost = location.hostname,
@@ -139,6 +127,8 @@
 		return result;
 	}
 	// ====================================================================================================================
+
+	// ====================================================================================================================
 	if (
 		pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
 	) {
@@ -179,11 +169,12 @@
 	}
 
 	else if (
-		pageURL.matchLink('https?://openload.co/embed/*') // https://openload.co/embed/GwWaJKr7q-g/
+		pageURL.matchLink('https?://openload.co/embed/*') || // https://openload.co/embed/GwWaJKr7q-g/
+		pageURL.matchLink('https?://oload.tv/embed/*') // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
 	) {
 		funcToTest = function() {
-			var url = document.querySelector('#streamurl');
-			var ready = url && url.innerText && !url.innerText.match("HERE IS THE LINK");
+			var ready, url = document.querySelector('#streamurl');
+			if (url && !url.innerText.match("HERE IS THE LINK")) ready = true;
 			return ready;
 		};
 		funcToRun = function() {
