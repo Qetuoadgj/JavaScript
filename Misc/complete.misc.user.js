@@ -11,7 +11,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 
-// @run-at       document-start
+// @run-at       document-end
 
 /// @noframes
 
@@ -20,12 +20,14 @@
 
 /// @require      https://code.jquery.com/jquery-3.2.1.min.js
 
+// @match		 *://www.eporner.com/hd-porn/*/*/
 // @match		 *://www.eporner.com/embed/*
 
 // @match        *://openload.co/embed/*
 // @match        *://oload.tv/embed/*
+// @match        *://oload.info/embed/*
 
-// @match        *://yourporn.sexy/post/*.html
+// @match        *://yourporn.sexy/post/*.html*
 
 // @match        *://www.camwhores.tv/embed/*
 
@@ -37,6 +39,7 @@
 
 // @match		 *://vidoza.net/embed-*
 
+// @match		 *://xfreehd.com/video/*/*
 // @match		 *://*.xfreehd.com/media/*.mp4
 
 // @match		 *://e.yespornplease.com/e/*
@@ -50,15 +53,23 @@
 // @match		 *://www.tube8.com/embed/*
 
 // @match		 *://*.mp4
+
+// @match		 *://www.imagefap.com/pictures/*/*?*view=2
+
+// @match		 *://pron.tv/*
 // ==/UserScript==
 
 (function() {
 	'use strict';
-	console.clear();
-	document.body.style.background = 'black';
-	document.body.style.display = 'none';
+	// console.clear();
+	// if (document.body) {
+	// 	document.body.style.background = 'black';
+	// 	document.body.style.display = 'none';
+	// }
 	// DEFAULT GLOBAL VARIABLES
 	// ====================================================================================================================
+	var TEST_MODE = false;
+	var URL_MATCHED;
 	var pageHost = location.hostname,
 		pageURL = location.href,
 		pageTitle = document.title,
@@ -66,33 +77,57 @@
 	;
 	var refineVideoParam = 'REFINE_VIDEO';
 	var refineVideo = function(url) {
+		// if (TEST_MODE) return;
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
 	};
-	// ====================================================================================================================
-	var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
-		if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
-			delay = delay || 1000; // defaults
-			timerGroup = timerGroup || [];
-			var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
-			var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
-			var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
-				var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
-				if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
-			};
-			var clearTimers = function(timerGroup) {
-				if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]); if (i == timerGroup.length-1) {timerGroup = [];}}
-			};
-			var iteration = function(count) {
-				var keepRun = tries ? (count <= tries) : true;
-				if (keepRun) {
-					var result = funcToTest();
-					console.log('iteration: ', count);
-					if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
-				}
-			};
-			iteration(1); // 1st iteration
-		}
+	var openURL = function(url) {
+		if (TEST_MODE) return;
+		window.location.href = url;
 	};
+	// TEST_MODE = true;
+	// ====================================================================================================================
+	var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
+		waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
+			if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
+				delay = delay || 1000; // defaults
+				timerGroup = timerGroup || [];
+				var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
+				var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
+				var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
+					var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
+					if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
+				};
+				var clearTimers = function(timerGroup) {
+					if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]); if (i == timerGroup.length-1) {timerGroup = [];}}
+				};
+				var iteration = function(count) {
+					var keepRun = tries ? (count <= tries) : true;
+					if (keepRun) {
+						var result = funcToTest();
+						console.log('iteration: ', count);
+						if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+					}
+				};
+				iteration(1); // 1st iteration
+			}
+		},
+		waitForElement = function(elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
+			var funcToTest = function() {
+				var result, elementsArray = document.querySelectorAll(elementSelector);
+				for (var i = 0; i < elementsArray.length; ++i) {
+					var element = elementsArray[i];
+					var value = element ? element.getAttribute(attribute) : null;
+					result = attribute ? value : element;
+					if (result && result !== '') {
+						funcResult = element;
+						break;
+					}
+				}
+				return result;
+			};
+			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		}
+	;
 
 	String.prototype.addToURL = function(param, separator, prefix, postfix) {
 		prefix = prefix || ''; postfix = postfix || '';
@@ -102,15 +137,18 @@
 	};
 
 	String.prototype.matchLink = function(link, flags) {
+		var original = link;
 		link = link.replace(/[.\/]/g, "\\$&");
 		link = link.replace(/\*/g, ".*");
 		var re = new RegExp(link, flags);
-		return this.match(re);
+		var result = this.match(re);
+		if (result) URL_MATCHED = 'matchLink: ' + original + (flags ? ' ; flags: ' + flags : '');
+		return result;
 	};
 
 	NodeList.prototype.forEach = Array.prototype.forEach; // Source: https://gist.github.com/DavidBruant/1016007
 	HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
-	function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
+	// function forEach(array, callback, scope) {for (var i = 0; i < array.length; i++) {callback.call(scope, i, array[i]);}}
 
 	function injectNode(tagName, parentNode, innerHTML) {
 		var e = document.createElement(tagName);
@@ -126,62 +164,267 @@
 		script.remove();
 		return result;
 	}
-	// ====================================================================================================================
 
+	var getAbsoluteUrl = (function(){var a; return function(url){if(!a) a = document.createElement('a'); a.href = url; return a.href; };})();
+
+	function addGlobalStyle(css, cssClass) {
+		var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
+		var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+		if (cssClass) style.setAttribute('class', cssClass);
+		head.appendChild(style);
+	}
 	// ====================================================================================================================
-	if (
-		pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
-	) {
-		funcToTest = function() {
-			return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
-		};
-		funcToRun = function() {
-			var quality = 0, menuItem;
-			var qualityTable = {};
-			document.querySelectorAll('.vjs-menu-content > .vjs-menu-item').forEach(function(item) { // https://www.eporner.com/embed/HYmQUXbhRrR
-				var button = item.querySelector('.vjs-menu-item-text');
-				var text = button ? button.innerText : '';
-				var q = Number(text.match(/\d+/));
-				if (q > quality) {quality = q; menuItem = item;}
-			});
-			if (menuItem) menuItem.click();
-			console.log('quality: '+quality);
-			var contentURL;
-			var video = document.querySelector('body video');
-			var src = video.src;
-			if (src.match("blob:")) {
-				var content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
-				video.src = content;
-				waitForCondition(
-					function(){return video.src != content;},
-					function(){
-						contentURL = video.src;
-						window.location.href = refineVideo(contentURL);
-					}, delay, tries, timerGroup
-				);
-			} else {
-				contentURL = video.src;
-				console.log('contentURL: ', contentURL);
-				window.location.href = refineVideo(contentURL);
+	var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters,
+		G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_stickTo, G_stickPosition, G_qualityButtons,
+		G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = false;
+
+	String.prototype.capitalize = function() {
+		function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
+		return this.split(' ').map(capFirst).join(' ');
+	};
+
+	String.prototype.toTitleCase = function(lower) {
+		var string = lower ? this.toLowerCase() : this;
+		var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
+		return string.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function(match, index, title) {
+			if (index > 0 && index + match.length !== title.length &&
+				match.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
+				(title.charAt(index + match.length) !== '-' || title.charAt(index - 1) === '-') &&
+				title.charAt(index - 1).search(/[^\s-]/) < 0) {
+				return match.toLowerCase();
+			}
+			if (match.substr(1).search(/[A-Z]|\../) > -1) {
+				return match;
+			}
+			return match.charAt(0).toUpperCase() + match.substr(1);
+		});
+	};
+
+	Element.prototype.appendElement = function(targetFrame, appendPosition) {
+		if (appendPosition == 'after') targetFrame.parentNode.insertBefore(this, targetFrame.nextSibling);
+		else if (appendPosition == 'before') targetFrame.parentNode.insertBefore(this, targetFrame);
+		else if (!appendPosition || appendPosition == 'append') targetFrame.appendChild(this);
+	};
+
+	Element.prototype.autoHeight = function(fixedHeight) {
+		this.style.height = 'auto';
+		this.style.height = (this.scrollHeight) + 'px';
+		if (fixedHeight > 0) this.style.maxHeight = this.style.height;
+		this.addEventListener('click', this.autoHeight, false);
+	};
+
+	function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
+		var onKeyDown = function(e) {
+			e = e || window.event;
+			var cKey = 67;
+			var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+			if (targetElement && ctrlDown && e.keyCode == cKey) {
+				var selectedText = window.getSelection().toString();
+				selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
+				if (!selectedText) {
+					targetElement.select();
+					document.execCommand('copy');
+					if (preventDefault) e.preventDefault();
+				}
 			}
 		};
-		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+	}
+
+	function embedCode(callerFunction) {
+		var parentDocument = document;
+		var id = 'embedCode';
+		var embedCodeFrame = document.getElementById(id);
+		if (embedCodeFrame) embedCodeFrame.remove();
+		embedCodeFrame = parentDocument.createElement('div');
+		embedCodeFrame.setAttribute('id', id);
+		embedCodeFrame.style.setProperty('display', 'block', 'important');
+		embedCodeFrame.style['word-wrap'] = 'break-word';
+		embedCodeFrame.appendElement(G_stickTo, G_stickPosition);
+		G_embedCodeFrame = embedCodeFrame;
+
+		G_contentTitle = G_contentTitle || pageTitle.replace(/^.{1} /i, '').capitalize();
+		if (!G_embedCodeText || G_refreshEmbedCodeText) {
+			G_embedCodeText = '<div class="thumbnail"';
+			if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+			if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
+			G_embedCodeText += ' content="' + G_contentURL + '"';
+			if (G_contentURL !== pageURL) G_embedCodeText += ' url="' + pageURL + '"';
+			G_embedCodeText += '></div>';
+		}
+
+		var embedCodeTextArea = parentDocument.createElement('textarea');
+		embedCodeTextArea.setAttribute('id', embedCodeFrame.id + 'TextArea');
+		embedCodeTextArea.style.setProperty('display', 'block', 'important');
+		embedCodeTextArea.style.border = 'none';
+		embedCodeTextArea.style['background-color'] = 'transparent';
+		embedCodeTextArea.style.width = '100%';
+		embedCodeTextArea.style['max-width'] = '100%';
+		embedCodeTextArea.style.rows = '2';
+		embedCodeTextArea.style.overflow = 'hidden';
+		embedCodeTextArea.style['font-size'] = '12px';
+		embedCodeTextArea.style.color = 'grey';
+		embedCodeTextArea.setAttribute('readonly', 'readonly');
+		embedCodeTextArea.setAttribute('onclick', 'this.focus(); this.select();');
+		embedCodeTextArea.value = G_embedCodeText;
+		embedCodeFrame.appendChild(embedCodeTextArea);
+		G_embedCodeTextArea = embedCodeFrame;
+
+		if (G_embedCodeAutoHeight) {
+			embedCodeTextArea.autoHeight(G_embedCodeFixedHeight);
+			// textArea.addEventListener("resize", textArea.autoHeight(textAreaFixedHeight));
+		}
+
+		addKeyComboCtrlC(embedCodeTextArea, true, false);
+
+		var embedCodeLink = parentDocument.createElement('a');
+		embedCodeLink.style['font-size'] = '12px';
+		embedCodeLink.style.color = '#086081';
+		embedCodeLink.style.width = 'auto';
+		embedCodeLink.setAttribute('target', '_blank'); // Open in new tab
+		embedCodeLink.setAttribute('href', G_contentURL);
+		embedCodeLink.text = embedCodeLink.href;
+		embedCodeFrame.appendChild(embedCodeLink);
+		G_embedCodeLink = embedCodeLink;
+
+		var embedCodePoster = parentDocument.createElement('img');
+		embedCodePoster.style.setProperty('display', 'block', 'important');
+		embedCodePoster.style['max-height'] = '120px';
+		// embedCodePoster.style['min-width'] = '90px';
+		embedCodePoster.style.width = 'auto';
+		embedCodePoster.style.height = 'auto';
+		embedCodePoster.setAttribute('src', G_posterURL);
+		embedCodeFrame.appendChild(embedCodePoster);
+		embedCodePoster.addEventListener("click", callerFunction, false);
+		var posters = G_posters || []; // global value
+		for (var index = 0; index < posters.length; index++) {
+			if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
+				embedCodePoster.setAttribute('src', posters[index]);
+			}
+		}
+		var qualityButtons = G_qualityButtons || []; // global value
+		qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
+	}
+
+	var G_videoWidth, G_videoHeight;
+	function getVideoData(video, run) {
+		var showData = () => {
+			console.log('video: '+video.src+' ['+width+'x'+height+']');
+			G_videoWidth = width;
+			G_videoHeight = height;
+			run();
+		};
+		var width = video.videoWidth, height = video.videoHeight;
+		if (width && height) {
+			showData();
+		} else {
+			video.addEventListener( "loadedmetadata", function (e) {
+				width = this.videoWidth;
+				height = this.videoHeight;
+				showData();
+			}, false );
+		}
+	}
+	// ====================================================================================================================
+	if (
+		pageURL.matchLink('https?://www.eporner.com')
+	) {
+		if (
+			pageURL.matchLink('https?://www.eporner.com/hd-porn/*/*/')
+		) {
+			funcToRun = function() {
+				var val = 0;
+				document.querySelectorAll('.vjs-menu-item-text').forEach(function(e) {
+					var size = e.innerText.match(/(\d+)p/);
+					if (size) val = Math.max(val, size[1]);
+				});
+				G_contentTitle = document.title;
+				var titleShort = document.querySelector('meta[property="og:title"]').content;
+				if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+				G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
+				G_posterURL = document.querySelector('meta[property="og:image"]').content;
+				G_stickTo = document.querySelector('#relateddiv');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+			};
+			waitForElement('#EPvideo_html5_api', 'src', funcToRun, delay, tries, timerGroup);
+		}
+		else if (
+			pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
+		) {
+			funcToTest = function() {
+				return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
+			};
+			funcToRun = function() {
+				var quality = 0, menuItem;
+				var qualityTable = {};
+				document.querySelectorAll('.vjs-menu-content > .vjs-menu-item').forEach(function(item) { // https://www.eporner.com/embed/HYmQUXbhRrR
+					var button = item.querySelector('.vjs-menu-item-text');
+					var text = button ? button.innerText : '';
+					var q = Number(text.match(/\d+/));
+					if (q > quality) {quality = q; menuItem = item;}
+				});
+				if (menuItem) menuItem.click();
+				console.log('quality: '+quality);
+				var contentURL;
+				var video = document.querySelector('body video');
+				var src = video.src;
+				if (src.match("blob:")) {
+					var content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
+					video.src = content;
+					waitForCondition(
+						function(){return video.src != content;},
+						function(){
+							contentURL = video.src;
+							openURL(refineVideo(contentURL));
+						}, delay, tries, timerGroup
+					);
+				} else {
+					contentURL = video.src;
+					console.log('contentURL: ', contentURL);
+					openURL(refineVideo(contentURL));
+				}
+			};
+			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://xfreehd.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://xfreehd.com/video/*/*') // https://xfreehd.com/video/6388/carolina-abril-pool-guy-fun
+		) {
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				// var titleShort = document.querySelector('meta[property="og:title"]').content;
+				// if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+				G_contentURL = document.querySelector('video > source').src;
+				G_contentURL = document.querySelector('.nv-hdicon') ? G_contentURL.replace('/iphone/', '/hd/') : G_contentURL;
+				G_posterURL = document.querySelector('meta[property="og:image"]').content;
+				G_stickTo = document.querySelector('#wrapper > div.container > div:nth-child(2) > div.col-md-8 > div:nth-child(1)');
+				G_stickPosition = 'after';
+				embedCode(funcToRun);
+			};
+			waitForElement('video > source', 'src', funcToRun, delay, tries, timerGroup);
+		}
 	}
 
 	else if (
 		pageURL.matchLink('https?://openload.co/embed/*') || // https://openload.co/embed/GwWaJKr7q-g/
-		pageURL.matchLink('https?://oload.tv/embed/*') // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
+		pageURL.matchLink('https?://oload.tv/embed/*') || // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
+		pageURL.matchLink('https?://oload.info/embed/*') // https://oload.info/embed/GkrmWmRxsGM/
 	) {
 		funcToTest = function() {
 			var ready, url = document.querySelector('#streamurl');
-			if (url && !url.innerText.match("HERE IS THE LINK")) ready = true;
+			if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
 			return ready;
 		};
 		funcToRun = function() {
 			var contentURL = location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
 			// var posterURL = document.querySelector('#olvideo_html5_api').poster;
 			console.log('contentURL: ', contentURL);
-			window.location.href = refineVideo(contentURL);
+			openURL(refineVideo(contentURL));
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 		// document.addEventListener('DOMContentLoaded', funcToRun, false);
@@ -197,9 +440,26 @@
 			funcToRun = function() {
 				var contentURL = document.querySelector('body video[src]').src;
 				console.log('contentURL: ', contentURL);
-				window.location.href = refineVideo(contentURL);
+				openURL(refineVideo(contentURL));
 			};
 			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		}
+		else if (
+			pageURL.matchLink('https?://yourporn.sexy/post/*') // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
+		) {
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				G_contentURL = shortURL + '#onlyVideo';
+				G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+				G_stickTo = document.querySelector('div.comments_area');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+				getVideoData(funcResult, function(){
+					if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+					embedCode(funcToRun);
+				});
+			};
+			waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
 		}
 	}
 
@@ -219,7 +479,7 @@
 				);
 				var posterURL = flashvars.preview_url;
 				console.log('contentURL: ', contentURL);
-				window.location.href = refineVideo(contentURL);
+				openURL(refineVideo(contentURL));
 			};
 			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 		}
@@ -250,7 +510,7 @@
 					var video_url = text.match(/{file:.*"(.*.mp4)",label:"\d+p"}/i);
 					contentURL = video_url ? video_url[1] : null;
 					console.log('contentURL: ', contentURL);
-					window.location.href = refineVideo(contentURL);
+					openURL(refineVideo(contentURL));
 				}
 			});
 		};
@@ -264,7 +524,7 @@
 			var contentURL = GM_getValue('contentURL', null);
 			if (contentURL) {
 				GM_deleteValue('contentURL');
-				window.location.href = refineVideo(contentURL);
+				openURL(refineVideo(contentURL));
 			}
 		}, 10);
 	}
@@ -288,7 +548,7 @@
 			GM_setValue('contentURL', contentURL);
 			console.log('quality: '+quality);
 			console.log('contentURL: ', contentURL);
-			window.location.href = refineVideo(contentURL);
+			openURL(refineVideo(contentURL));
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 	}
@@ -320,7 +580,7 @@
 					if (maxQuality > 0) {
 						console.log('quality: ' + maxQuality);
 						contentURL = flashvars['quality_' + maxQuality + 'p'];
-						window.location.href = refineVideo(contentURL);
+						openURL(refineVideo(contentURL));
 					}
 				}
 			};
@@ -333,7 +593,7 @@
 	) {
 		var contentURL = pageURL;
 		console.log('contentURL: ', contentURL);
-		window.location.href = refineVideo(contentURL);
+		openURL(refineVideo(contentURL));
 	}
 
 	else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
@@ -353,7 +613,7 @@
 			};
 			testQualities();
 			console.log('contentURL: ', contentURL);
-			window.location.href = refineVideo(contentURL);
+			openURL(refineVideo(contentURL));
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 	} else { // https://www.bitporno.com/embed/sXou0BTtX
@@ -364,10 +624,137 @@
 			document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
 				var contentURL = e.src;
 				console.log('contentURL: ', contentURL);
-				window.location.href = refineVideo(contentURL);
+				openURL(refineVideo(contentURL));
 			});
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 	}
 
+	// ====================================================================================================================
+
+	if (
+		pageURL.matchLink('https?://www.imagefap.com/pictures/*/*[?]*view=2')
+	) {
+		funcToRun = function() {
+			var imagesArray = [];
+			var thumbsArray = [];
+
+			var userID = document.querySelector('#menubar > table > tbody > tr:nth-child(2) > td:nth-child(1) > a').href;
+			userID = userID.replace(/.*user=(.*)/i, '$1');
+
+			var galleryID = document.querySelector('#galleryid_input').value;
+
+			var imageNames = document.querySelectorAll('td > font > i');
+			imageNames.forEach(function(self, index, array) {
+				var image = self.innerText;
+				imagesArray.push(image);
+			});
+
+			var imageIDs = document.querySelectorAll('#gallery > form > table > tbody > tr > td');
+			imageIDs.forEach(function(self, index, array) {
+				var imageID = self.id;
+				var image = imagesArray[index];
+				var imageURL = 'http://x.imagefapusercontent.com/u/' + userID + '/' + galleryID + '/' + imageID + '/' + image;
+				imagesArray[index] = imageURL;
+			});
+
+			var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
+			thumbs.forEach(function(self, index, array) {
+				var thumbURL = self.src;
+				thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
+				thumbsArray.push(thumbURL);
+				if (imagesArray[index].match('...')) imagesArray[index] = thumbURL.replace('x.fap.to/thumb/', 'x.fap.to/full/');
+			});
+
+			pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
+
+			G_refreshEmbedCodeText = false;
+			thumbsArray.forEach(function(self, index, array) {
+				contentURL = imagesArray[index];
+				G_posterURL = self;
+				G_contentTitle = '';
+				if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+				if (contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+				if (G_posterURL && G_posterURL !== contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
+				G_embedCodeText += ' content="' + contentURL + '"';
+				if (contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+				G_embedCodeText += '></div>';
+			});
+
+			G_stickTo = document.querySelector('#gallery');
+			G_stickPosition = 'after';
+			embedCode(funcToRun);
+		};
+		waitForElement('#gallery', false, funcToRun, delay, tries, timerGroup);
+	}
+
+	else if (
+		pageURL.matchLink('https?://pron.tv/*')
+	) {
+		document.querySelectorAll('.search-result-thumbnail, .lazy-load').forEach(function(link, index) {
+			var image = link.src ? link : link.querySelector('img');
+			var imageSrc = image.src;
+			if (!imageSrc || imageSrc.match('/img/blank.gif') || imageSrc === '') {
+				var noscript = link.querySelector('noscript');
+				if (noscript) {
+					imageSrc = noscript.innerText.match(/.*src="(.*?)".*/i)[1];
+				} else if (image.dataset.src) {
+					imageSrc = image.dataset.src;
+				}
+				if (imageSrc) image.src = imageSrc;
+			}
+		});
+		waitForElement('#pronwidgetcol32', false, function(){
+			document.querySelectorAll('div > a[href="#"] > img').forEach(thumbs, function(thumb, index) {
+				var link = thumb.parentNode;
+				if (link) {
+					var query = thumb.title || thumb.alt;
+					query = 'http://pron.tv/stream/search?q='+query+'&RandomHD=Random%20HD!';
+					link.href = query;
+					link.setAttribute('target', '_blank');
+				}
+			});
+		}, delay, tries, false);
+		if (
+			pageURL.matchLink('https?://pron.tv/l/*/*')
+		) {
+			addGlobalStyle('#player-and-details {height: 480px;}');
+			funcToRun = function() {
+				var iframes =  document.querySelectorAll('#actualPlayer iframe');
+				G_contentURL = iframes ? iframes[0].src : 'null';
+				if (G_contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) {
+					G_contentURL = G_contentURL + '&hd=1';
+				}
+				else if (G_contentURL.matchLink('https?://yespornplease.com/view/*')) {
+					// http://yespornplease.com/view/741577353?utm=pron
+					// http://e.yespornplease.com/e/741577353/width-650/height-400/autoplay-1
+					G_contentURL = G_contentURL.replace(/.*\/view\/(.*?)[?].*/i, 'http://e.yespornplease.com/e/$1/width-650/height-400/autoplay-0');
+					G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
+				}
+				else if (G_contentURL.matchLink('https?://www.porntrex.com/video/*')) {
+					G_contentURL = G_contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
+				}
+				var poster = document.querySelector('.blockx img.imgshadow');
+				G_posterURL = poster ? poster.src : '';
+				G_stickTo = document.querySelector('#linkdetails-similars');
+				for (const a of document.querySelectorAll("span > b")) {
+					if (a.textContent.includes("Source-Title")) {
+						G_contentTitle = a.parentNode.nextElementSibling.textContent.replace(/\n/g,'').toTitleCase();
+					}
+				}
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+				addKeyComboCtrlC(true);
+			};
+			waitForElement('#actualPlayer iframe', 'src', funcToRun, delay, tries, timerGroup);
+			var source = document.querySelector('#player-and-details-2 > div.blockx > div.a > center > b:nth-of-type(2)');
+			if (source) {
+				var sourceURL = source.innerText;
+				source.outerHTML = '<a href="//' +sourceURL + '">' + sourceURL + '</a>';
+			}
+		}
+	}
+
+	URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
+	console.log(URL_MATCHED);
 })();
