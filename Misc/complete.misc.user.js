@@ -42,6 +42,7 @@
 // @match		 *://xfreehd.com/video/*/*
 // @match		 *://*.xfreehd.com/media/*.mp4
 
+// @match		 *://yespornplease.com/view/*
 // @match		 *://e.yespornplease.com/e/*
 // @match		 *://vshare.io/v/*
 
@@ -76,8 +77,18 @@
 		shortURL = (location.protocol + '//' + location.host + location.pathname)
 	;
 	var refineVideoParam = 'REFINE_VIDEO';
+	if (location.href.match('autoplay=true')) {
+		GM_setValue('autoplay', true);
+		var autoplay = GM_getValue('autoplay', null);
+	}
 	var refineVideo = function(url) {
 		// if (TEST_MODE) return;
+		var autoplay = GM_getValue('autoplay', null);
+		console.log('autoplay: ' + autoplay || 'false');
+		if (autoplay) {
+			url = url.split('?')[1] ? url.split('?')[0] + '?autoplay=true' + url.split('?')[1] : url + '?autoplay=true';
+			GM_deleteValue('autoplay');
+		}
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
 	};
 	var openURL = function(url) {
@@ -174,8 +185,8 @@
 		head.appendChild(style);
 	}
 	// ====================================================================================================================
-	var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters,
-		G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_stickTo, G_stickPosition, G_qualityButtons,
+	var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters, G_sampleURL,
+		G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_sampleVideo, G_stickTo, G_stickPosition, G_qualityButtons,
 		G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = false;
 
 	String.prototype.capitalize = function() {
@@ -231,6 +242,26 @@
 		window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
 	}
 
+	var G_videoWidth, G_videoHeight;
+	function getVideoData(video, run) {
+		var showData = () => {
+			console.log('video: '+video.src+' ['+width+'x'+height+']');
+			G_videoWidth = width;
+			G_videoHeight = height;
+			run();
+		};
+		var width = video.videoWidth, height = video.videoHeight;
+		if (width && height) {
+			showData();
+		} else {
+			video.addEventListener('loadedmetadata', function (e) {
+				width = this.videoWidth;
+				height = this.videoHeight;
+				showData();
+			}, false );
+		}
+	}
+
 	function embedCode(callerFunction) {
 		var parentDocument = document;
 		var id = 'embedCode';
@@ -278,6 +309,7 @@
 		addKeyComboCtrlC(embedCodeTextArea, true, false);
 
 		var embedCodeLink = parentDocument.createElement('a');
+		embedCodeLink.style.setProperty('display', 'block', 'important');
 		embedCodeLink.style['font-size'] = '12px';
 		embedCodeLink.style.color = '#086081';
 		embedCodeLink.style.width = 'auto';
@@ -288,42 +320,34 @@
 		G_embedCodeLink = embedCodeLink;
 
 		var embedCodePoster = parentDocument.createElement('img');
-		embedCodePoster.style.setProperty('display', 'block', 'important');
+		embedCodePoster.style.setProperty('display', 'inline-block', 'important');
+		embedCodePoster.style['vertical-align'] = 'inherit';
 		embedCodePoster.style['max-height'] = '120px';
 		// embedCodePoster.style['min-width'] = '90px';
 		embedCodePoster.style.width = 'auto';
 		embedCodePoster.style.height = 'auto';
 		embedCodePoster.setAttribute('src', G_posterURL);
 		embedCodeFrame.appendChild(embedCodePoster);
-		embedCodePoster.addEventListener("click", callerFunction, false);
+		embedCodePoster.addEventListener('click', callerFunction, false);
 		var posters = G_posters || []; // global value
 		for (var index = 0; index < posters.length; index++) {
 			if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
 				embedCodePoster.setAttribute('src', posters[index]);
 			}
 		}
+		if (G_sampleURL && !(G_videoWidth && G_videoHeight)) {
+			var embedCodeVideo = parentDocument.createElement('video');
+			embedCodeVideo.style = embedCodePoster.getAttribute('style');
+			embedCodeVideo.setAttribute('preload', 'metadata');
+			embedCodeVideo.setAttribute('src', G_sampleURL);
+			embedCodeFrame.appendChild(embedCodeVideo);
+			embedCodeVideo.addEventListener('click', callerFunction, false);
+			G_sampleVideo = embedCodeVideo;
+			embedCodeVideo.addEventListener('loadedmetadata', function (e) {G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;}, false );
+			embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
+		}
 		var qualityButtons = G_qualityButtons || []; // global value
 		qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
-	}
-
-	var G_videoWidth, G_videoHeight;
-	function getVideoData(video, run) {
-		var showData = () => {
-			console.log('video: '+video.src+' ['+width+'x'+height+']');
-			G_videoWidth = width;
-			G_videoHeight = height;
-			run();
-		};
-		var width = video.videoWidth, height = video.videoHeight;
-		if (width && height) {
-			showData();
-		} else {
-			video.addEventListener( "loadedmetadata", function (e) {
-				width = this.videoWidth;
-				height = this.videoHeight;
-				showData();
-			}, false );
-		}
 	}
 	// ====================================================================================================================
 	if (
@@ -340,7 +364,7 @@
 				});
 				G_contentTitle = document.title;
 				var titleShort = document.querySelector('meta[property="og:title"]').content;
-				if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+				if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort.trim(), titleShort.trim() + ' [' + val + 'p] ');
 				G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
 				G_posterURL = document.querySelector('meta[property="og:image"]').content;
 				G_stickTo = document.querySelector('#relateddiv');
@@ -402,9 +426,16 @@
 				G_contentURL = document.querySelector('video > source').src;
 				G_contentURL = document.querySelector('.nv-hdicon') ? G_contentURL.replace('/iphone/', '/hd/') : G_contentURL;
 				G_posterURL = document.querySelector('meta[property="og:image"]').content;
+				G_sampleURL = G_contentURL;
 				G_stickTo = document.querySelector('#wrapper > div.container > div:nth-child(2) > div.col-md-8 > div:nth-child(1)');
 				G_stickPosition = 'after';
 				embedCode(funcToRun);
+				G_sampleVideo.addEventListener('loadedmetadata', function (e) {
+					G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
+					if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+					embedCode(funcToRun);
+					G_videoWidth = null; G_videoHeight = null;
+				}, false );
 			};
 			waitForElement('video > source', 'src', funcToRun, delay, tries, timerGroup);
 		}
@@ -518,17 +549,39 @@
 	}
 
 	else if (
-		pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
+		pageURL.matchLink('https?://yespornplease.com/*') // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
 	) {
-		var getIframeContent = setInterval(function() {
-			var contentURL = GM_getValue('contentURL', null);
-			if (contentURL) {
-				GM_deleteValue('contentURL');
-				openURL(refineVideo(contentURL));
-			}
-		}, 10);
-	}
+		if (
+			pageURL.matchLink('https?://yespornplease.com/view/*') //http://yespornplease.com/view/392920164
+		){
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				G_contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
+				G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
+				G_posterURL = (
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+					document.querySelector('meta[property="og:image"]').content
+				);
+				G_stickTo = document.querySelector('.video-tags');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+			};
+			waitForElement('#video_embed_code', false, funcToRun, delay, tries, timerGroup);
+		}
 
+		else if (
+			pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
+		) {
+			var getIframeContent = setInterval(function() {
+				var contentURL = GM_getValue('contentURL', null);
+				if (contentURL) {
+					GM_deleteValue('contentURL');
+					openURL(refineVideo(contentURL));
+				}
+			}, 10);
+		}
+	}
 	else if (
 		pageURL.matchLink('https?://vshare.io/v/*') // http://vshare.io/v/e16edd7/width-867/height-491/1 || // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
 	) {
