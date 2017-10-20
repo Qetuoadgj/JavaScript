@@ -86,7 +86,7 @@
 		var autoplay = GM_getValue('autoplay', null);
 		console.log('autoplay: ' + autoplay || 'false');
 		if (autoplay) {
-			url = url.split('?')[1] ? url.split('?')[0] + '?autoplay=true' + url.split('?')[1] : url + '?autoplay=true';
+			url = url.split('?')[1] ? url.split('?')[0] + '?autoplay=true&' + url.split('?')[1] : url + '?autoplay=true';
 			GM_deleteValue('autoplay');
 		}
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
