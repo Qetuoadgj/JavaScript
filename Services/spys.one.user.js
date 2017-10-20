@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         spys.one
 // @icon         https://www.google.com/s2/favicons?domain=spys.one
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        GM_registerMenuCommand
@@ -9,7 +9,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 /// @grant        none
-// @run-at       document-start
+// @run-at       document-end
 /// @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/spys.one.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
@@ -40,8 +40,6 @@
 	};
 
 	function pageIsInIframe() {return window.location !== window.parent.location;}
-
-	if (shortURL !== location.protocol + "//" + location.host + "/") window.location = location.protocol + "//" + location.host;
 
 	function check_proxies() {
 		if ( pageURL.match("https://hidemy.name/") ) {
@@ -74,6 +72,8 @@
 			}
 		}
 	}
+
+	// if (shortURL !== location.protocol + "//" + location.host + "/") window.location = location.protocol + "//" + location.host;
 
 	if ( pageURL.match("https://hidemy.name/") ) {
 		if (pageIsInIframe()) {
@@ -135,8 +135,8 @@
 		var result;
 		var ip_list = "";
 		var ip_list_selector = (
-			"body > table:nth-child(3) > tbody > tr:nth-child(4) > td > table > tbody > tr.spy1x > td > font.spy14,"+
-			"body > table:nth-child(3) > tbody > tr:nth-child(4) > td > table > tbody > tr.spy1xx > td > font.spy14"
+			"body > table > tbody > tr > td > table > tbody > tr.spy1x > td > font.spy14,"+
+			"body > table > tbody > tr > td > table > tbody > tr.spy1xx > td > font.spy14"
 		);
 
 		document.querySelectorAll(ip_list_selector).forEach(function(item) {
