@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.02
+// @version      0.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -86,7 +86,7 @@
 		var autoplay = GM_getValue('autoplay', null);
 		console.log('autoplay: ' + autoplay || 'false');
 		if (autoplay) {
-			url = url.split('?')[1] ? url.split('?')[0] + '?autoplay=true&' + url.split('?')[1] : url + '?autoplay=true';
+			url = url.split('?')[1] ? url + '&' + 'autoplay=true' : url + '?' + 'autoplay=true';
 			GM_deleteValue('autoplay');
 		}
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
