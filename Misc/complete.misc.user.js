@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.01
+// @version      0.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
