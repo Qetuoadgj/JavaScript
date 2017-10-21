@@ -688,42 +688,49 @@
 	else if (
 		pageURL.matchLink('https?://www.pornhub.com/*')
 	) {
+		var actualSource = () => {
+			var contentURL;
+			var flashvars;
+			for (let script of document.scripts) {
+				var text = script.text;
+				var match = text.match(/var flashvars_(.*?) = */i);
+				if (match) {
+					var id = match[1];
+					if (id) flashvars = getWindowVar('flashvars_' + id);
+					if (flashvars) break;
+				}
+			}
+			if (flashvars) {
+				var qualityTable = flashvars.defaultQuality, maxQuality = 0;
+				for (let quality of qualityTable) {
+					maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
+				}
+				if (maxQuality > 0) {
+					console.log('quality: ' + maxQuality);
+					contentURL = flashvars['quality_' + maxQuality + 'p'];
+					return(contentURL); // openURL(refineVideo(contentURL));
+				}
+			}
+		};
+
 		if (
 			pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
 			pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
 		) {
-			var handleScripts = function(event) {
-				var contentURL;
-				var flashvars;
-				for (let script of document.scripts) {
-					var text = script.text;
-					var match = text.match(/var flashvars_(.*?) = */i);
-					if (match) {
-						var id = match[1];
-						if (id) flashvars = getWindowVar('flashvars_' + id);
-						if (flashvars) break;
-					}
-				}
-				if (flashvars) {
-					var qualityTable = flashvars.defaultQuality, maxQuality = 0;
-					for (let quality of qualityTable) {
-						maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
-					}
-					if (maxQuality > 0) {
-						console.log('quality: ' + maxQuality);
-						contentURL = flashvars['quality_' + maxQuality + 'p'];
-						openURL(refineVideo(contentURL));
-					}
-				}
+			funcToRun = function() {
+				var contentURL = actualSource();
+				if (contentURL) openURL(refineVideo(contentURL));
 			};
-			document.addEventListener('DOMContentLoaded', handleScripts, false);
+			document.addEventListener('DOMContentLoaded', funcToRun, false);
 		}
 		else if (
 			pageURL.matchLink('https?://www.pornhub.com/view_video.php[?]viewkey=*') // https://www.pornhub.com/view_video.php?viewkey=899243017
 		) {
 			funcToRun = function() {
+				G_sampleURL = actualSource();
+				if (G_sampleURL) GM_deleteValue('G_sampleURL');
 				G_contentTitle = document.title;
-				G_contentURL = pageURL + '#onlyVideo';
+				G_contentURL = document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#onlyVideo';
 				G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
 				G_stickTo = document.querySelector('.video-actions-container');
 				G_stickPosition = 'before';
