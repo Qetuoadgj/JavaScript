@@ -78,7 +78,7 @@
 		pageURL = location.href,
 		pageTitle = document.title,
 		shortURL = (location.protocol + '//' + location.host + location.pathname).trim(),
-		cutURL = (location.host + location.pathname).trim()
+		cutURL = pageURL.replace(/^.*?:\/\//, '').trim()
 	;
 	var refineVideoParam = 'REFINE_VIDEO';
 	if (location.href.match('autoplay=true')) {
@@ -646,7 +646,7 @@
 				G_stickPosition = 'before';
 				embedCode(funcToRun);
 			};
-			waitForElement('#video_embed_code', false, funcToRun, delay, tries, timerGroup);
+			waitForElement('#video_embed_code', null, funcToRun, delay, tries, timerGroup);
 		}
 
 		else if (
@@ -690,7 +690,7 @@
 	) {
 		if (
 			pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
-			pageURL.match('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
+			pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
 		) {
 			var handleScripts = function(event) {
 				var contentURL;
@@ -717,6 +717,19 @@
 				}
 			};
 			document.addEventListener('DOMContentLoaded', handleScripts, false);
+		}
+		else if (
+			pageURL.matchLink('https?://www.pornhub.com/view_video.php[?]viewkey=*') // https://www.pornhub.com/view_video.php?viewkey=899243017
+		) {
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				G_contentURL = pageURL + '#onlyVideo';
+				G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
+				G_stickTo = document.querySelector('.video-actions-container');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+			};
+			waitForElement('meta[name="twitter:player"]', 'content', funcToRun, delay, tries, timerGroup);
 		}
 	}
 
@@ -817,7 +830,7 @@
 			G_stickPosition = 'after';
 			embedCode(funcToRun);
 		};
-		waitForElement('#gallery', false, funcToRun, delay, tries, timerGroup);
+		waitForElement('#gallery', null, funcToRun, delay, tries, timerGroup);
 	}
 
 	else if (
@@ -836,7 +849,7 @@
 				if (imageSrc) image.src = imageSrc;
 			}
 		});
-		waitForElement('#pronwidgetcol32', false, function(){
+		waitForElement('#pronwidgetcol32', null, function(){
 			document.querySelectorAll('div > a[href="#"] > img').forEach(thumbs, function(thumb, index) {
 				var link = thumb.parentNode;
 				if (link) {
@@ -906,7 +919,7 @@
 			document.querySelectorAll('.GTTabsLinks').forEach(function(item, index, array){if (item) item.addEventListener('click', funcToRun, false);}); // source buttons
 			embedCode(funcToRun);
 		};
-		waitForElement('iframe[src], #mediaplayer_media > video', false, funcToRun, delay, tries, timerGroup);
+		waitForElement('iframe[src], #mediaplayer_media > video', null, funcToRun, delay, tries, timerGroup);
 	}
 
 	URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
