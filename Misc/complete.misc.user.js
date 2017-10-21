@@ -47,6 +47,7 @@
 // @match		 *://vshare.io/v/*
 
 // @match		 *://*.googlevideo.com/videoplayback?id=*
+// @match		 *://*.googleusercontent.com/*=*?c=WEB&cver=html5
 
 // @match		 *://www.pornhub.com/embed/*
 // @match		 *://www.pornhub.com/view_video.php?viewkey=*
@@ -58,6 +59,8 @@
 // @match		 *://www.imagefap.com/pictures/*/*?*view=2
 
 // @match		 *://pron.tv/*
+
+// @match		 *://fuckingsession.com/*/
 // ==/UserScript==
 
 (function() {
@@ -74,7 +77,8 @@
 	var pageHost = location.hostname,
 		pageURL = location.href,
 		pageTitle = document.title,
-		shortURL = (location.protocol + '//' + location.host + location.pathname)
+		shortURL = (location.protocol + '//' + location.host + location.pathname).trim(),
+		cutURL = (location.host + location.pathname).trim()
 	;
 	var refineVideoParam = 'REFINE_VIDEO';
 	if (location.href.match('autoplay=true')) {
@@ -184,6 +188,19 @@
 		if (cssClass) style.setAttribute('class', cssClass);
 		head.appendChild(style);
 	}
+
+	function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
+
+	function getVisibleElement(elements) {
+		for (var i = 0; i < elements.length; ++i) {
+			var element = elements[i];
+			console.log(element, 'isVisible: '+isVisible(element));
+			if (isVisible(element)) {
+				return element;
+			}
+		}
+		return;
+	}
 	// ====================================================================================================================
 	var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters, G_sampleURL,
 		G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_sampleVideo, G_stickTo, G_stickPosition, G_qualityButtons,
@@ -274,15 +291,58 @@
 		embedCodeFrame.appendElement(G_stickTo, G_stickPosition);
 		G_embedCodeFrame = embedCodeFrame;
 
-		G_contentTitle = G_contentTitle || pageTitle.replace(/^.{1} /i, '').capitalize();
-		if (!G_embedCodeText || G_refreshEmbedCodeText) {
-			G_embedCodeText = '<div class="thumbnail"';
-			if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-			if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-			G_embedCodeText += ' content="' + G_contentURL + '"';
-			if (G_contentURL !== pageURL) G_embedCodeText += ' url="' + pageURL + '"';
-			G_embedCodeText += '></div>';
-		}
+		var createEmbedCodeText = () => {
+			G_contentTitle = G_contentTitle || pageTitle.replace(/^.{1} /i, '').capitalize();
+			if (!G_embedCodeText || G_refreshEmbedCodeText) {
+				G_embedCodeText = '<div class="thumbnail"';
+				if (G_contentURL.matchLink('https?://*.googleusercontent.com/*')) {
+					if (G_contentURL.match('=m18?')) {G_videoWidth = 640; G_videoHeight = 360;}
+					else if (G_contentURL.match('=m22?')) {G_videoWidth = 1270; G_videoHeight = 720;}
+					else if (G_contentURL.match('=m37?')) {G_videoWidth = 1920; G_videoHeight = 1080;}
+				}
+				if (G_contentURL.matchLink('https?://*.googleusercontent.com/*=m37?*')) {G_videoWidth = 1920; G_videoHeight = 1080;}
+				else if (G_contentURL.matchLink('https?://*.googleusercontent.com/*=m37?*')) {G_videoWidth = 1920; G_videoHeight = 1080;}
+				if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+				if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
+				G_embedCodeText += ' content="' + G_contentURL + '"';
+				if (G_contentURL !== pageURL) G_embedCodeText += ' url="' + pageURL + '"';
+				G_embedCodeText += '></div>';
+			}
+			embedCodeTextArea.value = G_embedCodeText;
+			if (G_embedCodeAutoHeight) {
+				embedCodeTextArea.autoHeight(G_embedCodeFixedHeight);
+				// textArea.addEventListener("resize", textArea.autoHeight(textAreaFixedHeight));
+			}
+		};
+
+		var testVideo = () => {
+			var embedCodeVideo = parentDocument.createElement('video');
+			embedCodeVideo.style = embedCodePoster.getAttribute('style');
+			embedCodeVideo.style.display = 'none';
+			embedCodeVideo.setAttribute('preload', 'metadata');
+			embedCodeVideo.setAttribute('src', G_sampleURL);
+			embedCodeFrame.appendChild(embedCodeVideo);
+			// embedCodeVideo.addEventListener('click', callerFunction, false);
+			G_sampleVideo = embedCodeVideo;
+			embedCodeVideo.addEventListener('loadedmetadata', function (e) {
+				G_videoWidth = this.videoWidth;
+				G_videoHeight = this.videoHeight;
+				G_refreshEmbedCodeText = true;
+				createEmbedCodeText();
+				G_sampleURL = null;
+				GM_deleteValue('sources');
+				// embedCodePoster.style.height = document.querySelector('#embedCode > video').offsetHeight+'px';
+				document.querySelector('#embedCode > video').remove();
+			}, false );
+			embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
+		};
+
+		var getVideoData = () => {
+			G_sampleURL = GM_getValue('G_sampleURL', G_sampleURL);
+			if (G_sampleURL) {testVideo(); GM_deleteValue('G_sampleURL');}
+		};
+		setTimeout(getVideoData, 2000);
 
 		var embedCodeTextArea = parentDocument.createElement('textarea');
 		embedCodeTextArea.setAttribute('id', embedCodeFrame.id + 'TextArea');
@@ -297,14 +357,10 @@
 		embedCodeTextArea.style.color = 'grey';
 		embedCodeTextArea.setAttribute('readonly', 'readonly');
 		embedCodeTextArea.setAttribute('onclick', 'this.focus(); this.select();');
-		embedCodeTextArea.value = G_embedCodeText;
+		// embedCodeTextArea.value = G_embedCodeText;
 		embedCodeFrame.appendChild(embedCodeTextArea);
 		G_embedCodeTextArea = embedCodeFrame;
-
-		if (G_embedCodeAutoHeight) {
-			embedCodeTextArea.autoHeight(G_embedCodeFixedHeight);
-			// textArea.addEventListener("resize", textArea.autoHeight(textAreaFixedHeight));
-		}
+		createEmbedCodeText();
 
 		addKeyComboCtrlC(embedCodeTextArea, true, false);
 
@@ -335,20 +391,39 @@
 				embedCodePoster.setAttribute('src', posters[index]);
 			}
 		}
-		if (G_sampleURL && !(G_videoWidth && G_videoHeight)) {
-			var embedCodeVideo = parentDocument.createElement('video');
-			embedCodeVideo.style = embedCodePoster.getAttribute('style');
-			embedCodeVideo.setAttribute('preload', 'metadata');
-			embedCodeVideo.setAttribute('src', G_sampleURL);
-			embedCodeFrame.appendChild(embedCodeVideo);
-			embedCodeVideo.addEventListener('click', callerFunction, false);
-			G_sampleVideo = embedCodeVideo;
-			embedCodeVideo.addEventListener('loadedmetadata', function (e) {G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;}, false );
-			embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
-		}
+		if (G_sampleURL && !(G_videoWidth && G_videoHeight)) testVideo();
 		var qualityButtons = G_qualityButtons || []; // global value
 		qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
 	}
+	// ====================================================================================================================
+	var sources = GM_getValue('sources', {});
+	var iframes = document.querySelectorAll('iframe');
+	iframes.forEach(function(iframe, index){
+		console.log('iframe.src: ', iframe.src);
+		var cutSrc = iframe.src.replace(/^.*?:\/\//, '').trim();
+		sources[cutSrc] = 'empty';
+		console.log('cutSrc: ', cutSrc);
+	});
+	console.log('cutURL: ', cutURL);
+	if (sources[cutURL]) {
+		funcToRun = function() {
+			var src;
+			for (let video of document.querySelectorAll('video > source[src], video[src]')) {
+				src = video.getAttribute('src', 2);
+				if (src && src.match('http')) {
+					console.log('video.src', src);
+					break;
+				}
+			}
+			if (document.querySelector('#streamurl')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
+			if (src && src.match('http')) {
+				sources[cutURL] = src;
+				GM_setValue('G_sampleURL', src);
+			}
+		};
+		waitForElement('video > source[src], video[src], #streamurl', null, funcToRun, delay, tries, timerGroup);
+	}
+	GM_setValue('sources', sources);
 	// ====================================================================================================================
 	if (
 		pageURL.matchLink('https?://www.eporner.com')
@@ -363,8 +438,7 @@
 					if (size) val = Math.max(val, size[1]);
 				});
 				G_contentTitle = document.title;
-				var titleShort = document.querySelector('meta[property="og:title"]').content;
-				if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort.trim(), titleShort.trim() + ' [' + val + 'p] ');
+				if (val !== 0) G_contentTitle += ' [' + val + 'p]';
 				G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
 				G_posterURL = document.querySelector('meta[property="og:image"]').content;
 				G_stickTo = document.querySelector('#relateddiv');
@@ -485,10 +559,7 @@
 				G_stickTo = document.querySelector('div.comments_area');
 				G_stickPosition = 'before';
 				embedCode(funcToRun);
-				getVideoData(funcResult, function(){
-					if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
-					embedCode(funcToRun);
-				});
+				getVideoData(funcResult, function(){embedCode(funcToRun);});
 			};
 			waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
 		}
@@ -529,6 +600,14 @@
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 
 	}
+
+	/*else if (
+		pageURL.matchLink('https?://*.googlevideo.com/videoplayback[?]id=*') // https://r15---sn-3c27sn7z.googlevideo.com/videoplayback?id=bb50038a8daac978&itag=18&source=picasa&begin=0&requiressl=yes&mm=30&mn=sn-3c27sn7z&ms=nxu&mv=m&nh=IgpwcjAxLmticDAzKgkxMjcuMC4wLjE&pl=20&sc=yes&ei=j7HqWfLcHMTmdMD0h-gH&mime=video/mp4&lmt=1500365434742379&mt=1508553023&ip=37.25.114.58&ipbits=8&expire=1508560303&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,nh,pl,sc,ei,mime,lmt&signature=344E8ACF80459A98F266D36CC83E44627C4711FB.AB9D367927C84B4328D8BE17466EA5D30ACD4B3B&key=ck2&c=WEB&cver=html5
+	) {
+		var contentURL = pageURL;
+		console.log('contentURL: ', contentURL);
+		openURL(refineVideo(contentURL));
+	}*/
 
 	else if (
 		pageURL.matchLink('https?://vidoza.net/embed-*') // https://vidoza.net/embed-gzp9id6hi29d.html
@@ -806,6 +885,28 @@
 				source.outerHTML = '<a href="//' +sourceURL + '">' + sourceURL + '</a>';
 			}
 		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://fuckingsession.com/*/') // http://fuckingsession.com/hardx-maya-bijou-creampie-first-time/
+	) {
+		funcToRun = function() {
+			G_contentTitle = document.title;
+			G_contentURL = document.querySelector('iframe[src], #mediaplayer_media > video').src;
+			//
+			var visibleElement = getVisibleElement(document.querySelectorAll('iframe[src], #mediaplayer_media > video'));
+			if (visibleElement && !visibleElement.src && document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button')) {
+				document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button').forEach(function(item, index, array){return item.click();});
+			}
+			G_contentURL = visibleElement ? visibleElement.src : G_contentURL;
+			//
+			G_posterURL = (document.querySelector('meta[name="thumbnail"]') ? document.querySelector('meta[name="thumbnail"]').content : document.querySelector('meta[property="og:image"]').content);
+			G_stickTo = document.querySelector('#extras');
+			G_stickPosition = 'before';
+			document.querySelectorAll('.GTTabsLinks').forEach(function(item, index, array){if (item) item.addEventListener('click', funcToRun, false);}); // source buttons
+			embedCode(funcToRun);
+		};
+		waitForElement('iframe[src], #mediaplayer_media > video', false, funcToRun, delay, tries, timerGroup);
 	}
 
 	URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
