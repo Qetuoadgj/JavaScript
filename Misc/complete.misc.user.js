@@ -61,6 +61,9 @@
 // @match		 *://pron.tv/*
 
 // @match		 *://fuckingsession.com/*/
+
+// @match		 *://www.porntube.com/videos/*
+// @match		 *://www.porntube.com/embed/*
 // ==/UserScript==
 
 (function() {
@@ -74,11 +77,12 @@
 	// ====================================================================================================================
 	var TEST_MODE = false;
 	var URL_MATCHED;
+	function cutURL(url) {return url.replace(/^.*?:\/\//, '').trim();}
 	var pageHost = location.hostname,
 		pageURL = location.href,
 		pageTitle = document.title,
 		shortURL = (location.protocol + '//' + location.host + location.pathname).trim(),
-		cutURL = pageURL.replace(/^.*?:\/\//, '').trim()
+		cuttenURL = cutURL(pageURL)
 	;
 	var refineVideoParam = 'REFINE_VIDEO';
 	if (location.href.match('autoplay=true')) {
@@ -96,6 +100,9 @@
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
 	};
 	var openURL = function(url) {
+		GM_deleteValue('contentURL');
+		// GM_deleteValue('G_sampleURL');
+		// GM_deleteValue('sources');
 		if (TEST_MODE) return;
 		window.location.href = url;
 	};
@@ -292,16 +299,16 @@
 		G_embedCodeFrame = embedCodeFrame;
 
 		var createEmbedCodeText = () => {
+			var tmpTitle = G_contentTitle;
+			embedCodeTextArea.style.color = 'grey';
 			G_contentTitle = G_contentTitle || pageTitle.replace(/^.{1} /i, '').capitalize();
 			if (!G_embedCodeText || G_refreshEmbedCodeText) {
 				G_embedCodeText = '<div class="thumbnail"';
-				if (G_contentURL.matchLink('https?://*.googleusercontent.com/*')) {
+				if (!G_sampleURL && G_contentURL.matchLink('https?://*.googleusercontent.com/*')) {
 					if (G_contentURL.match('=m18?')) {G_videoWidth = 640; G_videoHeight = 360;}
 					else if (G_contentURL.match('=m22?')) {G_videoWidth = 1270; G_videoHeight = 720;}
 					else if (G_contentURL.match('=m37?')) {G_videoWidth = 1920; G_videoHeight = 1080;}
 				}
-				if (G_contentURL.matchLink('https?://*.googleusercontent.com/*=m37?*')) {G_videoWidth = 1920; G_videoHeight = 1080;}
-				else if (G_contentURL.matchLink('https?://*.googleusercontent.com/*=m37?*')) {G_videoWidth = 1920; G_videoHeight = 1080;}
 				if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
 				if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
 				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
@@ -314,35 +321,9 @@
 				embedCodeTextArea.autoHeight(G_embedCodeFixedHeight);
 				// textArea.addEventListener("resize", textArea.autoHeight(textAreaFixedHeight));
 			}
+			if (G_videoWidth && G_videoHeight) embedCodeTextArea.style.color = 'green';
+			G_contentTitle = tmpTitle;
 		};
-
-		var testVideo = () => {
-			var embedCodeVideo = parentDocument.createElement('video');
-			embedCodeVideo.style = embedCodePoster.getAttribute('style');
-			embedCodeVideo.style.display = 'none';
-			embedCodeVideo.setAttribute('preload', 'metadata');
-			embedCodeVideo.setAttribute('src', G_sampleURL);
-			embedCodeFrame.appendChild(embedCodeVideo);
-			// embedCodeVideo.addEventListener('click', callerFunction, false);
-			G_sampleVideo = embedCodeVideo;
-			embedCodeVideo.addEventListener('loadedmetadata', function (e) {
-				G_videoWidth = this.videoWidth;
-				G_videoHeight = this.videoHeight;
-				G_refreshEmbedCodeText = true;
-				createEmbedCodeText();
-				G_sampleURL = null;
-				GM_deleteValue('sources');
-				// embedCodePoster.style.height = document.querySelector('#embedCode > video').offsetHeight+'px';
-				document.querySelector('#embedCode > video').remove();
-			}, false );
-			embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
-		};
-
-		var getVideoData = () => {
-			G_sampleURL = GM_getValue('G_sampleURL', G_sampleURL);
-			if (G_sampleURL) {testVideo(); GM_deleteValue('G_sampleURL');}
-		};
-		setTimeout(getVideoData, 2000);
 
 		var embedCodeTextArea = parentDocument.createElement('textarea');
 		embedCodeTextArea.setAttribute('id', embedCodeFrame.id + 'TextArea');
@@ -391,39 +372,69 @@
 				embedCodePoster.setAttribute('src', posters[index]);
 			}
 		}
-		if (G_sampleURL && !(G_videoWidth && G_videoHeight)) testVideo();
+
+		var testVideo = () => {
+			var embedCodeVideo = parentDocument.createElement('video');
+			embedCodeVideo.style = embedCodePoster.getAttribute('style');
+			// embedCodeVideo.style.display = 'none';
+			embedCodeVideo.style['border-style'] = 'solid';
+			embedCodeVideo.style['border-width'] = '1px';
+			embedCodeVideo.setAttribute('preload', 'metadata');
+			embedCodeVideo.setAttribute('src', G_sampleURL);
+			embedCodeVideo.style.height = embedCodePoster.offsetHeight+'px';
+			embedCodeVideo.style.width = embedCodePoster.offsetWidth+'px';
+			embedCodeFrame.appendChild(embedCodeVideo);
+			// embedCodeVideo.addEventListener('click', callerFunction, false);
+			G_sampleVideo = embedCodeVideo;
+			G_videoWidth = null;
+			G_videoHeight = null;
+			embedCodeVideo.addEventListener('loadedmetadata', function (e) {
+				G_videoWidth = this.videoWidth;
+				G_videoHeight = this.videoHeight;
+				G_refreshEmbedCodeText = true;
+				createEmbedCodeText();
+				G_sampleURL = null;
+				GM_deleteValue('sources');
+				GM_deleteValue('G_sampleURL');
+				// embedCodePoster.style.height = document.querySelector('#embedCode > video').offsetHeight+'px';
+				document.querySelector('#embedCode > video').remove();
+			}, false );
+			if (embedCodeVideo.outerHTML) embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
+		};
+		waitForCondition(function(){G_sampleURL = G_sampleURL || GM_getValue('G_sampleURL', G_sampleURL); return G_sampleURL;}, testVideo, delay*2, tries/2, null);
 		var qualityButtons = G_qualityButtons || []; // global value
 		qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
 	}
 	// ====================================================================================================================
 	var sources = GM_getValue('sources', {});
-	var iframes = document.querySelectorAll('iframe');
-	iframes.forEach(function(iframe, index){
-		console.log('iframe.src: ', iframe.src);
-		var cutSrc = iframe.src.replace(/^.*?:\/\//, '').trim();
-		sources[cutSrc] = 'empty';
-		console.log('cutSrc: ', cutSrc);
-	});
-	console.log('cutURL: ', cutURL);
-	if (sources[cutURL]) {
-		funcToRun = function() {
+	function getVideoSources() {
+		GM_deleteValue('contentURL');
+		GM_deleteValue('G_sampleURL');
+		GM_deleteValue('sources');
+		sources = {};
+		var getSources = function() {
 			var src;
-			for (let video of document.querySelectorAll('video > source[src], video[src]')) {
+			for (let video of document.querySelectorAll('video > source[src^="http"], video[src^="http"]')) {
 				src = video.getAttribute('src', 2);
-				if (src && src.match('http')) {
-					console.log('video.src', src);
-					break;
+				if (src && src.match('http')) break;
+			}
+			var quality = 0;
+			document.querySelectorAll('video > source[src^="http"]').forEach(function(source) {
+				var res = source.dataset.res;
+				if (res) {
+					var value = Number(res.match(/\d+/));
+					if (value > quality) {quality = value; src = source.getAttribute('src', 2);}
 				}
-			}
+			});
 			if (document.querySelector('#streamurl')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
-			if (src && src.match('http')) {
-				sources[cutURL] = src;
-				GM_setValue('G_sampleURL', src);
-			}
+			sources[cuttenURL] = src;
+			GM_setValue('G_sampleURL', src);
+			console.log('cuttenURL: ', cuttenURL, '\nvideo.src: ', src);
+			GM_setValue('sources', sources);
 		};
-		waitForElement('video > source[src], video[src], #streamurl', null, funcToRun, delay, tries, timerGroup);
+		waitForElement('video > source[src^="http"], video[src^="http"], #streamurl', null, getSources, delay, tries, null);
 	}
-	GM_setValue('sources', sources);
+	getVideoSources();
 	// ====================================================================================================================
 	if (
 		pageURL.matchLink('https?://www.eporner.com')
@@ -438,8 +449,12 @@
 					if (size) val = Math.max(val, size[1]);
 				});
 				G_contentTitle = document.title;
-				if (val !== 0) G_contentTitle += ' [' + val + 'p]';
 				G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1];
+				if (val !== 0) {
+					var id = document.querySelector('#fid').value;
+					var vid = G_contentURL.split('/')[4];
+					G_sampleURL = location.protocol + '//' + location.host + '/dload/' + vid + '/' + val + '/' + id + '-' + val + 'p.mp4'; // https://www.eporner.com/dload/DQ1fQ5H7Jkz/480/1101004-480p.mp4
+				}
 				G_posterURL = document.querySelector('meta[property="og:image"]').content;
 				G_stickTo = document.querySelector('#relateddiv');
 				G_stickPosition = 'before';
@@ -598,7 +613,6 @@
 			if (playButton) playButton.click();
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-
 	}
 
 	/*else if (
@@ -655,7 +669,7 @@
 			var getIframeContent = setInterval(function() {
 				var contentURL = GM_getValue('contentURL', null);
 				if (contentURL) {
-					GM_deleteValue('contentURL');
+					// GM_deleteValue('contentURL');
 					openURL(refineVideo(contentURL));
 				}
 			}, 10);
@@ -673,12 +687,12 @@
 			document.querySelectorAll('body video > source[src]').forEach(function(source) {
 				var res = source.res || source.label;
 				if (res) {
-					var value = Number(text.match(/\d+/));
+					var value = Number(res.match(/\d+/));
 					if (value > quality) {quality = value; contentURL = source.src;}
 				}
 			});
 			GM_setValue('contentURL', contentURL);
-			console.log('quality: '+quality);
+			console.log('quality: ', quality);
 			console.log('contentURL: ', contentURL);
 			openURL(refineVideo(contentURL));
 		};
@@ -741,6 +755,53 @@
 	}
 
 	else if (
+		pageURL.matchLink('https?://www.porntube.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.porntube.com/videos/*') // https://www.porntube.com/videos/lusty-ellen-saint-loves-rear-pocket-lots-rock-hard-cock_1169422
+		) {
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				G_contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
+				G_posterURL = document.querySelector('span[itemprop="thumbnail"] > link[itemprop="url"]').href;
+				G_stickTo = document.querySelector('div.cpp');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+			};
+			waitForElement('meta[itemprop="embedUrl"]', null, funcToRun, delay, tries, timerGroup);
+		}
+
+		else if (
+			pageURL.matchLink('https?://www.porntube.com/embed/*') // https://www.porntube.com/embed/1169422
+		) {
+			// TEST_MODE = true;
+			// getVideoSources();
+			funcToTest = function() {
+				return document.querySelector('body video > source[src]') || document.querySelector('body video[src]');
+			};
+			funcToRun = function() {
+				var contentURL = document.querySelector('body video[src]').src;
+				var quality = 0;
+				document.querySelectorAll('body video > source[src]').forEach(function(source) {
+					var res = source.dataset.res;
+					if (res) {
+						var value = Number(res.match(/\d+/));
+						if (value > quality) {quality = value; contentURL = source.src;}
+					}
+				});
+				GM_setValue('contentURL', contentURL);
+				console.log('quality: ', quality);
+				console.log('contentURL: ', contentURL);
+				openURL(refineVideo(contentURL));
+			};
+			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		}
+	}
+
+	// ====================================================================================================================
+	// ====================================================================================================================
+
+	else if (
 		pageURL.split("?")[0].split("#")[0].endsWith("mp4") // https://b02.xfreehd.com/media/videos/hd/11960.mp4
 	) {
 		var contentURL = pageURL;
@@ -782,6 +843,7 @@
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
 	}
 
+	// ====================================================================================================================
 	// ====================================================================================================================
 
 	if (
@@ -910,6 +972,7 @@
 	else if (
 		pageURL.matchLink('https?://fuckingsession.com/*/') // http://fuckingsession.com/hardx-maya-bijou-creampie-first-time/
 	) {
+		var delayedRun = function(){setTimeout(funcToRun, 250);};
 		funcToRun = function() {
 			G_contentTitle = document.title;
 			G_contentURL = document.querySelector('iframe[src], #mediaplayer_media > video').src;
@@ -920,13 +983,16 @@
 			}
 			G_contentURL = visibleElement ? visibleElement.src : G_contentURL;
 			//
+			if (G_contentURL.matchLink('https?://*.googleusercontent.com/*')) G_sampleURL = G_contentURL;
+			else if (sources[cutURL(G_contentURL)]) G_sampleURL = sources[cutURL(G_contentURL)];
+			//
 			G_posterURL = (document.querySelector('meta[name="thumbnail"]') ? document.querySelector('meta[name="thumbnail"]').content : document.querySelector('meta[property="og:image"]').content);
 			G_stickTo = document.querySelector('#extras');
 			G_stickPosition = 'before';
-			document.querySelectorAll('.GTTabsLinks').forEach(function(item, index, array){if (item) item.addEventListener('click', funcToRun, false);}); // source buttons
+			document.querySelectorAll('.GTTabsLinks').forEach(function(item, index, array){if (item) item.addEventListener('click', delayedRun, false);}); // source buttons
 			embedCode(funcToRun);
 		};
-		waitForElement('iframe[src], #mediaplayer_media > video', null, funcToRun, delay, tries, timerGroup);
+		waitForElement('iframe[src], #mediaplayer_media > video', null, delayedRun, delay, tries, timerGroup);
 	}
 
 	URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
