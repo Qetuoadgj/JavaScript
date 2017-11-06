@@ -55,7 +55,7 @@
 // @match		 *://www.tube8.com/embed/*
 // @match		 *://www.tube8.com/*/*/*/
 
-// @match		 *://*.mp4
+// @match		*://*/*.mp4
 
 // @match		 *://www.imagefap.com/pictures/*/*?*view=2
 
@@ -67,6 +67,13 @@
 // @match		 *://www.porntube.com/embed/*
 
 // @match		 *://www.miscopy.com/?attachment_id=*
+
+// @match		*://javhihi.com/movie/*
+
+// @match		*://www.x-art.com/galleries/*
+// @match		*://www.pornpics.com/*
+
+// @match		*://*/*.jpg
 // ==/UserScript==
 
 (function() {
@@ -416,6 +423,58 @@
         qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
     }
     // ====================================================================================================================
+    if (
+        pageURL.matchLink('https?://www.pornpics.com')
+    ) {
+        var class_name = 'thumbwook';
+        var valid = (item) => {return item.querySelector('a.rel-link > img');};
+        //
+        var i = 1, append_text = (item) => {
+            if ( valid(item) ) {
+                var text = item.querySelector('p.image_number_text');
+                if (!text) {
+                    text = document.createElement('p');
+                    item.appendChild(text);
+                    text.innerText = '#' + i;
+                    text.class = 'image_number_text';
+                    text.style['font-size'] = 'x-large';
+                    text.style.margin = '0';
+                }
+                i++;
+            }
+        };
+        //
+        var array = document.querySelectorAll('.' + class_name);
+        for (let item of array) {append_text(item);}
+        //
+        document.addEventListener('DOMNodeInserted', function handleNewElements(event){
+            var item = event.target;
+            var item_class = item.className ? item.className.trim() : '';
+            if (item_class == class_name ) {append_text(item);}
+        } , false);
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
+        pageURL.matchLink('*.jpg')
+    ) {
+        funcToRun = function() {
+            var val = 0;
+
+            G_contentTitle = document.title;
+            G_contentURL = shortURL;
+            G_posterURL = shortURL;
+            G_stickTo = document.querySelector('body');
+            G_stickPosition = 'append';
+            embedCode(funcToRun);
+        };
+        waitForElement('img', 'src', funcToRun, delay, tries, timerGroup);
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    // ====================================================================================================================
     var sources = GM_getValue('sources', {});
     function getVideoSources() {
         GM_deleteValue('contentURL');
@@ -446,7 +505,30 @@
     }
     getVideoSources();
     // ====================================================================================================================
+
     if (
+        pageURL.matchLink('https?://www.x-art.com')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.x-art.com/galleries/*') // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
+        ) {
+            // <a href="https://www.x-art.com/join/" class="button expand">View Gallery</a>
+            for (let link of document.querySelectorAll('a.button.expand')) {
+                var text = link.innerText;
+                var match = text.match('View Gallery');
+                if (match) {
+                    var gallery_url = 'http://hosted.x-art.com/galleries/' + decodeURI(shortURL.replace(/.*\/galleries\/(.*?)\//i, '$1')).replace(/ /g, '_').toLowerCase() + '/index.php';
+                    // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
+                    // http://hosted.x-art.com/galleries/kristin_and_nina_unleashed/index.php?PA=1044800
+                    link.href = gallery_url;
+                    break;
+                }
+            }
+        }
+    }
+
+    // ====================================================================================================================
+    else if (
         pageURL.matchLink('https?://www.eporner.com')
     ) {
         if (
@@ -609,6 +691,22 @@
                 openURL(refineVideo(contentURL));
             };
             waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+        } else {
+            funcToRun = function() {
+                G_contentTitle = document.title;
+                G_contentURL = shortURL + '#onlyVideo';
+                G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+                G_stickTo = document.querySelector('div.video-info');
+                G_stickPosition = 'before';
+                embedCode(funcToRun);
+                G_sampleURL = (
+                    flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
+                    flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
+                    flashvars.video_alt_url ? flashvars.video_alt_url :
+                    flashvars.video_url
+                );
+            };
+            waitForElement('meta[property="og:image"]', 'content', funcToRun, delay, tries, timerGroup);
         }
     }
 
