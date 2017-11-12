@@ -55,7 +55,7 @@
 // @match		 *://www.tube8.com/embed/*
 // @match		 *://www.tube8.com/*/*/*/
 
-// @match		*://*/*.mp4
+// @match		 *://*/*.mp4
 
 // @match		 *://www.imagefap.com/pictures/*/*?*view=2
 
@@ -68,12 +68,14 @@
 
 // @match		 *://www.miscopy.com/?attachment_id=*
 
-// @match		*://javhihi.com/movie/*
+// @match		 *://javhihi.com/movie/*
 
-// @match		*://www.x-art.com/galleries/*
-// @match		*://www.pornpics.com/*
+// @match		 *://www.x-art.com/galleries/*
+// @match		 *://www.pornpics.com/*
+// @match        *://danbooru.donmai.us/posts*
+// @match        *://luscious.net/c/hentai/pictures/*
 
-// @match		*://*/*.jpg
+// @match		 *://*/*.jpg
 // ==/UserScript==
 
 (function() {
@@ -121,6 +123,7 @@
     var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
         waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
             if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
+                // console.log('funcToTest: '+funcToTest.toString());
                 delay = delay || 1000; // defaults
                 timerGroup = timerGroup || [];
                 var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
@@ -145,6 +148,7 @@
         },
         waitForElement = function(elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
             var funcToTest = function() {
+                // console.log('elementSelector: '+elementSelector+', attribute: '+attribute);
                 var result, elementsArray = document.querySelectorAll(elementSelector);
                 for (var i = 0; i < elementsArray.length; ++i) {
                     var element = elementsArray[i];
@@ -314,7 +318,7 @@
     // ====================================================================================================================
     var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters, G_sampleURL,
         G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_sampleVideo, G_stickTo, G_stickPosition, G_qualityButtons,
-        G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = false;
+        G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = false, G_IsVideo = true;
 
     String.prototype.capitalize = function() {
         function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
@@ -350,6 +354,29 @@
         if (fixedHeight > 0) this.style.maxHeight = this.style.height;
         this.addEventListener('click', this.autoHeight, false);
     };
+
+    function addOpenInNewTabProperty (selector) {
+        selector = selector || 'a';
+        var linksArray = document.querySelectorAll(selector);
+        // alert(selector+'\n'+linksArray.length);
+        for (var i = 0; i < linksArray.length; ++i) {
+            var link = linksArray[i], href = link.href;
+            if (href) link.setAttribute('target', '_blank');
+        }
+    }
+
+    function addPageControlKeys(prevPageSelector, nextPageSelector) {
+        var previous_page_btn = document.querySelectorAll(prevPageSelector)[0];
+        var next_page_btn = document.querySelectorAll(nextPageSelector)[0];
+        var onKeyUp = function(e) {
+            e = e || window.event;
+            var lArrowKey = 37, rArrowKey = 39;
+            var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+            if (e.keyCode == lArrowKey) previous_page_btn.click();
+            else if (e.keyCode == rArrowKey) next_page_btn.click();
+        };
+        window.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+    }
 
     function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
         var onKeyDown = function(e) {
@@ -412,11 +439,12 @@
                     else if (G_contentURL.match('=m22?')) {G_videoWidth = 1270; G_videoHeight = 720;}
                     else if (G_contentURL.match('=m37?')) {G_videoWidth = 1920; G_videoHeight = 1080;}
                 }
-                if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                // if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
                 if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                 if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
                 G_embedCodeText += ' content="' + G_contentURL + '"';
                 if (G_contentURL !== pageURL) G_embedCodeText += ' url="' + pageURL + '"';
+                if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                 G_embedCodeText += '></div>';
             }
             embedCodeTextArea.value = G_embedCodeText;
@@ -504,12 +532,71 @@
             }, false );
             if (embedCodeVideo.outerHTML) embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
         };
-        waitForCondition(function(){G_sampleURL = G_sampleURL || GM_getValue('G_sampleURL', G_sampleURL); return G_sampleURL;}, testVideo, delay*2, tries/2, null);
+        if (G_IsVideo) waitForCondition(function(){G_sampleURL = G_sampleURL || GM_getValue('G_sampleURL', G_sampleURL); return G_sampleURL;}, testVideo, delay*2, tries/2, null);
         var qualityButtons = G_qualityButtons || []; // global value
         qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
     }
     // ====================================================================================================================
+    G_IsVideo = false;
     if (
+        pageURL.matchLink('https?://www.imagefap.com/pictures/*/*[?]*view=2')
+    ) {
+        funcToRun = function() {
+            var imagesArray = [];
+            var thumbsArray = [];
+
+            var userID = document.querySelector('#menubar > table > tbody > tr:nth-child(2) > td:nth-child(1) > a').href;
+            userID = userID.replace(/.*user=(.*)/i, '$1');
+
+            var galleryID = document.querySelector('#galleryid_input').value;
+
+            var imageNames = document.querySelectorAll('td > font > i');
+            imageNames.forEach(function(self, index, array) {
+                var image = self.innerText;
+                imagesArray.push(image);
+            });
+
+            var imageIDs = document.querySelectorAll('#gallery > form > table > tbody > tr > td');
+            imageIDs.forEach(function(self, index, array) {
+                var imageID = self.id;
+                var image = imagesArray[index];
+                var imageURL = 'http://x.imagefapusercontent.com/u/' + userID + '/' + galleryID + '/' + imageID + '/' + image;
+                imagesArray[index] = imageURL;
+            });
+
+            var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
+            thumbs.forEach(function(self, index, array) {
+                var thumbURL = self.src;
+                thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
+                thumbsArray.push(thumbURL);
+                if (imagesArray[index].match('...')) imagesArray[index] = thumbURL.replace('x.fap.to/thumb/', 'x.fap.to/full/');
+            });
+
+            pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
+
+            G_refreshEmbedCodeText = false;
+            thumbsArray.forEach(function(self, index, array) {
+                contentURL = imagesArray[index];
+                G_posterURL = self;
+                G_contentTitle = '';
+                if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+                if (contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+                if (G_posterURL && G_posterURL !== contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
+                G_embedCodeText += ' content="' + contentURL + '"';
+                if (contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+                G_embedCodeText += '></div>';
+            });
+
+            G_stickTo = document.querySelector('#gallery');
+            G_stickPosition = 'after';
+            embedCode(funcToRun);
+        };
+        waitForElement('#gallery', null, funcToRun, delay, tries, timerGroup);
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
         pageURL.matchLink('https?://www.pornpics.com')
     ) {
         var class_name = 'thumbwook';
@@ -543,6 +630,58 @@
     }
 
     else if (
+        pageURL.matchLink('https?://danbooru.donmai.us')
+    ) {
+        addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+        addOpenInNewTabProperty('article > a');
+        document.querySelectorAll('a.search-tag').forEach(function(link, index) {
+            var href = link.href + '+limit%3A50&';
+            link.href = href;
+        });
+        if (
+            pageURL.matchLink('https?://danbooru.donmai.us/posts/*')
+        ) {
+            funcToRun = function() {
+                G_contentURL = document.querySelector('#image-container').getAttribute('data-large-file-url');
+                G_contentURL = G_contentURL ? ('http://' + pageHost + G_contentURL) : G_contentURL;
+                G_posterURL = document.querySelector('#image-container').getAttribute('data-preview-file-url');
+                G_posterURL = G_posterURL ? ('http://' + pageHost + G_posterURL) : G_posterURL;
+                G_stickTo = document.querySelector('#image-container');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+            };
+            waitForElement('#image-container', 'data-preview-file-url', funcToRun, delay, tries, timerGroup);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
+        pageURL.matchLink('https?://luscious.net')
+    ) {
+        // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+        // addOpenInNewTabProperty('article > a');
+        // document.querySelectorAll('a.search-tag').forEach(function(link, index) {
+        //     var href = link.href + '+limit%3A50&';
+        //     link.href = href;
+        // });
+        if (
+            pageURL.matchLink('https?://luscious.net/c/hentai/pictures/*')
+        ) {
+            funcToRun = function() {
+                G_contentURL = document.querySelector('a.icon-download').getAttribute('href');
+                G_posterURL = document.querySelector('div.album_details > a > img').getAttribute('src');
+                G_stickTo = document.querySelector('div.picture_option');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+            };
+            waitForElement('a.icon-download', 'href', funcToRun, delay, tries, timerGroup);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
         pageURL.matchLink('*.jpg')
     ) {
         funcToRun = function() {
@@ -560,6 +699,29 @@
         return; // SKIP REST OF THE CODE
     }
 
+    // ====================================================================================================================
+
+    else if (
+        pageURL.matchLink('https?://www.x-art.com')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.x-art.com/galleries/*') // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
+        ) {
+            // <a href="https://www.x-art.com/join/" class="button expand">View Gallery</a>
+            for (let link of document.querySelectorAll('a.button.expand')) {
+                var text = link.innerText;
+                var match = text.match('View Gallery');
+                if (match) {
+                    var gallery_url = 'http://hosted.x-art.com/galleries/' + decodeURI(shortURL.replace(/.*\/galleries\/(.*?)\//i, '$1')).replace(/ /g, '_').toLowerCase() + '/index.php';
+                    // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
+                    // http://hosted.x-art.com/galleries/kristin_and_nina_unleashed/index.php?PA=1044800
+                    link.href = gallery_url;
+                    break;
+                }
+            }
+        }
+        return; // SKIP REST OF THE CODE
+    }
     // ====================================================================================================================
     var sources = GM_getValue('sources', {});
     function getVideoSources() {
@@ -591,30 +753,8 @@
     }
     getVideoSources();
     // ====================================================================================================================
-
+    G_IsVideo = true;
     if (
-        pageURL.matchLink('https?://www.x-art.com')
-    ) {
-        if (
-            pageURL.matchLink('https?://www.x-art.com/galleries/*') // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
-        ) {
-            // <a href="https://www.x-art.com/join/" class="button expand">View Gallery</a>
-            for (let link of document.querySelectorAll('a.button.expand')) {
-                var text = link.innerText;
-                var match = text.match('View Gallery');
-                if (match) {
-                    var gallery_url = 'http://hosted.x-art.com/galleries/' + decodeURI(shortURL.replace(/.*\/galleries\/(.*?)\//i, '$1')).replace(/ /g, '_').toLowerCase() + '/index.php';
-                    // https://www.x-art.com/galleries/Kristin%20and%20Nina%20Unleashed/
-                    // http://hosted.x-art.com/galleries/kristin_and_nina_unleashed/index.php?PA=1044800
-                    link.href = gallery_url;
-                    break;
-                }
-            }
-        }
-    }
-
-    // ====================================================================================================================
-    else if (
         pageURL.matchLink('https?://www.eporner.com')
     ) {
         if (
@@ -699,7 +839,7 @@
                 embedCode(funcToRun);
                 G_sampleVideo.addEventListener('loadedmetadata', function (e) {
                     G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
-                    if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                    // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
                     embedCode(funcToRun);
                     G_videoWidth = null; G_videoHeight = null;
                 }, false );
@@ -1042,107 +1182,6 @@
     // ====================================================================================================================
 
     else if (
-        pageURL.split("?")[0].split("#")[0].endsWith("mp4") // https://b02.xfreehd.com/media/videos/hd/11960.mp4
-    ) {
-        var contentURL = pageURL;
-        console.log('contentURL: ', contentURL);
-        openURL(refineVideo(contentURL));
-    }
-
-    else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
-        funcToTest = function() {
-            return flashvars.video_alt_url || flashvars.video_url;
-        };
-        funcToRun = function() {
-            var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
-            var posterURL = flashvars.preview_url;
-            var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
-                var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                for (let quality of qualitiesTable) {maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;}
-                if (maxQuality > 0) {
-                    console.log('quality: ' + maxQuality);
-                    contentURL = flashvars['quality_' + maxQuality + 'p'];
-                }
-            };
-            testQualities();
-            console.log('contentURL: ', contentURL);
-            openURL(refineVideo(contentURL));
-        };
-        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-    } else { // https://www.bitporno.com/embed/sXou0BTtX
-        funcToTest = function() {
-            return document.querySelectorAll("body video > source[src], body video[src]")[0];
-        };
-        funcToRun = function() {
-            document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
-                var contentURL = e.src;
-                console.log('contentURL: ', contentURL);
-                openURL(refineVideo(contentURL));
-            });
-        };
-        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-    }
-
-    // ====================================================================================================================
-    // ====================================================================================================================
-
-    if (
-        pageURL.matchLink('https?://www.imagefap.com/pictures/*/*[?]*view=2')
-    ) {
-        funcToRun = function() {
-            var imagesArray = [];
-            var thumbsArray = [];
-
-            var userID = document.querySelector('#menubar > table > tbody > tr:nth-child(2) > td:nth-child(1) > a').href;
-            userID = userID.replace(/.*user=(.*)/i, '$1');
-
-            var galleryID = document.querySelector('#galleryid_input').value;
-
-            var imageNames = document.querySelectorAll('td > font > i');
-            imageNames.forEach(function(self, index, array) {
-                var image = self.innerText;
-                imagesArray.push(image);
-            });
-
-            var imageIDs = document.querySelectorAll('#gallery > form > table > tbody > tr > td');
-            imageIDs.forEach(function(self, index, array) {
-                var imageID = self.id;
-                var image = imagesArray[index];
-                var imageURL = 'http://x.imagefapusercontent.com/u/' + userID + '/' + galleryID + '/' + imageID + '/' + image;
-                imagesArray[index] = imageURL;
-            });
-
-            var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
-            thumbs.forEach(function(self, index, array) {
-                var thumbURL = self.src;
-                thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
-                thumbsArray.push(thumbURL);
-                if (imagesArray[index].match('...')) imagesArray[index] = thumbURL.replace('x.fap.to/thumb/', 'x.fap.to/full/');
-            });
-
-            pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
-
-            G_refreshEmbedCodeText = false;
-            thumbsArray.forEach(function(self, index, array) {
-                contentURL = imagesArray[index];
-                G_posterURL = self;
-                G_contentTitle = '';
-                if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
-                if (contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-                if (G_posterURL && G_posterURL !== contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-                G_embedCodeText += ' content="' + contentURL + '"';
-                if (contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
-                G_embedCodeText += '></div>';
-            });
-
-            G_stickTo = document.querySelector('#gallery');
-            G_stickPosition = 'after';
-            embedCode(funcToRun);
-        };
-        waitForElement('#gallery', null, funcToRun, delay, tries, timerGroup);
-    }
-
-    else if (
         pageURL.matchLink('https?://pron.tv/*')
     ) {
         document.querySelectorAll('.search-result-thumbnail, .lazy-load').forEach(function(link, index) {
@@ -1234,6 +1273,54 @@
         };
         waitForElement('iframe[src], #mediaplayer_media > video', null, delayedRun, delay, tries, timerGroup);
     }
+
+    // ====================================================================================================================
+    // ====================================================================================================================
+
+    else if (
+        pageURL.split("?")[0].split("#")[0].endsWith("mp4") // https://b02.xfreehd.com/media/videos/hd/11960.mp4
+    ) {
+        var contentURL = pageURL;
+        console.log('contentURL: ', contentURL);
+        openURL(refineVideo(contentURL));
+    }
+
+    else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
+        funcToTest = function() {
+            return flashvars.video_alt_url || flashvars.video_url;
+        };
+        funcToRun = function() {
+            var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
+            var posterURL = flashvars.preview_url;
+            var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
+                var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
+                for (let quality of qualitiesTable) {maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;}
+                if (maxQuality > 0) {
+                    console.log('quality: ' + maxQuality);
+                    contentURL = flashvars['quality_' + maxQuality + 'p'];
+                }
+            };
+            testQualities();
+            console.log('contentURL: ', contentURL);
+            openURL(refineVideo(contentURL));
+        };
+        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+    } else { // https://www.bitporno.com/embed/sXou0BTtX
+        funcToTest = function() {
+            return document.querySelectorAll("body video > source[src], body video[src]")[0];
+        };
+        funcToRun = function() {
+            document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
+                var contentURL = e.src;
+                console.log('contentURL: ', contentURL);
+                openURL(refineVideo(contentURL));
+            });
+        };
+        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+    }
+
+    // ====================================================================================================================
+    // ====================================================================================================================
 
     URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
     console.log(URL_MATCHED);
