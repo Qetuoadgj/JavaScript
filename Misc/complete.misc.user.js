@@ -72,6 +72,8 @@
 
 // @match		 *://www.x-art.com/galleries/*
 // @match		 *://www.pornpics.com/*
+// @match		 *://www.sex.com/picture/*/
+// @match		 *://www.sex.com/pin/*/
 // @match        *://danbooru.donmai.us/posts*
 // @match        *://luscious.net/c/hentai/pictures/*
 
@@ -101,13 +103,24 @@
 		GM_setValue('autoplay', true);
 		var autoplay = GM_getValue('autoplay', null);
 	}
+	var duration = location.href.match(/\bt\b=((\d+)(,\d+)?)/);
+	if (duration) {
+		GM_setValue('t', duration[1]);
+		var t = GM_getValue('t', null);
+	}
 	var refineVideo = function(url) {
 		// if (TEST_MODE) return;
 		var autoplay = GM_getValue('autoplay', null);
+		var t = GM_getValue('t', null);
 		console.log('autoplay: ' + autoplay || 'false');
 		if (autoplay) {
 			url = url.split('?')[1] ? url + '&' + 'autoplay=true' : url + '?' + 'autoplay=true';
 			GM_deleteValue('autoplay');
+		}
+		if (t) {
+			console.log('t: ' + t);
+			url = url.split('?')[1] ? url + '&' + 't='+t : url + '?' + 't='+t;
+			GM_deleteValue('t');
 		}
 		return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
 	};
@@ -686,6 +699,26 @@
 				};
 				waitForElement('#main', null, funcToRun, delay, tries, timerGroup);
 			} , false);
+		}
+		//
+		return; // SKIP REST OF THE CODE
+	}
+
+	else if (
+		pageURL.matchLink('https?://www.sex.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://www.sex.com/pin/*/') ||
+			pageURL.matchLink('https?://www.sex.com/picture/*/')
+		) {
+			funcToRun = function() {
+				G_contentURL = document.querySelector('.image_frame img').src.replace(/(.*?)\?.*/, '$1');
+				G_posterURL = document.querySelector('meta[itemprop="thumbnail"]').content;
+				G_stickTo = document.querySelector('.image_frame');
+				G_stickPosition = 'after';
+				embedCode(funcToRun);
+			};
+			waitForElement('.image_frame img', 'src', funcToRun, delay, tries, timerGroup);
 		}
 		//
 		return; // SKIP REST OF THE CODE
