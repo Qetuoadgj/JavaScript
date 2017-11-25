@@ -116,6 +116,7 @@
 		if (autoplay) {
 			url = url.split('?')[1] ? url + '&' + 'autoplay=true' : url + '?' + 'autoplay=true';
 			GM_deleteValue('autoplay');
+			url = url.replace('#autoplay=true&autoplay=true', '&autoplay=true');
 		}
 		if (t) {
 			console.log('t: ' + t);
