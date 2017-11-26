@@ -421,8 +421,10 @@
 				return;
 			}
 			// else if (e.type == 'change') {
-			query = query.replace(/[^a-zA-Z0-9]+/g, ' ').replace(/^\s{2,}|\s{2,}$/g, '').toTitleCase(true);
-			input.value = query;
+			if (query.match(/[^a-zA-Z0-9:.]+/)) {
+				query = query.replace(/[^a-zA-Z0-9:.]+/g, ' ').replace(/^\s{2,}|\s{2,}$/g, '').toTitleCase(true);
+				input.value = query;
+			}
 			// }
 		};
 		inputList.forEach(function(input){
