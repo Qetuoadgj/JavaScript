@@ -76,6 +76,7 @@
 // @match		 *://www.sex.com/pin/*/
 // @match        *://danbooru.donmai.us/posts*
 // @match        *://luscious.net/c/hentai/pictures/*
+// @match        *://vipergirls.to/threads/*/page*
 
 // @match		 *://*/*.jpg
 // ==/UserScript==
@@ -774,6 +775,52 @@
 				embedCode(funcToRun);
 			};
 			waitForElement('a.icon-download', 'href', funcToRun, delay, tries, timerGroup);
+		}
+		//
+		return; // SKIP REST OF THE CODE
+	}
+
+	else if (
+		pageURL.matchLink('https?://vipergirls.to/*')
+	) {
+		addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+		if (
+			pageURL.matchLink('https?://vipergirls.to/threads/*/page*')
+		) {
+			funcToRun = function() {
+				var imagesArray = [];
+				var thumbsArray = [];
+
+				var thumbs = document.querySelectorAll('.postcontent > a > img');
+
+				thumbs.forEach(function(self, index) {
+					var thumbURL = self.src;
+					// http://t6.imgchili.com/27208/27208100_dawsonmiller_yellow_.jpg --> http://i6.imgchili.net/27208/27208100_dawsonmiller_yellow_.jpg
+					var imageURL = thumbURL.replace(/http:\/\/t(.*?)\.imgchili.com\//i, 'http://i$1.imgchili.net/');
+					thumbsArray.push(thumbURL);
+					imagesArray.push(imageURL);
+				});
+
+				G_refreshEmbedCodeText = false;
+				thumbsArray.forEach(function(self, index, array) {
+					G_contentURL = imagesArray[index];
+					G_posterURL = self;
+					G_contentTitle = '';
+					if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+					if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+					if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
+					G_embedCodeText += ' content="' + G_contentURL + '"';
+					if (G_contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+					if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
+					if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+					G_embedCodeText += '></div>';
+				});
+
+				G_stickTo = document.querySelector('.navlinks');
+				G_stickPosition = 'before';
+				embedCode(funcToRun);
+			};
+			waitForElement('.navlinks', null, funcToRun, delay, tries, timerGroup);
 		}
 		//
 		return; // SKIP REST OF THE CODE
