@@ -480,11 +480,11 @@
 				}
 				// if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
 				if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-				G_embedCodeText += ' content="' + G_contentURL + '"';
-				if (G_contentURL !== pageURL) G_embedCodeText += ' url="' + pageURL + '"';
+				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+				G_embedCodeText += ' data-content="' + G_contentURL + '"';
+				if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
 				if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
-				if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+				if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
 				G_embedCodeText += '></div>';
 			}
 			embedCodeTextArea.value = G_embedCodeText;
@@ -626,11 +626,11 @@
 				G_contentTitle = '';
 				if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
 				if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-				G_embedCodeText += ' content="' + G_contentURL + '"';
-				if (G_contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+				if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+				G_embedCodeText += ' data-content="' + G_contentURL + '"';
+				if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
 				if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
-				if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+				if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
 				G_embedCodeText += '></div>';
 			});
 
@@ -690,11 +690,11 @@
 						G_contentTitle = document.querySelector('div.info-text1').textContent.replace('Description: ', '') + ' #' + (index+1);
 						if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
 						if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-						if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-						G_embedCodeText += ' content="' + G_contentURL + '"';
-						if (G_contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+						if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+						G_embedCodeText += ' data-content="' + G_contentURL + '"';
+						if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
 						if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
-						if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+						if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
 						G_embedCodeText += '></div>';
 					});
 					G_stickTo = document.querySelector('#main');
@@ -808,11 +808,11 @@
 					G_contentTitle = '';
 					if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
 					if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
-					if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' image="' + G_posterURL + '"';
-					G_embedCodeText += ' content="' + G_contentURL + '"';
-					if (G_contentURL !== pageURL) G_embedCodeText +=' url="'+pageURL+'"';
+					if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+					G_embedCodeText += ' data-content="' + G_contentURL + '"';
+					if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
 					if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
-					if (G_videoWidth && G_videoHeight) G_embedCodeText += ' quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+					if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
 					G_embedCodeText += '></div>';
 				});
 
