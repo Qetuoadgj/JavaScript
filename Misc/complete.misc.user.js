@@ -1141,19 +1141,20 @@
 			};
 			waitForElement('#video_embed_code', null, funcToRun, delay, tries, timerGroup);
 		}
-
-		else if (
-			pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
-		) {
-			var getIframeContent = setInterval(function() {
-				var contentURL = GM_getValue('contentURL', null);
-				if (contentURL) {
-					// GM_deleteValue('contentURL');
-					openURL(refineVideo(contentURL));
-				}
-			}, 10);
-		}
 	}
+	else if (
+		pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
+	) {
+		document.querySelectorAll('iframe').forEach(function(iframe, index){iframe.src = iframe.src.replace(/^https?:\/\//i, '//');});
+		var getIframeContent = setInterval(function() {
+			var contentURL = GM_getValue('contentURL', null);
+			if (contentURL) {
+				// GM_deleteValue('contentURL');
+				openURL(refineVideo(contentURL));
+			}
+		}, 10);
+	}
+
 	else if (
 		pageURL.matchLink('https?://vshare.io/v/*') // http://vshare.io/v/e16edd7/width-867/height-491/1 || // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
 	) {
