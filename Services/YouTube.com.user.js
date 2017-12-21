@@ -4,7 +4,7 @@
 // @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @run-at       document-end
+// @run-at       document-start
 // @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
