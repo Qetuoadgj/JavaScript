@@ -33,14 +33,18 @@
 				}
 				button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
 			}
+			main.classList.add('bug-fixed');
 		}
-		main.classList.add('bug-fixed');
 	};
+
 	var MagicOptionsFixStyle = function() {
-		var panel = document.querySelector('div[title="Magic Options"]').nthParentNode(2);
-		if (panel) {
-			panel.style.position = 'inherit';
-			panel.classList.add('bug-fixed');
+		var main = document.querySelector('div[title="Magic Options"]');
+		if (main) {
+			var panel = main.nthParentNode(2);
+			if (panel) {
+				panel.style.position = 'inherit';
+				panel.classList.add('bug-fixed');
+			}
 		}
 	};
 
@@ -48,10 +52,11 @@
 	setTimeout(MagicOptionsFixStyle, 1);
 
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
-		if (event.target.id && event.target.id == 'clipconverter' && event.target.className != 'bug-fixed') {
+		var element = event.target;
+		if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
 			ClipConverterFixStyle();
 		}
-		if (event.target.title && event.target.title == 'Magic Options' && event.target.className != 'bug-fixed') {
+		if (element.title == 'Magic Options' && element.className != 'bug-fixed') {
 			MagicOptionsFixStyle();
 		}
 	} , false);
