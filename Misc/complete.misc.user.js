@@ -55,6 +55,8 @@
 // @match		 *://www.tube8.com/embed/*
 // @match		 *://www.tube8.com/*/*/*/
 
+// @match        *://xhamster.com/*
+
 // @match		 *://*/*.mp4
 
 // @match		 *://www.imagefap.com/pictures/*/*?*view=2
@@ -333,7 +335,7 @@
 	// ====================================================================================================================
 	var G_embedCodeText, G_refreshEmbedCodeText = true, G_contentTitle, G_contentURL, G_posterURL, G_posters, G_sampleURL, G_altText,
 		G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_sampleVideo, G_stickTo, G_stickPosition, G_qualityButtons,
-		G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = false, G_IsVideo = true, G_noVideoSource = false;
+		G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = 60, G_IsVideo = true, G_noVideoSource = false;
 
 	String.prototype.capitalize = function() {
 		function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
@@ -365,9 +367,9 @@
 
 	Element.prototype.autoHeight = function(fixedHeight) {
 		this.style.height = 'auto';
-		this.style.height = (this.scrollHeight) + 'px';
+		this.style.height = (fixedHeight > 0 ? Math.min(fixedHeight, this.scrollHeight) : this.scrollHeight) + 'px';
 		if (fixedHeight > 0) this.style.maxHeight = this.style.height;
-		this.addEventListener('click', this.autoHeight, false);
+		this.addEventListener('click', function(){this.autoHeight(fixedHeight);}, false);
 	};
 
 	function addOpenInNewTabProperty (selector) {
@@ -1321,6 +1323,55 @@
 				embedCode(funcToRun);
 			};
 			waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+		}
+	}
+
+	else if (
+		pageURL.matchLink('https?://xhamster.com/*')
+	) {
+		if (
+			pageURL.matchLink('https?://xhamster.com/xembed.php[?]video=*') // https://xhamster.com/xembed.php?video=5604024
+		) {
+			var playMaxQualitySource = (qualityButtons, playButton) => {
+				var quality = 0;
+				qualityButtons.forEach(function(btn) {
+					var value = btn.dataset.value;
+					if (value) {
+						value = Number(value.match(/\d+/));
+						if (value > quality) {quality = value; btn.click(); playButton.click();}
+					}
+				});
+				return quality;
+			};
+			funcToRun = function() {
+				var quality = playMaxQualitySource(document.querySelectorAll('.quality.chooser > span[data-value]'), document.querySelector('.xplayer-start-button'));
+				var contentURL = document.querySelector('body video[src]').src;
+				console.log('contentURL: ', contentURL);
+				openURL(refineVideo(contentURL));
+			};
+			waitForElement('.xplayer-start-button', null, funcToRun, delay, tries, timerGroup);
+		}
+
+		else if (
+			pageURL.matchLink('https?://xhamster.com/videos/*') // https://xhamster.com/videos/ariana-marie-lets-you-cum-on-her-lovely-face-5604024
+		) {
+			funcToRun = function() {
+				G_contentTitle = document.title;
+				G_contentURL = document.querySelector('link[itemprop="embedUrl"]').href;
+				G_posterURL = (
+					document.querySelector('link[itemprop="thumbnailUrl"]') ?
+					document.querySelector('link[itemprop="thumbnailUrl"]').href :
+					document.querySelector('meta[name="thumbnail"]') ?
+					document.querySelector('meta[name="thumbnail"]').content :
+					document.querySelector('meta[property="og:image"]').content
+				);
+				G_stickTo = document.querySelector('.banner-container');
+				G_stickPosition = 'before';
+				G_qualityButtons = document.querySelectorAll('.quality.chooser > span[data-value], .xplayer-start-button, .play-inner');
+				getVideoSources();
+				embedCode(funcToRun);
+			};
+			waitForElement('link[itemprop="embedUrl"]', 'href', funcToRun, delay, tries, timerGroup);
 		}
 	}
 
