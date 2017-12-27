@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @run-at       document-start
@@ -13,6 +13,8 @@
 
 (function() {
 	'use strict';
+
+	var bug_fixed = 0;
 
 	Element.prototype.nthParentNode = function(num) {
 		var parent = this;
@@ -34,6 +36,7 @@
 				button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
 			}
 			main.classList.add('bug-fixed');
+			bug_fixed = 1;
 		}
 	};
 
@@ -48,16 +51,19 @@
 		}
 	};
 
-	setTimeout(ClipConverterFixStyle, 1);
-	setTimeout(MagicOptionsFixStyle, 1);
+	// setTimeout(ClipConverterFixStyle, 1);
+	// setTimeout(MagicOptionsFixStyle, 1);
 
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
-		var element = event.target;
-		if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
-			ClipConverterFixStyle();
+		if (bug_fixed === 0) {
+			var element = event.target;
+			// if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
+			if (element.className != 'bug-fixed') {
+				ClipConverterFixStyle();
+			}
+			if (element.title == 'Magic Options' && element.className != 'bug-fixed') {
+				MagicOptionsFixStyle();
+			}
 		}
-		if (element.title == 'Magic Options' && element.className != 'bug-fixed') {
-			MagicOptionsFixStyle();
-		}
-	} , false);
+	}, false);
 })();
