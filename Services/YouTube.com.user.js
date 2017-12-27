@@ -34,9 +34,12 @@
 					button.innerHTML = '<span class="yt-uix-button-content"><strong>' + text + '</strong></span>';
 				}
 				button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
+				if (main.className != 'bug-fixed') {
+					main.classList.add('bug-fixed');
+					bug_fixed = 1;
+				}
 			}
-			main.classList.add('bug-fixed');
-			bug_fixed = 1;
+			// alert('bug_fixed: ' + bug_fixed);
 		}
 	};
 
