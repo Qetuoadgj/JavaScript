@@ -15,6 +15,7 @@
 	'use strict';
 
 	var bug_fixed = 0;
+	var pageURL = location.href;
 
 	Element.prototype.nthParentNode = function(num) {
 		var parent = this;
@@ -36,7 +37,7 @@
 				button.setAttribute('class', 'yt-uix-button yt-uix-button-opacity yt-uix-tooltip');
 				if (main.className != 'bug-fixed') {
 					main.classList.add('bug-fixed');
-					bug_fixed = 1;
+					bug_fixed++;
 				}
 			}
 			// alert('bug_fixed: ' + bug_fixed);
@@ -58,11 +59,13 @@
 	// setTimeout(MagicOptionsFixStyle, 1);
 
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
-		if (bug_fixed === 0) {
+		if (location.href !== pageURL) bug_fixed = 0; // поменялось видео в плейлисте
+		if (bug_fixed < 2) {
 			var element = event.target;
-			// if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
-			if (element.className != 'bug-fixed') {
+			if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
 				ClipConverterFixStyle();
+				// console.clear();
+				// console.log('bug_fixed: ' + bug_fixed);
 			}
 			if (element.title == 'Magic Options' && element.className != 'bug-fixed') {
 				MagicOptionsFixStyle();
