@@ -26,6 +26,7 @@
 // @match        *://openload.co/embed/*
 // @match        *://oload.tv/embed/*
 // @match        *://oload.info/embed/*
+// @match        *://oload.stream/embed/*
 
 // @match        *://yourporn.sexy/post/*.html*
 
@@ -38,6 +39,8 @@
 // @match		 *://drive.google.com/file/d/*/preview?*
 
 // @match		 *://vidoza.net/embed-*
+
+// @match		 *://streamango.com/embed/flsafofeeeqtaqqs
 
 // @match		 *://xfreehd.com/video/*/*
 // @match		 *://*.xfreehd.com/media/*.mp4
@@ -71,6 +74,7 @@
 // @match		 *://www.miscopy.com/?attachment_id=*
 
 // @match		 *://javhihi.com/movie/*
+/// @match        *://pornroom.org/*/
 
 // @match		 *://www.x-art.com/galleries/*
 // @match		 *://www.pornpics.com/*
@@ -891,12 +895,14 @@
 				}
 			});
 			if (document.querySelector('#streamurl')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
+			else if (document.querySelector('#streamuri')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamuri').innerText + '?mime=true';
 			sources[cuttenURL] = src;
 			GM_setValue('G_sampleURL', src);
 			console.log('cuttenURL: ', cuttenURL, '\nvideo.src: ', src);
+			console.log('G_sampleURL: ', G_sampleURL, '\nvideo.src: ', src);
 			GM_setValue('sources', sources);
 		};
-		waitForElement('video > source[src^="http"], video[src^="http"], #streamurl', null, getSources, delay, tries, null);
+		waitForElement('video > source[src^="http"], video[src^="http"], #streamurl, #streamuri', null, getSources, delay, tries, null);
 	}
 	// if (!G_noVideoSource) getVideoSources();
 	// ====================================================================================================================
@@ -998,15 +1004,18 @@
 	else if (
 		pageURL.matchLink('https?://openload.co/embed/*') || // https://openload.co/embed/GwWaJKr7q-g/
 		pageURL.matchLink('https?://oload.tv/embed/*') || // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
-		pageURL.matchLink('https?://oload.info/embed/*') // https://oload.info/embed/GkrmWmRxsGM/
+		pageURL.matchLink('https?://oload.info/embed/*') || // https://oload.info/embed/GkrmWmRxsGM/
+		pageURL.matchLink('https?://oload.stream/embed/*') // https://oload.stream/embed/_5lSwGYiAMc/
 	) {
+		var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
 		funcToTest = function() {
-			var ready, url = document.querySelector('#streamurl');
+			var ready, url = src_span;
 			if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
 			return ready;
 		};
 		funcToRun = function() {
-			var contentURL = location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
+			var url = src_span;
+			var contentURL = location.protocol + '//' + location.host + '/stream/' + url.innerText + '?mime=true';
 			// var posterURL = document.querySelector('#olvideo_html5_api').poster;
 			console.log('contentURL: ', contentURL);
 			openURL(refineVideo(contentURL));
@@ -1517,6 +1526,7 @@
 			document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
 				var contentURL = e.src;
 				console.log('contentURL: ', contentURL);
+				GM_setValue('G_sampleURL', contentURL); // исправление на случай если ранее видео "не нашлось"
 				openURL(refineVideo(contentURL));
 			});
 		};
