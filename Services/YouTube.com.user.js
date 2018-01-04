@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @run-at       document-start
-// @noframes
+/// @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        https://www.youtube.com/watch?*
@@ -55,12 +55,28 @@
 		}
 	};
 
-	// setTimeout(ClipConverterFixStyle, 1);
-	// setTimeout(MagicOptionsFixStyle, 1);
+	function launchTimers(interval = 2000, stop = 0) {
+		var i = 1, timerId = setTimeout(function tick() {
+			if (location.href !== pageURL) bug_fixed = 0; // поменялось видео в плейлисте
+			if (bug_fixed < 1) {
+				ClipConverterFixStyle();
+				MagicOptionsFixStyle();
+				console.clear();
+				console.log('bug_fixed: ' + bug_fixed);
+			}
+			timerId = setTimeout(tick, interval);
+		}, interval);
+		if (stop > 1) setTimeout(function stopTimers(){clearInterval(timerId);}, stop); // остановить запущенные таймеры через stop мсек.
+	}
+	setTimeout(launchTimers, 250); //
+
+	/*
+	setTimeout(ClipConverterFixStyle, 3000);
+	setTimeout(MagicOptionsFixStyle, 3000);
 
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
 		if (location.href !== pageURL) bug_fixed = 0; // поменялось видео в плейлисте
-		if (bug_fixed < 2) {
+		if (bug_fixed < 20) {
 			var element = event.target;
 			if (element.id == 'clipconverter' && element.className != 'bug-fixed') {
 				ClipConverterFixStyle();
@@ -72,4 +88,5 @@
 			}
 		}
 	}, false);
+	*/
 })();
