@@ -1525,9 +1525,12 @@
 		funcToRun = function() {
 			document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
 				var contentURL = e.src;
-				console.log('contentURL: ', contentURL);
-				GM_setValue('G_sampleURL', contentURL); // исправление на случай если ранее видео "не нашлось"
-				openURL(refineVideo(contentURL));
+				if (!contentURL.match(/\/embed\//i)) {
+					console.log('contentURL: ', contentURL);
+					GM_setValue('G_sampleURL', contentURL); // исправление на случай если ранее видео "не нашлось"
+					openURL(refineVideo(contentURL));
+					return;
+				}
 			});
 		};
 		waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
