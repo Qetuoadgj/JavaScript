@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @run-at       document-start
-/// @noframes
+// @run-at       document-end
+// @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        https://www.youtube.com/watch?*
@@ -68,7 +68,7 @@
 		}, interval);
 		if (stop > 1) setTimeout(function stopTimers(){clearInterval(timerId);}, stop); // остановить запущенные таймеры через stop мсек.
 	}
-	setTimeout(launchTimers, 250); //
+	setTimeout(launchTimers, 250, 10000); //
 
 	/*
 	setTimeout(ClipConverterFixStyle, 3000);
