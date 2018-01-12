@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.7
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @run-at       document-end
-// @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
-// @match        https://www.youtube.com/watch?*
+// @run-at       document-end
+// @noframes
+// @include      /^https?://www\.youtube\.com/watch?.*$/
 // ==/UserScript==
 
 (function() {
@@ -38,6 +38,7 @@
 				if (main.className != 'bug-fixed') {
 					main.classList.add('bug-fixed');
 					bug_fixed++;
+					// return;
 				}
 			}
 			// alert('bug_fixed: ' + bug_fixed);
@@ -55,6 +56,7 @@
 		}
 	};
 
+	/*
 	function launchTimers(interval = 2000, stop = 0) {
 		var i = 1, timerId = setTimeout(function tick() {
 			if (location.href !== pageURL) bug_fixed = 0; // поменялось видео в плейлисте
@@ -63,17 +65,19 @@
 				MagicOptionsFixStyle();
 				console.clear();
 				console.log('bug_fixed: ' + bug_fixed);
+				console.log('interval: ' + interval);
+				console.log('stop: ' + stop);
 			}
 			timerId = setTimeout(tick, interval);
 		}, interval);
-		if (stop > 1) setTimeout(function stopTimers(){clearInterval(timerId);}, stop); // остановить запущенные таймеры через stop мсек.
+		if (stop > 1) setTimeout(function stopTimers(){console.log('timers: ' + 'stopped'); clearInterval(timerId);}, stop); // остановить запущенные таймеры через stop мсек.
 	}
-	setTimeout(launchTimers, 250, 10000); //
+	setTimeout(launchTimers, 50, 50, 2000);
+   */
 
-	/*
-	setTimeout(ClipConverterFixStyle, 3000);
-	setTimeout(MagicOptionsFixStyle, 3000);
-
+	// /*
+	setTimeout(ClipConverterFixStyle, 10);
+	setTimeout(MagicOptionsFixStyle, 10);
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
 		if (location.href !== pageURL) bug_fixed = 0; // поменялось видео в плейлисте
 		if (bug_fixed < 20) {
@@ -82,11 +86,12 @@
 				ClipConverterFixStyle();
 				// console.clear();
 				// console.log('bug_fixed: ' + bug_fixed);
+				console.log('bug_fixed: ' + bug_fixed);
 			}
 			if (element.title == 'Magic Options' && element.className != 'bug-fixed') {
 				MagicOptionsFixStyle();
 			}
 		}
 	}, false);
-	*/
+	// */
 })();
