@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         YouTube.com
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.9
+// @version      1.1.0
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @run-at       document-end
 // @noframes
-// @include      /^https?://www\.youtube\.com/watch?.*$/
+// @include      /^https?://www\.youtube\.com/.*$/
 // ==/UserScript==
 
 (function() {
@@ -76,6 +76,9 @@
    */
 
 	// /*
+	// if (
+	// 	pageURL.match('^https?:\/\/www\.youtube\.com\/watch?.*$')
+	// ) {
 	setTimeout(ClipConverterFixStyle, 10);
 	setTimeout(MagicOptionsFixStyle, 10);
 	document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
@@ -93,5 +96,6 @@
 			}
 		}
 	}, false);
+	// }
 	// */
 })();
