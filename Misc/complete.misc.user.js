@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.01
+// @version      0.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -131,6 +131,7 @@
             url = url.split('?')[1] ? url + '&' + 't='+t : url + '?' + 't='+t;
             GM_deleteValue('t');
         }
+        GM_setValue('G_sampleURL', url);
         return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
     };
     var openURL = function(url) {
@@ -419,7 +420,8 @@
     }
 
     function refineText(inputList) {
-        var eventList = ['change', 'input', 'cut', 'copy', 'paste', 'focus', 'blur']; // 'keydown', 'keyup',
+        // var eventList = ['change', 'input', 'cut', 'copy', 'paste', 'focus', 'blur']; // 'keydown', 'keyup',
+        var eventList = ['paste', 'focus', 'blur']; // 'keydown', 'keyup',
         var enterKey = 13, escKey = 27;
         var onEvent = function(input, e) {
             e = e || window.event;
@@ -462,6 +464,21 @@
         }
     }
 
+    function decodeEntities(encodedString) {
+        encodedString = decodeURI(encodedString);
+        var id = 'decodeEntities_decodeIt';
+        var s = document.getElementById(id);
+        if (!s) {
+            s = document.createElement('span');
+            s.id = 'decodeEntities_decodeIt';
+            document.body.appendChild(s);
+        }
+        s.innerHTML = encodedString;
+        var decodedString = s.innerText;
+        // s.remove();
+        return decodedString;
+    }
+
     function embedCode(callerFunction) {
         var parentDocument = document;
         var id = 'embedCode';
@@ -478,6 +495,7 @@
             var tmpTitle = G_contentTitle;
             embedCodeTextArea.style.color = 'grey';
             G_contentTitle = G_contentTitle || pageTitle.replace(/^.{1} /i, '').capitalize();
+            G_contentTitle = decodeEntities(G_contentTitle);
             if (!G_embedCodeText || G_refreshEmbedCodeText) {
                 G_embedCodeText = '<div class="thumbnail"';
                 if (!G_sampleURL && G_contentURL.matchLink('https?://*.googleusercontent.com/*')) {
@@ -1197,14 +1215,16 @@
     ) {
         var actualSource = () => {
             var contentURL;
-            var flashvars;
-            for (let script of document.scripts) {
-                var text = script.text;
-                var match = text.match(/var flashvars_(.*?) = */i);
-                if (match) {
-                    var id = match[1];
-                    if (id) flashvars = getWindowVar('flashvars_' + id);
-                    if (flashvars) break;
+            var flashvars = getWindowVar('flashvars');
+            if (!flashvars) {
+                for (let script of document.scripts) {
+                    var text = script.text;
+                    var match = text.match(/var flashvars_(.*?) = */i);
+                    if (match) {
+                        var id = match[1];
+                        if (id) flashvars = getWindowVar('flashvars_' + id);
+                        if (flashvars) break;
+                    }
                 }
             }
             if (flashvars) {
@@ -1426,8 +1446,8 @@
             G_noVideoSource = false;
             addGlobalStyle('#player-and-details {height: 480px;}');
             funcToRun = function() {
-                var iframes =  document.querySelectorAll('#actualPlayer iframe');
-                G_contentURL = iframes ? iframes[0].src : 'null';
+                var iframes = document.querySelectorAll('#actualPlayer iframe');
+                G_contentURL = iframes[0] ? iframes[0].src : 'null';
                 if (G_contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) {
                     G_contentURL = G_contentURL + '&hd=1';
                 }
@@ -1446,15 +1466,40 @@
                 var title = document.querySelector('h1[title]');
                 for (const a of document.querySelectorAll("span > b")) {
                     if (a.textContent.includes("Source-Title")) {
-                        G_contentTitle = a.parentNode.nextElementSibling.textContent.replace(/\n/g,'').toTitleCase();
-                        if (title) title.innerText = G_contentTitle;
+                        // G_contentTitle = a.parentNode.nextElementSibling.textContent.replace(/\n/g,'').toTitleCase();
+                        // if (title) title.innerText = G_contentTitle;
+                        if (title) G_contentTitle = title.innerText;
                     }
                 }
                 G_stickPosition = 'before';
+                var ContentPreviewIframe = document.querySelector('#ContentPreviewIframe');
+                if (ContentPreviewIframe) {
+                    G_contentURL = ContentPreviewIframe.src;
+                    G_stickTo = ContentPreviewIframe;
+                    G_stickPosition = 'after';
+                    G_sampleURL = null;
+                }
                 embedCode(funcToRun);
                 addKeyComboCtrlC(true);
             };
-            waitForElement('#actualPlayer iframe', 'src', funcToRun, delay, tries, timerGroup);
+            waitForElement('#actualPlayer iframe, #ContentPreviewIframe', 'src', funcToRun, delay, tries, timerGroup);
+            var addPreview = function() {
+                var iframes = document.querySelectorAll('#actualPlayer iframe');
+                if (iframes[0]) return;
+                console.log('previewURL: '+funcResult);
+                var iframe = document.createElement('iframe');
+                iframe.style.height = '467px';
+                iframe.style.width = '100%';
+                iframe.style.borderWidth = '0';
+                iframe.src = funcResult.href;
+                iframe.id = 'ContentPreviewIframe';
+                var target = document.querySelector('.linkdetails > h1');
+                if (target) {
+                    target.parentNode.insertBefore(iframe, target.nextSibling);
+                }
+                // <iframe src="https://openload.co/embed/x1g5a0Ytdow/&quot;" style="height: 467px; width: 100%; border-width: 0;"></iframe>
+            };
+            waitForElement('.linktitleurl > a', 'href', addPreview, delay, tries, null);
             var source = document.querySelector('#player-and-details-2 > div.blockx > div.a > center > b:nth-of-type(2)');
             if (source) {
                 var sourceURL = source.innerText;
