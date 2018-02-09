@@ -809,9 +809,9 @@
         ) {
             funcToRun = function() {
                 G_contentURL = document.querySelector('#image-container').getAttribute('data-large-file-url');
-                G_contentURL = G_contentURL ? ('http://' + pageHost + G_contentURL) : G_contentURL;
+                G_contentURL = getAbsoluteUrl(G_contentURL); // G_contentURL = G_contentURL ? ('http://' + pageHost + G_contentURL) : G_contentURL;
                 G_posterURL = document.querySelector('#image-container').getAttribute('data-preview-file-url');
-                G_posterURL = G_posterURL ? ('http://' + pageHost + G_posterURL) : G_posterURL;
+                G_posterURL = getAbsoluteUrl(G_posterURL); // G_posterURL = G_posterURL ? ('http://' + pageHost + G_posterURL) : G_posterURL;
                 G_stickTo = document.querySelector('#image-container');
                 G_stickPosition = 'after';
                 embedCode(funcToRun);
