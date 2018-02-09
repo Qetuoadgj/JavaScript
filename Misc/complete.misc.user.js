@@ -81,6 +81,7 @@
 // @match		 *://www.sex.com/picture/*/
 // @match		 *://www.sex.com/pin/*/
 // @match        *://danbooru.donmai.us/posts*
+// @match        *://konachan.com/post/show/*/*
 // @match        *://luscious.net/c/hentai/pictures/*
 /// @match        *://vipergirls.to/threads/*/page*
 // @match        *://vipergirls.to/threads/*
@@ -753,13 +754,54 @@
         return; // SKIP REST OF THE CODE
     }
 
+
+
+    else if (
+        pageURL.matchLink('https?://konachan.com')
+    ) {
+        addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+        addOpenInNewTabProperty('a.thumb');
+        document.querySelectorAll('.tag-link a').forEach(function(link, index) {
+            var href = link.href + '+limit%3A100&';
+            link.href = href;
+        });
+        if (
+            pageURL.matchLink('https?://konachan.com/post/show/*/*')
+        ) {
+            addGlobalStyle('#image {height: 480px; width: auto;}');
+            funcToRun = function() {
+                var json_data;
+                document.scripts.forEach(function(script) {
+                    var text = script.text;
+                    if (text.match(/Post\.register_resp\(/) && text.match(/"preview_url":"(.*?)"/i)) {
+                        json_data = text.match(/.*?\((.*)\).*/mi);
+                        json_data = json_data[1] ? JSON.parse(json_data[1]) : null;
+                    }
+                });
+
+                if (json_data) {
+                    G_contentURL = json_data.posts[0].file_url || json_data.posts[0].jpg_url || document.querySelector('#image').src;
+                    G_posterURL = json_data.posts[0].preview_url;
+                    G_stickTo = document.querySelector('#image');
+                    G_stickPosition = 'after';
+                    G_videoWidth = json_data.posts[0].width;
+                    G_videoHeight = json_data.posts[0].height;
+                    embedCode(funcToRun);
+                }
+            };
+            waitForElement('#image', 'src', funcToRun, delay, tries, timerGroup);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
     else if (
         pageURL.matchLink('https?://danbooru.donmai.us')
     ) {
         addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         addOpenInNewTabProperty('article > a');
         document.querySelectorAll('a.search-tag').forEach(function(link, index) {
-            var href = link.href + '+limit%3A50&';
+            var href = link.href + '+limit%3A100&';
             link.href = href;
         });
         if (
