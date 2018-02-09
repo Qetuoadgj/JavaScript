@@ -81,7 +81,7 @@
 // @match		 *://www.sex.com/picture/*/
 // @match		 *://www.sex.com/pin/*/
 // @match        *://danbooru.donmai.us/posts*
-// @match        *://konachan.com/post/show/*/*
+// @match        *://konachan.com/post/show*
 // @match        *://luscious.net/c/hentai/pictures/*
 /// @match        *://vipergirls.to/threads/*/page*
 // @match        *://vipergirls.to/threads/*
@@ -766,7 +766,7 @@
             link.href = href;
         });
         if (
-            pageURL.matchLink('https?://konachan.com/post/show/*/*')
+            pageURL.matchLink('https?://konachan.com/post/show*')
         ) {
             addGlobalStyle('#image {height: 480px; width: auto;}');
             funcToRun = function() {
