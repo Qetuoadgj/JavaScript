@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.02
+// @version      0.0.03
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -89,7 +89,7 @@
 // @match		 *://*/*.jpg
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
     // console.clear();
     // if (document.body) {
@@ -100,14 +100,20 @@
     // ====================================================================================================================
     var TEST_MODE = false;
     var URL_MATCHED;
-    function cutURL(url) {return url.replace(/^.*?:\/\//, '').trim();}
+    function cutURL(url) {
+        url = url.replace(/^.*?:\/\//, '');
+        url = url.replace(/^www\./i, '');
+        url = url.replace(/\b#onlyVideo\b.*/, '');
+        url = url.trim();
+        return url;
+    }
     var pageHost = location.hostname,
         pageURL = location.href,
         pageTitle = document.title,
         shortURL = (location.protocol + '//' + location.host + location.pathname).trim(),
         cuttenURL = cutURL(pageURL)
     ;
-    var refineVideoParam = 'REFINE_VIDEO';
+    // var refineVideoParam = 'REFINE_VIDEO';
     if (location.href.match('autoplay=true')) {
         GM_setValue('autoplay', true);
         var autoplay = GM_getValue('autoplay', null);
@@ -117,25 +123,25 @@
         GM_setValue('t', duration[1]);
         var t = GM_getValue('t', null);
     }
-    var refineVideo = function(url) {
+    var refineVideo = function (url) {
         // if (TEST_MODE) return;
         var autoplay = GM_getValue('autoplay', null);
         var t = GM_getValue('t', null);
         console.log('autoplay: ' + autoplay || 'false');
         if (autoplay) {
-            url = url.split('?')[1] ? url + '&' + 'autoplay=true' : url + '?' + 'autoplay=true';
+            url = url.split('?')[1] ? (url + '&autoplay=true') : (url + '?autoplay=true');
             GM_deleteValue('autoplay');
-            url = url.replace('#autoplay=true&autoplay=true', '&autoplay=true');
+            url = url.replace(/#autoplay=true(&autoplay=true){1,}/g, '#autoplay=true').replace(/(&autoplay=true){2,}/g, '&autoplay=true');
         }
         if (t) {
             console.log('t: ' + t);
-            url = url.split('?')[1] ? url + '&' + 't='+t : url + '?' + 't='+t;
+            url = url.split('?')[1] ? (url + '&t=' + t) : (url + '?t=' + t);
             GM_deleteValue('t');
         }
         GM_setValue('G_sampleURL', url);
         return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
     };
-    var openURL = function(url) {
+    var openURL = function (url) {
         GM_deleteValue('contentURL');
         // GM_deleteValue('G_sampleURL');
         // GM_deleteValue('sources');
@@ -145,34 +151,35 @@
     // TEST_MODE = true;
     // ====================================================================================================================
     var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
-        waitForCondition = function(funcToTest, funcToRun, delay, tries, timerGroup) {
+        waitForCondition = function (funcToTest, funcToRun, delay, tries, timerGroup) {
             if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
                 // console.log('funcToTest: '+funcToTest.toString());
                 delay = delay || 1000; // defaults
                 timerGroup = timerGroup || [];
                 var timerGroupIndex = timerGroup ? (timerGroup.length > 0 ? timerGroup.length : 0) : null; // get Index for current function timer
                 var ID = Math.floor((Math.random() * 9999) + 1000); // random ID for debug
-                var startIteration = function(iteration, delay, count, timerGroup, timerGroupIndex) {
+                var startIteration = function (iteration, delay, count, timerGroup, timerGroupIndex) {
                     var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
-                    if (timerGroup) {timerGroup[timerGroupIndex] = timer;} // add timer to timerGroup
+                    if (timerGroup) { timerGroup[timerGroupIndex] = timer; } // add timer to timerGroup
                 };
-                var clearTimers = function(timerGroup) {
-                    if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) {clearTimeout(timerGroup[i]); if (i == timerGroup.length-1) {timerGroup = [];}}
+                var clearTimers = function (timerGroup) {
+                    if (timerGroup) for (var i = 0; i < timerGroup.length; ++i) { clearTimeout(timerGroup[i]); if (i == timerGroup.length - 1) { timerGroup = []; } }
                 };
-                var iteration = function(count) {
+                var iteration = function (count) {
                     var keepRun = tries ? (count <= tries) : true;
                     if (keepRun) {
                         var result = funcToTest();
                         console.log('iteration: ', count);
-                        if (result) {clearTimers(timerGroup); return funcToRun();} else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+                        if (result) { clearTimers(timerGroup); return funcToRun(); }
+                        else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
                     }
                 };
                 iteration(1); // 1st iteration
             }
         },
-        waitForElement = function(elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
-            var funcToTest = function() {
-                console.log('elementSelector: '+elementSelector+', attribute: '+attribute);
+        waitForElement = function (elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
+            var funcToTest = function () {
+                console.log('elementSelector: ' + elementSelector + ', attribute: ' + attribute);
                 var result, elementsArray = document.querySelectorAll(elementSelector);
                 for (var i = 0; i < elementsArray.length; ++i) {
                     var element = elementsArray[i];
@@ -189,14 +196,14 @@
         }
     ;
 
-    String.prototype.addToURL = function(param, separator, prefix, postfix) {
+    String.prototype.addToURL = function (param, separator, prefix, postfix) {
         prefix = prefix || ''; postfix = postfix || '';
         var url = this.split(separator)[0] || '', params = this.split(separator)[1] || '';
         var result = url + separator + params + prefix + param + postfix;
         return result;
     };
 
-    String.prototype.matchLink = function(link, flags) {
+    String.prototype.matchLink = function (link, flags) {
         var original = link;
         link = link.replace(/[.\/]/g, "\\$&");
         link = link.replace(/\*/g, ".*");
@@ -219,27 +226,27 @@
     }
 
     function getWindowVar(varName) {
-        var script = injectNode('script',  document.head, 'function getVar(varName){return window[varName];}');
+        var script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
         var result = getVar(varName);
         script.remove();
         return result;
     }
 
-    var getAbsoluteUrl = (function(){var a; return function(url){if(!a) a = document.createElement('a'); a.href = url; return a.href; };})();
+    var getAbsoluteUrl = (function () { var a; return function (url) { if (!a) a = document.createElement('a'); a.href = url; return a.href; }; })();
 
     function addGlobalStyle(css, cssClass) {
-        var head = document.getElementsByTagName('head')[0]; if (!head) {return;}
+        var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
         var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
         if (cssClass) style.setAttribute('class', cssClass);
         head.appendChild(style);
     }
 
-    function isVisible(element) {return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0;}
+    function isVisible(element) { return element.offsetWidth > 0 || element.offsetHeight > 0 || element.getClientRects().length > 0; }
 
     function getVisibleElement(elements) {
         for (var i = 0; i < elements.length; ++i) {
             var element = elements[i];
-            console.log(element, 'isVisible: '+isVisible(element));
+            console.log(element, 'isVisible: ' + isVisible(element));
             if (isVisible(element)) {
                 return element;
             }
@@ -256,24 +263,25 @@
     // * @param   {number}  s       The saturation
     // * @param   {number}  l       The lightness
     // * @return  {Array}           The RGB representation
-    function hslToRgb(h, s, l){
+    function hslToRgb(h, s, l) {
         var r, g, b;
-        if(s === 0){
+        if (s === 0) {
             r = g = b = l; // achromatic
-        }else{
-            var hue2rgb = function hue2rgb(p, q, t){
-                if(t < 0) t += 1;
-                if(t > 1) t -= 1;
-                if(t < 1/6) return p + (q - p) * 6 * t;
-                if(t < 1/2) return q;
-                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        }
+        else {
+            var hue2rgb = function hue2rgb(p, q, t) {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
                 return p;
             };
             var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
+            r = hue2rgb(p, q, h + 1 / 3);
             g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
+            b = hue2rgb(p, q, h - 1 / 3);
         }
         return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
     }
@@ -287,16 +295,17 @@
     // * @param   {number}  g       The green color value
     // * @param   {number}  b       The blue color value
     // * @return  {Array}           The HSL representation
-    function rgbToHsl(r, g, b){
+    function rgbToHsl(r, g, b) {
         r /= 255; g /= 255; b /= 255;
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
         var h, s, l = (max + min) / 2;
-        if(max == min){
+        if (max == min) {
             h = s = 0; // achromatic
-        }else{
+        }
+        else {
             var d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch(max){
+            switch (max) {
                 case r: h = (g - b) / d + (g < b ? 6 : 0); break;
                 case g: h = (b - r) / d + 2; break;
                 case b: h = (r - g) / d + 4; break;
@@ -312,11 +321,12 @@
             b = Math.abs(end - start) * a,
             c = (end > start) ? (start + b) : (start - b);
         var h = c, s = saturation, l = '50%';
-        if (format=='hsl') {
-            return 'hsl(' + c + ','+ saturation +'%,50%)';
-        } else {
+        if (format == 'hsl') {
+            return 'hsl(' + c + ',' + saturation + '%,50%)';
+        }
+        else {
             var rgb = hslToRgb(h, s, l);
-            return 'rgb('+rgb[1]+', '+rgb[2]+', '+rgb[3]+')';
+            return 'rgb(' + rgb[1] + ', ' + rgb[2] + ', ' + rgb[3] + ')';
         }
     }
 
@@ -324,7 +334,7 @@
         backGroundAlpha = backGroundAlpha === 0 ? 0 : backGroundAlpha ? backGroundAlpha : 0.4;
         var mainDiv = document.createElement('div');
         mainDiv.style.background = pickColourByScale(qualityPercent, 1, 100, 0, 100);
-        mainDiv.style.background = mainDiv.style.background.replace(/rgb\((.*)\)/, 'rgba($1, '+backGroundAlpha+')');
+        mainDiv.style.background = mainDiv.style.background.replace(/rgb\((.*)\)/, 'rgba($1, ' + backGroundAlpha + ')');
         console.log(mainDiv.style.background);
         mainDiv.style.zIndex = 2147483647; // '10000';
         mainDiv.style.position = 'absolute'; // 'inherit'
@@ -344,15 +354,15 @@
         G_embedCodeFrame, G_embedCodeTextArea, G_embedCodeLink, G_sampleVideo, G_stickTo, G_stickPosition, G_qualityButtons,
         G_embedCodeAutoHeight = true, G_embedCodeFixedHeight = 60, G_IsVideo = true, G_noVideoSource = false;
 
-    String.prototype.capitalize = function() {
-        function capFirst(str) {return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1);}
+    String.prototype.capitalize = function () {
+        function capFirst(str) { return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1); }
         return this.split(' ').map(capFirst).join(' ');
     };
 
-    String.prototype.toTitleCase = function(lower) {
+    String.prototype.toTitleCase = function (lower) {
         var string = lower ? this.toLowerCase() : this;
         var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
-        return string.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function(match, index, title) {
+        return string.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function (match, index, title) {
             if (index > 0 && index + match.length !== title.length &&
                 match.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
                 (title.charAt(index + match.length) !== '-' || title.charAt(index - 1) === '-') &&
@@ -366,20 +376,20 @@
         });
     };
 
-    Element.prototype.appendElement = function(targetFrame, appendPosition) {
+    Element.prototype.appendElement = function (targetFrame, appendPosition) {
         if (appendPosition == 'after') targetFrame.parentNode.insertBefore(this, targetFrame.nextSibling);
         else if (appendPosition == 'before') targetFrame.parentNode.insertBefore(this, targetFrame);
         else if (!appendPosition || appendPosition == 'append') targetFrame.appendChild(this);
     };
 
-    Element.prototype.autoHeight = function(fixedHeight) {
+    Element.prototype.autoHeight = function (fixedHeight) {
         this.style.height = 'auto';
         this.style.height = (fixedHeight > 0 ? Math.min(fixedHeight, this.scrollHeight) : this.scrollHeight) + 'px';
         if (fixedHeight > 0) this.style.maxHeight = this.style.height;
-        this.addEventListener('click', function(){this.autoHeight(fixedHeight);}, false);
+        this.addEventListener('click', function () { this.autoHeight(fixedHeight); }, false);
     };
 
-    function addOpenInNewTabProperty (selector) {
+    function addOpenInNewTabProperty(selector) {
         selector = selector || 'a';
         var linksArray = document.querySelectorAll(selector);
         // alert(selector+'\n'+linksArray.length);
@@ -392,21 +402,21 @@
     function addPageControlKeys(prevPageSelector, nextPageSelector) {
         var previous_page_btn = document.querySelectorAll(prevPageSelector)[0];
         var next_page_btn = document.querySelectorAll(nextPageSelector)[0];
-        var onKeyUp = function(e) {
+        var onKeyUp = function (e) {
             e = e || window.event;
             var lArrowKey = 37, rArrowKey = 39;
-            var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+            var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
             if (e.keyCode == lArrowKey) previous_page_btn.click();
             else if (e.keyCode == rArrowKey) next_page_btn.click();
         };
-        window.addEventListener("keyup", function(e){onKeyUp(e);}, false);
+        window.addEventListener("keyup", function (e) { onKeyUp(e); }, false);
     }
 
     function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
-        var onKeyDown = function(e) {
+        var onKeyDown = function (e) {
             e = e || window.event;
             var cKey = 67;
-            var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+            var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
             if (targetElement && ctrlDown && e.keyCode == cKey) {
                 var selectedText = window.getSelection().toString();
                 selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
@@ -417,14 +427,14 @@
                 }
             }
         };
-        window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+        window.addEventListener('keydown', function (e) { onKeyDown(e); }, false);
     }
 
     function refineText(inputList) {
         // var eventList = ['change', 'input', 'cut', 'copy', 'paste', 'focus', 'blur']; // 'keydown', 'keyup',
         var eventList = ['paste', 'focus', 'blur']; // 'keydown', 'keyup',
         var enterKey = 13, escKey = 27;
-        var onEvent = function(input, e) {
+        var onEvent = function (input, e) {
             e = e || window.event;
             var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
             var query = input.value;
@@ -438,9 +448,9 @@
             }
             // }
         };
-        inputList.forEach(function(input){
-            eventList.forEach(function(event){
-                input.addEventListener(event,function(e){onEvent(input,e);},false);
+        inputList.forEach(function (input) {
+            eventList.forEach(function (event) {
+                input.addEventListener(event, function (e) { onEvent(input, e); }, false);
             });
         });
     }
@@ -448,7 +458,7 @@
     var G_videoWidth, G_videoHeight;
     function getVideoData(video, run) {
         var showData = () => {
-            console.log('video: '+video.src+' ['+width+'x'+height+']');
+            console.log('video: ' + video.src + ' [' + width + 'x' + height + ']');
             G_videoWidth = width;
             G_videoHeight = height;
             run();
@@ -456,12 +466,13 @@
         var width = video.videoWidth, height = video.videoHeight;
         if (width && height) {
             showData();
-        } else {
+        }
+        else {
             video.addEventListener('loadedmetadata', function (e) {
                 width = this.videoWidth;
                 height = this.videoHeight;
                 showData();
-            }, false );
+            }, false);
         }
     }
 
@@ -500,16 +511,16 @@
             if (!G_embedCodeText || G_refreshEmbedCodeText) {
                 G_embedCodeText = '<div class="thumbnail"';
                 if (!G_sampleURL && G_contentURL.matchLink('https?://*.googleusercontent.com/*')) {
-                    if (G_contentURL.match('=m18?')) {G_videoWidth = 640; G_videoHeight = 360;}
-                    else if (G_contentURL.match('=m22?')) {G_videoWidth = 1270; G_videoHeight = 720;}
-                    else if (G_contentURL.match('=m37?')) {G_videoWidth = 1920; G_videoHeight = 1080;}
+                    if (G_contentURL.match('=m18?')) { G_videoWidth = 640; G_videoHeight = 360; }
+                    else if (G_contentURL.match('=m22?')) { G_videoWidth = 1270; G_videoHeight = 720; }
+                    else if (G_contentURL.match('=m37?')) { G_videoWidth = 1920; G_videoHeight = 1080; }
                 }
                 // if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
                 if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                 if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
                 G_embedCodeText += ' data-content="' + G_contentURL + '"';
                 if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
-                if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
+                if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                 if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                 G_embedCodeText += '></div>';
             }
@@ -518,7 +529,7 @@
                 embedCodeTextArea.autoHeight(G_embedCodeFixedHeight);
                 // textArea.addEventListener("resize", textArea.autoHeight(textAreaFixedHeight));
             }
-            if (G_videoWidth && G_videoHeight) embedCodeTextArea.style.color = pickColourByScale((G_videoWidth*G_videoHeight)/(1900*1080)*100, 1, 100, 0, 100); //'green';
+            if (G_videoWidth && G_videoHeight) embedCodeTextArea.style.color = pickColourByScale((G_videoWidth * G_videoHeight) / (1900 * 1080) * 100, 1, 100, 0, 100); //'green';
             G_contentTitle = tmpTitle;
         };
 
@@ -578,8 +589,8 @@
             embedCodeVideo.style['border-width'] = '1px';
             embedCodeVideo.setAttribute('preload', 'metadata');
             embedCodeVideo.setAttribute('src', G_sampleURL);
-            embedCodeVideo.style.height = embedCodePoster.offsetHeight+'px';
-            embedCodeVideo.style.width = embedCodePoster.offsetWidth+'px';
+            embedCodeVideo.style.height = embedCodePoster.offsetHeight + 'px';
+            embedCodeVideo.style.width = embedCodePoster.offsetWidth + 'px';
             embedCodeFrame.appendChild(embedCodeVideo);
             // embedCodeVideo.addEventListener('click', callerFunction, false);
             G_sampleVideo = embedCodeVideo;
@@ -600,19 +611,19 @@
                 GM_deleteValue('G_sampleURL');
                 // embedCodePoster.style.height = document.querySelector('#embedCode > video').offsetHeight+'px';
                 document.querySelector('#embedCode > video').remove();
-            }, false );
+            }, false);
             if (embedCodeVideo.outerHTML) embedCodeVideo.outerHTML = ' ' + embedCodeVideo.outerHTML;
         };
-        if (G_IsVideo) waitForCondition(function(){G_sampleURL = G_sampleURL || GM_getValue('G_sampleURL', G_sampleURL); return G_sampleURL;}, testVideo, delay*2, tries/2, null);
+        if (G_IsVideo) waitForCondition(function () { G_sampleURL = G_sampleURL || GM_getValue('G_sampleURL', G_sampleURL); return G_sampleURL; }, testVideo, delay * 2, tries / 2, null);
         var qualityButtons = G_qualityButtons || []; // global value
-        qualityButtons.forEach(function(item, index, array){item.addEventListener('click', callerFunction, false);});
+        qualityButtons.forEach(function (item, index, array) { item.addEventListener('click', callerFunction, false); });
     }
     // ====================================================================================================================
     G_IsVideo = false;
     if (
         pageURL.matchLink('https?://www.imagefap.com/pictures/*/*[?]*view=2')
     ) {
-        funcToRun = function() {
+        funcToRun = function () {
             var imagesArray = [];
             var thumbsArray = [];
 
@@ -622,13 +633,13 @@
             var galleryID = document.querySelector('#galleryid_input').value;
 
             var imageNames = document.querySelectorAll('td > font > i');
-            imageNames.forEach(function(self, index, array) {
+            imageNames.forEach(function (self, index, array) {
                 var image = self.innerText;
                 imagesArray.push(image);
             });
 
             var imageIDs = document.querySelectorAll('#gallery > form > table > tbody > tr > td');
-            imageIDs.forEach(function(self, index, array) {
+            imageIDs.forEach(function (self, index, array) {
                 var imageID = self.id;
                 var image = imagesArray[index];
                 var imageURL = 'http://x.imagefapusercontent.com/u/' + userID + '/' + galleryID + '/' + imageID + '/' + image;
@@ -636,7 +647,7 @@
             });
 
             var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
-            thumbs.forEach(function(self, index, array) {
+            thumbs.forEach(function (self, index, array) {
                 var thumbURL = self.src;
                 thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
                 thumbsArray.push(thumbURL);
@@ -646,7 +657,7 @@
             pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
 
             G_refreshEmbedCodeText = false;
-            thumbsArray.forEach(function(self, index, array) {
+            thumbsArray.forEach(function (self, index, array) {
                 G_contentURL = imagesArray[index];
                 G_posterURL = self;
                 G_contentTitle = '';
@@ -654,8 +665,8 @@
                 if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                 if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
                 G_embedCodeText += ' data-content="' + G_contentURL + '"';
-                if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
-                if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
+                if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+                if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                 if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                 G_embedCodeText += '></div>';
             });
@@ -673,10 +684,10 @@
         pageURL.matchLink('https?://www.pornpics.com')
     ) {
         var class_name = 'thumbwook';
-        var valid = (item) => {return item.querySelector('a.rel-link > img');};
+        var valid = (item) => { return item.querySelector('a.rel-link > img'); };
         //
         var i = 1, append_text = (item) => {
-            if ( valid(item) ) {
+            if (valid(item)) {
                 var text = item.querySelector('p.image_number_text');
                 if (!text) {
                     text = document.createElement('p');
@@ -691,35 +702,35 @@
         };
         //
         var array = document.querySelectorAll('.' + class_name);
-        for (let item of array) {append_text(item);}
+        for (let item of array) { append_text(item); }
         //
-        document.addEventListener('DOMNodeInserted', function handleNewElements(event){
+        document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
             var item = event.target;
             var item_class = item.className ? item.className.trim() : '';
-            if (item_class == class_name ) {append_text(item);}
-        } , false);
+            if (item_class == class_name) { append_text(item); }
+        }, false);
         //
         if (
             pageURL.matchLink('https?://www.pornpics.com/galleries/*')
         ) {
             document.addEventListener('DOMContentLoaded', function onContentLoaded(event) {
-                funcToRun = function() {
+                funcToRun = function () {
                     // pageURL = pageURL.replace(/(.*?)\?.*/, '$1');
                     G_refreshEmbedCodeText = false;
-                    document.querySelectorAll('#main li.thumbwook > a').forEach(function(self, index, array) {
+                    document.querySelectorAll('#main li.thumbwook > a').forEach(function (self, index, array) {
                         G_contentURL = self.href;
                         G_posterURL = self.querySelector('img').src;
                         // data-size="683x1024"
                         G_videoWidth = self.dataset && self.dataset.size ? self.dataset.size.split('x')[0] : null;
-                        G_videoHeight= self.dataset && self.dataset.size ? self.dataset.size.split('x')[1] : null;
+                        G_videoHeight = self.dataset && self.dataset.size ? self.dataset.size.split('x')[1] : null;
                         // G_contentTitle = '';
-                        G_contentTitle = document.querySelector('div.info-text1').textContent.replace('Description: ', '') + ' #' + (index+1);
+                        G_contentTitle = document.querySelector('div.info-text1').textContent.replace('Description: ', '') + ' #' + (index + 1);
                         if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                         if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
                         G_embedCodeText += ' data-content="' + G_contentURL + '"';
-                        if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
-                        if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
+                        if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+                        if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                         G_embedCodeText += '></div>';
                     });
@@ -728,7 +739,7 @@
                     embedCode(funcToRun);
                 };
                 waitForElement('#main', null, funcToRun, delay, tries, timerGroup);
-            } , false);
+            }, false);
         }
         //
         return; // SKIP REST OF THE CODE
@@ -741,7 +752,7 @@
             pageURL.matchLink('https?://www.sex.com/pin/*/') ||
             pageURL.matchLink('https?://www.sex.com/picture/*/')
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentURL = document.querySelector('.image_frame img').src.replace(/(.*?)\?.*/, '$1');
                 G_posterURL = document.querySelector('meta[itemprop="thumbnail"]').content;
                 G_stickTo = document.querySelector('.image_frame');
@@ -754,14 +765,12 @@
         return; // SKIP REST OF THE CODE
     }
 
-
-
     else if (
         pageURL.matchLink('https?://konachan.com')
     ) {
         addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         addOpenInNewTabProperty('a.thumb');
-        document.querySelectorAll('.tag-link a').forEach(function(link, index) {
+        document.querySelectorAll('.tag-link a').forEach(function (link, index) {
             var href = link.href + '+limit%3A100&';
             link.href = href;
         });
@@ -769,9 +778,9 @@
             pageURL.matchLink('https?://konachan.com/post/show*')
         ) {
             addGlobalStyle('#image {height: 480px; width: auto;}');
-            funcToRun = function() {
+            funcToRun = function () {
                 var json_data;
-                document.scripts.forEach(function(script) {
+                document.scripts.forEach(function (script) {
                     var text = script.text;
                     if (text.match(/Post\.register_resp\(/) && text.match(/"preview_url":"(.*?)"/i)) {
                         json_data = text.match(/.*?\((.*)\).*/mi);
@@ -800,14 +809,14 @@
     ) {
         addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         addOpenInNewTabProperty('article > a');
-        document.querySelectorAll('a.search-tag').forEach(function(link, index) {
+        document.querySelectorAll('a.search-tag').forEach(function (link, index) {
             var href = link.href + '+limit%3A100&';
             link.href = href;
         });
         if (
             pageURL.matchLink('https?://danbooru.donmai.us/posts/*')
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentURL = document.querySelector('#image-container').getAttribute('data-large-file-url');
                 G_contentURL = getAbsoluteUrl(G_contentURL); // G_contentURL = G_contentURL ? ('http://' + pageHost + G_contentURL) : G_contentURL;
                 G_posterURL = document.querySelector('#image-container').getAttribute('data-preview-file-url');
@@ -834,7 +843,7 @@
         if (
             pageURL.matchLink('https?://luscious.net/c/hentai/pictures/*')
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentURL = document.querySelector('a.icon-download').getAttribute('href');
                 G_posterURL = document.querySelector('div.album_details > a > img').getAttribute('src');
                 G_stickTo = document.querySelector('div.picture_option');
@@ -855,13 +864,13 @@
             pageURL.matchLink('https?://vipergirls.to/threads/*/page*') || // https://vipergirls.to/threads/463374-Dawson-Miller/page1
             pageURL.matchLink('https?://vipergirls.to/threads/*') // https://vipergirls.to/threads/2451548-Dawson-Miller-My-First-Fansign-x67-1600px-Jan-9-2017
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 var imagesArray = [];
                 var thumbsArray = [];
 
                 var thumbs = document.querySelectorAll('.postcontent a > img');
 
-                thumbs.forEach(function(self, index) {
+                thumbs.forEach(function (self, index) {
                     var thumbURL = self.src;
                     // http://t6.imgchili.com/27208/27208100_dawsonmiller_yellow_.jpg --> http://i6.imgchili.net/27208/27208100_dawsonmiller_yellow_.jpg
                     var imageURL = thumbURL.replace(/http:\/\/t(.*?)\.imgchili.com\//i, 'http://i$1.imgchili.net/');
@@ -870,7 +879,7 @@
                 });
 
                 G_refreshEmbedCodeText = false;
-                thumbsArray.forEach(function(self, index, array) {
+                thumbsArray.forEach(function (self, index, array) {
                     G_contentURL = imagesArray[index];
                     G_posterURL = self;
                     G_contentTitle = '';
@@ -878,8 +887,8 @@
                     if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                     if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
                     G_embedCodeText += ' data-content="' + G_contentURL + '"';
-                    if (G_contentURL !== pageURL) G_embedCodeText +=' data-url="'+pageURL+'"';
-                    if (G_altText) G_embedCodeText +=' alt="'+G_altText+'"';
+                    if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+                    if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                     if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                     G_embedCodeText += '></div>';
                 });
@@ -897,7 +906,7 @@
     else if (
         pageURL.matchLink('*.jpg')
     ) {
-        funcToRun = function() {
+        funcToRun = function () {
             var val = 0;
 
             G_contentTitle = document.title;
@@ -942,18 +951,18 @@
         GM_deleteValue('G_sampleURL');
         GM_deleteValue('sources');
         sources = {};
-        var getSources = function() {
+        var getSources = function () {
             var src;
             for (let video of document.querySelectorAll('video > source[src^="http"], video[src^="http"]')) {
                 src = video.getAttribute('src', 2);
                 if (src && src.match('http')) break;
             }
             var quality = 0;
-            document.querySelectorAll('video > source[src^="http"]').forEach(function(source) {
+            document.querySelectorAll('video > source[src^="http"]').forEach(function (source) {
                 var res = source.dataset.res;
                 if (res) {
                     var value = Number(res.match(/\d+/));
-                    if (value > quality) {quality = value; src = source.getAttribute('src', 2);}
+                    if (value > quality) { quality = value; src = source.getAttribute('src', 2); }
                 }
             });
             if (document.querySelector('#streamurl')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
@@ -975,9 +984,9 @@
         if (
             pageURL.matchLink('https?://www.eporner.com/hd-porn/*/*/')
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 var val = 0;
-                document.querySelectorAll('.vjs-menu-item-text').forEach(function(e) {
+                document.querySelectorAll('.vjs-menu-item-text').forEach(function (e) {
                     var size = e.innerText.match(/(\d+)p/);
                     if (size) val = Math.max(val, size[1]);
                 });
@@ -998,20 +1007,20 @@
         else if (
             pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
         ) {
-            funcToTest = function() {
+            funcToTest = function () {
                 return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var quality = 0, menuItem;
                 var qualityTable = {};
-                document.querySelectorAll('.vjs-menu-content > .vjs-menu-item').forEach(function(item) { // https://www.eporner.com/embed/HYmQUXbhRrR
+                document.querySelectorAll('.vjs-menu-content > .vjs-menu-item').forEach(function (item) { // https://www.eporner.com/embed/HYmQUXbhRrR
                     var button = item.querySelector('.vjs-menu-item-text');
                     var text = button ? button.innerText : '';
                     var q = Number(text.match(/\d+/));
-                    if (q > quality) {quality = q; menuItem = item;}
+                    if (q > quality) { quality = q; menuItem = item; }
                 });
                 if (menuItem) menuItem.click();
-                console.log('quality: '+quality);
+                console.log('quality: ' + quality);
                 var contentURL;
                 var video = document.querySelector('body video');
                 var src = video.src;
@@ -1019,13 +1028,14 @@
                     var content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
                     video.src = content;
                     waitForCondition(
-                        function(){return video.src != content;},
-                        function(){
+                        function () { return video.src != content; },
+                        function () {
                             contentURL = video.src;
                             openURL(refineVideo(contentURL));
                         }, delay, tries, timerGroup
                     );
-                } else {
+                }
+                else {
                     contentURL = video.src;
                     console.log('contentURL: ', contentURL);
                     openURL(refineVideo(contentURL));
@@ -1041,7 +1051,7 @@
         if (
             pageURL.matchLink('https?://xfreehd.com/video/*/*') // https://xfreehd.com/video/6388/carolina-abril-pool-guy-fun
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 // var titleShort = document.querySelector('meta[property="og:title"]').content;
                 // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
@@ -1057,7 +1067,7 @@
                     // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
                     embedCode(funcToRun);
                     G_videoWidth = null; G_videoHeight = null;
-                }, false );
+                }, false);
             };
             waitForElement('video > source', 'src', funcToRun, delay, tries, timerGroup);
         }
@@ -1070,12 +1080,12 @@
         pageURL.matchLink('https?://oload.stream/embed/*') // https://oload.stream/embed/_5lSwGYiAMc/
     ) {
         var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
-        funcToTest = function() {
+        funcToTest = function () {
             var ready, url = src_span;
             if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
             return ready;
         };
-        funcToRun = function() {
+        funcToRun = function () {
             var url = src_span;
             var contentURL = location.protocol + '//' + location.host + '/stream/' + url.innerText + '?mime=true';
             // var posterURL = document.querySelector('#olvideo_html5_api').poster;
@@ -1090,10 +1100,10 @@
         pageURL.matchLink('https?://yourporn.sexy/*')
     ) {
         if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
-            funcToTest = function() {
+            funcToTest = function () {
                 return document.querySelector('body video[src]');
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var contentURL = document.querySelector('body video[src]').src;
                 console.log('contentURL: ', contentURL);
                 openURL(refineVideo(contentURL));
@@ -1103,14 +1113,14 @@
         else if (
             pageURL.matchLink('https?://yourporn.sexy/post/*') // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = shortURL + '#onlyVideo';
                 G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 G_stickTo = document.querySelector('div.comments_area');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
-                getVideoData(funcResult, function(){embedCode(funcToRun);});
+                getVideoData(funcResult, function () { embedCode(funcToRun); });
             };
             waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
         }
@@ -1120,10 +1130,10 @@
         pageURL.matchLink('https?://www.porntrex.com/video/*/*')
     ) {
         if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
-            funcToTest = function() {
+            funcToTest = function () {
                 return typeof flashvars !== "undefined" && flashvars.video_url;
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var contentURL = (
                     flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
                     flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
@@ -1135,8 +1145,9 @@
                 openURL(refineVideo(contentURL));
             };
             waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-        } else {
-            funcToRun = function() {
+        }
+        else {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = shortURL + '#onlyVideo';
                 G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
@@ -1157,10 +1168,10 @@
     else if (
         pageURL.matchLink('https?://drive.google.com/file/d/*/preview[?]*(start=1|autoplay=1)') // https://drive.google.com/file/d/0B8vZ-fFzt8h8Y2VWbVdGQ2dFdzA/preview?start=1&autoplay=1
     ) {
-        funcToTest = function() {
+        funcToTest = function () {
             return document.querySelector('.drive-viewer-video-preview-img[src]');
         };
-        funcToRun = function() {
+        funcToRun = function () {
             var playButton = document.querySelector('div.drive-viewer-video-preview > img');
             if (playButton) playButton.click();
         };
@@ -1178,9 +1189,9 @@
     else if (
         pageURL.matchLink('https?://vidoza.net/embed-*') // https://vidoza.net/embed-gzp9id6hi29d.html
     ) {
-        var handleElements = function(event) {
+        var handleElements = function (event) {
             var contentURL;
-            document.scripts.forEach(function(script) {
+            document.scripts.forEach(function (script) {
                 var text = script.text;
                 if (text.match(/{file:.*"(.*.mp4)",label:"\d+p"}/i)) {
                     var video_url = text.match(/{file:.*"(.*.mp4)",label:"\d+p"}/i);
@@ -1198,8 +1209,8 @@
     ) {
         if (
             pageURL.matchLink('https?://yespornplease.com/view/*') //http://yespornplease.com/view/392920164
-        ){
-            funcToRun = function() {
+        ) {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
                 G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
@@ -1218,12 +1229,13 @@
     else if (
         pageURL.matchLink('https?://e.yespornplease.com/e/*') // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
     ) {
-        document.querySelectorAll('iframe').forEach(function(iframe, index){iframe.src = iframe.src.replace(/^https?:\/\//i, '//');});
-        var getIframeContent = setInterval(function() {
+        document.querySelectorAll('iframe').forEach(function (iframe, index) { iframe.src = iframe.src.replace(/^https?:\/\//i, '//'); });
+        var getIframeContent = setInterval(function () {
             var contentURL = GM_getValue('contentURL', null);
             if (contentURL) {
                 // GM_deleteValue('contentURL');
                 openURL(refineVideo(contentURL));
+                clearInterval(getIframeContent);
             }
         }, 10);
     }
@@ -1231,17 +1243,17 @@
     else if (
         pageURL.matchLink('https?://vshare.io/v/*') // http://vshare.io/v/e16edd7/width-867/height-491/1 || // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
     ) {
-        funcToTest = function() {
+        funcToTest = function () {
             return document.querySelector('body video > source[src]') || document.querySelector('body video[src]');
         };
-        funcToRun = function() {
+        funcToRun = function () {
             var contentURL = document.querySelector('body video[src]').src;
             var quality = 0;
-            document.querySelectorAll('body video > source[src]').forEach(function(source) {
+            document.querySelectorAll('body video > source[src]').forEach(function (source) {
                 var res = source.res || source.label;
                 if (res) {
                     var value = Number(res.match(/\d+/));
-                    if (value > quality) {quality = value; contentURL = source.src;}
+                    if (value > quality) { quality = value; contentURL = source.src; }
                 }
             });
             GM_setValue('contentURL', contentURL);
@@ -1277,7 +1289,7 @@
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
                     contentURL = flashvars['quality_' + maxQuality + 'p'];
-                    return(contentURL); // openURL(refineVideo(contentURL));
+                    return (contentURL); // openURL(refineVideo(contentURL));
                 }
             }
         };
@@ -1286,7 +1298,7 @@
             pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
             pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 var contentURL = actualSource();
                 if (contentURL) openURL(refineVideo(contentURL));
             };
@@ -1295,7 +1307,7 @@
         else if (
             pageURL.matchLink('https?://www.pornhub.com/view_video.php[?]viewkey=*') // https://www.pornhub.com/view_video.php?viewkey=899243017
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_sampleURL = actualSource();
                 if (G_sampleURL) GM_deleteValue('G_sampleURL');
                 G_contentTitle = document.title;
@@ -1315,7 +1327,7 @@
         if (
             pageURL.matchLink('https?://www.porntube.com/videos/*') // https://www.porntube.com/videos/lusty-ellen-saint-loves-rear-pocket-lots-rock-hard-cock_1169422
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
                 G_posterURL = document.querySelector('span[itemprop="thumbnail"] > link[itemprop="url"]').href;
@@ -1331,17 +1343,17 @@
         ) {
             // TEST_MODE = true;
             // getVideoSources();
-            funcToTest = function() {
+            funcToTest = function () {
                 return document.querySelector('body video > source[src]') || document.querySelector('body video[src]');
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var contentURL = document.querySelector('body video[src]').src;
                 var quality = 0;
-                document.querySelectorAll('body video > source[src]').forEach(function(source) {
+                document.querySelectorAll('body video > source[src]').forEach(function (source) {
                     var res = source.dataset.res;
                     if (res) {
                         var value = Number(res.match(/\d+/));
-                        if (value > quality) {quality = value; contentURL = source.src;}
+                        if (value > quality) { quality = value; contentURL = source.src; }
                     }
                 });
                 GM_setValue('contentURL', contentURL);
@@ -1360,15 +1372,15 @@
             pageURL.matchLink('https?://www.tube8.com/embed/*') // https://www.tube8.com/embed/amateur/miriam-and-george/624201/
         ) {
             // TEST_MODE = true;
-            funcToTest = function() {
+            funcToTest = function () {
                 return flashvars.video_alt_url || flashvars.video_url;
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
                 var posterURL = flashvars.preview_url;
                 var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                     var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                    for (let quality of qualitiesTable) {maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;}
+                    for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                     if (maxQuality > 0) {
                         console.log('quality: ' + maxQuality);
                         contentURL = flashvars['quality_' + maxQuality + 'p'];
@@ -1384,10 +1396,10 @@
         else if (
             pageURL.matchLink('https?://www.tube8.com/*/*/*/') // https://www.tube8.com/amateur/miriam-and-george/624201/
         ) {
-            funcToTest = function() {
+            funcToTest = function () {
                 return flashvars.image_url && page_params.embedCode;
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = page_params.embedCode.match(/.*src="(.*?)".*/i)[1];
                 G_posterURL = flashvars.image_url;
@@ -1407,16 +1419,16 @@
         ) {
             var playMaxQualitySource = (qualityButtons, playButton) => {
                 var quality = 0;
-                qualityButtons.forEach(function(btn) {
+                qualityButtons.forEach(function (btn) {
                     var value = btn.dataset.value;
                     if (value) {
                         value = Number(value.match(/\d+/));
-                        if (value > quality) {quality = value; btn.click(); playButton.click();}
+                        if (value > quality) { quality = value; btn.click(); playButton.click(); }
                     }
                 });
                 return quality;
             };
-            funcToRun = function() {
+            funcToRun = function () {
                 var quality = playMaxQualitySource(document.querySelectorAll('.quality.chooser > span[data-value]'), document.querySelector('.xplayer-start-button'));
                 var contentURL = document.querySelector('body video[src]').src;
                 console.log('contentURL: ', contentURL);
@@ -1428,7 +1440,7 @@
         else if (
             pageURL.matchLink('https?://xhamster.com/videos/*') // https://xhamster.com/videos/ariana-marie-lets-you-cum-on-her-lovely-face-5604024
         ) {
-            funcToRun = function() {
+            funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = document.querySelector('link[itemprop="embedUrl"]').href;
                 G_posterURL = (
@@ -1456,14 +1468,15 @@
     ) {
         G_noVideoSource = true;
         refineText(document.querySelectorAll('#q'));
-        document.querySelectorAll('.search-result-thumbnail, .lazy-load').forEach(function(link, index) {
+        document.querySelectorAll('.search-result-thumbnail, .lazy-load').forEach(function (link, index) {
             var image = link.src ? link : link.querySelector('img');
             var imageSrc = image.src;
             if (!imageSrc || imageSrc.match('/img/blank.gif') || imageSrc === '') {
                 var noscript = link.querySelector('noscript');
                 if (noscript) {
                     imageSrc = noscript.innerText.match(/.*src="(.*?)".*/i)[1];
-                } else if (image.dataset.src) {
+                }
+                else if (image.dataset.src) {
                     imageSrc = image.dataset.src;
                 }
                 if (imageSrc) image.src = imageSrc;
@@ -1487,7 +1500,7 @@
         ) {
             G_noVideoSource = false;
             addGlobalStyle('#player-and-details {height: 480px;}');
-            funcToRun = function() {
+            funcToRun = function () {
                 var iframes = document.querySelectorAll('#actualPlayer iframe');
                 G_contentURL = iframes[0] ? iframes[0].src : 'null';
                 if (G_contentURL.matchLink('https://docs.google.com/file/d/*/preview?*')) {
@@ -1525,10 +1538,10 @@
                 addKeyComboCtrlC(true);
             };
             waitForElement('#actualPlayer iframe, #ContentPreviewIframe', 'src', funcToRun, delay, tries, timerGroup);
-            var addPreview = function() {
+            var addPreview = function () {
                 var iframes = document.querySelectorAll('#actualPlayer iframe');
                 if (iframes[0]) return;
-                console.log('previewURL: '+funcResult);
+                console.log('previewURL: ' + funcResult);
                 var iframe = document.createElement('iframe');
                 iframe.style.height = '467px';
                 iframe.style.width = '100%';
@@ -1545,7 +1558,7 @@
             var source = document.querySelector('#player-and-details-2 > div.blockx > div.a > center > b:nth-of-type(2)');
             if (source) {
                 var sourceURL = source.innerText;
-                source.outerHTML = '<a href="//' +sourceURL + '">' + sourceURL + '</a>';
+                source.outerHTML = '<a href="//' + sourceURL + '">' + sourceURL + '</a>';
             }
         }
     }
@@ -1553,14 +1566,14 @@
     else if (
         pageURL.matchLink('https?://fuckingsession.com/*/') // http://fuckingsession.com/hardx-maya-bijou-creampie-first-time/
     ) {
-        var delayedRun = function(){setTimeout(funcToRun, 250);};
-        funcToRun = function() {
+        var delayedRun = function () { setTimeout(funcToRun, 250); };
+        funcToRun = function () {
             G_contentTitle = document.title;
             G_contentURL = document.querySelector('iframe[src], #mediaplayer_media > video').src;
             //
             var visibleElement = getVisibleElement(document.querySelectorAll('iframe[src], #mediaplayer_media > video'));
             if (visibleElement && !visibleElement.src && document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button')) {
-                document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button').forEach(function(item, index, array){return item.click();});
+                document.querySelectorAll('.jwdisplayIcon, #vplayer_display_button').forEach(function (item, index, array) { return item.click(); });
             }
             G_contentURL = visibleElement ? visibleElement.src : G_contentURL;
             //
@@ -1570,7 +1583,7 @@
             G_posterURL = (document.querySelector('meta[name="thumbnail"]') ? document.querySelector('meta[name="thumbnail"]').content : document.querySelector('meta[property="og:image"]').content);
             G_stickTo = document.querySelector('#extras');
             G_stickPosition = 'before';
-            document.querySelectorAll('.GTTabsLinks').forEach(function(item, index, array){if (item) item.addEventListener('click', delayedRun, false);}); // source buttons
+            document.querySelectorAll('.GTTabsLinks').forEach(function (item, index, array) { if (item) item.addEventListener('click', delayedRun, false); }); // source buttons
             embedCode(funcToRun);
         };
         waitForElement('iframe[src], #mediaplayer_media > video', null, delayedRun, delay, tries, timerGroup);
@@ -1588,15 +1601,15 @@
     }
 
     else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
-        funcToTest = function() {
+        funcToTest = function () {
             return flashvars.video_alt_url || flashvars.video_url;
         };
-        funcToRun = function() {
+        funcToRun = function () {
             var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
             var posterURL = flashvars.preview_url;
             var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                 var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                for (let quality of qualitiesTable) {maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;}
+                for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
                     contentURL = flashvars['quality_' + maxQuality + 'p'];
@@ -1607,12 +1620,13 @@
             openURL(refineVideo(contentURL));
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
-    } else { // https://www.bitporno.com/embed/sXou0BTtX
-        funcToTest = function() {
+    }
+    else { // https://www.bitporno.com/embed/sXou0BTtX
+        funcToTest = function () {
             return document.querySelectorAll("body video > source[src], body video[src]")[0];
         };
-        funcToRun = function() {
-            document.querySelectorAll("body video > source[src], body video[src]").forEach(function(e){
+        funcToRun = function () {
+            document.querySelectorAll("body video > source[src], body video[src]").forEach(function (e) {
                 var contentURL = e.src;
                 if (!contentURL.match(/\/embed\//i)) {
                     console.log('contentURL: ', contentURL);
