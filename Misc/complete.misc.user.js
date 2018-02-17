@@ -68,6 +68,9 @@
 
 // @match		 *://fuckingsession.com/*/
 
+// @match        *://www.bitporno.sx/?v=*
+// @match        *://www.bitporno.com/?v=*
+
 // @match		 *://www.porntube.com/videos/*
 // @match		 *://www.porntube.com/embed/*
 
@@ -142,13 +145,14 @@
         return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
     };
     var openURL = function (url) {
+        console.log('openURL.url: ' + url);
         GM_deleteValue('contentURL');
         // GM_deleteValue('G_sampleURL');
         // GM_deleteValue('sources');
         if (TEST_MODE) return;
         window.location.href = url;
     };
-    // TEST_MODE = true;
+    TEST_MODE = true;
     // ====================================================================================================================
     var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
         waitForCondition = function (funcToTest, funcToRun, delay, tries, timerGroup) {
@@ -1587,6 +1591,25 @@
             embedCode(funcToRun);
         };
         waitForElement('iframe[src], #mediaplayer_media > video', null, delayedRun, delay, tries, timerGroup);
+    }
+
+    else if (
+        pageURL.matchLink('https://www.bitporno.sx/*') ||
+        pageURL.matchLink('https://www.bitporno.com/*')
+    ) {
+        if (
+            pageURL.matchLink('https://www.bitporno.sx/?*v=*') ||
+            pageURL.matchLink('https://www.bitporno.com/?*v=*') // https://www.bitporno.com/?v=kI44xwQ9
+        ) {
+            funcToRun = function() {
+                G_contentURL = document.querySelector('#embed_code').value.match(/.*src="(.*?)".*/i)[1];
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                G_stickTo = document.querySelector('div.small_content');
+                G_stickPosition = 'before';
+                embedCode(funcToRun);
+            };
+            waitForElement('#embed_code', null, funcToRun, delay, tries, timerGroup);
+        }
     }
 
     // ====================================================================================================================
