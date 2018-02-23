@@ -152,7 +152,7 @@
         if (TEST_MODE) return;
         window.location.href = url;
     };
-    TEST_MODE = true;
+    // TEST_MODE = true;
     // ====================================================================================================================
     var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
         waitForCondition = function (funcToTest, funcToRun, delay, tries, timerGroup) {
@@ -1595,7 +1595,8 @@
 
     else if (
         pageURL.matchLink('https://www.bitporno.sx/*') ||
-        pageURL.matchLink('https://www.bitporno.com/*')
+        pageURL.matchLink('https://www.bitporno.com/*') &&
+        !pageURL.match('/embed/')
     ) {
         if (
             pageURL.matchLink('https://www.bitporno.sx/?*v=*') ||
