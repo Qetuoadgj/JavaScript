@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub
 // @icon         https://www.google.com/s2/favicons?domain=GitHub.com
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
@@ -108,16 +108,17 @@
             var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
             if ( targetType !== 'input' || targetType !== 'textarea' ) {
                 var SelectedRepoLinks = GetLinksFromSelection('td.content a.js-navigation-open');
-                if (SelectedRepoLinks.length > 0) {
+                if (SelectedRepoLinks.length>0 && e.keyCode==delKey) {
                     DeleteByArray(SelectedRepoLinks);
+                    e.preventDefault();
                 }
                 else {
                     var RepoLink = document.querySelector( 'tr.js-navigation-item.navigation-focus' );
                     if (RepoLink && e.keyCode == delKey) { // Delete
                         DeleteFromRepo( RepoLink );
-                    }
+                        e.preventDefault();
+                   }
                 }
-                e.preventDefault();
             }
         };
 
