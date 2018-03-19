@@ -21,7 +21,9 @@
 /// @require      https://code.jquery.com/jquery-3.2.1.min.js
 
 // @match		 *://www.eporner.com/hd-porn/*/*/
+// @match		 *://www.eporner.eu/hd-porn/*/*/
 // @match		 *://www.eporner.com/embed/*
+// @match		 *://www.eporner.eu/embed/*
 
 // @match        *://openload.co/embed/*
 // @match        *://oload.tv/embed/*
@@ -73,6 +75,9 @@
 
 // @match		 *://www.porntube.com/videos/*
 // @match		 *://www.porntube.com/embed/*
+
+// @match		 *://www.rapidvideo.com/e/*
+// @match		 *://www.rapidvideo.com/embed/*
 
 // @match		 *://www.miscopy.com/?attachment_id=*
 
@@ -983,10 +988,12 @@
     // ====================================================================================================================
     G_IsVideo = true;
     if (
-        pageURL.matchLink('https?://www.eporner.com')
+        pageURL.matchLink('https?://www.eporner.com') ||
+        pageURL.matchLink('https?://www.eporner.eu')
     ) {
         if (
-            pageURL.matchLink('https?://www.eporner.com/hd-porn/*/*/')
+            pageURL.matchLink('https?://www.eporner.com/hd-porn/*/*/') ||
+            pageURL.matchLink('https?://www.eporner.eu/hd-porn/*/*/') // https://www.eporner.eu/hd-porn/JRev6xBSGK5/Sasha-Grey-Jack-S-My-First-Porn/
         ) {
             funcToRun = function () {
                 var val = 0;
@@ -1009,7 +1016,8 @@
             waitForElement('#EPvideo_html5_api', 'src', funcToRun, delay, tries, timerGroup);
         }
         else if (
-            pageURL.matchLink('https?://www.eporner.com/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
+            pageURL.matchLink('https?://www.eporner.com/embed/*') || // https://www.eporner.com/embed/DQ1fQ5H7Jkz
+            pageURL.matchLink('https?://www.eporner.eu/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
         ) {
             funcToTest = function () {
                 return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
@@ -1464,6 +1472,46 @@
         }
     }
 
+    else if (
+        pageURL.matchLink('https?://www.rapidvideo.com/*')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.rapidvideo.com/e/*') || // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
+            pageURL.matchLink('https?://www.rapidvideo.com/embed/*')   // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
+        ) {
+            var playMaxQualitySource = (qualityButtons, cur) => {
+                var quality = 0;
+                qualityButtons.forEach(function (btn) {
+                    var match = btn.innerText.trim().match(/(\d+p)/i);
+                    if (match) {
+                        var value = match[1];
+                        value =  Number(value.replace(/(\d+)p/, '$1'));
+                        if (value) {
+                            if (value>quality && value>cur) {
+                                quality = value;
+                                console.log('cur: ', cur);
+                                console.log('quality: ', quality);
+                                btn.click();
+                            }
+                        }
+                    }
+                });
+                return (quality || cur) ;
+            };
+            funcToRun = function () {
+                var cur = document.querySelector('body video > source').dataset.res;
+                var quality = playMaxQualitySource(document.querySelectorAll('#home_video > div > a'), cur);
+                // console.log('quality: ', quality);
+                if (quality && quality == cur) {
+                    var contentURL = document.querySelector('body  video > source[src]').src;
+                    console.log('contentURL: ', contentURL);
+                    openURL(refineVideo(contentURL));
+                }
+            };
+            waitForElement('body  video > source[src]', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
     // ====================================================================================================================
     // ====================================================================================================================
 
@@ -1517,7 +1565,21 @@
                     G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
                 }
                 else if (G_contentURL.matchLink('https?://www.porntrex.com/video/*')) {
-                    G_contentURL = G_contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
+                    // G_contentURL = G_contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
+                    G_contentURL = G_contentURL + '#onlyVideo';
+                    /*
+                    if (iframes[0]) {
+                        waitForCondition(
+                            function() {
+                                return (iframes[0] && G_sampleURL);
+                            },
+                            function() {
+                                // iframes[0].src = "chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#" + G_sampleURL;
+                                 iframes[0].src = G_sampleURL;
+                           }, 250, 100, null
+                        );
+                    }
+                    */
                 }
                 var poster = document.querySelector('.blockx img.imgshadow');
                 G_posterURL = poster ? poster.src : '';
