@@ -42,6 +42,10 @@
     }
     // ====================================================================================================================
 
+    function copyToClipboard(text) { window.prompt("Copy to clipboard: Ctrl+C, Enter", text); }
+
+    // ====================================================================================================================
+
     var name = '__NV_DD3Manual', params, expire = '1';
     var geforce_gt440_win7_x32_rus_whql = '{"d0":"1","d1":"71","d2":"541","d4":"18","d5":"2092","driverType":"whql"}'; // GeForce, 440GT, Win7, x32, Sertified
     var geforce_610m_win10_x64_rus_whql = '{"d0":"1","d1":"84","d2":"620","d4":"57","d5":"2092","driverType":"whql"}'; // GeForce, 610M, Win10, x64, Sertified
@@ -50,4 +54,11 @@
     params = geforce_gt440_win7_x32_rus_whql;
 
     setCookie(name, params, expire);
+
+    GM_registerMenuCommand("Log Current Cookie", function() {
+        var val = getCookie(name);
+        console.log(name+' = '+val);
+        // alert(name+' = 'val);
+        copyToClipboard(val);
+    }, "");
 })();
