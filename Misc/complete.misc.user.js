@@ -1095,6 +1095,22 @@
         funcToTest = function () {
             var ready, url = src_span;
             if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
+            else {
+                if (!src_span) {
+                    document.querySelectorAll('div > p').forEach(function (item) { // https://www.eporner.com/embed/HYmQUXbhRrR
+                        var text = item.innerText;
+                        var match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
+                        if (match && match[0]) {
+                            src_span = document.createElement('span');
+                            src_span.id = '#streamurl';
+                            src_span.innerText = text;
+                            document.body.appendChild(src_span);
+                            src_span = item;
+                            ready = true;
+                        }
+                    });
+                }
+            }
             return ready;
         };
         funcToRun = function () {
