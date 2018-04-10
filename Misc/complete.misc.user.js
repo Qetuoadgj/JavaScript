@@ -29,6 +29,7 @@
 // @match        *://oload.tv/embed/*
 // @match        *://oload.info/embed/*
 // @match        *://oload.stream/embed/*
+// @match        *://oload.xyz/embed/*
 
 // @match        *://yourporn.sexy/post/*.html*
 
@@ -1089,7 +1090,8 @@
         pageURL.matchLink('https?://openload.co/embed/*') || // https://openload.co/embed/GwWaJKr7q-g/
         pageURL.matchLink('https?://oload.tv/embed/*') || // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
         pageURL.matchLink('https?://oload.info/embed/*') || // https://oload.info/embed/GkrmWmRxsGM/
-        pageURL.matchLink('https?://oload.stream/embed/*') // https://oload.stream/embed/_5lSwGYiAMc/
+        pageURL.matchLink('https?://oload.stream/embed/*') || // https://oload.stream/embed/_5lSwGYiAMc/
+        pageURL.matchLink('https?://oload.xyz/embed/*') // https://oload.xyz/embed/kuar1R4lKQw/
     ) {
         var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
         funcToTest = function () {
@@ -1099,7 +1101,9 @@
                 if (!src_span) {
                     document.querySelectorAll('div > p').forEach(function (item) { // https://www.eporner.com/embed/HYmQUXbhRrR
                         var text = item.innerText;
-                        var match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
+                        // var match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
+                        // http://pron.tv/l/Jenna-Reid-MP4-mp4/ezcexss2 // yybXOZwKGAg~1523412842~37.25.0.0~_27EYtA9
+                        var match = text.match(/^.+~\d+~\d+\.\d+\.\d+\.\d+~.+$/);
                         if (match && match[0]) {
                             src_span = document.createElement('span');
                             src_span.id = '#streamurl';
