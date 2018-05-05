@@ -1245,6 +1245,7 @@
             funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
+                G_contentURL = document.querySelector('iframe').src;
                 G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
                 G_posterURL = (
                     document.querySelector('meta[name="thumbnail"]') ?
@@ -1449,7 +1450,7 @@
         if (
             pageURL.matchLink('https?://xhamster.com/xembed.php[?]video=*') // https://xhamster.com/xembed.php?video=5604024
         ) {
-            var playMaxQualitySource = (qualityButtons, playButton) => {
+            var XH_playMaxQualitySource = (qualityButtons, playButton) => {
                 var quality = 0;
                 qualityButtons.forEach(function (btn) {
                     var value = btn.dataset.value;
@@ -1461,7 +1462,7 @@
                 return quality;
             };
             funcToRun = function () {
-                var quality = playMaxQualitySource(document.querySelectorAll('.quality.chooser > span[data-value]'), document.querySelector('.xplayer-start-button'));
+                var quality = XH_playMaxQualitySource(document.querySelectorAll('.quality.chooser > span[data-value]'), document.querySelector('.xplayer-start-button'));
                 var contentURL = document.querySelector('body video[src]').src;
                 console.log('contentURL: ', contentURL);
                 openURL(refineVideo(contentURL));
@@ -1499,7 +1500,7 @@
             pageURL.matchLink('https?://www.rapidvideo.com/e/*') || // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
             pageURL.matchLink('https?://www.rapidvideo.com/embed/*')   // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
         ) {
-            var playMaxQualitySource = (qualityButtons, cur) => {
+            var RV_playMaxQualitySource = (qualityButtons, cur) => {
                 var quality = 0;
                 qualityButtons.forEach(function (btn) {
                     var match = btn.innerText.trim().match(/(\d+p)/i);
@@ -1520,7 +1521,7 @@
             };
             funcToRun = function () {
                 var cur = document.querySelector('body video > source').dataset.res;
-                var quality = playMaxQualitySource(document.querySelectorAll('#home_video > div > a'), cur);
+                var quality = RV_playMaxQualitySource(document.querySelectorAll('#home_video > div > a'), cur);
                 // console.log('quality: ', quality);
                 if (quality && quality == cur) {
                     var contentURL = document.querySelector('body  video > source[src]').src;
