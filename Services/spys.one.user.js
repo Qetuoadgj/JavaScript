@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         spys.one
 // @icon         https://www.google.com/s2/favicons?domain=spys.one
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        GM_registerMenuCommand
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant        GM_addValueChangeListener
 /// @grant        none
 // @run-at       document-end
 /// @noframes
@@ -33,6 +34,8 @@
     var majorVersion = parseInt(navigator.appVersion,10);
 
     var MenuCommand = (language = 'ru-RU') ? 'Протестировать прокси-лист' : 'Check Proxy-List';
+
+    GM_setValue("init_proxy_check", 0);
 
     /*
     alert(version);
@@ -108,6 +111,12 @@
                 }, 1000);
             }
             GM_registerMenuCommand(MenuCommand, function(){check_proxies();}, "c");
+            GM_addValueChangeListener("init_proxy_check", function(name, old_value, new_value, remote) {
+                if (new_value == 1) {
+                    GM_setValue("init_proxy_check", 0);
+                    check_proxies();
+                }
+            })
         }
         var not_working_cb = document.getElementById("cb_f");
         if (not_working_cb) not_working_cb.removeAttribute("checked");
@@ -205,8 +214,44 @@
             var set_iframe_height = setInterval(function(){
                 var GM_proxy_list_height = GM_getValue("proxy_list_height", 0);
                 proxy_checker.style.height = GM_proxy_list_height;
-            }, 1000);
+            }, 1000/10);
             // clearInterval(check_height);
+
+            var check_button = document.createElement('button');
+            document.body.appendChild(check_button);
+            check_button.id = 'check_button';
+            check_button.style.display = 'block';
+            check_button.style.position = 'fixed';
+            check_button.style.top = '0px'; check_button.style.right = '0px';
+            check_button.style.height = 'auto'; check_button.style.width = 'width';
+            check_button.style.margin = '7px 7px';
+            check_button.style.padding = '10px';
+            check_button.style.background = '#19373a';
+            check_button.style.borderWidth = '1px';
+            check_button.style.borderColor = 'greenyellow';
+            check_button.style.borderStyle = 'solid';
+            check_button.style.color = 'cyan';
+            check_button.style.fontSize = '9px';
+            /*
+            element.style {
+                height: ;
+                width: auto;
+                position: fixed;
+                top: 7px;
+                right: 7px;
+                display: block;
+                background: #19373a;
+                border-width: 1px;
+                border-color: greenyellow;
+                border-style: solid;
+                color: cyan;
+                font-size: 9px;
+                margin: 0 auto;
+                padding: 10px;
+            }
+            */
+            check_button.innerText = MenuCommand;
+            check_button.addEventListener('click', function(e){GM_setValue("init_proxy_check", 1);}, false);
         }
     }
 })();
