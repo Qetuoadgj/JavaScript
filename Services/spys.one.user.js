@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         spys.one
 // @icon         https://www.google.com/s2/favicons?domain=spys.one
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        GM_registerMenuCommand
@@ -16,6 +16,7 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        http://spys.one/*
 // @match        https://hidemy.name/ru/proxy-checker/
+// @match        https://hidemyna.me/ru/proxy-checker/
 // @namespace    http://spys.one/
 // ==/UserScript==
 
@@ -63,7 +64,10 @@
     function pageIsInIframe() {return window.location !== window.parent.location;}
 
     function check_proxies() {
-        if ( pageURL.match("https://hidemy.name/") ) {
+        if (
+            pageURL.match("https://hidemy.name/") ||
+            pageURL.match("https://hidemyna.me/")
+        ) {
             var check_button = document.getElementById("chkb1");
             if (check_button) {
                 check_button.click();
@@ -96,7 +100,10 @@
 
     // if (shortURL !== location.protocol + "//" + location.host + "/") window.location = location.protocol + "//" + location.host;
 
-    if ( pageURL.match("https://hidemy.name/") ) {
+    if (
+        pageURL.match("https://hidemy.name/") ||
+        pageURL.match("https://hidemyna.me/")
+    ) {
         if (pageIsInIframe()) {
             var GM_proxy_list = GM_getValue("proxy_list", null);
             var editor = document.getElementById("f_in");
@@ -183,7 +190,7 @@
             var check_url = document.createElement("a");
             document.body.appendChild(check_url);
             check_url.id = "check_url";
-            check_url.href = "https://hidemy.name/ru/proxy-checker/";
+            check_url.href = "https://hidemyna.me/ru/proxy-checker/"; //"https://hidemy.name/ru/proxy-checker/";
             check_url.target = "_blank";
             check_url.innerText = check_url.href;
 
@@ -203,7 +210,7 @@
             var proxy_checker = document.createElement("iframe");
             document.body.appendChild(proxy_checker);
             proxy_checker.id = "proxy_checker";
-            proxy_checker.src = "https://hidemy.name/ru/proxy-checker/";
+            proxy_checker.src = check_url.href ; //"https://hidemy.name/ru/proxy-checker/";
             proxy_checker.style.width = "100%";
             proxy_checker.style.height = "0px";
             proxy_checker.style.overflow = "hidden";
