@@ -52,6 +52,11 @@
 // @match		 *://e.yespornplease.com/e/*
 // @match		 *://vshare.io/v/*
 
+// @match		 *://pornobranch.com/*/*/
+// @match		 *://www.pentasex.io/*
+// @match		 *://www.veporns.com/video/*
+// @match		 *://pornbeu.com/*/
+
 // @match		 *://*.googlevideo.com/videoplayback?id=*
 // @match		 *://*.googleusercontent.com/*=*?c=WEB&cver=html5
 
@@ -94,6 +99,8 @@
 // @match        *://luscious.net/c/hentai/pictures/*
 /// @match        *://vipergirls.to/threads/*/page*
 // @match        *://vipergirls.to/threads/*
+
+// @match        *://www.babesandstars.com/*/*/*/
 
 // @match		 *://*/*.jpg
 // ==/UserScript==
@@ -914,6 +921,52 @@
     }
 
     else if (
+        pageURL.matchLink('https?://www.babesandstars.com/')
+    ) {
+        addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+        if (
+            pageURL.matchLink('http://www.babesandstars.com/*/*/*/') // http://www.babesandstars.com/b/bethanie-badertscher/hlgk/
+        ) {
+            funcToRun = function () {
+                var imagesArray = [];
+                var thumbsArray = [];
+
+                var thumbs = document.querySelectorAll('div.my_gallery figure > a > img');
+
+                thumbs.forEach(function (self, index) {
+                    var thumbURL = self.src;
+                    // http://static.babesandstars.com/galleries/62000/62874/t07.jpg --> http://static.babesandstars.com/galleries/62000/62874/07.jpg
+                    var imageURL = thumbURL.replace(/(.*)\/t(\d+.jpg)/i, '$1/$2');
+                    thumbsArray.push(thumbURL);
+                    imagesArray.push(imageURL);
+                });
+
+                G_refreshEmbedCodeText = false;
+                thumbsArray.forEach(function (self, index, array) {
+                    G_contentURL = imagesArray[index];
+                    G_posterURL = self;
+                    G_contentTitle = '';
+                    if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+                    if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+                    if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+                    G_embedCodeText += ' data-content="' + G_contentURL + '"';
+                    if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+                    if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
+                    if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+                    G_embedCodeText += '></div>';
+                });
+
+                G_stickTo = document.querySelector('.my_gallery');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+            };
+            waitForElement('.my_gallery', null, funcToRun, delay, tries, timerGroup);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
         pageURL.matchLink('*.jpg')
     ) {
         funcToRun = function () {
@@ -1295,6 +1348,117 @@
             openURL(refineVideo(contentURL));
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+    }
+
+    else if (
+        pageURL.matchLink('https?://pornobranch.com/') // http://pornobranch.com/latinasextapes-com-mofos-com-gina-valentina-sexting-latina-makes-house-call-05-06-2017-blowjob-brunette-cowgirl-deep-throat-doggystyle-facial-gagging-latina-missionary-outdoors-reve/39903/
+    ) {
+        if (
+            pageURL.matchLink('https?://pornobranch.com/*/*/') // http://pornobranch.com/latinasextapes-com-mofos-com-gina-valentina-sexting-latina-makes-house-call-05-06-2017-blowjob-brunette-cowgirl-deep-throat-doggystyle-facial-gagging-latina-missionary-outdoors-reve/39903/
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                // var titleShort = document.querySelector('meta[property="og:title"]').content;
+                // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                G_contentURL = document.querySelector('#video iframe').src;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                G_sampleURL = null;
+                G_stickTo = document.querySelector('#video');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+                G_sampleVideo.addEventListener('loadedmetadata', function (e) {
+                    G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
+                    // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                    embedCode(funcToRun);
+                    G_videoWidth = null; G_videoHeight = null;
+                }, false);
+            };
+            waitForElement('#video iframe', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    else if (
+        pageURL.matchLink('https?://www.pentasex.io/')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.pentasex.io/*.html') //https://www.pentasex.io/nubilefilms-blair-williams-puppy-love_a8c88c533.html
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                // var titleShort = document.querySelector('meta[property="og:title"]').content;
+                // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                G_contentURL = document.querySelector('iframe[src^="http"]').src;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                G_sampleURL = null;
+                G_stickTo = document.querySelector('.pm-video-control');
+                G_stickPosition = 'before';
+                G_qualityButtons = document.querySelectorAll('.ss-tabs-menu > li > span[data-tab]');
+                embedCode(funcToRun);
+                G_sampleVideo.addEventListener('loadedmetadata', function (e) {
+                    G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
+                    // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                    embedCode(funcToRun);
+                    G_videoWidth = null; G_videoHeight = null;
+                }, false);
+            };
+            waitForElement('iframe[src^="http"]', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    else if (
+        pageURL.matchLink('https?://www.veporns.com/')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.veporns.com/video/*') // http://www.veporns.com/video/eroticax-gina-valentina-happy-endings-h245979cc07d1676
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                // var titleShort = document.querySelector('meta[property="og:title"]').content;
+                // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                G_contentURL = document.querySelector('#playerbox > iframe[src^="http"]').src;
+                G_posterURL = document.querySelector('meta[itemprop="thumbnailUrl"]').content;
+                G_sampleURL = null;
+                G_stickTo = document.querySelector('#playerbox');
+                G_stickPosition = 'after';
+                G_qualityButtons = document.querySelectorAll('div.r > a[href^="#server"]');
+                embedCode(funcToRun);
+                G_sampleVideo.addEventListener('loadedmetadata', function (e) {
+                    G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
+                    // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                    embedCode(funcToRun);
+                    G_videoWidth = null; G_videoHeight = null;
+                }, false);
+            };
+            waitForElement('#playerbox > iframe[src^="http"]', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    else if (
+        pageURL.matchLink('https?://pornbeu.com/*')
+    ) {
+        if (
+            pageURL.matchLink('https?://pornbeu.com/*/') // http://pornbeu.com/18onlygirls-inspiring-orgy-apolonia-ally/
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                // var titleShort = document.querySelector('meta[property="og:title"]').content;
+                // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                G_contentURL = document.querySelector('iframe[src^="http"]').src;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                G_sampleURL = null;
+                G_stickTo = document.querySelector('.entry-embed');
+                G_stickPosition = 'after';
+                // G_qualityButtons = document.querySelectorAll('.ss-tabs-menu > li > span[data-tab]');
+                embedCode(funcToRun);
+                G_sampleVideo.addEventListener('loadedmetadata', function (e) {
+                    G_videoWidth = this.videoWidth; G_videoHeight = this.videoHeight;
+                    // if (G_videoWidth && G_videoHeight) G_contentTitle = G_contentTitle + ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                    embedCode(funcToRun);
+                    G_videoWidth = null; G_videoHeight = null;
+                }, false);
+            };
+            waitForElement('iframe[src^="http"]', 'src', funcToRun, delay, tries, timerGroup);
+        }
     }
 
     else if (
