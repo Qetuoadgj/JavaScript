@@ -79,10 +79,20 @@
         }
     }
     function nightMode(className, on) {
-        var css = 'body, div, li, ul, a , h, h3, button { background:black !important; /* color:grey !important; */ };';
-        var style = document.querySelector('head > style.'+className);
-        if (style) style.remove();
-        if (on) addGlobalStyle(css, className);
+        var exStyles = document.querySelectorAll('head > style.'+className), i;
+        for (i = 0; i < exStyles.length; ++i) {
+            var style = exStyles[i];
+            style.remove();
+        }
+        if (on) {
+            var css;
+            //
+            css = 'body, div, li, ul, a , h, h3, button { background:black !important; /* color:grey !important; */ };';
+            addGlobalStyle(css, className);
+            //
+            css = '#check_button {border-color: #333 !important; color: #333 !important};'
+            addGlobalStyle(css, className);
+        }
     }
     var nightModeEnable = 1;
     function initNightMode() {
@@ -98,11 +108,11 @@
         check_button.style.height = 'auto'; check_button.style.width = 'width';
         check_button.style.margin = '7px 7px';
         check_button.style.padding = '10px';
-        check_button.style.background = '#19373a';
+        check_button.style.background = 'rgba(255,255,255,.6)'; // '#19373a';
         check_button.style.borderWidth = '1px';
-        check_button.style.borderColor = 'greenyellow';
+        check_button.style.borderColor = 'rgb(255, 153, 0)'; // 'greenyellow';
         check_button.style.borderStyle = 'solid';
-        check_button.style.color = 'cyan';
+        check_button.style.color = 'rgb(255, 153, 0)'; // 'cyan';
         check_button.style.fontSize = '9px';
         check_button.innerText = 'Ночной режим';
         check_button.addEventListener('click', function(e){
