@@ -87,10 +87,10 @@
         if (on) {
             var css;
             //
-            css = 'body, div, li, ul, a , h, h3, button { background:black !important; /* color:grey !important; */ };';
+            css = '#check_button { border-color: #333 !important; color: #333 !important; background: rgba(0,0,0,.6) !important; };';
             addGlobalStyle(css, className);
             //
-            css = '#check_button {border-color: #333 !important; color: #333 !important};'
+            css = 'body, div, li, ul, a , h, h3, button { background: black !important; /* color: grey !important; */ };';
             addGlobalStyle(css, className);
         }
     }
