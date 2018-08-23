@@ -65,6 +65,12 @@
         for (var i = 0; i < num; ++i) {parent = parent.parentNode;}
         return parent;
     };
+    function addGlobalStyle(css, cssClass) {
+        var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
+        var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+        if (cssClass) style.setAttribute('class', cssClass);
+        head.appendChild(style);
+    }
     function hideLogo(logoSelector, logoParentsCount) {
         var logoImage = document.querySelector(logoSelector);
         if (logoImage) {
@@ -72,6 +78,44 @@
             if (mainParent) mainParent.remove();
         }
     }
+    function nightMode(className, on) {
+        var css = 'body, div, li, ul, a , h, h3, button { background:black !important; /* color:grey !important; */ };';
+        var style = document.querySelector('head > style.'+className);
+        if (style) style.remove();
+        if (on) addGlobalStyle(css, className);
+    }
+    var nightModeEnable = 1;
+    function initNightMode() {
+        // GM_setValue("nightModeEnable", nightModeEnable);
+        nightMode('__nightMode', nightModeEnable);
+        //
+        var check_button = document.createElement('button');
+        document.body.appendChild(check_button);
+        check_button.id = 'check_button';
+        check_button.style.display = 'block';
+        check_button.style.position = 'fixed';
+        check_button.style.top = '0px'; check_button.style.right = '0px';
+        check_button.style.height = 'auto'; check_button.style.width = 'width';
+        check_button.style.margin = '7px 7px';
+        check_button.style.padding = '10px';
+        check_button.style.background = '#19373a';
+        check_button.style.borderWidth = '1px';
+        check_button.style.borderColor = 'greenyellow';
+        check_button.style.borderStyle = 'solid';
+        check_button.style.color = 'cyan';
+        check_button.style.fontSize = '9px';
+        check_button.innerText = 'Ночной режим';
+        check_button.addEventListener('click', function(e){
+            nightModeEnable = !nightModeEnable;
+            // GM_setValue("nightModeEnable", nightModeEnable);
+            nightMode('__nightMode', nightModeEnable);
+        }, false);
+    }
+    initNightMode();
+    //
+    var junk = document.querySelector('.clearfix.share');
+    if (junk) junk.remove();
+    //
     waitForElement(
         'pjsdiv > img[src="http://smotriserial.me/images/logo.png"]', 'src',
         function() {hideLogo('pjsdiv > img[src="http://smotriserial.me/images/logo.png"]', 2);},
