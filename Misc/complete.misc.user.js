@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.03
+// @version      0.0.04
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -24,6 +24,8 @@
 // @match		 *://www.eporner.eu/hd-porn/*/*/
 // @match		 *://www.eporner.com/embed/*
 // @match		 *://www.eporner.eu/embed/*
+
+// @match        *://openload.co/f/*/*
 
 // @match        *://openload.co/embed/*
 // @match        *://oload.tv/embed/*
@@ -1136,6 +1138,27 @@
                 }, false);
             };
             waitForElement('video > source', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    else if (
+        pageURL.matchLink('https?://openload.co/f/*')
+    ) {
+        if (
+            pageURL.matchLink('https?://openload.co/f/*/*') // https://openload.co/f/kBZ_4w-aqEw/dfdfdf54545_3.avi
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                // var titleShort = document.querySelector('meta[property="og:title"]').content;
+                // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                G_posterURL = document.querySelector('meta[name="og:image"]').content;
+                G_contentURL = 'https://openload.co/embed/'+G_posterURL.match(/.*\/(.*?)\/.*.jpg/i)[1]+'/'; // document.querySelector('#main > div.embedbox-holder > div > textarea'); //.innerText.match(/.*src="(.*?)".*/i)[1];
+                G_stickTo = document.querySelector('div.media-player');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+                document.querySelector('div.videocontainer').outerHTML = '<iframe src="'+G_contentURL+'" scrolling="no" frameborder="0" width="700" height="430" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>';
+            };
+            waitForElement('div.videocontainer', null, funcToRun, delay, tries, timerGroup);
         }
     }
 
