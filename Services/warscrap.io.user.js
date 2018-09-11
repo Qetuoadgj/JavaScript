@@ -19,6 +19,8 @@
     var showCanvasBorders = 0;
     var globalOpacity = 1.0;
     var o = new Object();
+    var colorTable = ['lightgray', 'rgb(227, 38, 54)', 'white'];
+    o.colorIndex = 1;
     //
     o.scaleValue = 25;
     o.scaleValueDefault = o.scaleValue;
@@ -35,7 +37,7 @@
     o.opacityStep = 0.2; //0.25;
     o.scaleStep = o.scaleValue / 2; //0.25;
     //
-    o.lineColor1 = 'lightgray';
+    o.lineColor1 = colorTable[o.colorIndex]; //'red'; //'lightgray';
     o.lineColor2 = o.lineColor1;
     o.dotColor = o.lineColor1; //'aqua';
     //
@@ -204,6 +206,17 @@
         }
     }
 
+    function cycleColors()
+    {
+        o.colorIndex++
+        o.colorIndex = o.colorIndex >= colorTable.length ? 0 : o.colorIndex;
+        var color = colorTable[o.colorIndex];
+        o.lineColor1 = color;
+        o.lineColor2 = color;
+        o.dotColor = color;
+        RedrawCanvas(canvas)
+    }
+
     /*
     addMouseWheelHandler(window, function(e) {
         var dir = -1;
@@ -268,6 +281,11 @@
             else if ((e.keyCode == KEY_E) && shiftKeyIsDown()) {
                 dir = 0+1;
                 ChangeScaleValue(dir);
+                e.preventDefault();
+            }
+
+            else if (e.keyCode == KEY_MULTIPLY) {
+                cycleColors()
                 e.preventDefault();
             }
 
