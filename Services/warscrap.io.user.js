@@ -18,15 +18,21 @@
     var showCanvasBorders = 0;
 
     var lineWidth = 2;
-    var lineOpacity = 0.25;
+    var lineOpacity = 0.25,
+        lineOpacityDefault = lineOpacity
+    ;
     var lineColor1 = 'lightgray'; //'lightgray';
     var lineColor2 = lineColor1; //'lightgray';
     var dotColor = 'aqua';
     var dotRadiusPX = 1.5;
-    var dotOpacity = 0.2;
+    var dotOpacity = 0.2,
+        dotOpacityDefault = dotOpacity
+        ;
 
     var smallLineSize = 15;
-    var scaleValue = 50;
+    var scaleValue = 50,
+        scaleValueDefault = scaleValue
+    ;
     var opacity = 1.0;
 
     // Your code here...
@@ -252,7 +258,30 @@
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
+            else if (e.keyCode == KEY_P) {
+                scaleValue = scaleValueDefault;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
 
+            else if (e.keyCode == KEY_ADD) {
+                lineOpacity += 0.05;
+                dotOpacity += 0.05;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_SUBTRACT) {
+                lineOpacity -= 0.05;
+                dotOpacity -= 0.05;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_0) {
+                lineOpacity+= lineOpacityDefault;
+                dotOpacity += dotOpacityDefault;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
             // e.preventDefault();
         }
     }
