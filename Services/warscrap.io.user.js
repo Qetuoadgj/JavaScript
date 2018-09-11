@@ -112,15 +112,15 @@
         context.stroke();
         context.globalAlpha = 1.0;
 
-        /*
+        ///*
         context.globalAlpha = lineOpacity;
         context.beginPath();
         context.strokeStyle = lineColor2 || 'white';
         context.lineWidth = lineWidth;
-        addVerticalBars(scaleValue*0.5*3, smallLineSize*0.125);
+        addVerticalBars(scaleValue*0.5*3, smallLineSize*0.25);
         context.stroke();
         context.globalAlpha = 1.0;
-        */
+        //*/
 
         /*
         var centerX = canvas.width / 2;
@@ -265,14 +265,14 @@
                 drawCanvas(canvas);
             }
             else if (e.keyCode == KEY_Q) {
-                scaleValue /= 1.1;
-                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*5), scaleValueDefault/2);
+                scaleValue -= 5;
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*6), scaleValueDefault/2);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
             else if (e.keyCode == KEY_E) {
-                scaleValue *= 1.1;
-                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*5), scaleValueDefault/2);
+                scaleValue += 5;
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*6), scaleValueDefault/2);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
