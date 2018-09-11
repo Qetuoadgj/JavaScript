@@ -15,7 +15,7 @@
 (function() {
     'use strict';
     //     var defaultRadius = 1.5;
-    var showCanvasBorders = 1;
+    var showCanvasBorders = 0;
 
     var lineWidth = 2;
     var lineOpacity = 0.25,
@@ -112,6 +112,13 @@
         context.stroke();
         context.globalAlpha = 1.0;
 
+        context.globalAlpha = lineOpacity;
+        context.beginPath();
+        context.strokeStyle = lineColor2 || 'white';
+        context.lineWidth = lineWidth;
+        addVerticalBars(scaleValue*0.5*3, smallLineSize*0.25);
+        context.stroke();
+        context.globalAlpha = 1.0;
         /*
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
@@ -276,16 +283,16 @@
             else if (e.keyCode == KEY_C) {
                 lineOpacity -= 0.05;
                 dotOpacity -= 0.05;
-                lineOpacity = Math.max(Math.min(lineOpacity, 1), 0.15);
-                dotOpacity = Math.max(Math.min(dotOpacity, 1), 0.10);
+                lineOpacity = Math.max(Math.min(lineOpacity, 1.00), 0.15);
+                dotOpacity = Math.max(Math.min(dotOpacity, 0.95), 0.10);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
             else if (e.keyCode == KEY_V) {
                 lineOpacity += 0.05;
                 dotOpacity += 0.05;
-                lineOpacity = Math.max(Math.min(lineOpacity, 1), 0.15);
-                dotOpacity = Math.max(Math.min(dotOpacity, 1), 0.10);
+                lineOpacity = Math.max(Math.min(lineOpacity, 1.00), 0.15);
+                dotOpacity = Math.max(Math.min(dotOpacity, 0.95), 0.10);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
