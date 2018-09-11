@@ -15,7 +15,7 @@
 (function() {
     'use strict';
     //     var defaultRadius = 1.5;
-    var showCanvasBorders = 0;
+    var showCanvasBorders = 1;
 
     var lineWidth = 2;
     var lineOpacity = 0.25,
@@ -27,7 +27,7 @@
     var dotRadiusPX = 1.5;
     var dotOpacity = 0.2,
         dotOpacityDefault = dotOpacity
-        ;
+    ;
 
     var smallLineSize = 15;
     var scaleValue = 50,
@@ -48,8 +48,8 @@
     canvas.style.transform = 'translate(-50%, -50%)';
     // canvas.style.width = '250px';
     // canvas.style.height = '250px';
-    canvas.width = window.innerWidth-1; // defaultRadius;
-    canvas.height = window.innerHeight-1; //defaultRadius;
+    canvas.width = Math.min(window.innerWidth, window.innerHeight)-1; // defaultRadius;
+    canvas.height = canvas.width; //window.innerHeight-1; //defaultRadius;
     if (showCanvasBorders) {
         canvas.style.border = '10px';
         canvas.style.borderColor = 'red';
@@ -248,38 +248,56 @@
                 toggleSwitch = !toggleSwitch;
                 // e.preventDefault();
             }
-            else if (e.keyCode == KEY_OPEN_BRACKET) {
-                scaleValue /= 1.1;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                drawCanvas(canvas);
-            }
-            else if (e.keyCode == KEY_CLOSE_BRACKET) {
-                scaleValue *= 1.1;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                drawCanvas(canvas);
-            }
-            else if (e.keyCode == KEY_P) {
+
+            else if (((e.keyCode == KEY_Q) || (e.keyCode == KEY_E)) && ctrlDown) {
                 scaleValue = scaleValueDefault;
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
+            else if (e.keyCode == KEY_Q) {
+                scaleValue /= 1.1;
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*8), scaleValueDefault/2);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_E) {
+                scaleValue *= 1.1;
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*8), scaleValueDefault/2);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
 
-            else if (e.keyCode == KEY_ADD) {
-                lineOpacity += 0.05;
-                dotOpacity += 0.05;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                drawCanvas(canvas);
-            }
-            else if (e.keyCode == KEY_SUBTRACT) {
-                lineOpacity -= 0.05;
-                dotOpacity -= 0.05;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                drawCanvas(canvas);
-            }
-            else if (e.keyCode == KEY_0) {
+            else if (((e.keyCode == KEY_C) || (e.keyCode == KEY_V)) && ctrlDown) {
                 lineOpacity = lineOpacityDefault;
                 dotOpacity = dotOpacityDefault;
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_C) {
+                lineOpacity -= 0.05;
+                dotOpacity -= 0.05;
+                lineOpacity = Math.max(Math.min(lineOpacity, 1), 0.15);
+                dotOpacity = Math.max(Math.min(dotOpacity, 1), 0.10);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_V) {
+                lineOpacity += 0.05;
+                dotOpacity += 0.05;
+                lineOpacity = Math.max(Math.min(lineOpacity, 1), 0.15);
+                dotOpacity = Math.max(Math.min(dotOpacity, 1), 0.10);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawCanvas(canvas);
+            }
+            else if (e.keyCode == KEY_Z) {
+                // Clear the canvas
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                // Move registration point to the center of the canvas
+                context.translate(canvas.width/2, canvas.width/2);
+                // Rotate 90 degree
+                context.rotate(90*Math.PI/180);
+                // Move registration point back to the top left corner of canvas
+                context.translate(-canvas.width/2, -canvas.width/2);
                 drawCanvas(canvas);
             }
             // e.preventDefault();
