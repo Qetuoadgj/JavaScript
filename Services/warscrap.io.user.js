@@ -112,13 +112,16 @@
         context.stroke();
         context.globalAlpha = 1.0;
 
+        /*
         context.globalAlpha = lineOpacity;
         context.beginPath();
         context.strokeStyle = lineColor2 || 'white';
         context.lineWidth = lineWidth;
-        addVerticalBars(scaleValue*0.5*3, smallLineSize*0.25);
+        addVerticalBars(scaleValue*0.5*3, smallLineSize*0.125);
         context.stroke();
         context.globalAlpha = 1.0;
+        */
+
         /*
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
@@ -263,13 +266,13 @@
             }
             else if (e.keyCode == KEY_Q) {
                 scaleValue /= 1.1;
-                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*8), scaleValueDefault/2);
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*5), scaleValueDefault/2);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
             else if (e.keyCode == KEY_E) {
                 scaleValue *= 1.1;
-                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*8), scaleValueDefault/2);
+                scaleValue = Math.max(Math.min(scaleValue, scaleValueDefault*5), scaleValueDefault/2);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
@@ -283,16 +286,16 @@
             else if (e.keyCode == KEY_C) {
                 lineOpacity -= 0.05;
                 dotOpacity -= 0.05;
-                lineOpacity = Math.max(Math.min(lineOpacity, 1.00), 0.15);
-                dotOpacity = Math.max(Math.min(dotOpacity, 0.95), 0.10);
+                lineOpacity = Math.max(Math.min(lineOpacity, lineOpacityDefault*4), lineOpacityDefault);
+                dotOpacity = Math.max(Math.min(dotOpacity, dotOpacityDefault*4), dotOpacityDefault);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
             else if (e.keyCode == KEY_V) {
                 lineOpacity += 0.05;
                 dotOpacity += 0.05;
-                lineOpacity = Math.max(Math.min(lineOpacity, 1.00), 0.15);
-                dotOpacity = Math.max(Math.min(dotOpacity, 0.95), 0.10);
+                lineOpacity = Math.max(Math.min(lineOpacity, lineOpacityDefault*4), lineOpacityDefault);
+                dotOpacity = Math.max(Math.min(dotOpacity, dotOpacityDefault*4), dotOpacityDefault);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 drawCanvas(canvas);
             }
