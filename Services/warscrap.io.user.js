@@ -29,7 +29,7 @@
     o.lineOpacityDefault = o.lineOpacity;
     //
     o.dotRadiusPX = 1.5;
-    o.dotOpacity = 0.5; //0.2;
+    o.dotOpacity = o.lineOpacity; // 0.5; //0.2;
     o.dotOpacityDefault = o.dotOpacity;
     //
     o.opacityStep = 0.2; //0.25;
