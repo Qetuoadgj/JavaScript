@@ -186,7 +186,7 @@
     function ChangeScaleValue(dir)
     {
         if (dir < 0) dir = -1; else dir = 1;
-        ChangeValue('scaleValue', dir * o.scaleStep, o.scaleValueDefault, o.scaleValueDefault/2, o.scaleValueDefault*4)
+        ChangeValue('scaleValue', dir * o.scaleStep, o.scaleValueDefault, o.scaleValueDefault, o.scaleValueDefault*8)
         RedrawCanvas(canvas)
     }
     function ChangeScaleOpacity(dir)
