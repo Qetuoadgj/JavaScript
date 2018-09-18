@@ -9,6 +9,7 @@
 // @run-at       document-end
 // @noframes
 // @match        *://warscrap.io
+// @match        *://cache.armorgames.com/files/games/warscrap-18371/index.html*
 // @grant        none
 // ==/UserScript==
 
@@ -16,30 +17,36 @@
     'use strict';
 
     // Your code here...
+    var isOdd = function(x) { return x & 1; };
+    var isEven = function(x) { return !( x & 1 ); };
+
     var showCanvasBorders = 0;
     var globalOpacity = 1.0;
     var o = new Object();
-    var colorTable = ['lightgray', 'rgb(227, 38, 54)', 'white'];
+    var colorTable = ['lightgray', 'red'];
     o.colorIndex = 1;
     //
-    o.scaleValue = 25;
+    o.scaleValue = 24;
     o.scaleValueDefault = o.scaleValue;
-    o.scaleLineHeight = 15;
+    o.lineHeight1 = 12/4;
+    o.lineHeight2 = 12/4;
     //
     o.lineWidth = 2;
     o.lineOpacity = 1.0; //0.25;
     o.lineOpacityDefault = o.lineOpacity;
     //
-    o.dotRadiusPX = 1.5;
+    o.dotRadiusPX = 1.25;
     o.dotOpacity = o.lineOpacity; // 0.5; //0.2;
     o.dotOpacityDefault = o.dotOpacity;
     //
     o.opacityStep = 0.2; //0.25;
     o.scaleStep = o.scaleValue / 2; //0.25;
     //
-    o.lineColor1 = colorTable[o.colorIndex]; //'red'; //'lightgray';
-    o.lineColor2 = o.lineColor1;
-    o.dotColor = o.lineColor1; //'aqua';
+    o.lineColor1 = colorTable[o.colorIndex]; // colorTable[o.colorIndex]; //'red'; //'lightgray';
+    o.lineColor2 = colorTable[0];
+    o.dotColor = colorTable[1]; // o.lineColor1; //'aqua';
+    //
+    o.showVerticalScale = false;
     //
     // Your code here...
     var canvas = document.createElement("canvas");
@@ -91,11 +98,16 @@
         context.lineTo(x + (distFromCenter + barLen), y);
     }
 
+    function addVerticalAdjust(adj, barLen) {
+        context.moveTo(x - barLen/2, y + adj);
+        context.lineTo(x + barLen/2, y + adj);
+    }
+
     function drawCanvas(canvas) {
         var horBarLen = 0;
         /*
         for (var i = 0; i < 5; i++) {
-            addVerticalBars(scaleValue*(i+1), o.scaleLineHeight);
+            addVerticalBars(scaleValue*(i+1), o.lineHeight1);
             horBarLen += scaleValue;
         }
         addHorizontalBars(scaleValue/2, horBarLen);
@@ -105,24 +117,26 @@
         context.beginPath();
         context.strokeStyle = o.lineColor1 || 'white';
         context.lineWidth = o.lineWidth;
-        addVerticalBars(o.scaleValue*1, o.scaleLineHeight);
+        addVerticalBars(o.scaleValue*1, o.lineHeight1);
         context.stroke();
         context.globalAlpha = 1.0;
 
+        /*
         context.globalAlpha = o.lineOpacity;
         context.beginPath();
         context.strokeStyle = o.lineColor2 || 'white';
         context.lineWidth = o.lineWidth;
-        addVerticalBars(o.scaleValue*0.5, o.scaleLineHeight*0.25);
+        addVerticalBars(o.scaleValue*0.5, o.lineHeight2);
         context.stroke();
         context.globalAlpha = 1.0;
+        */
 
         ///*
         context.globalAlpha = o.lineOpacity;
         context.beginPath();
         context.strokeStyle = o.lineColor2 || 'white';
         context.lineWidth = o.lineWidth;
-        addVerticalBars(o.scaleValue*0.5*3, o.scaleLineHeight*0.25);
+        addVerticalBars(o.scaleValue*0.5*3, o.lineHeight2);
         context.stroke();
         context.globalAlpha = 1.0;
         //*/
@@ -143,6 +157,33 @@
         context.strokeStyle = o.dotColor;
         context.stroke();
         context.globalAlpha = 1.0;
+
+        radius = o.scaleValue * 0.5; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
+        context.globalAlpha = o.dotOpacity;
+        context.beginPath();
+        context.arc(x, y, radius, 0.75 * Math.PI, 2.25 * Math.PI, false);
+        // context.fillStyle = o.dotColor;
+        // context.fill();
+        context.lineCap="round";
+        context.lineWidth = o.lineWidth;
+        context.strokeStyle = o.dotColor;
+        context.stroke();
+        context.globalAlpha = 1.0;
+
+        // /*
+        if (o.showVerticalScale) {
+            for (var i = 0; i < 20; i++) {
+                context.globalAlpha = o.dotOpacity;
+                context.beginPath();
+                addVerticalAdjust(o.scaleValueDefault*(i+1), o.scaleValueDefault/i);
+                context.lineCap="round"; //"square";
+                context.lineWidth = o.lineWidth;
+                context.strokeStyle = isEven(i+1) ? o.lineColor1 : o.lineColor2;
+                context.stroke();
+                context.globalAlpha = 1.0;
+            }
+        }
+        // */
     }
     drawCanvas(canvas);
 
@@ -212,9 +253,9 @@
         o.colorIndex = o.colorIndex >= colorTable.length ? 0 : o.colorIndex;
         var color = colorTable[o.colorIndex];
         o.lineColor1 = color;
-        o.lineColor2 = color;
-        o.dotColor = color;
-        RedrawCanvas(canvas)
+        // o.lineColor2 = color;
+        // o.dotColor = color;
+        RedrawCanvas(canvas);
     }
 
     /*
@@ -290,6 +331,7 @@
             }
 
             else if (e.keyCode == KEY_CLOSE_BRACKET) {
+                /*
                 // Clear the canvas
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 // Move registration point to the center of the canvas
@@ -299,6 +341,10 @@
                 // Move registration point back to the top left corner of canvas
                 context.translate(-canvas.width/2, -canvas.width/2);
                 drawCanvas(canvas);
+                */
+                //
+                o.showVerticalScale = ! o.showVerticalScale;
+                RedrawCanvas(canvas);
             }
             // e.preventDefault();
         }
