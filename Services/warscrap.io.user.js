@@ -23,7 +23,7 @@
     var showCanvasBorders = 0;
     var globalOpacity = 1.0;
     var o = new Object();
-    var colorTable = ['lightgray', 'red'];
+    var colorTable = ['lightgray', 'LawnGreen', 'red'];
     o.colorIndex = 1;
     //
     o.scaleValue = 24;
@@ -46,6 +46,7 @@
     o.lineColor2 = colorTable[0];
     o.dotColor = colorTable[1]; // o.lineColor1; //'aqua';
     //
+    o.showCicleMark = false;
     o.showVerticalScale = false;
     //
     // Your code here...
@@ -113,6 +114,7 @@
         addHorizontalBars(scaleValue/2, horBarLen);
         */
 
+        /*
         context.globalAlpha = o.lineOpacity;
         context.beginPath();
         context.strokeStyle = o.lineColor1 || 'white';
@@ -120,6 +122,7 @@
         addVerticalBars(o.scaleValue*1, o.lineHeight1);
         context.stroke();
         context.globalAlpha = 1.0;
+        */
 
         /*
         context.globalAlpha = o.lineOpacity;
@@ -131,7 +134,7 @@
         context.globalAlpha = 1.0;
         */
 
-        ///*
+        /*
         context.globalAlpha = o.lineOpacity;
         context.beginPath();
         context.strokeStyle = o.lineColor2 || 'white';
@@ -139,7 +142,7 @@
         addVerticalBars(o.scaleValue*0.5*3, o.lineHeight2);
         context.stroke();
         context.globalAlpha = 1.0;
-        //*/
+        */
 
         /*
         var centerX = canvas.width / 2;
@@ -158,25 +161,43 @@
         context.stroke();
         context.globalAlpha = 1.0;
 
-        radius = o.scaleValue * 0.5; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
-        context.globalAlpha = o.dotOpacity;
-        context.beginPath();
-        context.arc(x, y, radius, 0.75 * Math.PI, 2.25 * Math.PI, false);
-        // context.fillStyle = o.dotColor;
-        // context.fill();
-        context.lineCap="round";
-        context.lineWidth = o.lineWidth;
-        context.strokeStyle = o.dotColor;
-        context.stroke();
-        context.globalAlpha = 1.0;
+        ///*
+        if (o.showCicleMark) {
+            radius = o.scaleValue * 0.75; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
+            context.globalAlpha = o.dotOpacity;
+            context.beginPath();
+            context.arc(x, y, radius, 0.75 * Math.PI, 2.25 * Math.PI, false);
+            // context.fillStyle = o.dotColor;
+            // context.fill();
+            context.lineCap="round";
+            context.lineWidth = o.lineWidth;
+            context.strokeStyle = o.dotColor;
+            context.stroke();
+            context.globalAlpha = 1.0;
+        }
+        //*/
+
+        var i;
+        for (i = 0; i < 3; i++) {
+            context.globalAlpha = o.dotOpacity;
+            context.beginPath();
+            context.lineCap="square";
+            context.lineWidth = o.lineWidth;
+            context.strokeStyle = isEven(i+1) ? o.lineColor1 : o.lineColor2;
+            var lineHeight = isEven(i+1) ? o.lineHeight1 : 0.5;
+            addVerticalBars(o.scaleValue*(i+1)*0.5, lineHeight);
+            context.stroke();
+            context.globalAlpha = 1.0;
+        }
 
         // /*
         if (o.showVerticalScale) {
-            for (var i = 0; i < 20; i++) {
+            for (i = 0; i < 20; i++) {
                 context.globalAlpha = o.dotOpacity;
                 context.beginPath();
-                addVerticalAdjust(o.scaleValueDefault*(i+1), o.scaleValueDefault/i);
-                context.lineCap="round"; //"square";
+                var lineWidth = isEven(i+1) ? o.lineHeight1*2 : 0.5; // o.scaleValueDefault/((i+1)*3)
+                addVerticalAdjust(o.scaleValueDefault*(i+0)*2, lineWidth);
+                context.lineCap="square";
                 context.lineWidth = o.lineWidth;
                 context.strokeStyle = isEven(i+1) ? o.lineColor1 : o.lineColor2;
                 context.stroke();
