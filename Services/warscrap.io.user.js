@@ -184,7 +184,7 @@
             context.lineCap="square";
             context.lineWidth = o.lineWidth;
             context.strokeStyle = isEven(i+1) ? o.lineColor1 : o.lineColor2;
-            var lineHeight = isEven(i+1) ? o.lineHeight1 : 0.5;
+            var lineHeight = isEven(i+1) ? o.lineHeight1 : o.lineHeight1; //0.5;
             addVerticalBars(o.scaleValue*(i+1)*0.5, lineHeight);
             context.stroke();
             context.globalAlpha = 1.0;
