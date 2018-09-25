@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.04
+// @version      0.0.05
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -71,6 +71,7 @@
 // @match        *://xhamster.com/*
 
 // @match		 *://*/*.mp4
+// @match		 *://*/*.mp4*
 
 // @match		 *://www.imagefap.com/pictures/*/*?*view=2
 
@@ -103,8 +104,10 @@
 // @match        *://vipergirls.to/threads/*
 
 // @match        *://www.babesandstars.com/*/*/*/
+// @match		 *://www.jjgirls.com/pornpics/*
 
 // @match		 *://*/*.jpg
+// @match		 *://*/*.jpg*
 // ==/UserScript==
 
 (function () {
@@ -157,7 +160,10 @@
             GM_deleteValue('t');
         }
         GM_setValue('G_sampleURL', url);
-        return 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html#' + url;
+        var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
+        // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
+        var playerPath = 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html';
+        return playerPath + '#' + url;
     };
     var openURL = function (url) {
         console.log('openURL.url: ' + url);
@@ -272,6 +278,24 @@
         }
         return;
     }
+
+    function triggerEvent(el, type, keyCode) {
+        var e;
+        if ('createEvent' in document) {
+            // modern browsers, IE9+
+            e = document.createEvent('HTMLEvents');
+            e.keyCode = keyCode;
+            e.initEvent(type, false, true);
+            el.dispatchEvent(e);
+        } else {
+            // IE 8
+            e = document.createEventObject();
+            e.keyCode = keyCode;
+            e.eventType = type;
+            el.fireEvent('on' + e.eventType, e);
+        }
+    }
+
 
     // * Converts an HSL color value to RGB. Conversion formula
     // * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
@@ -969,6 +993,55 @@
     }
 
     else if (
+        pageURL.matchLink('https?://www.jjgirls.com/*')
+    ) {
+        // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
+        if (
+            pageURL.matchLink('https?://www.jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
+        ) {
+            funcToRun = function () {
+                var imagesArray = [];
+                var thumbsArray = [];
+
+                var thumbs = document.querySelectorAll('div.related > a[href^=http]');
+
+                thumbs.forEach(function (self, index) {
+                    var imageURL = self.href;
+                    var img = self.querySelector('img');
+                    if (img) {
+                        var thumbURL = img.src;
+                        thumbsArray.push(thumbURL);
+                        imagesArray.push(imageURL);
+                    }
+                });
+
+                var galTitle = document.querySelector('h1.info.fss').innerText.trim();
+                G_refreshEmbedCodeText = false;
+                thumbsArray.forEach(function (self, index, array) {
+                    G_contentURL = imagesArray[index];
+                    G_posterURL = self;
+                    G_contentTitle = galTitle || '';
+                    if (G_embedCodeText) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+                    if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+                    if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+                    G_embedCodeText += ' data-content="' + G_contentURL + '"';
+                    if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+                    if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
+                    if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+                    G_embedCodeText += '></div>';
+                });
+
+                G_stickTo = document.querySelector('div.related');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+            };
+            waitForElement('div.related > a[href^=http]', 'href', funcToRun, delay, tries, timerGroup);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
+    else if (
         pageURL.matchLink('*.jpg')
     ) {
         funcToRun = function () {
@@ -1123,8 +1196,15 @@
                 G_contentTitle = document.title;
                 // var titleShort = document.querySelector('meta[property="og:title"]').content;
                 // if (val !== 0) G_contentTitle = G_contentTitle.replace(titleShort, titleShort + '[' + val + 'p] ');
+                if (document.querySelector('.nv-hdicon')) {
+                    try {
+                        document.querySelector('.li-sd').click(); // enable HD
+                    } catch (err) {
+                        // skip
+                    }
+                }
                 G_contentURL = document.querySelector('video > source').src;
-                G_contentURL = document.querySelector('.nv-hdicon') ? G_contentURL.replace('/iphone/', '/hd/') : G_contentURL;
+                // G_contentURL = document.querySelector('.nv-hdicon') ? G_contentURL.replace('/iphone/', '/hd/') : G_contentURL;
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 G_sampleURL = G_contentURL;
                 G_stickTo = document.querySelector('#wrapper > div.container > div:nth-child(2) > div.col-md-8 > div:nth-child(1)');
@@ -1536,6 +1616,107 @@
                 G_stickTo = document.querySelector('.video-actions-container');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
+
+                var toHHMMSS = function(secs) {
+                    var sec_num = parseInt(secs, 10);
+                    var hours = Math.floor(sec_num / 3600) % 24;
+                    var minutes = Math.floor(sec_num / 60) % 60;
+                    var seconds = sec_num % 60;
+                    return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v,i) => v !== "00" || i > 0).join(":");
+                };
+                function addMediaTextIndicator(media, fontSize) {
+                    fontSize = fontSize || 72;
+                    var mediaTextIndicator = document.createElement('div');
+                    mediaTextIndicator.style.setProperty('color', 'yellow', 'important');
+                    mediaTextIndicator.style['font-size'] = fontSize + 'px';
+                    mediaTextIndicator.style.position = 'absolute';
+                    mediaTextIndicator.style['z-index'] = 2147483647; // Always on TOP
+                    mediaTextIndicator.style.top = '0px';
+                    mediaTextIndicator.style.left = (fontSize/4) + 'px';
+                    media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
+                    var volumeTextFade = function(fadeDelay) {
+                        fadeDelay = fadeDelay || 2000;
+                        var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+                        function textFadeStart(show) {
+                            var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+                            mediaTextIndicator.style.opacity = show ? 1 : 0;
+                            mediaTextIndicator.style.transition = transition;
+                            mediaTextIndicator.style['-webkit-transition'] = transition; // Safari
+                        }
+                        textFadeStart(true);
+                        setTimeout(textFadeStart, fadeDelaySeconds*1000);
+                    };
+                    var setVolumeText = function() {
+                        volumeTextFade(2000);
+                        mediaTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
+                    };
+                    var setTimeText = function() {
+                        volumeTextFade(2000);
+                        var duration = media.duration;
+                        var currentTime = media.currentTime;
+                        mediaTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
+                    };
+                    var addEventHandlers = function() {
+                        if (media.addEventListener) {
+                            media.addEventListener("volumechange", setVolumeText, false); // IE9, Chrome, Safari, Opera
+                            media.addEventListener("seeking", setTimeText, false); // IE9, Chrome, Safari, Opera
+                        }
+                        else {
+                            media.attachEvent("onvolumechange", setVolumeText); // IE 6/7/8
+                            media.attachEvent("onseeking", setTimeText); // IE 6/7/8
+                        }
+                    };
+                    setTimeout(addEventHandlers, 10);
+                    return mediaTextIndicator;
+                }
+                function mediaMouseControls(eventCatcher, media, step) {
+                    step = (step === 0) ? 0 : (step || 1);
+                    var mouseWheelAudioHandler = function(e) {
+                        if (step !== 0) {
+                            // cross-browser wheel delta
+                            e = window.event || e; // old IE support
+                            var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                            var amount = parseInt(delta*step), volume = parseInt(media.volume*100);
+                            var value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
+                            media.volume = Math.max(0, Math.min(100, value)) / 100;
+                        }
+                        e.preventDefault();
+                    };
+                    var mouseWheelTimeHandler = function(e) {
+                        if (step !== 0) {
+                            // cross-browser wheel delta
+                            e = window.event || e; // old IE support
+                            var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                            var amount = parseInt(delta*step);
+                            var mediaState = media.paused ? 0 : 1;
+                            setTimeout(function() {
+                                if (delta < 0) {
+                                    media.pause(); media.currentTime = parseInt(media.currentTime) - 5; if (mediaState == 1) media.play();
+                                }
+                                else if (delta > 0) {
+                                    media.pause(); media.currentTime = parseInt(media.currentTime) + 5; if (mediaState == 1) media.play();
+                                }
+                            }, 10);
+                        }
+                        e.preventDefault();
+                    };
+                    if (media.addEventListener) {
+                        eventCatcher.addEventListener("mousewheel", mouseWheelTimeHandler, false); // IE9, Chrome, Safari, Opera
+                        eventCatcher.addEventListener("DOMMouseScroll", mouseWheelTimeHandler, false); // Firefox
+                    }
+                    else {
+                        eventCatcher.attachEvent("onmousewheel", mouseWheelTimeHandler); // IE 6/7/8
+                    }
+                    var mediaTextIndicator = addMediaTextIndicator(media, 56/2);
+                    mediaTextIndicator.style.top = '5px';
+                }
+                setTimeout(function(){
+                    var eventCatcher = document.querySelector('div.mhp1138_eventCatcher'),
+                        media = document.querySelector('video');
+                    if (eventCatcher && media) {
+                        mediaMouseControls(eventCatcher, media, 1);
+                    }
+                }, 1000);
             };
             waitForElement('meta[name="twitter:player"]', 'content', funcToRun, delay, tries, timerGroup);
         }
@@ -1889,8 +2070,10 @@
     else if (
         pageURL.split("?")[0].split("#")[0].endsWith("mp4") // https://b02.xfreehd.com/media/videos/hd/11960.mp4
     ) {
+        // alert(1);
         var contentURL = pageURL;
         console.log('contentURL: ', contentURL);
+        // alert(refineVideo(contentURL));
         openURL(refineVideo(contentURL));
     }
 
