@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.05
+// @version      0.0.06
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -149,16 +149,42 @@
         var autoplay = GM_getValue('autoplay', null);
         var t = GM_getValue('t', null);
         console.log('autoplay: ' + autoplay || 'false');
+        /*
         if (autoplay) {
             url = url.split('?')[1] ? (url + '&autoplay=true') : (url + '?autoplay=true');
             GM_deleteValue('autoplay');
             url = url.replace(/#autoplay=true(&autoplay=true){1,}/g, '#autoplay=true').replace(/(&autoplay=true){2,}/g, '&autoplay=true');
         }
+        */
+        var url_base = url.split('?')[1] ? url.split('?')[0] : url;
+        var url_keys = url.split('?')[1] ? url.split('?')[1] : null;
+        if (autoplay) {
+            if (url_keys) {
+                if (!url_keys.match('&autoplay=true')) { url = url + '&autoplay=true'; }
+            }
+            else {
+                url = url + '?autoplay=true';
+            }
+            GM_deleteValue('autoplay');
+        }
+        /*
         if (t) {
             console.log('t: ' + t);
             url = url.split('?')[1] ? (url + '&t=' + t) : (url + '?t=' + t);
             GM_deleteValue('t');
         }
+        */
+        if (t) {
+            console.log('t: ' + t);
+            if (url_keys) {
+                if (!url_keys.match('&t=' + t)) { url = url + '&t=' + t; }
+            }
+            else {
+                url = url + '?t=' + t;
+            }
+            GM_deleteValue('t');
+        }
+        // alert(url);
         GM_setValue('G_sampleURL', url);
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
