@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.06
+// @version      0.0.07
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -1434,6 +1434,8 @@
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
+                // https://yespornplease.com/images/201806/8nltoty/311x173_15.jpg
+                G_posterURL = G_posterURL.replace(/_\d+.jpg/i, '_15.jpg');
                 G_stickTo = document.querySelector('.video-tags');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
