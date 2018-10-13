@@ -1435,7 +1435,7 @@
                     document.querySelector('meta[property="og:image"]').content
                 );
                 // https://yespornplease.com/images/201806/8nltoty/311x173_15.jpg
-                G_posterURL = G_posterURL.replace(/_\d+.jpg/i, '_15.jpg');
+                G_posterURL = G_posterURL.replace(/_\d+.jpg/i, '_5.jpg');
                 G_stickTo = document.querySelector('.video-tags');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
