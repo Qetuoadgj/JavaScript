@@ -13,6 +13,11 @@
 // @grant        none
 // ==/UserScript==
 
+/* uBlock Filter:
+! 10.11.2018, 5:53:35 hdrezka.ag
+||fs*.fex.net/get/*$media,important
+*/
+
 (function() {
     'use strict';
 
