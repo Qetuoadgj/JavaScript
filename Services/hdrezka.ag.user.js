@@ -14,6 +14,13 @@
 // ==/UserScript==
 
 /* uBlock Filter:
+! 23.10.2018, 18:28:40 http://hdrezka.ag/films/foreign/3040-kabelschik.html
+hdrezka.ag###send-video-issue
+hdrezka.ag##.b-post__social_holder
+hdrezka.ag##.b-post__support_holder
+hdrezka.ag##.b-post__lastepisodeout
+hdrezka.ag##.b-post__mixedtext
+
 ! 10.11.2018, 5:53:35 hdrezka.ag
 ||fs*.fex.net/get/*$media,important
 */
