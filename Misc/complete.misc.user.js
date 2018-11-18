@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.10
+// @version      0.0.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -10,6 +10,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant		 unsafeWindow
 
 // @run-at       document-end
 
@@ -279,7 +280,7 @@
 
     function getWindowVar(varName) {
         var script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
-        var result = window.getVar(varName);
+        var result = unsafeWindow.getVar(varName);
         script.remove();
         return result;
     }
@@ -1375,18 +1376,18 @@
     else if (
         pageURL.matchLink('https?://www.porntrex.com/video/*/*')
     ) {
-        if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+       if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
             funcToTest = function () {
-                return typeof window.flashvars !== "undefined" && window.flashvars.video_url;
+                return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
             };
             funcToRun = function () {
                 var contentURL = (
-                    window.flashvars.video_alt_url3 ? window.flashvars.video_alt_url3 :
-                    window.flashvars.video_alt_url2 ? window.flashvars.video_alt_url2 :
-                    window.flashvars.video_alt_url ? window.flashvars.video_alt_url :
-                    window.flashvars.video_url
+                    unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 :
+                    unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
+                    unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
+                    unsafeWindow.flashvars.video_url
                 );
-                var posterURL = window.flashvars.preview_url;
+                var posterURL = unsafeWindow.flashvars.preview_url;
                 console.log('contentURL: ', contentURL);
                 openURL(refineVideo(contentURL));
             };
@@ -1401,10 +1402,10 @@
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
                 G_sampleURL = (
-                    window.flashvars.video_alt_url3 ? window.flashvars.video_alt_url3 :
-                    window.flashvars.video_alt_url2 ? window.flashvars.video_alt_url2 :
-                    window.flashvars.video_alt_url ? window.flashvars.video_alt_url :
-                    window.flashvars.video_url
+                    unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 :
+                    unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
+                    unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
+                    unsafeWindow.flashvars.video_url
                 );
             };
             waitForElement('meta[property="og:image"]', 'content', funcToRun, delay, tries, timerGroup);
@@ -1841,17 +1842,17 @@
         ) {
             // TEST_MODE = true;
             funcToTest = function () {
-                return window.flashvars.video_alt_url || window.flashvars.video_url;
+                return unsafeWindow.flashvars.video_alt_url || unsafeWindow.flashvars.video_url;
             };
             funcToRun = function () {
-                var contentURL = (window.flashvars.video_alt_url || window.flashvars.video_url).match(/(https?:.*)/)[1];
-                var posterURL = window.flashvars.preview_url;
+                var contentURL = (unsafeWindow.flashvars.video_alt_url || unsafeWindow.flashvars.video_url).match(/(https?:.*)/)[1];
+                var posterURL = unsafeWindow.flashvars.preview_url;
                 var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                     var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                    for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && window.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
+                    for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && unsafeWindow.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                     if (maxQuality > 0) {
                         console.log('quality: ' + maxQuality);
-                        contentURL = window.flashvars['quality_' + maxQuality + 'p'];
+                        contentURL = unsafeWindow.flashvars['quality_' + maxQuality + 'p'];
                     }
                 };
                 testQualities();
@@ -1865,12 +1866,12 @@
             pageURL.matchLink('https?://www.tube8.com/*/*/*/') // https://www.tube8.com/amateur/miriam-and-george/624201/
         ) {
             funcToTest = function () {
-                return window.flashvars.image_url && window.page_params.embedCode;
+                return unsafeWindow.flashvars.image_url && unsafeWindow.page_params.embedCode;
             };
             funcToRun = function () {
                 G_contentTitle = document.title;
-                G_contentURL = window.page_params.embedCode.match(/.*src="(.*?)".*/i)[1];
-                G_posterURL = window.flashvars.image_url;
+                G_contentURL = unsafeWindow.page_params.embedCode.match(/.*src="(.*?)".*/i)[1];
+                G_posterURL = unsafeWindow.flashvars.image_url;
                 G_stickTo = document.querySelector('div.underplayer_wrap');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
@@ -2144,19 +2145,19 @@
         openURL(refineVideo(contentURL));
     }
 
-    else if (typeof flashvars !== "undefined" && window.flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
+    else if (typeof flashvars !== "undefined" && unsafeWindow.flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
         funcToTest = function () {
-            return window.flashvars.video_alt_url || window.flashvars.video_url;
+            return unsafeWindow.flashvars.video_alt_url || unsafeWindow.flashvars.video_url;
         };
         funcToRun = function () {
-            var contentURL = (window.flashvars.video_alt_url || window.flashvars.video_url).match(/(https?:.*)/)[1];
-            var posterURL = window.flashvars.preview_url;
+            var contentURL = (unsafeWindow.flashvars.video_alt_url || unsafeWindow.flashvars.video_url).match(/(https?:.*)/)[1];
+            var posterURL = unsafeWindow.flashvars.preview_url;
             var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                 var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && window.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
+                for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && unsafeWindow.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
-                    contentURL = window.flashvars['quality_' + maxQuality + 'p'];
+                    contentURL = unsafeWindow.flashvars['quality_' + maxQuality + 'p'];
                 }
             };
             testQualities();
