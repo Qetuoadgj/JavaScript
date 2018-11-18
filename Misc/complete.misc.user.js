@@ -569,7 +569,7 @@
         if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
-        G_embedCodeText += ' data-categories=""';
+        G_embedCodeText += ' data-categories="all,"';
         G_embedCodeText += '></div>';
         //
     };
