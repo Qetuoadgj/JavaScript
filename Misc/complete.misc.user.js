@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.08
+// @version      0.0.10
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -51,6 +51,7 @@
 // @match		 *://*.xfreehd.com/media/*.mp4
 
 // @match		 *://yespornplease.com/view/*
+// @match		 *://yespornplease.com/v/*
 // @match		 *://e.yespornplease.com/e/*
 // @match		 *://vshare.io/v/*
 
@@ -278,7 +279,7 @@
 
     function getWindowVar(varName) {
         var script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
-        var result = getVar(varName);
+        var result = window.getVar(varName);
         script.remove();
         return result;
     }
@@ -560,6 +561,19 @@
         return decodedString;
     }
 
+    var updateEmbedCodeText = (startNew) => {
+        if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
+        if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+        if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+        G_embedCodeText += ' data-content="' + G_contentURL + '"';
+        if (G_contentURL !== pageURL) G_embedCodeText += ' data-url="' + pageURL + '"';
+        if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
+        if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+        G_embedCodeText += ' data-categories=""';
+        G_embedCodeText += '></div>';
+        //
+    };
+
     function embedCode(callerFunction) {
         var parentDocument = document;
         var id = 'embedCode';
@@ -585,6 +599,7 @@
                     else if (G_contentURL.match('=m37?')) { G_videoWidth = 1920; G_videoHeight = 1080; }
                 }
                 // if (G_videoWidth && G_videoHeight) G_contentTitle += ' [' + G_videoWidth + 'x' + G_videoHeight + ']';
+                /*
                 if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                 if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
                 G_embedCodeText += ' data-content="' + G_contentURL + '"';
@@ -592,6 +607,8 @@
                 if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                 if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                 G_embedCodeText += '></div>';
+                */
+                updateEmbedCodeText(1);
             }
             embedCodeTextArea.value = G_embedCodeText;
             if (G_embedCodeAutoHeight) {
@@ -715,7 +732,7 @@
                 imagesArray[index] = imageURL;
             });
 
-            var thumbs = gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
+            var thumbs = document.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img'); // gallery.querySelectorAll('#gallery > form > table > tbody > tr > td > table > tbody > tr > td > a > img');
             thumbs.forEach(function (self, index, array) {
                 var thumbURL = self.src;
                 thumbURL = thumbURL.replace(/.*\/thumb\/(.*)/i, ' http://x.fap.to/thumb/$1');
@@ -730,6 +747,7 @@
                 G_contentURL = imagesArray[index];
                 G_posterURL = self;
                 G_contentTitle = '';
+                /*
                 if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                 if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                 if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
@@ -738,6 +756,8 @@
                 if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                 if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                 G_embedCodeText += '></div>';
+                */
+                updateEmbedCodeText();
             });
 
             G_stickTo = document.querySelector('#gallery');
@@ -794,6 +814,7 @@
                         G_videoHeight = self.dataset && self.dataset.size ? self.dataset.size.split('x')[1] : null;
                         // G_contentTitle = '';
                         G_contentTitle = document.querySelector('div.info-text1').textContent.replace('Description: ', '') + ' #' + (index + 1);
+                        /*
                         if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                         if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
@@ -802,6 +823,8 @@
                         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                         G_embedCodeText += '></div>';
+                        */
+                        updateEmbedCodeText();
                     });
                     G_stickTo = document.querySelector('#main');
                     G_stickPosition = 'after';
@@ -952,6 +975,7 @@
                     G_contentURL = imagesArray[index];
                     G_posterURL = self;
                     G_contentTitle = '';
+                    /*
                     if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                     if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                     if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
@@ -960,6 +984,8 @@
                     if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                     if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                     G_embedCodeText += '></div>';
+                    */
+                    updateEmbedCodeText();
                 });
 
                 G_stickTo = document.querySelector('#footer');
@@ -998,6 +1024,7 @@
                     G_contentURL = imagesArray[index];
                     G_posterURL = self;
                     G_contentTitle = '';
+                    /*
                     if (G_embedCodeText) G_embedCodeText += '\n' + '<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                     if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                     if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
@@ -1006,6 +1033,8 @@
                     if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                     if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                     G_embedCodeText += '></div>';
+                    */
+                    updateEmbedCodeText();
                 });
 
                 G_stickTo = document.querySelector('.my_gallery');
@@ -1047,6 +1076,7 @@
                     G_contentURL = imagesArray[index];
                     G_posterURL = self;
                     G_contentTitle = galTitle || '';
+                    /*
                     if (G_embedCodeText) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
                     if (G_contentURL !== pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
                     if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
@@ -1055,6 +1085,8 @@
                     if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
                     if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
                     G_embedCodeText += '></div>';
+                    */
+                    updateEmbedCodeText();
                 });
 
                 G_stickTo = document.querySelector('div.related');
@@ -1345,16 +1377,16 @@
     ) {
         if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
             funcToTest = function () {
-                return typeof flashvars !== "undefined" && flashvars.video_url;
+                return typeof window.flashvars !== "undefined" && window.flashvars.video_url;
             };
             funcToRun = function () {
                 var contentURL = (
-                    flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
-                    flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
-                    flashvars.video_alt_url ? flashvars.video_alt_url :
-                    flashvars.video_url
+                    window.flashvars.video_alt_url3 ? window.flashvars.video_alt_url3 :
+                    window.flashvars.video_alt_url2 ? window.flashvars.video_alt_url2 :
+                    window.flashvars.video_alt_url ? window.flashvars.video_alt_url :
+                    window.flashvars.video_url
                 );
-                var posterURL = flashvars.preview_url;
+                var posterURL = window.flashvars.preview_url;
                 console.log('contentURL: ', contentURL);
                 openURL(refineVideo(contentURL));
             };
@@ -1369,10 +1401,10 @@
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
                 G_sampleURL = (
-                    flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
-                    flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
-                    flashvars.video_alt_url ? flashvars.video_alt_url :
-                    flashvars.video_url
+                    window.flashvars.video_alt_url3 ? window.flashvars.video_alt_url3 :
+                    window.flashvars.video_alt_url2 ? window.flashvars.video_alt_url2 :
+                    window.flashvars.video_alt_url ? window.flashvars.video_alt_url :
+                    window.flashvars.video_url
                 );
             };
             waitForElement('meta[property="og:image"]', 'content', funcToRun, delay, tries, timerGroup);
@@ -1422,7 +1454,8 @@
         pageURL.matchLink('https?://yespornplease.com/*') // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
     ) {
         if (
-            pageURL.matchLink('https?://yespornplease.com/view/*') //http://yespornplease.com/view/392920164
+            pageURL.matchLink('https?://yespornplease.com/view/*') || // http://yespornplease.com/view/392920164
+            pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/593166401
         ) {
             funcToRun = function () {
                 G_contentTitle = document.title;
@@ -1808,17 +1841,17 @@
         ) {
             // TEST_MODE = true;
             funcToTest = function () {
-                return flashvars.video_alt_url || flashvars.video_url;
+                return window.flashvars.video_alt_url || window.flashvars.video_url;
             };
             funcToRun = function () {
-                var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
-                var posterURL = flashvars.preview_url;
+                var contentURL = (window.flashvars.video_alt_url || window.flashvars.video_url).match(/(https?:.*)/)[1];
+                var posterURL = window.flashvars.preview_url;
                 var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                     var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                    for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
+                    for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && window.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                     if (maxQuality > 0) {
                         console.log('quality: ' + maxQuality);
-                        contentURL = flashvars['quality_' + maxQuality + 'p'];
+                        contentURL = window.flashvars['quality_' + maxQuality + 'p'];
                     }
                 };
                 testQualities();
@@ -1832,12 +1865,12 @@
             pageURL.matchLink('https?://www.tube8.com/*/*/*/') // https://www.tube8.com/amateur/miriam-and-george/624201/
         ) {
             funcToTest = function () {
-                return flashvars.image_url && page_params.embedCode;
+                return window.flashvars.image_url && window.page_params.embedCode;
             };
             funcToRun = function () {
                 G_contentTitle = document.title;
-                G_contentURL = page_params.embedCode.match(/.*src="(.*?)".*/i)[1];
-                G_posterURL = flashvars.image_url;
+                G_contentURL = window.page_params.embedCode.match(/.*src="(.*?)".*/i)[1];
+                G_posterURL = window.flashvars.image_url;
                 G_stickTo = document.querySelector('div.underplayer_wrap');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
@@ -1900,7 +1933,7 @@
     ) {
         if (
             pageURL.matchLink('https?://www.rapidvideo.com/e/*') || // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
-            pageURL.matchLink('https?://www.rapidvideo.com/embed/*')   // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
+            pageURL.matchLink('https?://www.rapidvideo.com/embed/*') // https://www.rapidvideo.com/e/FOR20G2UV1&q=1080p
         ) {
             var RV_playMaxQualitySource = (qualityButtons, cur) => {
                 var quality = 0;
@@ -1908,7 +1941,7 @@
                     var match = btn.innerText.trim().match(/(\d+p)/i);
                     if (match) {
                         var value = match[1];
-                        value =  Number(value.replace(/(\d+)p/, '$1'));
+                        value = Number(value.replace(/(\d+)p/, '$1'));
                         if (value) {
                             if (value>quality && value>cur) {
                                 quality = value;
@@ -2111,19 +2144,19 @@
         openURL(refineVideo(contentURL));
     }
 
-    else if (typeof flashvars !== "undefined" && flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
+    else if (typeof flashvars !== "undefined" && window.flashvars.video_url) { // http://www.camwhores.tv/embed/127910?utm_source=prontv&utm_campaign=prontv&utm_medium=prontv
         funcToTest = function () {
-            return flashvars.video_alt_url || flashvars.video_url;
+            return window.flashvars.video_alt_url || window.flashvars.video_url;
         };
         funcToRun = function () {
-            var contentURL = (flashvars.video_alt_url || flashvars.video_url).match(/(https?:.*)/)[1];
-            var posterURL = flashvars.preview_url;
+            var contentURL = (window.flashvars.video_alt_url || window.flashvars.video_url).match(/(https?:.*)/)[1];
+            var posterURL = window.flashvars.preview_url;
             var testQualities = () => { // https://www.tube8.com/embed/hardcore/busty-honey-is-down-for-some-anal/36207721/
                 var qualitiesTable = [1080, 720, 480, 360, 240], maxQuality = 0;
-                for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
+                for (let quality of qualitiesTable) { maxQuality = quality > maxQuality && window.flashvars['quality_' + quality + 'p'] ? quality : maxQuality; }
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
-                    contentURL = flashvars['quality_' + maxQuality + 'p'];
+                    contentURL = window.flashvars['quality_' + maxQuality + 'p'];
                 }
             };
             testQualities();
