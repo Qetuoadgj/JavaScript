@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.11
+// @version      0.0.12
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -665,6 +665,37 @@
         for (var index = 0; index < posters.length; index++) {
             if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
                 embedCodePoster.setAttribute('src', posters[index]);
+            }
+        }
+
+        var poster_index = 0;
+        var mouseWheelImageHandler = function(e) {
+            var step = 1; step = (step === 0) ? 0 : (step || 1);
+            if (step !== 0) {
+                // cross-browser wheel delta
+                e = window.event || e; // old IE support
+                var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                poster_index += delta;
+                poster_index = poster_index < 0 ? posters.length + poster_index : poster_index
+                poster_index = poster_index > (posters.length-1) ? 0 : poster_index
+                setTimeout(function() {
+                    embedCodePoster.setAttribute('src', posters[poster_index]);
+                    G_posterURL = posters[poster_index];
+                    updateEmbedCodeText(1);
+                    embedCodeTextArea.value = G_embedCodeText;
+                    console.log('poster_index = ' + poster_index + ' [' + posters.length + ']');
+                }, 10);
+            }
+            e.preventDefault();
+        };
+
+        if (G_posters.length > 1) {
+            if (embedCodePoster.addEventListener) {
+                embedCodePoster.addEventListener("mousewheel", mouseWheelImageHandler, false); // IE9, Chrome, Safari, Opera
+                embedCodePoster.addEventListener("DOMMouseScroll", mouseWheelImageHandler, false); // Firefox
+            }
+            else {
+                embedCodePoster.attachEvent("onmousewheel", mouseWheelImageHandler); // IE 6/7/8
             }
         }
 
@@ -1376,7 +1407,7 @@
     else if (
         pageURL.matchLink('https?://www.porntrex.com/video/*/*')
     ) {
-       if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+        if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
             funcToTest = function () {
                 return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
             };
@@ -1468,6 +1499,7 @@
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
+                /*
                 // https://yespornplease.com/images/201806/8nltoty/311x173_15.jpg
                 var imgNumMatch = G_posterURL.match(/_(\d+).jpg/i);
                 if (imgNumMatch) {
@@ -1476,6 +1508,16 @@
                         G_posterURL = G_posterURL.replace(/_\d+.jpg/i, '_5.jpg');
                     }
                 }
+                */
+                G_posters = [];
+                var imgBase = G_posterURL.match(/^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i);
+                if (imgBase) {
+                    for (var i = 0; i < 99; i++) {
+                        G_posters[i] = imgBase[1] + '_' + (i+1) + '.jpg';
+                    }
+                    console.log('G_posters:\n', G_posters);
+                }
+
                 G_stickTo = document.querySelector('.video-tags');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
