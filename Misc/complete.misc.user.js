@@ -689,7 +689,7 @@
             e.preventDefault();
         };
 
-        if (G_posters.length > 1) {
+        if (posters.length > 1) {
             if (embedCodePoster.addEventListener) {
                 embedCodePoster.addEventListener("mousewheel", mouseWheelImageHandler, false); // IE9, Chrome, Safari, Opera
                 embedCodePoster.addEventListener("DOMMouseScroll", mouseWheelImageHandler, false); // Firefox
