@@ -670,12 +670,13 @@
         embedCodeFrame.appendChild(embedCodePoster);
         embedCodePoster.addEventListener('click', callerFunction, false);
         var posters = G_posters || []; // global value
-        for (var index = 0; index < posters.length; index++) {
-            if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
-                embedCodePoster.setAttribute('src', posters[index]);
+        setTimeout(function() {
+            for (var index = 0; index < posters.length; index++) {
+                if (embedCodePoster.naturalHeight === 0 || embedCodePoster.naturalWidth === 0) {
+                    embedCodePoster.setAttribute('src', posters[index]);
+                }
             }
-        }
-
+        }, 250);
         var poster_index = 0;
         var mouseWheelImageHandler = function(e) {
             var step = 1; step = (step === 0) ? 0 : (step || 1);
@@ -1303,9 +1304,9 @@
                 if (val !== 0) {
                     G_sampleURL = document.querySelector('video > source[src]').src; // <source src="https://cdn-fr633.vporn.com/vid2/h-mDpLEQJooWlD4gEUznog/1543628954/s280-s294/56/1192456/1192456_1920x1080_4000k.mp4" type="video/mp4" label="1080p" prevent-default="true" res="1080">
                 }
-                G_posterURL = document.querySelector('div[poster]').getAttribute('poster');
+                G_posterURL = document.querySelector('div[poster]').getAttribute('poster').replace(/b(\d+\.jpg)/i, 'd$1');
                 G_posters = []; // https://th-eu1.vporn.com/t/56/1192456/b150.jpg
-                var imgBase = G_posterURL.match(/^(https?:\/\/th-eu1\.vporn\.com\/t\/\d+\/\d+\/)b\d+.jpg/i); // /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i
+                var imgBase = G_posterURL.match(/^(https?:\/\/th-eu.*?\.vporn\.com\/t\/\d+\/\d+\/)\w\d+.jpg/i); // /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i
                 if (imgBase) {
                     for (var i = 0; i < 150; i++) {
                         G_posters[i] = imgBase[1] + 'd' + (i+1) + '.jpg';
