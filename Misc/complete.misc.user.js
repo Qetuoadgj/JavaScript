@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.12
+// @version      0.0.13
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -25,6 +25,9 @@
 // @match		 *://www.eporner.eu/hd-porn/*/*/
 // @match		 *://www.eporner.com/embed/*
 // @match		 *://www.eporner.eu/embed/*
+
+// @match		 *://www.vporn.com/*/*/*
+// @match		 *://www.vporn.com/embed/*
 
 // @match        *://openload.co/f/*/*
 
@@ -123,6 +126,9 @@
     // ====================================================================================================================
     var TEST_MODE = false;
     var URL_MATCHED;
+    function shiftKeyIsDown() {return !!window.event.shiftKey;}
+    function ctrlKeyIsDown() {return !!(window.event.ctrlKey || window.event.metaKey);}
+    function altKeyIsDown() {return !!window.event.altKey;}
     function cutURL(url) {
         url = url.replace(/^.*?:\/\//, '');
         url = url.replace(/^www\./i, '');
@@ -658,6 +664,8 @@
         // embedCodePoster.style['min-width'] = '90px';
         embedCodePoster.style.width = 'auto';
         embedCodePoster.style.height = 'auto';
+        embedCodePoster.style['min-width'] = '215px';
+        embedCodePoster.style.height = '120px';
         embedCodePoster.setAttribute('src', G_posterURL);
         embedCodeFrame.appendChild(embedCodePoster);
         embedCodePoster.addEventListener('click', callerFunction, false);
@@ -671,11 +679,12 @@
         var poster_index = 0;
         var mouseWheelImageHandler = function(e) {
             var step = 1; step = (step === 0) ? 0 : (step || 1);
+            step = shiftKeyIsDown() ? 5 : step;
             if (step !== 0) {
                 // cross-browser wheel delta
                 e = window.event || e; // old IE support
                 var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                poster_index += delta;
+                poster_index += delta*step;
                 poster_index = poster_index < 0 ? posters.length + poster_index : poster_index
                 poster_index = poster_index > (posters.length-1) ? 0 : poster_index
                 setTimeout(function() {
@@ -1273,6 +1282,60 @@
                 }
             };
             waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    if (
+        pageURL.matchLink('https?://www.vporn.com')
+    ) {
+        if (
+            pageURL.matchLink('https?://www.vporn.com/*/*/*/*') // https://www.vporn.com/female/brooke-lee-adams/1192456/#
+        ) {
+            funcToRun = function () {
+                var val = 0;
+                document.querySelectorAll('.vjs-menu-item-text').forEach(function (e) {
+                    var size = e.innerText.match(/(\d+)p/);
+                    if (size) val = Math.max(val, size[1]);
+                });
+                G_contentTitle = document.title;
+                var vid_id = document.querySelector('a#playme').getAttribute('vid');
+                G_contentURL = location.protocol + '//' + location.host + '/embed/' + vid_id + '/';
+                if (val !== 0) {
+                    G_sampleURL = document.querySelector('video > source[src]').src; // <source src="https://cdn-fr633.vporn.com/vid2/h-mDpLEQJooWlD4gEUznog/1543628954/s280-s294/56/1192456/1192456_1920x1080_4000k.mp4" type="video/mp4" label="1080p" prevent-default="true" res="1080">
+                }
+                G_posterURL = document.querySelector('div[poster]').getAttribute('poster');
+                G_posters = []; // https://th-eu1.vporn.com/t/56/1192456/b150.jpg
+                var imgBase = G_posterURL.match(/^(https?:\/\/th-eu1\.vporn\.com\/t\/\d+\/\d+\/)b\d+.jpg/i); // /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i
+                if (imgBase) {
+                    for (var i = 0; i < 150; i++) {
+                        G_posters[i] = imgBase[1] + 'd' + (i+1) + '.jpg';
+                    }
+                    console.log('G_posters:\n', G_posters);
+                }
+                G_stickTo = document.querySelector('.video-info-all');
+                G_stickPosition = 'before';
+                embedCode(funcToRun);
+            };
+            waitForElement('video > source[src]', 'src', funcToRun, delay, tries, timerGroup);
+        }
+
+        else if (
+            pageURL.matchLink('https?://www.vporn.com/embed/*') // https://www.vporn.com/embed/1192456/
+        ) {
+            alert("1");
+            var handleElements = function (event) {
+                var contentURL;
+                document.scripts.forEach(function (script) {
+                    var text = script.text;
+                    if (text.match(/<source\s+?src=".*?"\s+?type="video.*?"\s+?label=".*?".*?\/>/i)) {
+                        var video_url = text.match(/<source\s+?src="(.*?)"\s+?type="video.*?"\s+?label=".*?".*?\/>/i);
+                        contentURL = video_url ? video_url[1] : null;
+                        console.log('contentURL: ', contentURL);
+                        openURL(refineVideo(contentURL));
+                    }
+                });
+            };
+            document.addEventListener('DOMContentLoaded', handleElements, false);
         }
     }
 
