@@ -1322,7 +1322,6 @@
         else if (
             pageURL.matchLink('https?://www.vporn.com/embed/*') // https://www.vporn.com/embed/1192456/
         ) {
-            alert("1");
             var handleElements = function (event) {
                 var contentURL;
                 document.scripts.forEach(function (script) {
