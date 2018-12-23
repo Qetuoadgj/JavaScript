@@ -1626,7 +1626,8 @@
             }
             else {
                 GM_setValue('sampleURL', contentURL);
-                openURL(contentURL);
+                openURL(refineVideo(contentURL));
+                // openURL(contentURL);
             }
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
