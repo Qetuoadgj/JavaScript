@@ -1472,6 +1472,7 @@
         pageURL.matchLink('https?://yourporn.sexy/*')
     ) {
         if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
+            window.stop();
             funcToTest = function () {
                 return document.querySelector('body video[src]');
             };
@@ -1506,6 +1507,7 @@
         pageURL.matchLink('https?://www.porntrex.com/video/*/*')
     ) {
         if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+            window.stop();
             funcToTest = function () {
                 return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
             };
@@ -1806,6 +1808,7 @@
             pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
             pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
         ) {
+            if (pageURL.match('#onlyVideo')) window.stop();
             funcToRun = function () {
                 var contentURL = actualSource();
                 if (contentURL) openURL(refineVideo(contentURL));
