@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.00
+// @version      0.1.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -42,6 +42,8 @@
 // @match        *://oload.xyz/embed/*
 
 // @match        *://yourporn.sexy/post/*.html*
+// @match        *://biqle.ru/watch/*
+// @match        *://daxab.com/player/*
 
 // @match        *://www.camwhores.tv/embed/*
 
@@ -864,8 +866,8 @@
                     imgOutput = outputs.querySelector('#content_img');
                     outputsArray.push(iframeOutput, imgOutput);
                     if (iframeOutput.style.display == 'block') {
-                        iframeOutput.src = videoURL + '?autoplay=true'; // refineVideo(videoURL);
-                        // GM_deleteValue('videoURL');
+                        iframeOutput.src = videoURL; //+ '?autoplay=true'; // refineVideo(videoURL);
+                        GM_deleteValue('videoURL');
                     }
                 }
             }
@@ -1575,8 +1577,8 @@
                 var contentURL = document.querySelector('body video[src]').src;
                 console.log('contentURL: ', contentURL);
                 if (window.top === window.self) {
-                    openURL(refineVideo(contentURL));
                     GM_setValue('videoURL', refineVideo(contentURL));
+                    // openURL(refineVideo(contentURL));
                     window.close();
                 }
             };
@@ -1603,6 +1605,69 @@
                 }, 1000);
             };
             waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
+        }
+    }
+
+    else if (
+        pageURL.matchLink('https?://daxab.com/player/*')
+    ) {
+        // window.stop();
+        funcToTest = function () {
+            return document.querySelector('body video[src]');
+        };
+        funcToRun = function () {
+            var contentURL = document.querySelector('body video[src]').src;
+            console.log('contentURL: ', contentURL);
+            if (window.top === window.self) {
+                GM_setValue('videoURL', refineVideo(contentURL));
+                // openURL(refineVideo(contentURL));
+                window.close();
+            }
+        };
+        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+    }
+
+    else if (
+        pageURL.matchLink('https?://biqle.ru/*')
+    ) {
+        if (pageURL.match('#onlyVideo')) { // https://biqle.ru/watch/-159565098_456242372#onlyVideo
+            // /*
+            window.stop();
+            funcToTest = function () {
+                return document.querySelector('body iframe[src*="/player/"]');
+            };
+            funcToRun = function () {
+                var contentURL = document.querySelector('body iframe[src*="/player/"]').src;
+                console.log('contentURL: ', contentURL);
+                if (window.top === window.self) {
+                    openURL(contentURL);
+                    // window.close();
+                }
+            };
+            waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+            // */
+        }
+        else if (
+            pageURL.matchLink('https?://biqle.ru/watch/*') // https://biqle.ru/watch/-159565098_456242372
+        ) {
+            funcToRun = function () {
+                G_contentTitle = document.title;
+                G_contentURL = shortURL + '#onlyVideo';
+                G_posterURL = getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
+                G_stickTo = document.querySelector('.video > .heading');
+                G_stickPosition = 'after';
+                embedCode(funcToRun);
+                getVideoData(funcResult, function () { embedCode(funcToRun); });
+                //
+                setTimeout(function(){
+                    var eventCatcher = document.querySelector('video'),
+                        media = document.querySelector('video');
+                    if (eventCatcher && media) {
+                        mediaMouseControls(eventCatcher, media, 1);
+                    }
+                }, 1000);
+            };
+            waitForElement('iframe[src]', 'src', funcToRun, delay, tries, timerGroup);
         }
     }
 
