@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.0.13
+// @version      0.1.00
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -10,6 +10,8 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_addValueChangeListener
 // @grant		 unsafeWindow
 
 // @run-at       document-end
@@ -20,6 +22,8 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 
 /// @require      https://code.jquery.com/jquery-3.2.1.min.js
+
+// @match		 file:///*/2.0.*.html
 
 // @match		 *://www.eporner.com/hd-porn/*/*/
 // @match		 *://www.eporner.eu/hd-porn/*/*/
@@ -125,6 +129,9 @@
     // DEFAULT GLOBAL VARIABLES
     // ====================================================================================================================
     var TEST_MODE = false;
+    GM_registerMenuCommand('TEST_MODE', function(){TEST_MODE = true;}, "");
+    // TEST_MODE = true;
+    //
     var URL_MATCHED;
     function shiftKeyIsDown() {return !!window.event.shiftKey;}
     function ctrlKeyIsDown() {return !!(window.event.ctrlKey || window.event.metaKey);}
@@ -200,6 +207,7 @@
         return playerPath + '#' + url;
     };
     var openURL = function (url) {
+        if (TEST_MODE) alert(pageURL+'\n\n'+url);
         console.log('openURL.url: ' + url);
         GM_deleteValue('contentURL');
         // GM_deleteValue('G_sampleURL');
@@ -710,6 +718,7 @@
         }
 
         var testVideo = () => {
+            // alert(1);
             var embedCodeVideo = parentDocument.createElement('video');
             embedCodeVideo.style = embedCodePoster.getAttribute('style');
             // embedCodeVideo.style.display = 'none';
@@ -747,6 +756,27 @@
         qualityButtons.forEach(function (item, index, array) { item.addEventListener('click', callerFunction, false); });
     }
     // ====================================================================================================================
+    if (
+        pageURL.matchLink('file:///*/2.0.*.html')
+    ) {
+        GM_addValueChangeListener('videoURL', function(name, old_value, new_value, remote) {
+            if (new_value && new_value != "") {
+                var videoURL = GM_getValue('videoURL', 'none');
+                var outputs = document.getElementById('content');
+                var iframeOutput, imgOutput, outputsArray = [];
+                if (outputs) {
+                    iframeOutput = outputs.querySelector('#content_iframe');
+                    imgOutput = outputs.querySelector('#content_img');
+                    outputsArray.push(iframeOutput, imgOutput);
+                    if (iframeOutput.style.display == 'block') {
+                        iframeOutput.src = videoURL + '?autoplay=true'; // refineVideo(videoURL);
+                        // GM_deleteValue('videoURL');
+                    }
+                }
+            }
+        })
+        return
+    }
     G_IsVideo = false;
     if (
         pageURL.matchLink('https?://www.imagefap.com/pictures/*/*[?]*view=2')
@@ -1206,7 +1236,7 @@
             if (document.querySelector('#streamurl')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamurl').innerText + '?mime=true';
             else if (document.querySelector('#streamuri')) src = src || location.protocol + '//' + location.host + '/stream/' + document.querySelector('#streamuri').innerText + '?mime=true';
             sources[cuttenURL] = src;
-            GM_setValue('G_sampleURL', src);
+            GM_setValue('G_sampleURL', src); G_sampleURL = src;
             console.log('cuttenURL: ', cuttenURL, '\nvideo.src: ', src);
             console.log('G_sampleURL: ', G_sampleURL, '\nvideo.src: ', src);
             GM_setValue('sources', sources);
@@ -1248,6 +1278,7 @@
             pageURL.matchLink('https?://www.eporner.com/embed/*') || // https://www.eporner.com/embed/DQ1fQ5H7Jkz
             pageURL.matchLink('https?://www.eporner.eu/embed/*') // https://www.eporner.com/embed/DQ1fQ5H7Jkz
         ) {
+            // alert(pageURL);
             funcToTest = function () {
                 return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
             };
@@ -1286,7 +1317,7 @@
         }
     }
 
-    if (
+    else if (
         pageURL.matchLink('https?://www.vporn.com')
     ) {
         if (
@@ -1323,7 +1354,7 @@
         else if (
             pageURL.matchLink('https?://www.vporn.com/embed/*') // https://www.vporn.com/embed/1192456/
         ) {
-            var handleElements = function (event) {
+            var vporn_handleElements = function (event) {
                 var contentURL;
                 document.scripts.forEach(function (script) {
                     var text = script.text;
@@ -1335,7 +1366,7 @@
                     }
                 });
             };
-            document.addEventListener('DOMContentLoaded', handleElements, false);
+            document.addEventListener('DOMContentLoaded', vporn_handleElements, false);
         }
     }
 
@@ -1447,7 +1478,11 @@
             funcToRun = function () {
                 var contentURL = document.querySelector('body video[src]').src;
                 console.log('contentURL: ', contentURL);
-                openURL(refineVideo(contentURL));
+                if (window.top === window.self) {
+                    openURL(refineVideo(contentURL));
+                    GM_setValue('videoURL', refineVideo(contentURL));
+                    window.close();
+                }
             };
             waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
         }
@@ -1530,7 +1565,7 @@
     else if (
         pageURL.matchLink('https?://vidoza.net/embed-*') // https://vidoza.net/embed-gzp9id6hi29d.html
     ) {
-        var handleElements = function (event) {
+        var vidoza_handleElements = function (event) {
             var contentURL;
             document.scripts.forEach(function (script) {
                 var text = script.text;
@@ -1542,7 +1577,7 @@
                 }
             });
         };
-        document.addEventListener('DOMContentLoaded', handleElements, false);
+        document.addEventListener('DOMContentLoaded', vidoza_handleElements, false);
     }
 
     else if (
