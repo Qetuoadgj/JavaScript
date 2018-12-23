@@ -1617,11 +1617,15 @@
         };
         funcToRun = function () {
             var contentURL = document.querySelector('body video[src]').src;
+            contentURL = document.querySelector('.videoplayer_dl_select ._item'); // 1080p, 720p ...
             console.log('contentURL: ', contentURL);
             if (window.top === window.self) {
                 GM_setValue('videoURL', refineVideo(contentURL));
-                // openURL(refineVideo(contentURL));
                 window.close();
+            }
+            else {
+                GM_setValue('sampleURL', contentURL);
+                openURL(contentURL);
             }
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
