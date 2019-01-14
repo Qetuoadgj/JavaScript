@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.1
+// @version      1.0.2
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -35,5 +35,6 @@ hdrezka.ag##.b-post__mixedtext
         if (cssClass) style.setAttribute('class', cssClass);
         head.appendChild(style);
     }
-    addGlobalStyle("div {background: black}", "nightMode");
+    addGlobalStyle("div, body, .night_mode {background: black !important}", "nightMode");
+    document.body.classList.add('night_mode')
 })();
