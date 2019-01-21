@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.3
+// @version      1.0.4
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -23,6 +23,7 @@ hdrezka.ag##.b-post__mixedtext
 
 ! 10.11.2018, 5:53:35 hdrezka.ag
 ||fs*.fex.net/get/*$media,important
+||ankunding.biz^$media,important
 */
 
 (function() {
