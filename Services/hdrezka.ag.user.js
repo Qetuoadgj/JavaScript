@@ -47,7 +47,13 @@ hdrezka.ag##.b-post__mixedtext
         document.body.classList.add('night_mode');
         var style = document.querySelector('head > style.nightMode');
         if (style) style.remove();
-        else addGlobalStyle("div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}\nh2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}\n/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/", "nightMode");
+        else {
+            var css = "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}" +
+                "\nh2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}"+
+                "\n/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/" +
+                "\nbody::-webkit-scrollbar-thumb {background-color: #333;}\nbody::-webkit-scrollbar {background-color: rgba(34, 34, 34);}";
+            addGlobalStyle(css, "nightMode");
+        }
     }
     toggleNightMode();
     //
