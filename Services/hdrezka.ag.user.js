@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -10,16 +10,18 @@
 // @noframes
 // @match        *://hdrezka.ag/films/*/*.html
 // @match        *://hdrezka.ag/series/*/*.html
+// @match        *://hdrezka.me/films/*/*.html
+// @match        *://hdrezka.me/series/*/*.html
 // @grant        none
 // ==/UserScript==
 
 /* uBlock Filter:
 ! 23.10.2018, 18:28:40 http://hdrezka.ag/films/foreign/3040-kabelschik.html
-hdrezka.ag###send-video-issue
-hdrezka.ag##.b-post__social_holder
-hdrezka.ag##.b-post__support_holder
-hdrezka.ag##.b-post__lastepisodeout
-hdrezka.ag##.b-post__mixedtext
+hdrezka.*###send-video-issue
+hdrezka.*##.b-post__social_holder
+hdrezka.*##.b-post__support_holder
+hdrezka.*##.b-post__lastepisodeout
+hdrezka.*##.b-post__mixedtext
 
 ! 10.11.2018, 5:53:35 hdrezka.ag
 ||fs*.fex.net/get/*$media,important
@@ -52,7 +54,20 @@ hdrezka.ag##.b-post__mixedtext
             var css = "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}" +
                 "\nh2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}"+
                 "\n/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/" +
-                "\nbody::-webkit-scrollbar-thumb {background-color: #333;}\nbody::-webkit-scrollbar {background-color: rgba(34, 34, 34);}";
+                // "\n::-webkit-scrollbar-thumb {background-color: #333;}" +
+                // "\n::-webkit-scrollbar-thumb:hover {background: #555;}" +
+                // "\n::-webkit-scrollbar {background-color: rgba(34, 34, 34);}";
+                "\n::-webkit-scrollbar {width: 18px; height: 18px;}" +
+                "\n::-webkit-scrollbar-button {background: no-repeat #333; background-size: 18px; background-position: center bottom;}" +
+                "\n::-webkit-scrollbar-button:vertical:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +'");}' +
+                "\n::-webkit-scrollbar-button:vertical:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +'");}' +
+                "\n::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +'");}' +
+                "\n::-webkit-scrollbar-button:horizontal:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +'");}' +
+                "\n::-webkit-scrollbar-track-piece {background: #222;}" +
+                "\n::-webkit-scrollbar-thumb {background: #444; border-radius: 9px;}" +
+                "\n::-webkit-scrollbar-thumb:hover {background: #666;}" +
+                "\n::-webkit-scrollbar-corner {background-color: #222;}"
+            ;
             addGlobalStyle(css, "nightMode");
         }
     }
