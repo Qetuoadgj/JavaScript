@@ -60,19 +60,16 @@ hdrezka.*##.b-post__mixedtext
             var css = "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}" +
                 "\nh2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}"+
                 "\n/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/" +
-                // "\n::-webkit-scrollbar-thumb {background-color: #333;}" +
-                // "\n::-webkit-scrollbar-thumb:hover {background: #555;}" +
-                // "\n::-webkit-scrollbar {background-color: rgba(34, 34, 34);}";
                 "\n::-webkit-scrollbar {width: 18px; height: 18px;}" +
-                "\n::-webkit-scrollbar-button {background: no-repeat #333; background-size: 18px; background-position: center bottom;}" +
+                "\n::-webkit-scrollbar-button {background: no-repeat #222; background-size: 18px; background-position: center bottom;}" +
                 "\n::-webkit-scrollbar-button:vertical:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +'");}' +
                 "\n::-webkit-scrollbar-button:vertical:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +'");}' +
                 "\n::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +'");}' +
                 "\n::-webkit-scrollbar-button:horizontal:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +'");}' +
-                "\n::-webkit-scrollbar-track-piece {background: #222;}" +
-                "\n::-webkit-scrollbar-thumb {background: #333; border-radius: 6px;}" +
-                "\n::-webkit-scrollbar-thumb:hover {background: #555;}" +
-                "\n::-webkit-scrollbar-corner {background-color: #222;}"
+                "\n::-webkit-scrollbar-track-piece {background: #111;}" +
+                "\n::-webkit-scrollbar-thumb {background: #222; border-radius: 3px;}" +
+                "\n::-webkit-scrollbar-thumb:hover {background: #444;}" +
+                "\n::-webkit-scrollbar-corner {background-color: #111;}"
             ;
             addGlobalStyle(css, "nightMode");
         }
