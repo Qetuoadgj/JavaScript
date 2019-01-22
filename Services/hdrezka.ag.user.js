@@ -41,9 +41,11 @@ hdrezka.*##.b-post__mixedtext
     // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
     var playerElement = document.querySelector('#videoplayer');
     var playerWidth = playerElement ? playerElement.clientWidth : 640;
+    var playerHeight = playerElement ? playerElement.clientHeight : 360;
     // initScale = 2.0 * window.innerWidth/(1200 + 50);
-    var initScale = (window.innerWidth - 20*2 - 16) / playerWidth;
-    var scale = initScale; scale = Math.min(Math.max(1, scale), 2);
+    var initScale = Math.min((window.innerWidth - 20*2 - 16) / playerWidth, (window.innerHeight - 10*2 - 8) / playerHeight);
+    var minScale = 1, maxScale = initScale; // 2.5;
+    var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
     function scalePlayer(scale) {
         var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
         style = addGlobalStyle("#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}\nbody.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}", "zoomMode");
@@ -87,14 +89,14 @@ hdrezka.*##.b-post__mixedtext
         if (code) e.keyCode = code;
         if (!(targetType == 'input' || targetType == 'textarea')) {
             if (shiftDown && e.keyCode == KEY_UP_ARROW) {
-                scale += 0.05;
-                scale = Math.min(Math.max(1, scale), 2);
+                scale += 0.1;
+                scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
                 e.preventDefault();
             }
             else if (shiftDown && e.keyCode == KEY_DOWN_ARROW) {
-                scale -= 0.05;
-                scale = Math.min(Math.max(1, scale), 2);
+                scale -= 0.1;
+                scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
                 e.preventDefault();
             }
@@ -106,9 +108,10 @@ hdrezka.*##.b-post__mixedtext
                 playerElement = document.querySelector('#videoplayer');
                 playerWidth = playerElement ? playerElement.clientWidth : 640;
                 // initScale = 2.0 * window.innerWidth/(1200 + 50);
-                initScale = (window.innerWidth - 20*2 - 16) / playerWidth;
+                initScale = Math.min((window.innerWidth - 20*2 - 16) / playerWidth, (window.innerHeight - 10*2 - 8) / playerHeight);
+                maxScale = initScale; // 2.5;
                 scale = initScale;
-                scale = Math.min(Math.max(1, scale), 2);
+                scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
                 e.preventDefault();
             }
