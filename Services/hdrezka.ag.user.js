@@ -70,8 +70,8 @@ hdrezka.*##.b-post__mixedtext
                 "\n::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +'");}' +
                 "\n::-webkit-scrollbar-button:horizontal:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +'");}' +
                 "\n::-webkit-scrollbar-track-piece {background: #222;}" +
-                "\n::-webkit-scrollbar-thumb {background: #444; border-radius: 9px;}" +
-                "\n::-webkit-scrollbar-thumb:hover {background: #666;}" +
+                "\n::-webkit-scrollbar-thumb {background: #333; border-radius: 6px;}" +
+                "\n::-webkit-scrollbar-thumb:hover {background: #555;}" +
                 "\n::-webkit-scrollbar-corner {background-color: #222;}"
             ;
             addGlobalStyle(css, "nightMode");
