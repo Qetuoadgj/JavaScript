@@ -39,7 +39,11 @@ hdrezka.*##.b-post__mixedtext
         head.appendChild(style);
     }
     // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
-    var scale = 2.0; scale = Math.min(Math.max(1, scale), 2);
+    var playerElement = document.querySelector('#videoplayer');
+    var playerWidth = playerElement ? playerElement.clientWidth : 640;
+    // initScale = 2.0 * window.innerWidth/(1200 + 50);
+    var initScale = (window.innerWidth - 20*2 - 16) / playerWidth;
+    var scale = initScale; scale = Math.min(Math.max(1, scale), 2);
     function scalePlayer(scale) {
         var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
         style = addGlobalStyle("#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}\nbody.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}", "zoomMode");
@@ -96,6 +100,16 @@ hdrezka.*##.b-post__mixedtext
             }
             else if (shiftDown && e.keyCode == KEY_ENTER) {
                 toggleNightMode();
+                e.preventDefault();
+            }
+            else if (shiftDown && e.keyCode == KEY_LEFT_ARROW) {
+                playerElement = document.querySelector('#videoplayer');
+                playerWidth = playerElement ? playerElement.clientWidth : 640;
+                // initScale = 2.0 * window.innerWidth/(1200 + 50);
+                initScale = (window.innerWidth - 20*2 - 16) / playerWidth;
+                scale = initScale;
+                scale = Math.min(Math.max(1, scale), 2);
+                scalePlayer(scale);
                 e.preventDefault();
             }
         }
