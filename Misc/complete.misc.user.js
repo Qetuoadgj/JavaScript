@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.01
+// @version      0.1.04
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -141,7 +141,8 @@
     function cutURL(url) {
         url = url.replace(/^.*?:\/\//, '');
         url = url.replace(/^www\./i, '');
-        url = url.replace(/\b#onlyVideo\b.*/, '');
+        url = url.replace(/\b#OnlyVideo\b.*/, '');
+        url = url.replace(/\b#ReCast\b.*/, '');
         url = url.trim();
         return url;
     }
@@ -238,6 +239,7 @@
                     var keepRun = tries ? (count <= tries) : true;
                     if (keepRun) {
                         var result = funcToTest();
+                        funcResult = result;
                         console.log('iteration: ', count);
                         if (result) { clearTimers(timerGroup); return funcToRun(); }
                         else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
@@ -1568,7 +1570,7 @@
     else if (
         pageURL.matchLink('https?://yourporn.sexy/*')
     ) {
-        if (pageURL.match('#onlyVideo')) { // https://yourporn.sexy/post/59772cebee27b.html#onlyVideo
+        if (pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             window.stop();
             funcToTest = function () {
                 return document.querySelector('body video[src]');
@@ -1589,7 +1591,7 @@
         ) {
             funcToRun = function () {
                 G_contentTitle = document.title;
-                G_contentURL = shortURL + '#onlyVideo';
+                G_contentURL = shortURL + '#ReCast';
                 G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 G_stickTo = document.querySelector('div.comments_area');
                 G_stickPosition = 'before';
@@ -1636,7 +1638,7 @@
     else if (
         pageURL.matchLink('https?://biqle.ru/*')
     ) {
-        if (pageURL.match('#onlyVideo')) { // https://biqle.ru/watch/-159565098_456242372#onlyVideo
+        if (pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
             // /*
             window.stop();
             funcToTest = function () {
@@ -1658,7 +1660,7 @@
         ) {
             funcToRun = function () {
                 G_contentTitle = document.title;
-                G_contentURL = shortURL + '#onlyVideo';
+                G_contentURL = shortURL + '#ReCast';
                 G_posterURL = getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
                 G_stickTo = document.querySelector('.video > .heading');
                 G_stickPosition = 'after';
@@ -1680,7 +1682,7 @@
     else if (
         pageURL.matchLink('https?://www.porntrex.com/video/*/*')
     ) {
-        if (pageURL.match('#onlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#onlyVideo
+        if (pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
             window.stop();
             funcToTest = function () {
                 return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
@@ -1701,7 +1703,7 @@
         else {
             funcToRun = function () {
                 G_contentTitle = document.title;
-                G_contentURL = shortURL + '#onlyVideo';
+                G_contentURL = shortURL + '#OnlyVideo';
                 G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 G_stickTo = document.querySelector('div.video-info');
                 G_stickPosition = 'before';
@@ -1979,15 +1981,35 @@
         };
 
         if (
-            pageURL.match('#onlyVideo') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#onlyVideo
+            pageURL.match('#ReCast') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#ReCast
             pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
         ) {
-            if (pageURL.match('#onlyVideo')) window.stop();
-            funcToRun = function () {
-                var contentURL = actualSource();
-                if (contentURL) openURL(refineVideo(contentURL));
-            };
-            document.addEventListener('DOMContentLoaded', funcToRun, false);
+            if (pageURL.match('#ReCast')) { // https://www.pornhub.com/view_video.php?viewkey=ph5852ef85649df#ReCast
+                window.stop();
+                funcToTest = function () {
+                    return actualSource();
+                };
+                funcToRun = function () {
+                    var contentURL = funcResult; // actualSource();; // document.querySelector('body video[src]').src;
+                    console.log('contentURL: ', contentURL);
+                    if (window.top === window.self) {
+                        GM_setValue('videoURL', refineVideo(contentURL));
+                        // openURL(refineVideo(contentURL));
+                        window.close();
+                    }
+                };
+                waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+            }
+            else {
+                if (pageURL.match('#ReCast')) window.stop();
+                funcToRun = function () {
+                    var contentURL = actualSource();
+                    contentURL = contentURL ? contentURL : funcResult.src;
+                    if (contentURL) openURL(refineVideo(contentURL));
+                };
+                // document.addEventListener('DOMContentLoaded', funcToRun, false);
+                waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
+            }
         }
         else if (
             pageURL.matchLink('https?://www.pornhub.com/view_video.php[?]viewkey=*') // https://www.pornhub.com/view_video.php?viewkey=899243017
@@ -1996,7 +2018,7 @@
                 G_sampleURL = actualSource();
                 if (G_sampleURL) GM_deleteValue('G_sampleURL');
                 G_contentTitle = document.title;
-                G_contentURL = document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#onlyVideo';
+                G_contentURL = pageURL + '#ReCast'; //document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#ReCast';
                 G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
                 G_stickTo = document.querySelector('.video-actions-container');
                 G_stickPosition = 'before';
@@ -2342,7 +2364,7 @@
                 }
                 else if (G_contentURL.matchLink('https?://www.porntrex.com/video/*')) {
                     // G_contentURL = G_contentURL.replace(/.*porntrex.com\/video\/(.*?)\/.*/i, 'https://www.porntrex.com/embed/$1');
-                    G_contentURL = G_contentURL + '#onlyVideo';
+                    G_contentURL = G_contentURL + '#OnlyVideo';
                     /*
                     if (iframes[0]) {
                         waitForCondition(
