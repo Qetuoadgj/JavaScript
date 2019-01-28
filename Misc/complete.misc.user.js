@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.04
+// @version      0.1.05
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -784,7 +784,7 @@
                 }
             }
         }, 250);
-        var poster_index = 0;
+        var poster_index = 0; var last_poster_index = 0;
         var mouseWheelImageHandler = function(e) {
             var step = 1; step = (step === 0) ? 0 : (step || 1);
             step = shiftKeyIsDown() ? 5 : step;
@@ -797,6 +797,10 @@
                 poster_index = poster_index > (posters.length-1) ? 0 : poster_index
                 setTimeout(function() {
                     embedCodePoster.setAttribute('src', posters[poster_index]);
+                    embedCodePoster.onerror = function(e){
+                        posters = posters.slice(0, poster_index); G_posters = posters;
+                        // console.log('posters.length: '+posters.length+'\nposter_index: '+poster_index);
+                    };
                     G_posterURL = posters[poster_index];
                     updateEmbedCodeText(1);
                     embedCodeTextArea.value = G_embedCodeText;
