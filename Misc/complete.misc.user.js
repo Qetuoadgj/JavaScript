@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.05
+// @version      0.1.06
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -613,6 +613,18 @@
         mediaTextIndicator.style.top = '5px';
     }
 
+    function CreateLinksList(Haystack, NeedleRegEx, Replacement, StartNum, EndNum) {
+        var Ret = [];
+        if (Haystack.match(NeedleRegEx)) {
+            var Result = Haystack.replace(NeedleRegEx, Replacement);
+            StartNum = StartNum > 1 ? StartNum : 1; EndNum = EndNum > 1 ? EndNum : 1;
+            for (var i = StartNum; i < EndNum; i++) {
+                Ret[i] = Result.replace('$NUM', i);
+            }
+            // console.log('G_posters:\n', G_posters);
+            return Ret;
+        }
+    }
 
     function refineText(inputList) {
         // var eventList = ['change', 'input', 'cut', 'copy', 'paste', 'focus', 'blur']; // 'keydown', 'keyup',
@@ -793,13 +805,21 @@
                 e = window.event || e; // old IE support
                 var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
                 poster_index += delta*step;
-                poster_index = poster_index < 0 ? posters.length + poster_index : poster_index
-                poster_index = poster_index > (posters.length-1) ? 0 : poster_index
+                poster_index = poster_index < 1 ? posters.length - 1 : poster_index;
+                poster_index = poster_index >= posters.length ? 1 : poster_index;
+                poster_index = Math.min(Math.max(0, poster_index), posters.length - 1);
                 setTimeout(function() {
                     embedCodePoster.setAttribute('src', posters[poster_index]);
                     embedCodePoster.onerror = function(e){
                         posters = posters.slice(0, poster_index); G_posters = posters;
                         // console.log('posters.length: '+posters.length+'\nposter_index: '+poster_index);
+                        //
+                        poster_index = Math.min(Math.max(0, poster_index), posters.length - 1);
+                        G_posterURL = posters[poster_index];
+                        updateEmbedCodeText(1);
+                        embedCodeTextArea.value = G_embedCodeText;
+                        console.log('poster_index = ' + poster_index + ' [' + posters.length + ']');
+                        embedCodePoster.setAttribute('src', posters[poster_index]);
                     };
                     G_posterURL = posters[poster_index];
                     updateEmbedCodeText(1);
@@ -1779,25 +1799,7 @@
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
-                /*
-                // https://yespornplease.com/images/201806/8nltoty/311x173_15.jpg
-                var imgNumMatch = G_posterURL.match(/_(\d+).jpg/i);
-                if (imgNumMatch) {
-                    var imgNum = imgNumMatch[1];
-                    if (imgNum < 2) {
-                        G_posterURL = G_posterURL.replace(/_\d+.jpg/i, '_5.jpg');
-                    }
-                }
-                */
-                G_posters = [];
-                var imgBase = G_posterURL.match(/^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i);
-                if (imgBase) {
-                    for (var i = 0; i < 99; i++) {
-                        G_posters[i] = imgBase[1] + '_' + (i+1) + '.jpg';
-                    }
-                    console.log('G_posters:\n', G_posters);
-                }
-
+                G_posters = CreateLinksList(G_posterURL, /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i, '$1_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_posters);
                 G_stickTo = document.querySelector('.video-tags');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
