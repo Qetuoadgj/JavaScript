@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.07
+// @version      0.1.08
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -119,6 +119,8 @@
 
 // @match		 *://*/*.jpg
 // @match		 *://*/*.jpg*
+
+// @exclude      *://vshare.io/404/*
 // ==/UserScript==
 
 (function () {
@@ -207,6 +209,11 @@
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
         var playerPath = 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html';
+        if (url.match('vshare.io')) {
+            // alert(url);
+            playerPath = 'https://vshare.io/404/';
+            return playerPath + url;
+        }
         return playerPath + '#' + url;
     };
     var openURL = function (url) {
