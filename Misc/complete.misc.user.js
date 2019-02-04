@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.08
+// @version      0.1.09
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -121,6 +121,7 @@
 // @match		 *://*/*.jpg*
 
 // @exclude      *://vshare.io/404/*
+// @exclude      *://*/v/404/*
 // ==/UserScript==
 
 (function () {
@@ -152,7 +153,8 @@
         pageURL = location.href,
         pageTitle = document.title,
         shortURL = (location.protocol + '//' + location.host + location.pathname).trim(),
-        cuttenURL = cutURL(pageURL)
+        cuttenURL = cutURL(pageURL),
+        pageDomain = window.location.host.replace(/.*\.(.*\..*)/, '$1')
     ;
     // var refineVideoParam = 'REFINE_VIDEO';
     if (location.href.match('autoplay=true')) {
@@ -209,9 +211,13 @@
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
         var playerPath = 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html';
-        if (url.match('vshare.io')) {
+        if (
+            !isInstalled /*|| // https://www.eporner.com/embed/zHjfdCPcJ4d // https://www.eporner.com/v/404/https://s1-n10-nl-cdn.eporner.com/v9/828006b0967859654119768597e7e11b/5c58e09204f400/2215038-1080p.mp4
+            url.match('vshare.io') ||
+            url.match('eporner.com')*/
+        ) {
             // alert(url);
-            playerPath = 'https://vshare.io/404/';
+            playerPath = location.protocol + '//' + pageDomain + '/v/404/';
             return playerPath + url;
         }
         return playerPath + '#' + url;

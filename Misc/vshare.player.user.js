@@ -1,15 +1,19 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.02
+// @version      0.0.04
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
-// @grant        none
+/// @grant       none
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_deleteValue
 // @run-at       document-start
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/vshare.player.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        *://vshare.io/404/*
+// @match        *://*/v/404/*
 // ==/UserScript==
 
 (function() {
@@ -70,6 +74,9 @@
         // console.clear();
 
         var paramStart = '://vshare.io/404/'; // 'player.html#';
+        var pageDomain = window.location.host.replace(/.*\.(.*\..*)/, '$1');
+        // paramStart = location.protocol + '//' + pageDomain + '/v/404/';
+        paramStart = pageDomain + '/v/404/';
 
         function shiftKeyIsDown() {return !!window.event.shiftKey;}
         function ctrlKeyIsDown() {return !!(window.event.ctrlKey || window.event.metaKey);}
@@ -418,6 +425,27 @@
             }
         };
 
+        var useGMVolumeCookie = function(mediaElementSelector, cookieName) {
+            cookieName = cookieName || "media";
+            var mediaVolume = GM_getValue(cookieName+"_volume");
+            var mediaMuted = GM_getValue(cookieName+"_muted");
+            if (mediaMuted == "false") mediaMuted = false; // normalize
+            var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+            function saveSettings() {
+                GM_setValue(cookieName+"_volume", mediaElement.volume || 0);
+                GM_setValue(cookieName+"_muted", mediaElement.muted);
+            }
+            for (var i = 0; i < mediaElementsArray.length; ++i) {
+                var mediaElement = mediaElementsArray[i];
+                if (mediaVolume) mediaElement.volume = mediaVolume;
+                mediaElement.muted = mediaMuted;
+                mediaElement.addEventListener("volumechange", saveSettings, false);
+                // console.log("mediaElement: ", mediaElement);
+                // console.log("GM_getValue("+cookieName+"_volume): ", GM_getValue(cookieName+"_volume"));
+                // console.log("GM_getValue("+cookieName+"_muted): ", GM_getValue(cookieName+"_muted"));
+            }
+        };
+
         function GetFirstCustomKey(searchArray, customKeysArray) {
             for(var i in searchArray){
                 if (customKeysArray.indexOf(searchArray[i]) > -1) {
@@ -483,11 +511,10 @@
                 mediaKeyboardControls(video);
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
-                useLocalVolumeCookie("body > video", "video");
+                useGMVolumeCookie("body > video", "video"); // useLocalVolumeCookie("body > video", "video");
             }
         }
     };
     initPlayer();
     // ---------------------------------------------------
-
 })();
