@@ -1412,6 +1412,9 @@
                     G_sampleURL = location.protocol + '//' + location.host + '/dload/' + vid + '/' + val + '/' + id + '-' + val + 'p.mp4'; // https://www.eporner.com/dload/DQ1fQ5H7Jkz/480/1101004-480p.mp4
                 }
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                //G_posters = CreateLinksList(G_posterURL, /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i, '$1_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_posters);
+                G_posters = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_posters);
+                // https://static-eu-cdn.eporner.com/thumbs/static4/2/22/221/2215038/6_240.jpg
                 G_stickTo = document.querySelector('#relateddiv');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
