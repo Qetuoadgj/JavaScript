@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.09
+// @version      0.1.05.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -12,7 +12,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_addValueChangeListener
-// @grant		 unsafeWindow
+// @grant        unsafeWindow
 
 // @run-at       document-end
 
@@ -23,15 +23,15 @@
 
 /// @require      https://code.jquery.com/jquery-3.2.1.min.js
 
-// @match		 file:///*/2.0.*.html
+// @match        file:///*/2.0.*.html
 
-// @match		 *://www.eporner.com/hd-porn/*/*/
-// @match		 *://www.eporner.eu/hd-porn/*/*/
-// @match		 *://www.eporner.com/embed/*
-// @match		 *://www.eporner.eu/embed/*
+// @match        *://www.eporner.com/hd-porn/*/*/
+// @match        *://www.eporner.eu/hd-porn/*/*/
+// @match        *://www.eporner.com/embed/*
+// @match        *://www.eporner.eu/embed/*
 
-// @match		 *://www.vporn.com/*/*/*
-// @match		 *://www.vporn.com/embed/*
+// @match        *://www.vporn.com/*/*/*
+// @match        *://www.vporn.com/embed/*
 
 // @match        *://openload.co/f/*/*
 
@@ -49,65 +49,65 @@
 
 // @match        *://www.bitporno.com/embed/*
 
-// @match		 *://www.porntrex.com/video/*/*
+// @match        *://www.porntrex.com/video/*/*
 
-// @match		 *://drive.google.com/file/d/*/preview?*
+// @match        *://drive.google.com/file/d/*/preview?*
 
-// @match		 *://vidoza.net/embed-*
+// @match        *://vidoza.net/embed-*
 
-// @match		 *://streamango.com/embed/flsafofeeeqtaqqs
+// @match        *://streamango.com/embed/flsafofeeeqtaqqs
 
-// @match		 *://xfreehd.com/video/*/*
-// @match		 *://*.xfreehd.com/media/*.mp4
+// @match        *://xfreehd.com/video/*/*
+// @match        *://*.xfreehd.com/media/*.mp4
 
-// @match		 *://yespornplease.com/view/*
-// @match		 *://yespornplease.com/v/*
-// @match		 *://e.yespornplease.com/e/*
-// @match		 *://vshare.io/v/*
+// @match        *://yespornplease.com/view/*
+// @match        *://yespornplease.com/v/*
+// @match        *://e.yespornplease.com/e/*
+// @match        *://vshare.io/v/*
 
-// @match		 *://pornobranch.com/*/*/
-// @match		 *://www.pentasex.io/*
-// @match		 *://www.veporns.com/video/*
-// @match		 *://pornbeu.com/*/
+// @match        *://pornobranch.com/*/*/
+// @match        *://www.pentasex.io/*
+// @match        *://www.veporns.com/video/*
+// @match        *://pornbeu.com/*/
 
-// @match		 *://*.googlevideo.com/videoplayback?id=*
-// @match		 *://*.googleusercontent.com/*=*?c=WEB&cver=html5
+// @match        *://*.googlevideo.com/videoplayback?id=*
+// @match        *://*.googleusercontent.com/*=*?c=WEB&cver=html5
 
-// @match		 *://www.pornhub.com/embed/*
-// @match		 *://www.pornhub.com/view_video.php?viewkey=*
+// @match        *://www.pornhub.com/embed/*
+// @match        *://www.pornhub.com/view_video.php?viewkey=*
 
-// @match		 *://www.tube8.com/embed/*
-// @match		 *://www.tube8.com/*/*/*/
+// @match        *://www.tube8.com/embed/*
+// @match        *://www.tube8.com/*/*/*/
 
 // @match        *://xhamster.com/*
 
-// @match		 *://*/*.mp4
-// @match		 *://*/*.mp4*
+// @match        *://*/*.mp4
+// @match        *://*/*.mp4*
 
-// @match		 *://www.imagefap.com/pictures/*/*?*view=2
+// @match        *://www.imagefap.com/pictures/*/*?*view=2
 
-// @match		 *://pron.tv/*
+// @match        *://pron.tv/*
 
-// @match		 *://fuckingsession.com/*/
+// @match        *://fuckingsession.com/*/
 
 // @match        *://www.bitporno.sx/?v=*
 // @match        *://www.bitporno.com/?v=*
 
-// @match		 *://www.porntube.com/videos/*
-// @match		 *://www.porntube.com/embed/*
+// @match        *://www.porntube.com/videos/*
+// @match        *://www.porntube.com/embed/*
 
-// @match		 *://www.rapidvideo.com/e/*
-// @match		 *://www.rapidvideo.com/embed/*
+// @match        *://www.rapidvideo.com/e/*
+// @match        *://www.rapidvideo.com/embed/*
 
-// @match		 *://www.miscopy.com/?attachment_id=*
+// @match        *://www.miscopy.com/?attachment_id=*
 
-// @match		 *://javhihi.com/movie/*
+// @match        *://javhihi.com/movie/*
 /// @match        *://pornroom.org/*/
 
-// @match		 *://www.x-art.com/galleries/*
-// @match		 *://www.pornpics.com/*
-// @match		 *://www.sex.com/picture/*/
-// @match		 *://www.sex.com/pin/*/
+// @match        *://www.x-art.com/galleries/*
+// @match        *://www.pornpics.com/*
+// @match        *://www.sex.com/picture/*/
+// @match        *://www.sex.com/pin/*/
 // @match        *://danbooru.donmai.us/posts*
 // @match        *://konachan.com/post/show*
 // @match        *://luscious.net/c/hentai/pictures/*
@@ -115,21 +115,20 @@
 // @match        *://vipergirls.to/threads/*
 
 // @match        *://www.babesandstars.com/*/*/*/
-// @match		 *://www.jjgirls.com/pornpics/*
+// @match        *://www.jjgirls.com/pornpics/*
 
-// @match		 *://*/*.jpg
-// @match		 *://*/*.jpg*
+// @match        *://*/*.jpg
+// @match        *://*/*.jpg*
 
-// @exclude      *://vshare.io/404/*
-// @exclude      *://*/v/404/*
+// @exclude      *://vshare.io/v/404/*
 // ==/UserScript==
 
 (function () {
     'use strict';
     // console.clear();
     // if (document.body) {
-    // 	document.body.style.background = 'black';
-    // 	document.body.style.display = 'none';
+    //  document.body.style.background = 'black';
+    //  document.body.style.display = 'none';
     // }
     // DEFAULT GLOBAL VARIABLES
     // ====================================================================================================================
@@ -211,13 +210,13 @@
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
         var playerPath = 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html';
+        // alert(window.location.href + '\nisInstalled:' + isInstalled);
         if (
-            !isInstalled /*|| // https://www.eporner.com/embed/zHjfdCPcJ4d // https://www.eporner.com/v/404/https://s1-n10-nl-cdn.eporner.com/v9/828006b0967859654119768597e7e11b/5c58e09204f400/2215038-1080p.mp4
-            url.match('vshare.io') ||
-            url.match('eporner.com')*/
+            // !isInstalled /* ||
+            // url.match('eporner.com') || // https://www.eporner.com/embed/zHjfdCPcJ4d // https://www.eporner.com/v/404/https://s1-n10-nl-cdn.eporner.com/v9/828006b0967859654119768597e7e11b/5c58e09204f400/2215038-1080p.mp4
+            url.match('vshare.io')
         ) {
-            // alert(url);
-            playerPath = location.protocol + '//' + pageDomain + '/v/404/';
+           playerPath = location.protocol + '//' + pageDomain + '/v/404/';
             return playerPath + url;
         }
         return playerPath + '#' + url;
@@ -1412,9 +1411,7 @@
                     G_sampleURL = location.protocol + '//' + location.host + '/dload/' + vid + '/' + val + '/' + id + '-' + val + 'p.mp4'; // https://www.eporner.com/dload/DQ1fQ5H7Jkz/480/1101004-480p.mp4
                 }
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
-                //G_posters = CreateLinksList(G_posterURL, /^(https?:\/\/yespornplease.com\/images\/\d+\/.*\/\d+x\d+)_\d+.jpg/i, '$1_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_posters);
                 G_posters = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_posters);
-                // https://static-eu-cdn.eporner.com/thumbs/static4/2/22/221/2215038/6_240.jpg
                 G_stickTo = document.querySelector('#relateddiv');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
@@ -1781,12 +1778,12 @@
     }
 
     /*else if (
-		pageURL.matchLink('https?://*.googlevideo.com/videoplayback[?]id=*') // https://r15---sn-3c27sn7z.googlevideo.com/videoplayback?id=bb50038a8daac978&itag=18&source=picasa&begin=0&requiressl=yes&mm=30&mn=sn-3c27sn7z&ms=nxu&mv=m&nh=IgpwcjAxLmticDAzKgkxMjcuMC4wLjE&pl=20&sc=yes&ei=j7HqWfLcHMTmdMD0h-gH&mime=video/mp4&lmt=1500365434742379&mt=1508553023&ip=37.25.114.58&ipbits=8&expire=1508560303&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,nh,pl,sc,ei,mime,lmt&signature=344E8ACF80459A98F266D36CC83E44627C4711FB.AB9D367927C84B4328D8BE17466EA5D30ACD4B3B&key=ck2&c=WEB&cver=html5
-	) {
-		var contentURL = pageURL;
-		console.log('contentURL: ', contentURL);
-		openURL(refineVideo(contentURL));
-	}*/
+        pageURL.matchLink('https?://*.googlevideo.com/videoplayback[?]id=*') // https://r15---sn-3c27sn7z.googlevideo.com/videoplayback?id=bb50038a8daac978&itag=18&source=picasa&begin=0&requiressl=yes&mm=30&mn=sn-3c27sn7z&ms=nxu&mv=m&nh=IgpwcjAxLmticDAzKgkxMjcuMC4wLjE&pl=20&sc=yes&ei=j7HqWfLcHMTmdMD0h-gH&mime=video/mp4&lmt=1500365434742379&mt=1508553023&ip=37.25.114.58&ipbits=8&expire=1508560303&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,nh,pl,sc,ei,mime,lmt&signature=344E8ACF80459A98F266D36CC83E44627C4711FB.AB9D367927C84B4328D8BE17466EA5D30ACD4B3B&key=ck2&c=WEB&cver=html5
+    ) {
+        var contentURL = pageURL;
+        console.log('contentURL: ', contentURL);
+        openURL(refineVideo(contentURL));
+    }*/
 
     else if (
         pageURL.matchLink('https?://vidoza.net/embed-*') // https://vidoza.net/embed-gzp9id6hi29d.html
@@ -2363,18 +2360,18 @@
             }
         });
         /*
-		waitForElement('#pronwidgetcol32', null, function(){
-			document.querySelectorAll('div > a[href="#"] > img').forEach(thumbs, function(thumb, index) {
-				var link = thumb.parentNode;
-				if (link) {
-					var query = thumb.title || thumb.alt;
-					query = 'http://pron.tv/stream/search?q='+query+'&RandomHD=Random%20HD!';
-					link.href = query;
-					link.setAttribute('target', '_blank');
-				}
-			});
-		}, delay, tries, false);
-		*/
+        waitForElement('#pronwidgetcol32', null, function(){
+            document.querySelectorAll('div > a[href="#"] > img').forEach(thumbs, function(thumb, index) {
+                var link = thumb.parentNode;
+                if (link) {
+                    var query = thumb.title || thumb.alt;
+                    query = 'http://pron.tv/stream/search?q='+query+'&RandomHD=Random%20HD!';
+                    link.href = query;
+                    link.setAttribute('target', '_blank');
+                }
+            });
+        }, delay, tries, false);
+        */
         if (
             pageURL.matchLink('https?://pron.tv/l/*/*')
         ) {

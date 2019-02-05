@@ -13,7 +13,7 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/vshare.player.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        *://vshare.io/404/*
-// @match        *://*/v/404/*
+/// @match        *://*/v/404/*
 // ==/UserScript==
 
 (function() {
