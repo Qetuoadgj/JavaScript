@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.04
+// @version      0.0.05
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -12,7 +12,7 @@
 // @run-at       document-start
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/vshare.player.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
-// @match        *://vshare.io/404/*
+// @match        *://vshare.io/v/404/*
 /// @match        *://*/v/404/*
 // ==/UserScript==
 
@@ -73,9 +73,8 @@
     function initPlayer() {
         // console.clear();
 
-        var paramStart = '://vshare.io/404/'; // 'player.html#';
+        var paramStart = '://vshare.io/v/404/'; // 'player.html#';
         var pageDomain = window.location.host.replace(/.*\.(.*\..*)/, '$1');
-        // paramStart = location.protocol + '//' + pageDomain + '/v/404/';
         paramStart = pageDomain + '/v/404/';
 
         function shiftKeyIsDown() {return !!window.event.shiftKey;}
