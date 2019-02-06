@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.05.1
+// @version      0.1.07
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -170,6 +170,7 @@
         var autoplay = GM_getValue('autoplay', null);
         var t = GM_getValue('t', null);
         console.log('autoplay: ' + autoplay || 'false');
+        // alert('autoplay: ' + autoplay || 'false');
         /*
         if (autoplay) {
             url = url.split('?')[1] ? (url + '&autoplay=true') : (url + '?autoplay=true');
@@ -180,11 +181,11 @@
         var url_base = url.split('?')[1] ? url.split('?')[0] : url;
         var url_keys = url.split('?')[1] ? url.split('?')[1] : null;
         if (autoplay) {
-            if (url_keys) {
+          if (url_keys) {
                 if (!url_keys.match('&autoplay=true')) { url = url + '&autoplay=true'; }
             }
             else {
-                url = url + '?autoplay=true';
+                url = url + '?autoplay=true'; url_keys = url.replace(url_base, '');
             }
             GM_deleteValue('autoplay');
         }
@@ -201,11 +202,12 @@
                 if (!url_keys.match('&t=' + t)) { url = url + '&t=' + t; }
             }
             else {
-                url = url + '?t=' + t;
+                url = url + '?t=' + t; url_keys = url.replace(url_base, '');
             }
             GM_deleteValue('t');
         }
         // alert(url);
+        // alert(url_keys);
         GM_setValue('G_sampleURL', url);
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         // var playerPath = isInstalled ? 'chrome-extension://emnphkkblegpebimobpbekeedfgemhof/player.html' : 'D:/Google%20%D0%94%D0%B8%D1%81%D0%BA/HTML/Clean%20Media%20Page/player.html';
@@ -216,7 +218,7 @@
             // url.match('eporner.com') || // https://www.eporner.com/embed/zHjfdCPcJ4d // https://www.eporner.com/v/404/https://s1-n10-nl-cdn.eporner.com/v9/828006b0967859654119768597e7e11b/5c58e09204f400/2215038-1080p.mp4
             url.match('vshare.io')
         ) {
-           playerPath = location.protocol + '//' + pageDomain + '/v/404/';
+            playerPath = location.protocol + '//' + pageDomain + '/v/404/';
             return playerPath + url;
         }
         return playerPath + '#' + url;
@@ -900,6 +902,14 @@
     }
     // ====================================================================================================================
     if (
+        pageURL.matchLink('#ReCast')
+    ) {
+        GM_addValueChangeListener('videoURL', function(name, old_value, new_value, remote) {
+            window.close();
+        })
+        return
+    }
+    else if (
         pageURL.matchLink('file:///*/2.0.*.html')
     ) {
         GM_addValueChangeListener('videoURL', function(name, old_value, new_value, remote) {
@@ -1815,6 +1825,7 @@
                 G_contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
                 G_contentURL = document.querySelector('iframe').src;
                 G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
+                G_contentURL = pageURL + '#ReCast';
                 G_posterURL = (
                     document.querySelector('meta[name="thumbnail"]') ?
                     document.querySelector('meta[name="thumbnail"]').content :
@@ -1843,6 +1854,30 @@
     }
 
     else if (
+        pageURL.matchLink('https?://vshare.io/v/*/width-*/height-*/*')
+    ) {
+        // window.stop();
+        funcToTest = function () {
+            return document.querySelector('body video[src]');
+        };
+        funcToRun = function () {
+            var contentURL = document.querySelector('body video[src]').src;
+            console.log('contentURL: ', contentURL);
+            if (window.top === window.self) {
+                GM_setValue('videoURL', refineVideo(contentURL));
+                // openURL(refineVideo(contentURL));
+                window.close();
+            }
+            else {
+                GM_setValue('sampleURL', contentURL);
+                GM_setValue('videoURL', refineVideo(contentURL));
+                openURL(refineVideo(contentURL));
+            }
+        };
+        waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
+    }
+    /*
+    else if (
         pageURL.matchLink('https?://vshare.io/v/*') // http://vshare.io/v/e16edd7/width-867/height-491/1 || // http://yespornplease.com/e/984079251/width-882/height-496/autoplay-0/
     ) {
         funcToTest = function () {
@@ -1865,7 +1900,7 @@
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
     }
-
+    */
     else if (
         pageURL.matchLink('https?://pornobranch.com/') // http://pornobranch.com/latinasextapes-com-mofos-com-gina-valentina-sexting-latina-makes-house-call-05-06-2017-blowjob-brunette-cowgirl-deep-throat-doggystyle-facial-gagging-latina-missionary-outdoors-reve/39903/
     ) {
