@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.07
+// @version      0.1.08
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -907,7 +907,7 @@
         GM_addValueChangeListener('videoURL', function(name, old_value, new_value, remote) {
             window.close();
         })
-        return
+        // return
     }
     else if (
         pageURL.matchLink('file:///*/2.0.*.html')
@@ -2041,7 +2041,6 @@
                 }
             }
         };
-
         if (
             pageURL.match('#ReCast') || // https://www.pornhub.com/view_video.php?viewkey=ph5743d8915deb4#ReCast
             pageURL.matchLink('https?://www.pornhub.com/embed/*') // https://www.pornhub.com/embed/ph5743d8915deb4
