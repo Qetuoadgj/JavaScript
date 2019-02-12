@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.08
+// @version      0.1.09
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -181,7 +181,7 @@
         var url_base = url.split('?')[1] ? url.split('?')[0] : url;
         var url_keys = url.split('?')[1] ? url.split('?')[1] : null;
         if (autoplay) {
-          if (url_keys) {
+            if (url_keys) {
                 if (!url_keys.match('&autoplay=true')) { url = url + '&autoplay=true'; }
             }
             else {
@@ -236,6 +236,7 @@
     // ====================================================================================================================
     var funcToTest, funcToRun, delay = 50, tries = 100, timerGroup = [], funcResult,
         waitForCondition = function (funcToTest, funcToRun, delay, tries, timerGroup) {
+            funcResult = null;
             if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function') && (funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
                 // console.log('funcToTest: '+funcToTest.toString());
                 delay = delay || 1000; // defaults
@@ -253,16 +254,27 @@
                     var keepRun = tries ? (count <= tries) : true;
                     if (keepRun) {
                         var result = funcToTest();
-                        funcResult = result;
-                        console.log('iteration: ', count);
-                        if (result) { clearTimers(timerGroup); return funcToRun(); }
-                        else startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+                        funcResult = funcResult ? funcResult : result;
+                        // console.trace()
+                        if (result) {
+                            console.log('iteration [success]: ', count);
+                            clearTimers(timerGroup);
+                            return funcToRun();
+                        }
+                        else {
+                            console.log('iteration [keepRun]: ', count);
+                            startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
+                        }
+                    }
+                    else {
+                        // console.trace();
                     }
                 };
                 iteration(1); // 1st iteration
             }
         },
         waitForElement = function (elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
+            funcResult = null;
             var funcToTest = function () {
                 console.log('elementSelector: ' + elementSelector + ', attribute: ' + attribute);
                 var result, elementsArray = document.querySelectorAll(elementSelector);
@@ -274,6 +286,10 @@
                         funcResult = element;
                         break;
                     }
+                }
+                // alert(funcResult+"\n"+URL_MATCHED+"\nresult: "+ result);
+                if (!result) {
+                    // console.trace();
                 }
                 return result;
             };
@@ -1625,6 +1641,7 @@
     else if (
         pageURL.matchLink('https?://yourporn.sexy/*')
     ) {
+        G_noVideoSource = true;
         if (pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             window.stop();
             funcToTest = function () {
@@ -1650,9 +1667,10 @@
                 G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 G_stickTo = document.querySelector('div.comments_area');
                 G_stickPosition = 'before';
-                embedCode(funcToRun);
-                getVideoData(funcResult, function () { embedCode(funcToRun); });
-                //
+                G_sampleURL = funcResult.src; // 1.
+                // alert(G_sampleURL);
+                embedCode(funcToRun); // 2.
+                getVideoData(G_sampleURL, function () { embedCode(G_sampleURL); });
                 setTimeout(function(){
                     var eventCatcher = document.querySelector('video'),
                         media = document.querySelector('video');
@@ -1661,8 +1679,9 @@
                     }
                 }, 1000);
             };
-            waitForElement('video > source[src], video[src]', 'src', funcToRun, delay, tries, timerGroup);
+            waitForElement('video[src]', 'src', funcToRun, delay, tries, timerGroup);
         }
+        return;
     }
 
     else if (
