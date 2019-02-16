@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.09
+// @version      0.1.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -23,7 +23,7 @@
 
 /// @require      https://code.jquery.com/jquery-3.2.1.min.js
 
-// @match        file:///*/2.0.*.html
+// @match        file:///*/2.*.*.html
 
 // @match        *://www.eporner.com/hd-porn/*/*/
 // @match        *://www.eporner.eu/hd-porn/*/*/
@@ -926,7 +926,7 @@
         // return
     }
     else if (
-        pageURL.matchLink('file:///*/2.0.*.html')
+        pageURL.matchLink('file:///*/2.*.*.html')
     ) {
         GM_addValueChangeListener('videoURL', function(name, old_value, new_value, remote) {
             if (new_value && new_value != "") {
@@ -1601,7 +1601,8 @@
         pageURL.matchLink('https?://oload.tv/embed/*') || // https://oload.tv/embed/9RPKFjnnBCw/33628.mp4
         pageURL.matchLink('https?://oload.info/embed/*') || // https://oload.info/embed/GkrmWmRxsGM/
         pageURL.matchLink('https?://oload.stream/embed/*') || // https://oload.stream/embed/_5lSwGYiAMc/
-        pageURL.matchLink('https?://oload.xyz/embed/*') // https://oload.xyz/embed/kuar1R4lKQw/
+        pageURL.matchLink('https?://oload.xyz/embed/*') || // https://oload.xyz/embed/kuar1R4lKQw/
+        pageURL.matchLink('https?://oload.download/embed/*') // https://oload.download/embed/MXmOoScjRCs/45275.mp4
     ) {
         var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
         funcToTest = function () {
@@ -2609,6 +2610,6 @@
     if (!G_noVideoSource) getVideoSources();
     // ====================================================================================================================
 
-    URL_MATCHED = URL_MATCHED ? URL_MATCHED : 'URL_MATCHED: false';
+    URL_MATCHED = URL_MATCHED ? URL_MATCHED : "URL_MATCHED: Can't find any match !";
     console.log(URL_MATCHED);
 })();
