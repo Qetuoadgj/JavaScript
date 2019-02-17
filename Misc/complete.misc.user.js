@@ -876,6 +876,32 @@
             else {
                 embedCodePoster.attachEvent("onmousewheel", mouseWheelImageHandler); // IE 6/7/8
             }
+            var embedCodeThumbnailsFrameId = 'embedCodeThumbnailsFrame';
+            var embedCodeThumbnailsFrame = document.getElementById(embedCodeThumbnailsFrameId);
+            if (embedCodeThumbnailsFrame) embedCodeThumbnailsFrame.remove();
+            embedCodeThumbnailsFrame = parentDocument.createElement('div');
+            embedCodeThumbnailsFrame.setAttribute('id', embedCodeThumbnailsFrameId);
+            embedCodeThumbnailsFrame.style.setProperty('display', 'block', 'important');
+            embedCodeThumbnailsFrame.style['word-wrap'] = 'break-word';
+            embedCodeThumbnailsFrame.appendElement(embedCodeFrame, 'after');
+            // G_embedCodeThumbnailsFrame = embedCodeFrame;
+            function updatePoster(e) {
+                var img = e.target;
+                G_posterURL = img.getAttribute('src');
+                updateEmbedCodeText(1);
+                embedCodeTextArea.value = G_embedCodeText;
+                embedCodePoster.setAttribute('src', G_posterURL);
+                // console.log('G_posterURL = ' + G_posterURL);
+            }
+            for (var poster_url of posters) {
+                var embedCodeThumbnail = parentDocument.createElement('img');
+                embedCodeThumbnail.setAttribute('style', embedCodePoster.getAttribute('style'));
+                embedCodeThumbnail.style.zoom = 0.5;
+                embedCodeThumbnail.setAttribute('src', poster_url);
+                embedCodeThumbnail.setAttribute('onerror', 'this.remove();');
+                embedCodeFrame.appendChild(embedCodeThumbnail);
+                embedCodeThumbnail.addEventListener('click', updatePoster.bind(this), false);
+            }
         }
 
         var testVideo = () => {
@@ -1845,7 +1871,7 @@
                 G_contentURL = document.querySelector('#video_embed_code').value.match(/.*src="(.*?)".*/i)[1];
                 G_contentURL = document.querySelector('iframe').src;
                 G_contentURL = G_contentURL.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
-                G_contentURL = pageURL + '#ReCast';
+                // G_contentURL = pageURL + '#ReCast';
                 G_posterURL = (
                     document.querySelector('meta[name="thumbnail"]') ?
                     document.querySelector('meta[name="thumbnail"]').content :
