@@ -1695,9 +1695,9 @@
                 G_stickTo = document.querySelector('div.comments_area');
                 G_stickPosition = 'before';
                 G_sampleURL = funcResult.src; // 1.
-                alert(G_sampleURL);
-                getVideoData(funcResult, function () { embedCode(funcToRun); });
-                alert(funcResult);
+                //alert(G_sampleURL);
+                getVideoData(funcResult, function() {embedCode(funcToRun);});
+                //alert(funcResult);
                 // embedCode(funcToRun); // 2.
                 setTimeout(function(){
                     var eventCatcher = document.querySelector('video'),
