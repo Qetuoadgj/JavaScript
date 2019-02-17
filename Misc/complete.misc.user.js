@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.12
+// @version      0.1.13
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -1805,7 +1805,12 @@
             funcToRun = function () {
                 G_contentTitle = document.title;
                 G_contentURL = shortURL + '#OnlyVideo';
-                G_posterURL = getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+                var thumb = document.querySelector('.block-screenshots > a > img.thumb[src]');
+                if (thumb) {
+                    G_posters = CreateLinksList(thumb.src, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, 15); console.log('G_posters:\n', G_posters);
+                    G_posterURL = G_posters[1];
+                }
+                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 G_stickTo = document.querySelector('div.video-info');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
