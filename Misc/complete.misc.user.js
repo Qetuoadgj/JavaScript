@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         complete.misc
 // @icon         https://www.google.com/s2/favicons?domain=openload.co
-// @version      0.1.13
+// @version      0.1.14
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -1722,16 +1722,30 @@
         funcToRun = function () {
             var contentURL = document.querySelector('body video[src]').src;
             contentURL = document.querySelector('.videoplayer_dl_select ._item').href; // 1080p, 720p ...
-            console.log('contentURL: ', contentURL);
-            if (window.top === window.self) {
-                GM_setValue('videoURL', refineVideo(contentURL));
-                // openURL(refineVideo(contentURL));
-                window.close();
+            var returnResult = () => {
+                console.log('contentURL: ', contentURL);
+                if (window.top === window.self) {
+                    GM_setValue('videoURL', refineVideo(contentURL));
+                    // openURL(refineVideo(contentURL));
+                    window.close();
+                }
+                else {
+                    // alert(contentURL);
+                    GM_setValue('sampleURL', contentURL);
+                    openURL(refineVideo(contentURL));
+                    // openURL(contentURL);
+                }
+            }
+            if (contentURL == "") {
+                document.querySelector('.videoplayer_dl_select ._item').click();
+                contentURL = document.querySelector('body video[src]').getAttribute('src');
+                document.querySelector('body video[src]').onloadstart = function() {
+                    // alert("Starting to load video");
+                    returnResult();
+                };
             }
             else {
-                GM_setValue('sampleURL', contentURL);
-                openURL(refineVideo(contentURL));
-                // openURL(contentURL);
+                returnResult();
             }
         };
         waitForCondition(funcToTest, funcToRun, delay, tries, timerGroup);
@@ -2131,8 +2145,10 @@
                 G_sampleURL = actualSource();
                 if (G_sampleURL) GM_deleteValue('G_sampleURL');
                 G_contentTitle = document.title;
-                G_contentURL = pageURL + '#ReCast'; //document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#ReCast';
+                G_contentURL = document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#ReCast';
+                // G_contentURL = pageURL + '#ReCast';
                 G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
+                G_posters = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_posters);
                 G_stickTo = document.querySelector('.video-actions-container');
                 G_stickPosition = 'before';
                 embedCode(funcToRun);
