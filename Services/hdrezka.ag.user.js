@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.5
+// @version      1.0.6
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @run-at       document-end
 // @noframes
-// @match        *://hdrezka.ag/films/*/*.html
-// @match        *://hdrezka.ag/series/*/*.html
-// @match        *://hdrezka.me/films/*/*.html
-// @match        *://hdrezka.me/series/*/*.html
+// @match        *://hdrezka.ag/films/*.html
+// @match        *://hdrezka.ag/series/*.html
+// @match        *://hdrezka.me/films/*.html
+// @match        *://hdrezka.me/series/*.html
 // @grant        none
 // ==/UserScript==
 
