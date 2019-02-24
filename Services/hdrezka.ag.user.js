@@ -1,11 +1,15 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
 // @run-at       document-end
 // @noframes
 // @match        *://hdrezka.ag/films/*.html
@@ -13,10 +17,6 @@
 // @match        *://hdrezka.me/films/*.html
 // @match        *://hdrezka.me/series/*.html
 //// @grant        none
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_deleteValue
-// @grant        GM_registerMenuCommand
 // ==/UserScript==
 
 /* uBlock Filter:
@@ -38,6 +38,8 @@ hdrezka.*##.b-post__mixedtext
     // Your code here...
     var nightModeEnable = GM_getValue('nightModeEnable', 1);
     var autoScaleEnable = GM_getValue('autoScaleEnable', 1);
+    var videoScale = GM_getValue('videoScale', 1);
+    var ignoreResize = 0;
 
     function addGlobalStyle(css, cssClass) {
         var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
@@ -56,10 +58,11 @@ hdrezka.*##.b-post__mixedtext
     function scalePlayer(scale) {
         var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
         style = addGlobalStyle("#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}\nbody.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}", "zoomMode");
+        GM_setValue('videoScale', scale);
     }
     // scalePlayer(scale);
     function toggleAutoScale() {
-        autoScaleEnable = !autoScaleEnable;
+        if (ignoreResize) return;
         if (autoScaleEnable) {
             playerElement = document.querySelector('#videoplayer');
             playerWidth = playerElement ? playerElement.clientWidth : 640;
@@ -68,13 +71,16 @@ hdrezka.*##.b-post__mixedtext
             minScale = 1;
             maxScale = initScale; // 2.5;
             scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
+            autoScaleEnable = 1;
         }
         else {
             scale = 1;
+            autoScaleEnable = 0;
         }
         scalePlayer(scale);
         GM_setValue('autoScaleEnable', autoScaleEnable);
     }
+    toggleAutoScale();
     //
     function toggleNightMode(force) {
         var css = "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}" +
@@ -118,12 +124,14 @@ hdrezka.*##.b-post__mixedtext
         if (code) e.keyCode = code;
         if (!(targetType == 'input' || targetType == 'textarea')) {
             if (shiftDown && e.keyCode == KEY_UP_ARROW) {
+                ignoreResize = 1;
                 scale += 0.1;
                 scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
                 e.preventDefault();
             }
             else if (shiftDown && e.keyCode == KEY_DOWN_ARROW) {
+                ignoreResize = 1;
                 scale -= 0.1;
                 scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
@@ -144,6 +152,8 @@ hdrezka.*##.b-post__mixedtext
                 scale = Math.min(Math.max(minScale, scale), maxScale);
                 scalePlayer(scale);
                 */
+                ignoreResize = 0;
+                autoScaleEnable = !autoScaleEnable;
                 toggleAutoScale();
                 e.preventDefault();
             }
@@ -153,5 +163,24 @@ hdrezka.*##.b-post__mixedtext
     window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
 
     GM_registerMenuCommand('Night Mode', toggleNightMode, "");
-    GM_registerMenuCommand('Auto Scale', toggleAutoScale, "");
+    GM_registerMenuCommand('Auto Scale', function() {
+        ignoreResize = 0;
+        autoScaleEnable = !autoScaleEnable;
+        toggleAutoScale();
+    }, "");
+
+    var addEvent = function(object, type, callback) {
+        if (object == null || typeof(object) == 'undefined') return;
+        if (object.addEventListener) {
+            object.addEventListener(type, callback, false);
+        } else if (object.attachEvent) {
+            object.attachEvent("on" + type, callback);
+        } else {
+            object["on"+type] = callback;
+        }
+    };
+
+    addEvent(window, "resize", function(event) {
+        toggleAutoScale();
+    });
 })();
