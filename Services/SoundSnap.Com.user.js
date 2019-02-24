@@ -47,6 +47,9 @@
                         if (keepClassNames.includes(className)) continue;
                         button.classList.remove(className);
                     }
+                    button.style.color = 'black';
+                    button.setAttribute('onmouseover', 'this.style.color="white";');
+                    button.setAttribute('onmouseout', 'this.style.color="black";');
                     clearAllEventListeners(button);
                 }
                 // console.log(parent);
