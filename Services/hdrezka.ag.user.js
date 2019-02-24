@@ -41,24 +41,6 @@ hdrezka.*##.b-post__mixedtext
     var videoScale = GM_getValue('videoScale', 1);
     var ignoreResize = 0;
 
-    GM_registerMenuCommand('Night Mode', toggleNightMode, "");
-    GM_registerMenuCommand('Auto Scale', function() {
-        ignoreResize = 0;
-        autoScaleEnable = !autoScaleEnable;
-        toggleAutoScale();
-    }, "");
-
-    var addEvent = function(object, type, callback) {
-        if (object == null || typeof(object) == 'undefined') return;
-        if (object.addEventListener) {
-            object.addEventListener(type, callback, false);
-        } else if (object.attachEvent) {
-            object.attachEvent("on" + type, callback);
-        } else {
-            object["on"+type] = callback;
-        }
-    };
-
     function addGlobalStyle(css, cssClass) {
         var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
         var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
@@ -179,6 +161,26 @@ hdrezka.*##.b-post__mixedtext
     }
 
     window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+
+    setTimeout(function() {
+        GM_registerMenuCommand('Night Mode', toggleNightMode, "");
+        GM_registerMenuCommand('Auto Scale', function() {
+            ignoreResize = 0;
+            autoScaleEnable = !autoScaleEnable;
+            toggleAutoScale();
+        }, "");
+    }, 1000);
+
+    var addEvent = function(object, type, callback) {
+        if (object == null || typeof(object) == 'undefined') return;
+        if (object.addEventListener) {
+            object.addEventListener(type, callback, false);
+        } else if (object.attachEvent) {
+            object.attachEvent("on" + type, callback);
+        } else {
+            object["on"+type] = callback;
+        }
+    };
 
     addEvent(window, "resize", function(event) {
         toggleAutoScale();
