@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nexusmods.com
 // @icon         https://www.google.com/s2/favicons?domain=nexusmods.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/nexusmods.com.user.js
@@ -10,6 +10,9 @@
 // @noframes
 // @match        *://www.nexusmods.com/?id=*
 // @match        *://www.nexusmods.com/*/mods/*
+// @match        *://oblivion.nexusmods.com/mods/*
+// @match        *://skyrim.nexusmods.com/mods/*
+// @match        *://*.nexusmods.com/mods/*
 // ==/UserScript==
 
 (function() {
@@ -22,15 +25,25 @@
         var pageHost = location.hostname,
             pageURL = location.href,
             pageTitle = document.title,
-            shortURL = (location.protocol + '//' + location.host + location.pathname).trim();
-        var mod = location.href.match(/id=(\d+)/i);
+            shortURL = (location.protocol + '//' + location.host + location.pathname).trim()
+        ;
+        var base = location.protocol + '//www.nexusmods.com',
+            game = 'oblivion',
+            mod = null
+        ;
+        if (pageURL.match(/https?:\/\/.*\.nexusmods\.com\/mods\//i)) {
+            mod = location.href.match(/mods\/(\d+)/i);
+            game = location.href.match(/:\/\/(.*?)\.nexusmods.com/i)[1];
+        }
+        else {
+            mod = location.href.match(/id=(\d+)/i);
+        }
         if (mod) {
             var mod_id = mod[1];
-            var new_url = location.protocol + '//www.nexusmods.com/oblivion/mods/' + mod_id;
+            var new_url = base + '/' + game + '/mods/' + mod_id;
             location.href = new_url;
             return
         }
-
     }, 100);
 
     // Links Fix
