@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -16,6 +16,9 @@
 // @match        *://hdrezka.ag/series/*.html
 // @match        *://hdrezka.me/films/*.html
 // @match        *://hdrezka.me/series/*.html
+//
+// @match        *://hdrezka.ag/*/*.html
+// @match        *://hdrezka.me/*/*.html
 //// @grant        none
 // ==/UserScript==
 
