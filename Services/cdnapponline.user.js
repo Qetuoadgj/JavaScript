@@ -12,6 +12,9 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
+// Require chrome extension:
+// https://chrome.google.com/webstore/detail/native-hls-playback/emnphkkblegpebimobpbekeedfgemhof
+
 (function() {
     'use strict';
 
