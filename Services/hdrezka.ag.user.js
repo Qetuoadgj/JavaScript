@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.8
+// @version      1.0.9
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -19,16 +19,19 @@
 //
 // @match        *://hdrezka.ag/*/*.html
 // @match        *://hdrezka.me/*/*.html
+//
+// @match        *://rezka.ag/*/*.html
+// @match        *://rezka.me/*/*.html
 //// @grant        none
 // ==/UserScript==
 
 /* uBlock Filter:
 ! 23.10.2018, 18:28:40 http://hdrezka.ag/films/foreign/3040-kabelschik.html
-hdrezka.*###send-video-issue
-hdrezka.*##.b-post__social_holder
-hdrezka.*##.b-post__support_holder
-hdrezka.*##.b-post__lastepisodeout
-hdrezka.*##.b-post__mixedtext
+*rezka*.*###send-video-issue
+*rezka*.*##.b-post__social_holder
+*rezka*.*##.b-post__support_holder
+*rezka*.*##.b-post__lastepisodeout
+*rezka*.*##.b-post__mixedtext
 
 ! 10.11.2018, 5:53:35 hdrezka.ag
 ||fs*.fex.net/get/*$media,important
