@@ -15,23 +15,23 @@
 (function() {
     'use strict';
     // Your code here...
-    localStorage.classindex = "2";
-    localStorage.consent = "1";
-    localStorage.krk_record = "false";
-    localStorage.kro_setngss_aimSensitivity = "1.9";
-    localStorage.kro_setngss_ambientShading = "false";
-    localStorage.kro_setngss_canLoadMods = "false";
-    localStorage.kro_setngss_crosshairColor = "#ff8000";
-    localStorage.kro_setngss_fov = "95";
-    localStorage.kro_setngss_fpsFOV = "95";
-    localStorage.kro_setngss_muzzleFlash = "false";
-    localStorage.kro_setngss_particles = "false";
-    localStorage.kro_setngss_resolution = "1";
-    localStorage.kro_setngss_sensitivity = "1.7";
-    localStorage.kro_setngss_sound = "0.3";
-    localStorage.kro_setngss_weaponBob = "0";
-    localStorage.krunker_streamMode = "false";
-    localStorage.sprayindex = "12";
+    localStorage.classindex = localStorage.classindex || "2";
+    localStorage.consent = localStorage.consent || "1";
+    localStorage.krk_record = localStorage.krk_record || "false";
+    localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || "1.6";
+    localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || "false";
+    localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || "false";
+    localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ff8000";
+    localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || "95";
+    localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || "95";
+    localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || "false";
+    localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || "false";
+    localStorage.kro_setngss_resolution = localStorage.kro_setngss_resolution || "1";
+    localStorage.kro_setngss_sensitivity = localStorage.kro_setngss_sensitivity || "1.7";
+    localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || "0.3";
+    localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || "0";
+    localStorage.krunker_streamMode = localStorage.krunker_streamMode || "false";
+    localStorage.sprayindex = localStorage.sprayindex || "12";
     //
     document.addEventListener('DOMContentLoaded', function(){
         var parentElement = 0; parentElement = document.querySelector('.icon[role=presentation]');
@@ -74,6 +74,9 @@
         dotFill = 0;
         globalOpacity = 1 ; //* 0.75;
         shade = 1; // * 0;
+        //
+        lineColor = localStorage.kro_setngss_crosshairColor;
+        dotColor = localStorage.kro_setngss_crosshairColor;
         //
         cicleMark = [0.50 + cicleMarkGap / 2, 2.50 - cicleMarkGap / 2];
         // Your code here...
