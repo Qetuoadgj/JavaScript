@@ -75,6 +75,9 @@
         globalOpacity = 1 ; //* 0.75;
         shade = 1; // * 0;
         //
+        var mode = 1;
+        showCicleMark = 1;
+        //
         lineColor = localStorage.kro_setngss_crosshairColor;
         dotColor = localStorage.kro_setngss_crosshairColor;
         //
@@ -119,7 +122,20 @@
             context.stroke();
             context.globalAlpha = 1.0;
         }
-
+        //
+        function drawChevron(context, x, y, radius, angleStart, angleEnd, lineColor, lineWidth, fill, fillColor, opacity) {
+            context.globalAlpha = opacity;
+            context.beginPath();
+            context.moveTo(x-radius/(2*Math.sqrt(2)), y+radius/2);
+            context.lineTo(x, y);
+            context.moveTo(x+radius/(2*Math.sqrt(2)), y+radius/2);
+            context.lineTo(x, y);
+            context.lineWidth = lineWidth;
+            context.strokeStyle = lineColor;
+            context.stroke();
+            context.globalAlpha = 1.0;
+        }
+        //
         function drawCanvas(canvas, parentElement) {
             // Get context
             var context = canvas.getContext('2d');
@@ -137,6 +153,13 @@
             // drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, dotColor, lineWidth, 0, dotColor, dotOpacity);
             if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 2.0, 0, "Red", dotOpacity * 0.5);
             drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
+            if (mode == 1) {
+                var offsetY = 4;
+                radius = scaleValue * 0.50 * 2 * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
+                if (shade) drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 2.0, 0, "Red", dotOpacity * 0.5);
+                drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
+                showCicleMark = 0;
+            }
             if (showCicleMark) {
                 radius = scaleValue * 0.50 * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
                 if (shade) drawArc(context, x, y, radius, cicleMark[0] * Math.PI, cicleMark[1] * Math.PI, "Red", lineWidth * 2.5, 0, "Red", dotOpacity * 0.5);
