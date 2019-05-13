@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.0
+// @version      1.0.1
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -36,8 +36,8 @@
     document.addEventListener('DOMContentLoaded', function(){
         var parentElement = 0; parentElement = document.querySelector('.icon[role=presentation]');
         parentElement = document.querySelector('#gameContainer > canvas');
-        var scale_radius = 1;
-        var scale_thickness = 1;
+        var scale_radius = 1.0; //0.6;
+        var scale_thickness = 1.1;
         //
         var showCanvas = true;
         //
@@ -70,12 +70,12 @@
         lineWidth = 1.5 * scale_thickness;
         lineColor = "Orange";
         dotColor = "Orange";
-        dotRadiusPX = 1.0 + lineWidth / 2 * 1 * 4;
+        dotRadiusPX = 1.0 + lineWidth / 2 * 1 * 3;
         dotFill = 0;
         globalOpacity = 1 ; //* 0.75;
         shade = 1; // * 0;
         //
-        var mode = 1;
+        var mode = 0;
         showCicleMark = 1;
         //
         lineColor = localStorage.kro_setngss_crosshairColor;
@@ -155,7 +155,7 @@
             drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
             if (mode == 1) {
                 var offsetY = 4;
-                radius = scaleValue * 0.50 * 2 * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
+                radius = scaleValue * 0.50 * 2; // * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
                 if (shade) drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 2.0, 0, "Red", dotOpacity * 0.5);
                 drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
                 showCicleMark = 0;
