@@ -56,12 +56,18 @@
         if (cssClass) style.setAttribute('class', cssClass);
         head.appendChild(style);
     }
+    function scaleToElement(element, defaultWidth = 640, defaultHeight = 360) {
+        var elementWidth = element ? element.clientWidth : defaultWidth;
+        var elementHeight = element ? element.clientHeight : defaultHeight;
+        var ratio = 1; //elementWidth / elementHeight;
+        return Math.min((window.innerWidth - (20 + 4)*ratio) / elementWidth, (window.innerHeight - (20 + 4)) / elementHeight);
+    }
     // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
     var playerElement = document.querySelector('#videoplayer');
     var playerWidth = playerElement ? playerElement.clientWidth : 640;
     var playerHeight = playerElement ? playerElement.clientHeight : 360;
     // initScale = 2.0 * window.innerWidth/(1200 + 50);
-    var initScale = Math.min((window.innerWidth - 20*2 - 16) / playerWidth, (window.innerHeight - 10*2 - 8) / playerHeight);
+    var initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
     var minScale = 1, maxScale = initScale; // 2.5;
     var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
     function scalePlayer(scale) {
@@ -76,7 +82,7 @@
             playerElement = document.querySelector('#videoplayer');
             playerWidth = playerElement ? playerElement.clientWidth : 640;
             playerHeight = playerElement ? playerElement.clientHeight : 360;
-            initScale = Math.min((window.innerWidth - 20*2 - 16) / playerWidth, (window.innerHeight - 10*2 - 8) / playerHeight);
+            initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
             minScale = 1;
             maxScale = initScale; // 2.5;
             scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
@@ -261,7 +267,7 @@
                 ;
                 if (player_window) {
                     player_window.scrollIntoView();
-                    window.scrollBy(0, -8/2);
+                    window.scrollBy(0, -1);
                 }
                 e.preventDefault();
             }
