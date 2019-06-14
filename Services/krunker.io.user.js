@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.2
+// @version      1.0.3
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -157,7 +157,7 @@
         // if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 1, 0, "Red", dotOpacity * 0.5);
         // drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, dotColor, lineWidth, 0, dotColor, dotOpacity);
         if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, localStorage.color, lineWidth * 2.0, 0, "Red", dotOpacity * 0.5);
-        drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "White" /*lineColor*/, lineWidth, 0, lineColor, dotOpacity);
+        drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*"White"*/ lineColor, lineWidth, 0, lineColor, dotOpacity);
         if (mode == 1) {
             var offsetY = 4;
             radius = scaleValue * 0.50 * 2; // * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
