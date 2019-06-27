@@ -21,7 +21,7 @@
     localStorage.krk_record = localStorage.krk_record || "false";
     localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || "1.6";
     localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || "false";
-    localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || "false";
+    localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || "true";
     localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#00ff00";
     localStorage.kro_setngss_crosshairShadow = "#000000"; // "#ff0000";
     localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || "95";
@@ -30,7 +30,7 @@
     localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || "false";
     localStorage.kro_setngss_resolution = localStorage.kro_setngss_resolution || "1";
     localStorage.kro_setngss_sensitivity = localStorage.kro_setngss_sensitivity || "1.6";
-    localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || "0.3";
+    localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || "0.5";
     localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || "1";
     localStorage.krunker_streamMode = localStorage.krunker_streamMode || "false";
     localStorage.sprayindex = localStorage.sprayindex || "12";
@@ -86,6 +86,9 @@
     //
     lineColor = "#00ff00";
     dotColor = "#00ff00";
+    //
+    lineColor = "#FFffaa";
+    dotColor = "#ff2222";
     //
     cicleMark = [0.50 + cicleMarkGap / 2, 2.50 - cicleMarkGap / 2];
     // Your code here...
@@ -160,7 +163,7 @@
         // if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 1, 0, "Red", dotOpacity * 0.5);
         // drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, dotColor, lineWidth, 0, dotColor, dotOpacity);
         if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, localStorage.color, lineWidth * 2.0, 0, "Red", dotOpacity * 0.5);
-        drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*"White"*/ lineColor, lineWidth, 0, lineColor, dotOpacity);
+        drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*"White"*/ dotColor, lineWidth, 0, lineColor, dotOpacity);
         if (mode == 1) {
             var offsetY = 4;
             radius = scaleValue * 0.50 * 2; // * 2; // - o.lineWidth/2; // 10 * 1.5; //o.dotRadiusPX - o.lineWidth/2;
@@ -316,5 +319,15 @@
     }
     //
     if (showCanvas) {drawCanvas(canvas, parentElement); showCanvas = !showCanvas;}
+    // LOAD MODS
+    setTimeout(function() {
+        var canLoad = function() {
+            let ui = document.querySelector('#inGameUI');
+            return (ui && ui.style.display !== 'none');
+        };
+        if (canLoad() && localStorage.kro_setngss_canLoadMods == 'true') {
+            window.loadUserMod("RUST_SOUNDS","https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1","2624"); // RUST SOUNDS
+        };
+    }, 2500);
     // });
 })();
