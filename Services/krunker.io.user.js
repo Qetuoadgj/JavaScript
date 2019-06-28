@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.4
+// @version      1.0.5
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
