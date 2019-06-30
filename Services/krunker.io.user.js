@@ -203,13 +203,13 @@
             showCanvasBorders = false; // true;
             lineWidth = 1.50 * markThicknessMult;
             globalOpacity = 1.00;
-            lineColor = "#ffffaa";
+            lineColor = "rgb(127, 255, 127)"; // "rgb(255, 255, 170)";
             scaleValue = 24 * markScaleMult;
             showCicleMark = true;
             cicleMarkGap = 0.40;
             showDot = true;
             dotRadiusPX = 1.00 + lineWidth*1.50; // - 1.50;
-            dotColor = lineColor; // "#ff6000"; // "#ffff00";
+            dotColor = "rgb(255, 255, 127)"; // "#ff6000"; // "#ffff00";
             dotOpacity = 1.00;
             dotFill = false;
             shade = true;
@@ -286,7 +286,7 @@
                 showDot = true;
             };
             if (showDot) {
-                if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, localStorage.color, lineWidth * 2.0 + 1, 0, "Red", dotOpacity * 0.5);
+                if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red" /*localStorage.color*/, lineWidth * 2.0 + 1, 0, "Red", dotOpacity * 0.5);
                 drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*"White"*/ dotColor, lineWidth, 0, lineColor, dotOpacity);
             };
             if (showCicleMark) {
