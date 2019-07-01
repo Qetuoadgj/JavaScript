@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.02
+// @version      2.0.03
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -33,6 +33,8 @@
 // @match        *://www.jjgirls.com/pornpics/*
 // @match        *://www.babesandstars.com/*/*/*/
 // @match        *://www.definebabe.com/gallery/*
+// @match        *://hqporner.com/hdporn/*.html
+// @match        *://mydaddy.cc/video/*
 // ==/UserScript==
 
 (function() {
@@ -646,7 +648,7 @@
     // ================================================================================
     var G_noPlayerExtension = false, G_standartReCastFunc = function() {
         var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
-        if (!contentURL.match(/^http/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
+        if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         console.log('contentURL: ', contentURL);
         G_funcToTest = function() {
             if (window.top === window.self) {
@@ -1220,6 +1222,80 @@
             }
             // });
         }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://hqporner.com')
+    ) {
+        if (
+            G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
+        ) {
+            G_funcToRun = function() {
+                // --------------------------------------------------------------------------------
+                G_contentURL = document.querySelector('iframe').src;
+                G_posterURL = (
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]') ?
+                    document.querySelector('meta[property="og:image"]').content
+                    : ''
+                );
+                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
+                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
+                console.log(G_posterURL);
+                // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                G_queryURL = document.querySelector('iframe').src;
+                G_standartAddEmbedCodeFunc();
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('iframe', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https://mydaddy.cc/video/*/')
+    ) {
+        // G_noPlayerExtension = true;
+        let regExp = /file:."(.*?\/(\d+)\.mp4)"/gi, matchedScriptText;
+        let getMatchedScriptText = function(regExp) {
+            for (let script of document.scripts) {
+                let text = script.text;
+                if (text.match(regExp)) {
+                    return(text);
+                };
+            };
+        };
+        G_funcToTest = function() {
+            matchedScriptText = getMatchedScriptText(regExp);
+            return matchedScriptText;
+        };
+        G_funcToRun = function() {
+            // --------------------------------------------------------------------------------
+            let data = {}, result; while((result = regExp.exec(matchedScriptText)) !== null) {
+                let url = result[1].trim();
+                let quality = Math.floor(result[2].trim());
+                data[quality] = url;
+                // console.log('url:', url);
+                // console.log('quality:', quality);
+            };
+            console.log('data:', data);
+            let compare = 0; for (let quality of Object.keys(data)) {
+                if (quality > compare) {
+                    G_contentURL = location.protocol + data[quality];
+                    console.log('url:', G_contentURL);
+                    console.log('quality:', quality);
+                };
+            };
+            console.log('G_contentURL:', G_contentURL);
+            // return;
+            // --------------------------------------------------------------------------------
+            G_standartReCastFunc();
+        };
+        // waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
     }
 
     // ================================================================================
