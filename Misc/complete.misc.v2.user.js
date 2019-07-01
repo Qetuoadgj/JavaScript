@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.01
+// @version      2.0.02
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -22,6 +22,7 @@
 // @match        *://vshare.io/v/*
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
+// @match        *://sxyprn.com/post/*.html*
 // @match        *://*.pornhub.com/view_video.php?viewkey=*
 // @match        *://www.pornhub.com/embed/*
 // @match        *://www.playvids.com/*/*
