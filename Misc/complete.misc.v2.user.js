@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.03
+// @version      2.0.04
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -646,7 +646,7 @@
         }
     }
     // ================================================================================
-    var G_noPlayerExtension = false, G_standartReCastFunc = function() {
+    var G_noPlayerExtension = false, G_triesReCastMult = 2, G_standartReCastFunc = function() {
         var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         console.log('contentURL: ', contentURL);
@@ -930,7 +930,7 @@
     ) {
         G_noPlayerExtension = true;
         G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-        waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
     else if (
@@ -991,7 +991,7 @@
         if (G_pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-            waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         else if (
             G_pageURL.matchLink('https?://yourporn.sexy/post/*') || // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
@@ -1062,7 +1062,7 @@
             // window.stop();
             G_funcToTest = function() {return actualSource();};
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         // --------------------------------------------------------------------------------
         else if (
@@ -1121,7 +1121,7 @@
             // window.stop();
             G_funcToTest = function() {return actualSource();};
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         // --------------------------------------------------------------------------------
         else if (
@@ -1295,7 +1295,7 @@
             G_standartReCastFunc();
         };
         // waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
     // ================================================================================
