@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.04
+// @version      2.0.06
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -35,6 +35,9 @@
 // @match        *://www.definebabe.com/gallery/*
 // @match        *://hqporner.com/hdporn/*.html
 // @match        *://mydaddy.cc/video/*
+// @match        *://www.sex.com/picture/*/
+// @match        *://www.sex.com/pin/*/
+// @match        *://www.sex.com/*
 // ==/UserScript==
 
 (function() {
@@ -197,6 +200,17 @@
         }
     };
     // ================================================================================
+    function addGlobalStyle(css, cssClass) {
+        var head = document.getElementsByTagName('head')[0];
+        if (!head) return;
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = css;
+        if (cssClass) style.setAttribute('class', cssClass);
+        head.appendChild(style);
+        return style;
+    };
+    // ================================================================================
     function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
         var keyCodes = {'c' : 67};
         var onKeyDown = function (e) {
@@ -316,7 +330,7 @@
         d.style.width = w + 'px';
         d.style.height = 'auto';
         d.style.minHeight = h + 'px';
-        d.style.setProperty('background', 'white', 'important');
+        d.style.setProperty('background-color', 'white', 'important');
         d.style.border = '2px solid black';
         d.style.zIndex = 2147483647;
         document.body.appendChild(d);
@@ -329,7 +343,7 @@
             titleElement.style.borderBottom = '1px solid black';
             titleElement.style.margin = 0;
             titleElement.style.padding = (padding/2) + 'px';
-            titleElement.style.setProperty('background', '#4CAF50', 'important');
+            titleElement.style.setProperty('background-color', '#4CAF50', 'important');
             titleElement.style.setProperty('color', 'white', 'important');
             titleElement.innerText = title;
             d.appendChild(titleElement);
@@ -342,6 +356,7 @@
             messageElement.style.textAlign = 'center';
             messageElement.style.verticalAlign = 'middle';
             messageElement.style.setProperty('color', 'black', 'important');
+            messageElement.style.setProperty('background-color', 'white', 'important');
             messageElement.innerText = message;
             d.appendChild(messageElement);
         }
@@ -697,7 +712,7 @@
         log(G_debugMode, G_embedCodeTextAreaColor);
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
         // var A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
-        msgbox('Video', (G_videoWidth + ' x ' + G_videoHeight) + '\n' + G_sampleURL.replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
+        msgbox('Video', (G_videoWidth + ' x ' + G_videoHeight) + '\n' + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
     };
     // ================================================================================
     var G_noQualitySample = false, G_qualitySampleSource = null, G_queryURL = null, G_standartAddEmbedCodeFunc = function() {
@@ -708,7 +723,14 @@
         G_embedCodeTextArea = addEmbedCodeTextArea(G_embedCodeFrame);
         G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         G_embedCodeLink = addEmbedCodeLink(G_embedCodeFrame);
-        G_embedCodePoster = addEmbedCodePoster(G_embedCodeFrame, G_funcToRun);
+        G_embedCodePoster = addEmbedCodePoster(G_embedCodeFrame, function() {
+            let mediaData = GM_getValue('mediaData', null);
+            if (mediaData && !(G_videoWidth && G_videoHeight)) {
+                G_videoWidth = mediaData.width;
+                G_videoHeight = mediaData.height;
+            };
+            G_funcToRun();
+        });
         if (G_qualitySampleSource) {
             // document.querySelector('#EPvideo_html5_api').addEventListener('play', function(e) {
             G_qualitySampleSource.addEventListener('playing', function(e) {
@@ -1463,6 +1485,53 @@
             // });
         };
     }
+
+    else if (
+        G_pageURL.matchLink('https?://www.sex.com/*')
+    ) {
+        // /*
+        // document.addEventListener('DOMContentLoaded', function() {
+        addGlobalStyle([
+            'body * { background-color: rgb(24, 24, 24) !important; color: wheat;}',
+            '::-webkit-scrollbar { width: 18px; height: 18px;}',
+            '::-webkit-scrollbar-button { background: no-repeat #222; background-size: 18px; background-position: center bottom;}',
+            "::-webkit-scrollbar-button:horizontal:decrement { background-image: url('" + 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="Wheat"><polygon points="24,64 48,32 72,64" transform="rotate(-90 48 48)"/>'+"</svg>');}" +
+            "::-webkit-scrollbar-button:horizontal:increment { background-image: url('" + 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="Wheat"><polygon points="24,64 48,32 72,64" transform="rotate(90 48 48)"/>'+"</svg>');}" +
+            "::-webkit-scrollbar-button:vertical:increment { background-image: url('" + 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="Wheat"><polygon points="24,64 48,32 72,64" transform="rotate(180 48 48)"/>'+"</svg>');}" +
+            "::-webkit-scrollbar-button:vertical:decrement { background-image: url('" + 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="Wheat"><polygon points="24,64 48,32 72,64" transform="rotate(0 48 48)"/>'+"</svg>');}" +
+            '::-webkit-scrollbar-track-piece { background-color: #111;}',
+            '::-webkit-scrollbar-thumb { background-color: #444; border-radius: 3px;}',
+            '::-webkit-scrollbar-thumb:hover { background-color: #999;}',
+            '::-webkit-scrollbar-corner { background-color: #111;}',
+            'input * { borders: 1px wheat solid !important; color: wheat;}',
+        ].join('\n'), 'misc_style');
+        //});
+        // */
+        if (
+            G_pageURL.matchLink('https?://www.sex.com/pin/*/') ||
+            G_pageURL.matchLink('https?://www.sex.com/picture/*/')
+        ) {
+            G_funcToRun = function () {
+                let source = document.querySelector('.image_frame img');
+                G_contentURL = source.src.replace(/(.*?)\?.*/, '$1');
+                G_posterURL = document.querySelector('meta[itemprop="thumbnail"]').content;
+                G_stickTo = document.querySelector('.image_frame'); G_stickPosition = 1;
+                G_videoWidth = source.naturalWidth; G_videoHeight = source.naturalHeight;
+                G_standartAddEmbedCodeFunc();
+                setTimeout(function() {
+                    G_videoWidth = source.naturalWidth;
+                    G_videoHeight = source.naturalHeight;
+                    updateEmbedCodeTextColor();
+                }, 1000);
+            };
+            // setTimeout(function() {
+            waitForElement('.image_frame img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            //}, 2000);
+        }
+        //
+        return; // SKIP REST OF THE CODE
+    }
+
 
     else if (
         G_pageURL.matchLink('*.jpg')
