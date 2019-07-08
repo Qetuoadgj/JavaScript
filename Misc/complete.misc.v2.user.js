@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.06
+// @version      2.0.08
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -674,7 +674,7 @@
         };
         G_funcToRun = function() {
             var queryURL = GM_getValue('queryURL', null);
-            GM_setValue('queryURL', null); //  GM_deleteValue('queryURL');
+            // GM_setValue('queryURL', null); //  GM_deleteValue('queryURL');
             console.log('queryURL: ', queryURL);
             var mediaData = {};
             mediaData.url = queryURL;
@@ -700,6 +700,7 @@
                 //alert(2);
                 //};
             };
+            setTimeout(function(){GM_setValue('queryURL', null);}, 1000);
         };
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries*2, G_timerGroup);
     };
@@ -713,6 +714,11 @@
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
         // var A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
         msgbox('Video', (G_videoWidth + ' x ' + G_videoHeight) + '\n' + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
+        // --------------------------------------------------------------------------------
+        G_embedCodePoster.style.borderColor = G_embedCodeTextAreaColor;
+        G_embedCodePoster.style.borderWidth = '2px';
+        G_embedCodePoster.style.borderStyle = 'dashed';
+        G_embedCodePoster.style.zoom = 1.0;
     };
     // ================================================================================
     var G_noQualitySample = false, G_qualitySampleSource = null, G_queryURL = null, G_standartAddEmbedCodeFunc = function() {
@@ -723,14 +729,7 @@
         G_embedCodeTextArea = addEmbedCodeTextArea(G_embedCodeFrame);
         G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         G_embedCodeLink = addEmbedCodeLink(G_embedCodeFrame);
-        G_embedCodePoster = addEmbedCodePoster(G_embedCodeFrame, function() {
-            let mediaData = GM_getValue('mediaData', null);
-            if (mediaData && !(G_videoWidth && G_videoHeight)) {
-                G_videoWidth = mediaData.width;
-                G_videoHeight = mediaData.height;
-            };
-            G_funcToRun();
-        });
+        G_embedCodePoster = addEmbedCodePoster(G_embedCodeFrame, G_funcToRun);
         if (G_qualitySampleSource) {
             // document.querySelector('#EPvideo_html5_api').addEventListener('play', function(e) {
             G_qualitySampleSource.addEventListener('playing', function(e) {
@@ -755,8 +754,10 @@
         if (G_postersArray && G_postersArray.length > 1) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
         // --------------------------------------------------------------------------------
         GM_setValue('queryURL', null); //  GM_deleteValue('queryURL');
+        console.log('G_standartAddEmbedCodeFunc: queryURL: ', G_queryURL);
         if (G_queryURL) {
             GM_setValue('queryURL', G_queryURL);
+            let mediaDataOld = GM_getValue('mediaData', null);
             GM_setValue('mediaData', null); GM_addValueChangeListener('mediaData', function(name, old_value, new_value, remote) {
                 if (new_value.url == G_queryURL) {
                     console.log('mediaData:', new_value);
@@ -771,6 +772,7 @@
                     }, G_forceLoad);
                 }
             });
+            if (!(G_videoWidth && G_videoHeight) && mediaDataOld) GM_setValue('mediaData', mediaDataOld);
         }
         // --------------------------------------------------------------------------------
         log(G_debugMode, G_contentURL, '\n', G_sampleURL, '\n', G_posterURL);
