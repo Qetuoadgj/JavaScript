@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.08
+// @version      2.0.10
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -29,7 +29,13 @@
 // @match        *://www.youjizz.com/videos/*.html
 // @match        *://www.veporns.com/video/*
 // @match        *://openload.co/embed/*
-// @match        *://oload.*/embed/*
+// @match        *://oload.download/embed/*
+// @match        *://oload.stream/embed/*
+// @match        *://oload.info/embed/*
+// @match        *://oload.life/embed/*
+// @match        *://oload.xyz/embed/*
+// @match        *://oload.biz/embed/*
+// @match        *://oload.tv/embed/*
 // @match        *://www.jjgirls.com/pornpics/*
 // @match        *://www.babesandstars.com/*/*/*/
 // @match        *://www.definebabe.com/gallery/*
@@ -566,7 +572,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
+    var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoDuration, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
         var elementID = 'uniqueEmbedCodeVideo';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
@@ -586,6 +592,7 @@
             G_sampleURL = e.target.src;
             G_videoWidth = e.target.videoWidth;
             G_videoHeight = e.target.videoHeight;
+            G_videoDuration = e.target.duration;
             G_videoQuality = G_videoQuality || G_videoHeight;
             if (onLoadFunc && (typeof onLoadFunc).toLowerCase() == 'function') onLoadFunc();
         });
@@ -606,17 +613,24 @@
         return element;
     }
     // --------------------------------------------------------------------------------
+    var G_previewURL;
     var G_embedCodeText, G_contentTitle, G_altText, G_delimiter; function updateEmbedCodeText(embedCodeTextArea, startNew = 0, delimiter = '') {
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
         if (G_contentURL !== G_pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
+        if (G_previewURL) G_embedCodeText += ' data-video="' + G_previewURL + '"';
         G_embedCodeText += ' data-content="' + G_contentURL + '"';
         if (G_contentURL !== G_pageURL) G_embedCodeText += ' data-url="' + G_pageURL + '"';
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
         // if (G_videoQuality) G_embedCodeText += ' data-quality="' + G_videoQuality + 'p"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+        if (G_videoDuration) {
+            console.log('G_videoDuration:', G_videoDuration);
+            if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
+            G_embedCodeText += ' data-duration="' + G_videoDuration + '"';
+        };
         G_embedCodeText += ' data-categories="all,"';
         G_embedCodeText += '></div>';
         // --------------------------------------------------------------------------------
@@ -682,6 +696,7 @@
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
+            mediaData.duration = media.duration;
             //
             if (window.top === window.self) {
                 // alert(1);
@@ -736,6 +751,7 @@
                 G_sampleURL = e.target.src;
                 G_videoWidth = e.target.videoWidth;
                 G_videoHeight = e.target.videoHeight;
+                G_videoDuration = e.target.duration;
                 G_videoQuality = G_videoHeight;
                 updateEmbedCodeTextColor();
             });
@@ -764,6 +780,7 @@
                     G_sampleURL = new_value.src;
                     G_videoWidth = new_value.width;
                     G_videoHeight = new_value.height;
+                    G_videoDuration = new_value.duration;
                     G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                         updateEmbedCodeTextColor();
                     }, function onErrorFunc() {
@@ -864,6 +881,9 @@
                 G_stickTo = document.querySelector('#relateddiv'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 /*
@@ -938,6 +958,7 @@
                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
                 console.log(G_posterURL);
                 G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_queryURL = document.querySelector('iframe').src;
@@ -1331,7 +1352,8 @@
         G_pageURL.matchLink('https?://oload.stream/embed/*') || // https://oload.stream/embed/_5lSwGYiAMc/
         G_pageURL.matchLink('https?://oload.xyz/embed/*') || // https://oload.xyz/embed/kuar1R4lKQw/
         G_pageURL.matchLink('https?://oload.download/embed/*') || // https://oload.download/embed/MXmOoScjRCs/45275.mp4
-        G_pageURL.matchLink('https?://oload.*/embed/*') // https://oload.download/embed/KPgg6tUV_n0/16396.mp4
+        G_pageURL.matchLink('https?://oload.biz/embed/*') || // https://oload.download/embed/KPgg6tUV_n0/16396.mp4
+        G_pageURL.matchLink('https?://oload.*/embed/*') // https://oload.life/embed/7zh5fZ9bofM
     ) {
         var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
         G_funcToTest = function () {
