@@ -2,12 +2,12 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.11
+// @version      2.0.12
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
-// @run-at       document-end
+// @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -943,8 +943,13 @@
         G_pageURL.matchLink('https?://yespornplease.com')
     ) {
         if (
-            G_pageURL.matchLink('https?://yespornplease.com/v/*') || // https://yespornplease.com/v/306756151
             G_pageURL.matchLink('https?://yespornplease.com/view/*') // https://yespornplease.com/view/306756151
+        ) {
+            window.stop();
+            window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
+        }
+        else if (
+            G_pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/306756151
         ) {
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
