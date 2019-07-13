@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.10
+// @version      2.0.11
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -572,7 +572,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
+    var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoDuration, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
         var elementID = 'uniqueEmbedCodeVideo';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
@@ -592,6 +592,7 @@
             G_sampleURL = e.target.src;
             G_videoWidth = e.target.videoWidth;
             G_videoHeight = e.target.videoHeight;
+            G_videoDuration = e.target.duration;
             G_videoQuality = G_videoQuality || G_videoHeight;
             if (onLoadFunc && (typeof onLoadFunc).toLowerCase() == 'function') onLoadFunc();
         });
@@ -625,6 +626,11 @@
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
         // if (G_videoQuality) G_embedCodeText += ' data-quality="' + G_videoQuality + 'p"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+        if (G_videoDuration) {
+            console.log('G_videoDuration:', G_videoDuration);
+            if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
+            G_embedCodeText += ' data-duration="' + G_videoDuration + '"';
+        };
         G_embedCodeText += ' data-categories="all,"';
         G_embedCodeText += '></div>';
         // --------------------------------------------------------------------------------
@@ -690,6 +696,7 @@
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
+            mediaData.duration = media.duration;
             //
             if (window.top === window.self) {
                 // alert(1);
@@ -744,6 +751,7 @@
                 G_sampleURL = e.target.src;
                 G_videoWidth = e.target.videoWidth;
                 G_videoHeight = e.target.videoHeight;
+                G_videoDuration = e.target.duration;
                 G_videoQuality = G_videoHeight;
                 updateEmbedCodeTextColor();
             });
@@ -772,6 +780,7 @@
                     G_sampleURL = new_value.src;
                     G_videoWidth = new_value.width;
                     G_videoHeight = new_value.height;
+                    G_videoDuration = new_value.duration;
                     G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                         updateEmbedCodeTextColor();
                     }, function onErrorFunc() {
@@ -872,6 +881,9 @@
                 G_stickTo = document.querySelector('#relateddiv'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 /*
