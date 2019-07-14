@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.9
+// @version      1.0.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -116,29 +116,35 @@
         KEY_CLOSE_BRACKET = 221,
         KEY_SINGLE_QUOTE = 222
     ;
+
+    var png_scope_PU = 'https://upload.wikimedia.org/wikipedia/commons/2/24/PU_sight_Reticle.png';
+    var png_sight_Red_Cross = 'https://ui-ex.com/images/target-transparent-reticle-3.png';
+
     function initSettings() {
         // Your code here...
-        localStorage.classindex = localStorage.classindex || "2";
-        localStorage.consent = localStorage.consent || "1";
+        localStorage.classindex = localStorage.classindex || 2;
+        localStorage.consent = localStorage.consent || 1;
         localStorage.krk_record = localStorage.krk_record || "false";
-        localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || "1.6";
+        localStorage.kro_setngss_sensitivity = localStorage.kro_setngss_sensitivity || 1.60;
+        localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || localStorage.kro_setngss_sensitivity*1.20 || 1.70;
         localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || "false";
         localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || "true";
         localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#00ff00";
         localStorage.kro_setngss_crosshairShadow = "#000000"; // "#ff0000";
-        localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || "110";
-        localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || "110";
+        localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || 95;
+        localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || 120; // localStorage.kro_setngss_fov - 5;
         localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || "false";
         localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || "false";
-        localStorage.kro_setngss_resolution = localStorage.kro_setngss_resolution || "1";
-        localStorage.kro_setngss_sensitivity = localStorage.kro_setngss_sensitivity || "1.6";
-        localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || "0.5";
-        localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || "1";
+        localStorage.kro_setngss_resolution = localStorage.kro_setngss_resolution || 1;
+        localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || 0.5;
+        localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || "0";
         localStorage.krunker_streamMode = localStorage.krunker_streamMode || "false";
-        localStorage.sprayindex = localStorage.sprayindex || "12";
+        localStorage.sprayindex = localStorage.sprayindex || 12;
         //
         // localStorage.color = "#000000";
         localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || "#ff0000";
+        localStorage.kro_setngss_customScope = png_scope_PU;
+        localStorage.kro_setngss_customADSDot = png_sight_Red_Cross;
     };
     initSettings();
     //
@@ -193,13 +199,14 @@
             showCanvasBorders, lineWidth, globalOpacity, lineColor,
             scaleValue, showCicleMark, cicleMarkGap, showDot,
             dotRadiusPX, dotColor, dotOpacity, dotFill, shade,
-            mode = 2
+            mode = 2, canvasZoom;
         ;
         function resetMarkSettings() {
+            canvasZoom = 0.8250;
             parentElement = null;
             markScaleMult = 0.50; // * Math.sqrt(2.00);
             markThicknessMult = 1.10;
-            showCanvas = true;
+            showCanvas = false; //true;
             showCanvasBorders = false; // true;
             lineWidth = 1.50 * markThicknessMult;
             globalOpacity = 1.00;
@@ -253,7 +260,7 @@
         /* PREPARE CANVAS */
         var canvas = prepareCanvas();
         /* CREATE DRAW MARK FUNCTION */
-        function drawCanvas(canvas, parentElement) {
+        function drawCanvas(canvas, parentElement, canvasZoom = 1.00) {
             // Get context
             var context = canvas.getContext('2d');
             // center
@@ -302,11 +309,12 @@
                 console.log(rect_center_x+', '+rect_center_y);
                 // canvas.style.zoom = 1;
             };
+            if (canvasZoom) canvas.style.zoom = canvasZoom;
         };
         /* INIT CANVAS */
         if (showCanvas) {
             resetMarkSettings();
-            drawCanvas(canvas, parentElement);
+            drawCanvas(canvas, parentElement, canvasZoom);
             showCanvas = !showCanvas;
         };
         /* ASSIGN HOTKEYS */
@@ -324,8 +332,9 @@
                         clearCanvas(canvas);
                     } else {
                         clearCanvas(canvas);
-                        drawCanvas(canvas, parentElement);
+                        drawCanvas(canvas, parentElement, canvasZoom);
                     }
+                    showCanvas = !showCanvas;
                     /*
                     // if (showCanvas) {
                     initSettings();
@@ -335,20 +344,35 @@
                     mode = mode > 2 ? 0 : mode;
                     console.log('mode:', mode);
                     clearCanvas(canvas);
-                    drawCanvas(canvas, parentElement);
+                    drawCanvas(canvas, parentElement, canvasZoom);
                     */
                     // };
                     e.preventDefault();
                 }
             }
         };
+
+        function loadMods(modsArray, interval = 1000) {
+            for (let i = 0; modsArray.length; i++) {
+                let mod_name = modsArray[i][0], mod_url = modsArray[i][1], mod_id = modsArray[i][2];
+                if (mod_name && mod_url && mod_id) {
+                    console.log('Loading mod: [', mod_name, '|', mod_url, '|', mod_id,'] (', interval*i, ')');
+                    setTimeout(function() {window.loadUserMod(mod_name, mod_url, mod_id);}, interval*i);
+                };
+            };
+        };
+
         /* INIT HOTKEYS */
         window.addEventListener('keydown', function(e) {onKeyDown(e);}, false);
         setTimeout(function() {
             if (canLoad()) {
                 /* LOAD MODS */
                 if (localStorage.kro_setngss_canLoadMods == 'true') {
-                    window.loadUserMod("RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"); // RUST SOUNDS
+                    let modsArray = [
+                        ["NoSight", "https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0", "2723"],
+                        ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
+                    ];
+                    loadMods(modsArray, 1000);
                 };
             };
         }, 2500);
