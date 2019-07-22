@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.11
+// @version      1.0.13
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -117,8 +117,9 @@
         KEY_SINGLE_QUOTE = 222
     ;
 
-    var png_scope_PU = 'https://upload.wikimedia.org/wikipedia/commons/2/24/PU_sight_Reticle.png';
-    var png_sight_Red_Cross = 'https://ui-ex.com/images/target-transparent-reticle-3.png';
+    var png_scope_PU = 'https://github.com/Qetuoadgj/JavaScript/raw/master/Services/Images/PU_sight_Reticle.png'; // 'https://upload.wikimedia.org/wikipedia/commons/2/24/PU_sight_Reticle.png';
+    var png_sight_Red_Cross = 'https://raw.githubusercontent.com/Qetuoadgj/JavaScript/master/Services/Images/target-transparent-reticle-3.png'; // 'https://ui-ex.com/images/target-transparent-reticle-3.png';
+    var png_sight_Green_Cross = 'https://github.com/Qetuoadgj/JavaScript/raw/master/Services/Images/target-transparent-reticle-3%20%5Bgreen%5D.png';
 
     function initSettings() {
         // Your code here...
@@ -144,7 +145,14 @@
         // localStorage.color = "#000000";
         localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || "#ff0000";
         localStorage.kro_setngss_customScope = png_scope_PU;
-        localStorage.kro_setngss_customADSDot = png_sight_Red_Cross;
+        localStorage.kro_setngss_customADSDot = png_sight_Red_Cross; // png_sight_Green_Cross; // png_sight_Red_Cross;
+        //
+        localStorage.kro_setngss_crosshairSho = "3";
+        localStorage.kro_setngss_crosshairStyle = "1";
+        //
+        localStorage.kro_setngss_showDeaths = "true";
+        localStorage.kro_setngss_showTrails = "false";
+        localStorage.kro_setngss_particles = "true";
     };
     initSettings();
     //
