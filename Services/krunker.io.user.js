@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.13
+// @version      1.0.15
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -117,43 +117,61 @@
         KEY_SINGLE_QUOTE = 222
     ;
 
-    var png_scope_PU = 'https://github.com/Qetuoadgj/JavaScript/raw/master/Services/Images/PU_sight_Reticle.png'; // 'https://upload.wikimedia.org/wikipedia/commons/2/24/PU_sight_Reticle.png';
-    var png_sight_Red_Cross = 'https://raw.githubusercontent.com/Qetuoadgj/JavaScript/master/Services/Images/target-transparent-reticle-3.png'; // 'https://ui-ex.com/images/target-transparent-reticle-3.png';
-    var png_sight_Green_Cross = 'https://github.com/Qetuoadgj/JavaScript/raw/master/Services/Images/target-transparent-reticle-3%20%5Bgreen%5D.png';
-    var png_sight_Orange_Cross = 'https://github.com/Qetuoadgj/JavaScript/raw/master/Services/Images/target-transparent-reticle-3%20%5Borange%5D.png';
+    function googl(id) {
+        let shared = id.match(/https:\/\/drive.google.com\/file\/d\/(.*?)\/view\?usp=sharing/);
+        if (shared) return 'https://drive.google.com/uc?id=' + shared[1] + '&authuser=0&export=download';
+        shared = id.match(/https:\/\/drive.google.com\/open\?id=(.*)/);
+        if (shared) return 'https://drive.google.com/uc?id=' + shared[1] + '&authuser=0&export=download';
+        return 'https://drive.google.com/uc?id=' + id + '&authuser=0&export=download';
+    };
+
+    var Reticle_GREEN = 'https://drive.google.com/open?id=1dtTu1wGLq8NAiHE6dkJmy3TZSzVvG9Aw';
+    var Reticle_RED = 'https://drive.google.com/open?id=11SoQbfgg-2Exq3Nxn7jQdribTfgxJrjR';
+    var Reticle_Scope_PU = 'https://drive.google.com/file/d/19OzzNGLKh7RmlcQqW3cpUPqBkMc_-xSm/view?usp=sharing';
+
+    var png_sight_dot = googl(Reticle_RED);
+    var png_sight_sniper = googl(Reticle_Scope_PU);
 
     function initSettings() {
+		let ON = 'true',
+            OFF = 'false'
+        ;
         // Your code here...
         localStorage.classindex = localStorage.classindex || 2;
         localStorage.consent = localStorage.consent || 1;
-        localStorage.krk_record = localStorage.krk_record || "false";
+        localStorage.krk_record = localStorage.krk_record || OFF;
         localStorage.kro_setngss_sensitivity = localStorage.kro_setngss_sensitivity || 1.60;
-        localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || localStorage.kro_setngss_sensitivity*1.20 || 1.70;
-        localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || "false";
-        localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || "true";
-        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#00ff00";
+        localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || localStorage.kro_setngss_sensitivity*1.20;
+        localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || OFF;
+        localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || ON;
+        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#ff8000"; // "#00ff00";
         localStorage.kro_setngss_crosshairShadow = "#000000"; // "#ff0000";
         localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || 95;
-        localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || 120; // localStorage.kro_setngss_fov - 5;
-        localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || "false";
-        localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || "false";
+        localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || localStorage.kro_setngss_fov + 5; // 120;
+        localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || OFF;
+        localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || OFF;
         localStorage.kro_setngss_resolution = localStorage.kro_setngss_resolution || 1;
-        localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || 0.5;
-        localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || "0";
-        localStorage.krunker_streamMode = localStorage.krunker_streamMode || "false";
+        localStorage.kro_setngss_sound = localStorage.kro_setngss_sound || 0.7;
+        localStorage.kro_setngss_weaponBob = localStorage.kro_setngss_weaponBob || 0;
+        localStorage.krunker_streamMode = localStorage.krunker_streamMode || OFF;
         localStorage.sprayindex = localStorage.sprayindex || 12;
         //
         // localStorage.color = "#000000";
         localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || "#ff0000";
-        localStorage.kro_setngss_customScope = png_scope_PU;
-        localStorage.kro_setngss_customADSDot = png_sight_Orange_Cross; // png_sight_Green_Cross; // png_sight_Red_Cross;
+        localStorage.kro_setngss_customScope = png_sight_sniper;
+        localStorage.kro_setngss_customADSDot = png_sight_dot;
         //
-        localStorage.kro_setngss_crosshairSho = "3";
-        localStorage.kro_setngss_crosshairStyle = "1";
+        localStorage.kro_setngss_crosshairSho = 3;
+        localStorage.kro_setngss_crosshairStyle = 1;
         //
-        localStorage.kro_setngss_showDeaths = "true";
-        localStorage.kro_setngss_showTrails = "false";
-        localStorage.kro_setngss_particles = "true";
+        localStorage.kro_setngss_showDeaths = ON;
+        // localStorage.kro_setngss_showTrails = "false";
+        // localStorage.kro_setngss_particles = "true";
+        //
+        // localStorage.kro_setngss_crosshairSho = "3";
+		//
+		localStorage.kro_setngss_dynamicHP = OFF;
+		localStorage.kro_setngss_showUnboxings = OFF;
     };
     initSettings();
     //
@@ -379,7 +397,7 @@
                 if (localStorage.kro_setngss_canLoadMods == 'true') {
                     let modsArray = [
                         ["NoSight", "https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0", "2723"],
-                        ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
+//                         ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
                     ];
                     loadMods(modsArray, 1000);
                 };
