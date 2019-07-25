@@ -678,7 +678,10 @@
     var G_noPlayerExtension = false, G_triesReCastMult = 2, G_standartReCastFunc = function() {
         var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
+        else if (contentURL.match(/^\/\//)) contentURL = location.protocol + G_contentURL;
+        else if (contentURL.match(/^\//)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         console.log('contentURL: ', contentURL);
+        //
         G_funcToTest = function() {
             if (window.top === window.self) {
                 return 1;
@@ -1041,7 +1044,7 @@
         if (G_pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-            waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+            waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         else if (
             G_pageURL.matchLink('https?://yourporn.sexy/post/*') || // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
@@ -1054,7 +1057,7 @@
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.comments_area'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
-                G_qualitySampleSource = document.querySelector('body video[src]');
+                G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 /*
@@ -1072,7 +1075,7 @@
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
     }
 
