@@ -1058,6 +1058,7 @@
                 G_stickTo = document.querySelector('div.comments_area'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
+                G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 /*
@@ -1068,7 +1069,7 @@
                 */
                 var eventCatcher, media;
                 waitForCondition(function(){
-                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#player');
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('#vid_container_id video[src]');
                     media = media ? media : eventCatcher;
                     return eventCatcher && media;
                 }, function() {
