@@ -1134,7 +1134,7 @@
                 G_contentURL = document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#ReCast';
                 G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
-                G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15+2); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.video-actions-container'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
@@ -1149,7 +1149,7 @@
                 }, G_delay, G_tries, G_timerGroup);
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
-            waitForElement('meta[name="twitter:player"]', 'content', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('.video-actions-container', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
             // });
         }
     }

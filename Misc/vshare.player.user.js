@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.09
+// @version      0.0.10
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -73,6 +73,7 @@
     video.setAttribute('mozallowfullscreen', '');
     video.setAttribute('allowfullscreen', '');
     video.setAttribute('onerror', 'failed(event);');
+    // video.addEventListener('error', function(event){failed(event);});
     document.body.appendChild(video);
     // video.src = 'https://s902.vshare.io:440/s,128-1000-22-1-2191707-bkxdtksrwj/186745/351673/185658/ff-8840c3e48fc8f80f67eeacc4b3fc3cdbb94c86b4,5c584cc5,2f23e49_480.mp4';
     // ---------------------------------------------------
@@ -500,12 +501,17 @@
             console.log('url: ', url);
             var video = document.querySelector("body > video");
             if (video) {
+                let event = new Event('click');
+                video.dispatchEvent(event);
+                //
                 var href = location.href.replace(paramStart, ''); // location.href.split(paramStart)[1];
                 console.log('href: ', href);
                 var params = getParamsFromURL(href); // getParamsFromURL(location.search)
                 console.log('params: ', params);
                 listParams(params);
-                if (params.autoplay && params.autoplay == 'true') video.setAttribute('autoplay', '');
+                if (params.autoplay && params.autoplay == 'true') {
+                    video.setAttribute('autoplay', true);
+                };
                 var videoSrc = params.main_url;
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
                 video.setAttribute('src', videoSrc);
@@ -514,7 +520,7 @@
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
                 useGMVolumeCookie("body > video", "video");
-				// useLocalVolumeCookie("body > video", "video");
+                // useLocalVolumeCookie("body > video", "video");
             }
         }
     };
