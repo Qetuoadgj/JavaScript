@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.12
+// @version      2.0.13
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -26,6 +26,7 @@
 // @match        *://*.pornhub.com/view_video.php?viewkey=*
 // @match        *://www.pornhub.com/embed/*
 // @match        *://www.playvids.com/*/*
+// @match        *://www.pornoeggs.com/*
 // @match        *://www.youjizz.com/videos/*.html
 // @match        *://www.veporns.com/video/*
 // @match        *://openload.co/embed/*
@@ -502,6 +503,65 @@
         return element;
     };
     // --------------------------------------------------------------------------------
+    var G_embedCodeTextCategorie = '';
+    var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
+        var elementID = 'uniqueEmbedCodeCatInput';
+        for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element = document.createElement('input');
+        element.setAttribute('id', elementID);
+        element.style.setProperty('display', 'block', 'important');
+        element.style.border = 'none';
+        element.style['background-color'] = 'transparent';
+        element.style.width = '100%';
+        element.style['max-width'] = '100%';
+        // element.style.rows = '2';
+        element.style.overflow = 'hidden';
+        element.style['font-size'] = '12px';
+        element.style.color = G_embedCodeTextAreaColor;
+        // element.setAttribute('readonly', 'readonly');
+        // element.setAttribute('onclick', 'this.focus(); this.select();');
+        element.placeholder = 'categories';
+        element.addEventListener('change', function(e){
+            G_embedCodeTextCategorie = e.target.value;
+            updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+        }, false);
+        // element.value = '';
+        // --------------------------------------------------------------------------------
+        embedCodeFrame.appendChild(element);
+        // --------------------------------------------------------------------------------
+        return element;
+    };
+    var G_embedCodeTextStart = '';
+    var G_embedCodeStartInput; function addEmbedCodeStartInput(embedCodeFrame) {
+        var elementID = 'uniqueEmbedCodeStartInput';
+        for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element = document.createElement('input');
+        element.setAttribute('id', elementID);
+        element.style.setProperty('display', 'block', 'important');
+        element.style.border = 'none';
+        element.style['background-color'] = 'transparent';
+        element.style.width = '100%';
+        element.style['max-width'] = '100%';
+        // element.style.rows = '2';
+        element.style.overflow = 'hidden';
+        element.style['font-size'] = '12px';
+        element.style.color = G_embedCodeTextAreaColor;
+        // element.setAttribute('readonly', 'readonly');
+        // element.setAttribute('onclick', 'this.focus(); this.select();');
+        element.placeholder = '00:00:00';
+        element.addEventListener('change', function(e){
+            G_embedCodeTextStart = e.target.value;
+            updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+        }, false);
+        // element.value = '';
+        // --------------------------------------------------------------------------------
+        embedCodeFrame.appendChild(element);
+        // --------------------------------------------------------------------------------
+        return element;
+    };
+    // --------------------------------------------------------------------------------
     var G_embedCodeTextArea, G_embedCodeTextAreaColor = 'grey'; function addEmbedCodeTextArea(embedCodeFrame) {
         var elementID = 'uniqueEmbedCodeTextArea';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
@@ -631,7 +691,10 @@
             if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
             G_embedCodeText += ' data-duration="' + G_videoDuration + '"';
         };
-        G_embedCodeText += ' data-categories="all,"';
+        if (G_embedCodeTextStart) {
+            G_embedCodeText += ' data-start="' + G_embedCodeTextStart.trim() + '"';
+        };
+        G_embedCodeText += ' data-categories="all,' + G_embedCodeTextCategorie.trim() + '"';
         G_embedCodeText += '></div>';
         // --------------------------------------------------------------------------------
         embedCodeTextArea.value = delimiter ? delimiter + G_embedCodeText : G_embedCodeText;
@@ -744,6 +807,8 @@
         G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         G_delimiter = ''; // '<!-- ' + G_contentTitle + ' -->\n';
         G_embedCodeFrame = addEmbedCodeFrame(G_funcToRun);
+        G_embedCodeCatInput = addEmbedCodeCatInput(G_embedCodeFrame);
+        G_embedCodeStartInput = addEmbedCodeStartInput(G_embedCodeFrame);
         G_embedCodeTextArea = addEmbedCodeTextArea(G_embedCodeFrame);
         G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         G_embedCodeLink = addEmbedCodeLink(G_embedCodeFrame);
@@ -1052,7 +1117,7 @@
         ) {
             G_funcToRun = function () {
                 // --------------------------------------------------------------------------------
-                G_contentURL = G_shortURL + '#ReCast';
+                G_contentURL = G_shortURL; // + '#ReCast';
                 G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.comments_area'); G_stickPosition = -1;
@@ -1135,7 +1200,8 @@
         ) {
             G_funcToRun = function () {
                 G_sampleURL = actualSource();
-                G_contentURL = document.querySelector('meta[name="twitter:player"]').content; //pageURL + '#ReCast';
+                G_pageURL = G_pageURL.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2');
+                G_contentURL = document.querySelector('meta[name="twitter:player"]').content.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2'); //pageURL + '#ReCast';
                 G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15+2); console.log('G_posters:\n', G_postersArray);
@@ -1202,6 +1268,72 @@
                 G_stickTo = document.querySelector('.channel-info'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.mediaPlayerContainer');
+                    media = media ? media : document.querySelector('video[data-qualities]'); // document.querySelector('div#player video > source');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('video[data-qualities]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://*.pornoeggs.com/*')
+    ) {
+        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
+        // --------------------------------------------------------------------------------
+        let actualSource = () => {
+            var video = document.querySelector('video[data-qualities]');
+            var qualities = video.dataset.qualities.split('|');
+            var maxQuality = qualities[qualities.length-1];
+            var contentURL = video.dataset['src' + maxQuality];
+            log(G_debugMode, 'maxQuality', 'src' + maxQuality + ' =', contentURL);
+            return contentURL;
+        };
+        // --------------------------------------------------------------------------------
+        if (G_pageURL.match('#ReCast')) { // https://www.pornoeggs.com/watch?v=00RejSBM3Cl#ReCast
+            // window.stop();
+            G_funcToTest = function() {return actualSource();};
+            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        // --------------------------------------------------------------------------------
+        else if (
+            G_pageURL.matchLink('https?://www.pornoeggs.com/embed[?]v=*') // https://www.pornoeggs.com/embed?v=00RejSBM3Cl
+        ) {
+            return;
+            // --------------------------------------------------------------------------------
+            G_funcToRun = function () {
+                G_contentURL = actualSource();
+                G_contentURL = G_contentURL ? G_contentURL : G_funcResult.src;
+                if (G_contentURL) openURL(refineVideo(G_contentURL));
+            };
+            waitForElement('video[data-qualities]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        // --------------------------------------------------------------------------------
+        else if (
+            G_pageURL.matchLink('https?://www.pornoeggs.com/watch[?]v=*') // https://www.pornoeggs.com/watch?v=00RejSBM3Cl
+        ) {
+            G_funcToRun = function () {
+                // G_sampleURL = actualSource();
+                G_qualitySampleSource = document.querySelector('video[data-qualities]');
+                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
+                G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
+                // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
+                // G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('.pcomments-left'); G_stickPosition = -1;
+                // --------------------------------------------------------------------------------
+                G_previewURL = G_posterURL.replace(/^(.*)\/.*.jpg/, '$1/preview.mp4'); // https://cdn-img1.pornoeggs.com/thumbs/697/697331/preview.mp4
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
                 var eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.mediaPlayerContainer');
