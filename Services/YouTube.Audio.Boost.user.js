@@ -27,7 +27,7 @@
 
     // create a gain node
     var gainNode = audioCtx.createGain();
-    let volume_mult = GM_getValue('volume_mult', 1);
+    let volume_mult = GM_getValue('volume_mult', 1.0) || 1.0;
     gainNode.gain.value = volume_mult; // boost the volume
     source.connect(gainNode);
 
@@ -35,10 +35,13 @@
     gainNode.connect(audioCtx.destination);
 
     function callPrompt() {
-        let volume_mult = GM_getValue('volume_mult', 2);
-        let result = prompt('Boost by', volume_mult);
-        gainNode.gain.value = result*1; // double the volume
+        let volume_mult = GM_getValue('volume_mult', 2.0);
+        let result = prompt('Boost by', volume_mult || 1.0);
+        if (result === null) {
+            return;
+        }
         GM_setValue('volume_mult', result);
+        gainNode.gain.value = result*1; // double the volume
     };
 
     setTimeout(function() {
