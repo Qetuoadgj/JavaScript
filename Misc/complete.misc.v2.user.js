@@ -484,7 +484,7 @@
         log(G_debugMode, 'openURL.url: ' + url);
         GM_deleteValue('contentURL');
         // if (TEST_MODE) return;
-        /*window.*/ location.href = url;
+        /*window.*/ location.replace(url); // location.href = url;
     };
     // ================================================================================
     var G_embedCodeFrame, G_stickTo, G_stickPosition; function addEmbedCodeFrame() {
@@ -1014,7 +1014,7 @@
             G_pageURL.matchLink('https?://yespornplease.com/view/*') // https://yespornplease.com/view/306756151
         ) {
             window.stop();
-            window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
+            location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
         }
         else if (
             G_pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/306756151
