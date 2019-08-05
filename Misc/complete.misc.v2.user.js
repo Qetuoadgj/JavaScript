@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.13
+// @version      2.0.14
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -522,8 +522,17 @@
         // element.setAttribute('readonly', 'readonly');
         // element.setAttribute('onclick', 'this.focus(); this.select();');
         element.placeholder = 'categories';
+        element.autocomplete = 'on';
         element.addEventListener('change', function(e){
             G_embedCodeTextCategorie = e.target.value;
+            G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim().
+            replace(/\s+,/g, ',').
+            replace(/,\s+/g, ',').
+            replace(/,+/g, ',').
+            replace(/^,/g, '').
+            replace(/,$/g, '')
+            ;
+            e.target.value = G_embedCodeTextCategorie;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         }, false);
         // element.value = '';
@@ -1016,6 +1025,11 @@
             window.stop();
             location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
         }
+        /*
+        else if (G_pageURL.match('#ReCast')) {
+            return;
+        }
+        */
         else if (
             G_pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/306756151
         ) {
