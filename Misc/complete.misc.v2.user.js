@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.14
+// @version      2.0.15
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -12,6 +12,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_addValueChangeListener
+// @grant        GM_registerMenuCommand
 // @grant        unsafeWindow
 // @match        file:///*/2.*.*.html*
 // @match        *://www.eporner.com/hd-porn/*/*/
@@ -503,7 +504,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeTextCategorie = '';
+    var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
         var elementID = 'uniqueEmbedCodeCatInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
@@ -523,6 +524,8 @@
         // element.setAttribute('onclick', 'this.focus(); this.select();');
         element.placeholder = 'categories';
         element.autocomplete = 'on';
+        G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim();
+        if (G_embedCodeTextCategorie !== '') element.value = G_embedCodeTextCategorie;
         element.addEventListener('change', function(e){
             G_embedCodeTextCategorie = e.target.value;
             G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim().
@@ -541,7 +544,7 @@
         // --------------------------------------------------------------------------------
         return element;
     };
-    var G_embedCodeTextStart = '';
+    var G_embedCodeTextStart = '00:00:00';
     var G_embedCodeStartInput; function addEmbedCodeStartInput(embedCodeFrame) {
         var elementID = 'uniqueEmbedCodeStartInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
@@ -560,6 +563,8 @@
         // element.setAttribute('readonly', 'readonly');
         // element.setAttribute('onclick', 'this.focus(); this.select();');
         element.placeholder = '00:00:00';
+        G_embedCodeTextStart = G_embedCodeTextStart.trim();
+        if (G_embedCodeTextStart !== '') element.value = G_embedCodeTextStart;
         element.addEventListener('change', function(e){
             G_embedCodeTextStart = e.target.value;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
@@ -700,10 +705,10 @@
             if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
             G_embedCodeText += ' data-duration="' + G_videoDuration + '"';
         };
-        if (G_embedCodeTextStart) {
-            G_embedCodeText += ' data-start="' + G_embedCodeTextStart.trim() + '"';
+        if (G_embedCodeTextStart && G_embedCodeTextStart !== '00:00:00') {
+            G_embedCodeText += ' data-start="' + G_embedCodeTextStart + '"';
         };
-        G_embedCodeText += ' data-categories="all,' + G_embedCodeTextCategorie.trim() + '"';
+        G_embedCodeText += ' data-categories="all,' + G_embedCodeTextCategorie + '"';
         G_embedCodeText += '></div>';
         // --------------------------------------------------------------------------------
         embedCodeTextArea.value = delimiter ? delimiter + G_embedCodeText : G_embedCodeText;
@@ -915,6 +920,41 @@
         setCookie(name, null, { expires: -1 });
     }
     // ================================================================================
+    function setCategory() {
+        let category = GM_getValue('category', '');
+        let result = prompt('Category', category || '');
+        if (result === null) {
+            return;
+        }
+        GM_setValue('category', result);
+        G_embedCodeTextCategorie = result;
+    };
+    GM_registerMenuCommand('Set Category', function(){
+        setCategory();
+    }, "");
+    var G_messageTarget; GM_registerMenuCommand('Set Start Time', function(){
+        if (!G_messageTarget) {
+            return;
+        }
+        // /*
+        else if (G_messageTarget instanceof Element) {
+            G_embedCodeTextStart = toHHMMSS(G_messageTarget.currentTime); // || '00:00:00';
+            G_embedCodeStartInput.value = G_embedCodeTextStart;
+        }
+        // */
+        else {
+            G_messageTarget.postMessage({sender: 'QUESTION', data: null}, '*');
+        };
+    }, "");
+    window.addEventListener('message', function(e) {
+        if(typeof e.data === 'object' && e.data.sender === 'ANSWER') {
+            G_embedCodeTextStart = toHHMMSS(e.data.currentTime); // || '00:00:00';
+            alert('ANSWER.data.currentTime: ' + G_embedCodeTextStart);
+            G_embedCodeStartInput.value = G_embedCodeTextStart;
+            // console.log('received in script ' + me +': ', e.data.data);
+        }
+    });
+    // ================================================================================
     if (
         G_pageURL.matchLink('#ReCast')
     ) {
@@ -1050,6 +1090,7 @@
                 // --------------------------------------------------------------------------------
                 G_queryURL = document.querySelector('iframe').src;
                 G_standartAddEmbedCodeFunc();
+                G_messageTarget = document.querySelector('iframe').contentWindow;
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('#video_embed_code', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
@@ -1106,6 +1147,15 @@
                 G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
+                    media = media ? media : document.querySelector('.fp-player > video'); // || eventCatcher;
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay*2, 300, G_timerGroup);
             };
             /*
             // document.addEventListener("DOMContentLoaded", function(event) {

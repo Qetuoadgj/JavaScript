@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.10
+// @version      0.0.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -520,6 +520,19 @@
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
                 useGMVolumeCookie("body > video", "video");
+                window.addEventListener('message', function(e) {
+                    if(e.data.sender === 'QUESTION') {
+                        window.top.postMessage({
+                            sender: 'ANSWER',
+                            // data: {
+                            duration: video.duration,
+                            currentTime: video.currentTime,
+                            videoWidth: video.videoWidth,
+                            videoHeight: video.videoHeight,
+                            // }
+                        }, '*');
+                    }
+                });
                 // useLocalVolumeCookie("body > video", "video");
             }
         }
