@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.15
+// @version      2.0.16
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -940,6 +940,7 @@
         else if (G_messageTarget instanceof Element) {
             G_embedCodeTextStart = toHHMMSS(G_messageTarget.currentTime); // || '00:00:00';
             G_embedCodeStartInput.value = G_embedCodeTextStart;
+            alert('G_messageTarget.currentTime: ' + G_embedCodeTextStart);
         }
         // */
         else {
@@ -1155,6 +1156,7 @@
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
+                    G_messageTarget = media;
                 }, G_delay*2, 300, G_timerGroup);
             };
             /*
