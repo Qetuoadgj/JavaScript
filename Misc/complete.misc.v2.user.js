@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.16
+// @version      2.0.17
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -928,6 +928,7 @@
         }
         GM_setValue('category', result);
         G_embedCodeTextCategorie = result;
+		G_embedCodeCatInput.value = G_embedCodeTextCategorie;
     };
     GM_registerMenuCommand('Set Category', function(){
         setCategory();
@@ -1276,9 +1277,9 @@
                 G_standartAddEmbedCodeFunc();
                 var eventCatcher, media;
                 waitForCondition(function(){
-                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#player');
-                    media = media ? media : document.querySelector('div#player video > source');
-                    if (media) {media = media.parentNode};
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.mhp1138_eventCatcher');
+                    media = media ? media : document.querySelector('.mhp1138_videoWrapper > video');
+                    // if (media) {media = media.parentNode};
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
