@@ -21,9 +21,13 @@
     'use strict';
 
     // Your code here...
+    var userLang = navigator.language || navigator.userLanguage;
+    var str_title_prompt = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Множитель громкости' : 'Volume multiplier',
+        str_title_menu = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Усилить громкость видео' : 'Boost video volume'
+    ;
     function callPrompt(gainNode) {
         let volume_mult = GM_getValue('volume_mult', 2.0);
-        let result = prompt('Boost by', volume_mult || 1.0);
+        let result = prompt(str_title_prompt, volume_mult || 1.0);
         if (result === null) {return;}
         GM_setValue('volume_mult', result);
         gainNode.gain.value = result*1; // double the volume
@@ -50,7 +54,7 @@
         ].join(', '))[0]; // 1st match
         if (!gainNode && myVideoElement) {
             gainNode = connectBoost(myVideoElement)
-            if (gainNode) {GM_registerMenuCommand('Boost Volume', function(){callPrompt(gainNode)}, "");};
+            if (gainNode) {GM_registerMenuCommand(str_title_menu, function(){callPrompt(gainNode)}, '');};
         };
         if (gainNode || iteration >= limit) {clearInterval(findSource);};
     }, interval);

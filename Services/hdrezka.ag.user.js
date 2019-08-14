@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.11
+// @version      1.0.12
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -45,6 +45,10 @@
     'use strict';
 
     // Your code here...
+    var userLang = navigator.language || navigator.userLanguage;
+    var str_title_nightMode = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Ночной режим' : 'Night Mode',
+        str_title_autoScale = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Авто-размер' : 'Auto-Scale'
+    ;
     var nightModeEnable = GM_getValue('nightModeEnable', 1);
     var autoScaleEnable = GM_getValue('autoScaleEnable', 1);
     var videoScale = GM_getValue('videoScale', 1);
@@ -122,7 +126,7 @@
             nightModeEnable = 0;
         }
         else {
-            addGlobalStyle(css, "nightMode");
+            addGlobalStyle(css, 'nightMode');
             nightModeEnable = 1;
         }
         GM_setValue('nightModeEnable', nightModeEnable);
@@ -277,12 +281,12 @@
     window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
 
     setTimeout(function() {
-        GM_registerMenuCommand('Night Mode', toggleNightMode, "");
-        GM_registerMenuCommand('Auto Scale', function() {
+        GM_registerMenuCommand(str_title_nightMode, toggleNightMode, '');
+        GM_registerMenuCommand(str_title_autoScale, function() {
             ignoreResize = 0;
             autoScaleEnable = !autoScaleEnable;
             toggleAutoScale();
-        }, "");
+        }, '');
     }, 1000);
 
     var addEvent = function(object, type, callback) {
@@ -290,13 +294,13 @@
         if (object.addEventListener) {
             object.addEventListener(type, callback, false);
         } else if (object.attachEvent) {
-            object.attachEvent("on" + type, callback);
+            object.attachEvent('on' + type, callback);
         } else {
-            object["on"+type] = callback;
+            object['on'+type] = callback;
         }
     };
 
-    addEvent(window, "resize", function(event) {
+    addEvent(window, 'resize', function(event) {
         toggleAutoScale();
     });
 })();
