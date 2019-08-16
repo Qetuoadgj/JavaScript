@@ -488,6 +488,17 @@
         /*window.*/ location.replace(url); // location.href = url;
     };
     // ================================================================================
+    function eventFire(el, etype) {
+        if (el.fireEvent) {
+            el.fireEvent('on' + etype);
+        }
+        else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        };
+    };
+    // ================================================================================
     var G_embedCodeFrame, G_stickTo, G_stickPosition; function addEmbedCodeFrame() {
         var parentDocument = document;
         // --------------------------------------------------------------------------------
@@ -926,6 +937,7 @@
         GM_setValue('category', result);
         G_embedCodeTextCategorie = result;
         G_embedCodeCatInput.value = G_embedCodeTextCategorie;
+        eventFire(G_embedCodeCatInput, 'change');
     };
     GM_registerMenuCommand('Set Category', function(){
         setCategory();
