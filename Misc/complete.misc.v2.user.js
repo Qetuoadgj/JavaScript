@@ -538,8 +538,7 @@
         G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim();
         if (G_embedCodeTextCategorie !== '') element.value = G_embedCodeTextCategorie;
         element.addEventListener('change', function(e){
-            G_embedCodeTextCategorie = e.target.value;
-            G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim().
+            G_embedCodeTextCategorie = e.target.value.trim().
             replace(/\s+,/g, ',').
             replace(/,\s+/g, ',').
             replace(/,+/g, ',').
@@ -720,7 +719,15 @@
         if (G_embedCodeTextStart && G_embedCodeTextStart !== '00:00:00') {
             G_embedCodeText += ' data-start="' + G_embedCodeTextStart + '"';
         };
-        G_embedCodeText += ' data-categories="all,' + G_embedCodeTextCategorie + '"';
+        G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim().
+        replace(/\s+,/g, ',').
+        replace(/,\s+/g, ',').
+        replace(/,+/g, ',').
+        replace(/^,/g, '').
+        replace(/,$/g, '').
+        replace(/,/g, ', ')
+        ;
+        G_embedCodeText += ' data-categories="all,' + (G_embedCodeTextCategorie.length > 0 ? ' ' + G_embedCodeTextCategorie : '') + '"';
         G_embedCodeText += '></div>';
         // --------------------------------------------------------------------------------
         embedCodeTextArea.value = delimiter ? delimiter + G_embedCodeText : G_embedCodeText;
