@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.12
+// @version      1.0.13
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -22,6 +22,8 @@
 //
 // @match        *://rezka.ag/*/*.html
 // @match        *://rezka.me/*/*.html
+
+// @match        *://filmix.co/uzhasy/*.html
 //// @grant        none
 // ==/UserScript==
 
@@ -67,7 +69,7 @@
         return Math.min((window.innerWidth - (20 + 4)*ratio) / elementWidth, (window.innerHeight - (20 + 4)) / elementHeight);
     }
     // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
-    var playerElement = document.querySelector('#videoplayer');
+    var playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
     var playerWidth = playerElement ? playerElement.clientWidth : 640;
     var playerHeight = playerElement ? playerElement.clientHeight : 360;
     // initScale = 2.0 * window.innerWidth/(1200 + 50);
@@ -76,14 +78,23 @@
     var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
     function scalePlayer(scale) {
         var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
-        style = addGlobalStyle("#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}\nbody.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}", "zoomMode");
+        var css = [
+            "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
+            "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}"
+        ].join('\n');
+        if (window.location.href.match('/filmix.co/')) {
+            css += [
+                '.player-item, .players {width: auto !important; height: auto !important;}'
+            ].join('\n');
+        };
+        style = addGlobalStyle(css, "zoomMode");
         GM_setValue('videoScale', scale);
     }
     // scalePlayer(scale);
     function toggleAutoScale() {
         if (ignoreResize) return;
         if (autoScaleEnable) {
-            playerElement = document.querySelector('#videoplayer');
+            playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
             playerWidth = playerElement ? playerElement.clientWidth : 640;
             playerHeight = playerElement ? playerElement.clientHeight : 360;
             initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
@@ -101,23 +112,49 @@
     }
     toggleAutoScale();
     //
+    // https://filmix.co/uzhasy/3857-vozvraschenie-zhivyh-mertvecov-the-return-of-the-living-dead-1985.html
+    var css = [
+        '.container-main.main-block{width: auto;}',
+        '\n#content {width: 100%;}',
+        '\naside, .android-telegram-main, #top {display: none !important;}'
+    ].join('\n');
+    addGlobalStyle(css, 'pageFix');
     function toggleNightMode(force) {
-        var css = "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}" +
-            "\nh2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}"+
-            "\n/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/" +
-            "\n::-webkit-scrollbar {width: 18px; height: 18px;}" +
-            "\n::-webkit-scrollbar-button {background: no-repeat #222; background-size: 18px; background-position: center bottom;}" +
-            "\n::-webkit-scrollbar-button:vertical:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +'");}' +
-            "\n::-webkit-scrollbar-button:vertical:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +'");}' +
-            "\n::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +'");}' +
-            "\n::-webkit-scrollbar-button:horizontal:increment {background-image: url(" + '"' + "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +'");}' +
-            "\n::-webkit-scrollbar-track-piece {background: #111;}" +
-            "\n::-webkit-scrollbar-thumb {background: #222; border-radius: 3px;}" +
-            "\n::-webkit-scrollbar-thumb:hover {background: #444;}" +
-            "\n::-webkit-scrollbar-corner {background-color: #111;}" +
+        var css = [
+            "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}",
+            "h2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}",
+            "/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/",
+            "::-webkit-scrollbar {width: 18px; height: 18px;}",
+            "::-webkit-scrollbar-button {background: no-repeat #222; background-size: 18px; background-position: center bottom;}",
+            "::-webkit-scrollbar-button:vertical:decrement {background-image: url(" +
+            '"' +
+            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +
+            '");}',
+            "::-webkit-scrollbar-button:vertical:increment {background-image: url(" +
+            '"' +
+            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +
+            '");}',
+            "::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" +
+            '"' +
+            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +
+            '");}',
+            "::-webkit-scrollbar-button:horizontal:increment {background-image: url(" +
+            '"' +
+            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +
+            '");}',
+            "::-webkit-scrollbar-track-piece {background: #111;}",
+            "::-webkit-scrollbar-thumb {background: #222; border-radius: 3px;}",
+            "::-webkit-scrollbar-thumb:hover {background: #444;}",
+            "::-webkit-scrollbar-corner {background-color: #111;}",
             //
-            "\niframe#cdn-player {border: 1px #111 solid;}"
-        ;
+            "iframe#cdn-player {border: 1px #111 solid;}"
+        ].join('\n');
+        if (window.location.href.match('/filmix.co/')) {
+            css += [
+                'body * {color: wheat !important;}',
+                '#content {width: 100%; background-color: black;}'
+            ].join('\n');
+        };
         document.body.classList.add('night_mode');
         var style = document.querySelector('head > style.nightMode');
         if (force && style) style.remove();
@@ -233,7 +270,6 @@
         KEY_CLOSE_BRAKET = 221,
         KEY_SINGLE_QUOTE = 222
     ;
-    var showCanvas = true;
     function onKeyDown(e, code) {
         e = e || window.event;
         var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
@@ -266,9 +302,7 @@
                 e.preventDefault();
             }
             else if (shiftDown && e.keyCode == KEY_SPACE) {
-                var player_window = document.querySelector('#ownplayer') ||
-                    document.querySelector('iframe')
-                ;
+                var player_window = document.querySelectorAll('#ownplayer, iframe[allowfullscreen=true]')[0];
                 if (player_window) {
                     player_window.scrollIntoView();
                     window.scrollBy(0, -1);
