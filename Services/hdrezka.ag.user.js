@@ -24,6 +24,7 @@
 // @match        *://rezka.me/*/*.html
 
 // @match        *://filmix.co/uzhasy/*.html
+// @match        *://filmix.co/play/*
 //// @grant        none
 // ==/UserScript==
 
