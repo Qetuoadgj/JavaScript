@@ -80,11 +80,11 @@
         var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
         var css = [
             "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
-            "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}"
+            "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}",
         ].join('\n');
         if (window.location.href.match('/filmix.co/')) {
             css += [
-                '.player-item, .players {width: auto !important; height: auto !important;}'
+                '.player-item, .players {width: auto !important; height: auto !important;}',
             ].join('\n');
         };
         style = addGlobalStyle(css, "zoomMode");
@@ -147,12 +147,12 @@
             "::-webkit-scrollbar-thumb:hover {background: #444;}",
             "::-webkit-scrollbar-corner {background-color: #111;}",
             //
-            "iframe#cdn-player {border: 1px #111 solid;}"
+            "iframe#cdn-player {border: 1px #111 solid;}",
         ].join('\n');
         if (window.location.href.match('/filmix.co/')) {
             css += [
                 'body * {color: wheat !important;}',
-                '#content {width: 100%; background-color: black;}'
+                '#content {width: 100%; background-color: black;}',
             ].join('\n');
         };
         document.body.classList.add('night_mode');
