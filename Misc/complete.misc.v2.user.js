@@ -46,6 +46,7 @@
 // @match        *://www.sex.com/picture/*/
 // @match        *://www.sex.com/pin/*/
 // @match        *://www.sex.com/*
+// @match        *://www.pornpics.com/*
 // ==/UserScript==
 
 (function() {
@@ -1042,7 +1043,7 @@
         ) {
             G_funcToRun = function() {
                 G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1]; // https://www.eporner.com/embed/uCS7LAWJ70b
-                G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[property=og:image]').content;
+                G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[property="og:image"]').content;
                 G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('#relateddiv'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
@@ -1067,7 +1068,7 @@
             G_pageURL.matchLink('https?://www.eporner.eu/embed/*')
         ) {
             G_funcToTest = function () {
-                return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop=contentUrl][content]');
+                return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
             };
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
@@ -1083,7 +1084,7 @@
                 // --------------------------------------------------------------------------------
                 var video = document.querySelector('body video'), src = video.src;
                 if (src.match('blob:')) {
-                    var content = document.querySelector('head > meta[itemprop=contentUrl]').content;
+                    var content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
                     video.src = content;
                     waitForCondition(
                         function() {return video.src != content;},
@@ -1126,9 +1127,9 @@
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
                 G_posterURL = (
-                    document.querySelector('meta[name=thumbnail]') ?
-                    document.querySelector('meta[name=thumbnail]').content :
-                    document.querySelector('meta[property=og:image]').content
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]').content
                 );
                 // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
@@ -1210,7 +1211,7 @@
             };
             /*
             // document.addEventListener("DOMContentLoaded", function(event) {
-                waitForElement('meta[property=og:image]', 'content', G_funcToRun, G_delay, G_tries, G_timerGroup);
+                waitForElement('meta[property="og:image"]', 'content', G_funcToRun, G_delay, G_tries, G_timerGroup);
             // });
             */
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
@@ -1233,7 +1234,7 @@
             G_funcToRun = function () {
                 // --------------------------------------------------------------------------------
                 G_contentURL = G_shortURL; // + '#ReCast';
-                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property=og:image]').getAttribute('content', 2));
+                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.comments_area'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
@@ -1316,8 +1317,8 @@
             G_funcToRun = function () {
                 G_sampleURL = actualSource();
                 G_pageURL = G_pageURL.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2');
-                G_contentURL = document.querySelector('meta[name=twitter:player]').content.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2'); //pageURL + '#ReCast';
-                G_posterURL = document.querySelector('meta[name=twitter:image]').content;
+                G_contentURL = document.querySelector('meta[name="twitter:player"]').content.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2'); //pageURL + '#ReCast';
+                G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15+2); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.video-actions-container'); G_stickPosition = -1;
@@ -1375,9 +1376,9 @@
         ) {
             G_funcToRun = function () {
                 G_sampleURL = actualSource();
-                // G_contentURL = document.querySelector('link[rel=canonical]').href; //pageURL + '#ReCast';
+                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
-                G_posterURL = document.querySelector('meta[property=og:image]').content;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 // G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.channel-info'); G_stickPosition = 1;
@@ -1439,9 +1440,9 @@
             G_funcToRun = function () {
                 // G_sampleURL = actualSource();
                 G_qualitySampleSource = document.querySelector('video[data-qualities]');
-                // G_contentURL = document.querySelector('link[rel=canonical]').href; //pageURL + '#ReCast';
+                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
-                G_posterURL = document.querySelector('meta[property=og:image]').content;
+                G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 // G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.pcomments-left'); G_stickPosition = -1;
@@ -1506,8 +1507,8 @@
             G_pageURL.matchLink('https?://www.veporns.com/video/*') // http://www.veporns.com/video/eroticax-gina-valentina-happy-endings-h245979cc07d1676
         ) {
             G_funcToRun = function () {
-                G_contentURL = document.querySelector('#playerbox > iframe[src^=http]').src;
-                G_posterURL = document.querySelector('meta[itemprop=thumbnailUrl]').content;
+                G_contentURL = document.querySelector('#playerbox > iframe[src^="http"]').src;
+                G_posterURL = document.querySelector('meta[itemprop="thumbnailUrl"]').content;
                 G_sampleURL = null;
                 G_stickTo = document.querySelector('.box.info'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
@@ -1515,10 +1516,10 @@
                 G_standartAddEmbedCodeFunc();
             };
             function initFunc(e) {
-                waitForElement('#playerbox > iframe[src^=http]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+                waitForElement('#playerbox > iframe[src^="http"]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
             }
             // document.addEventListener("DOMContentLoaded", function(event) {
-            for (let button of document.querySelectorAll('.controls > .r > a[href^=#server]')) {
+            for (let button of document.querySelectorAll('.controls > .r > a[href^="#server"]')) {
                 button.addEventListener('click', initFunc);
             }
             // });
@@ -1535,10 +1536,10 @@
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src;
                 G_posterURL = (
-                    document.querySelector('meta[name=thumbnail]') ?
-                    document.querySelector('meta[name=thumbnail]').content :
-                    document.querySelector('meta[property=og:image]') ?
-                    document.querySelector('meta[property=og:image]').content
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]') ?
+                    document.querySelector('meta[property="og:image"]').content
                     : ''
                 );
                 // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
@@ -1611,7 +1612,7 @@
         G_pageURL.matchLink('https?://oload.biz/embed/*') || // https://oload.download/embed/KPgg6tUV_n0/16396.mp4
         G_pageURL.matchLink('https?://oload.*/embed/*') // https://oload.life/embed/7zh5fZ9bofM
     ) {
-        var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^=stream]');
+        var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
         G_funcToTest = function () {
             var ready, url = src_span;
             if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
@@ -1659,13 +1660,13 @@
     else if (
         G_pageURL.matchLink('https?://www.jjgirls.com/*')
     ) {
-        // addPageControlKeys('a[rel=prev]', 'a[rel=next]');
+        // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         if (
             G_pageURL.matchLink('https?://www.jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
         ) {
             G_funcToRun = function () {
                 var imagesArray = [], thumbsArray = [];
-                for (let link of document.querySelectorAll('div.related > a[href*=://pics.jjgirls.com/pictures/]')) {
+                for (let link of document.querySelectorAll('div.related > a[href*="://pics.jjgirls.com/pictures/"]')) {
                     var imageURL = link.href, img = link.querySelector('img');
                     if (img) {
                         var thumbURL = ''; //img.src;
@@ -1687,14 +1688,14 @@
                 // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
             };
             // --------------------------------------------------------------------------------
-            waitForElement('div.related > a[href^=http]', 'href', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('div.related > a[href^="http"]', 'href', G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
     }
 
     else if (
         G_pageURL.matchLink('https?://www.babesandstars.com/*')
     ) {
-        // addPageControlKeys('a[rel=prev]', 'a[rel=next]');
+        // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         if (
             G_pageURL.matchLink('https?://www.babesandstars.com/*/*/*/') // http://www.babesandstars.com/b/bethanie-badertscher/hlgk/
         ) {
@@ -1733,7 +1734,7 @@
     else if (
         G_pageURL.matchLink('https?://www.definebabe.com/*')
     ) {
-        // addPageControlKeys('a[rel=prev]', 'a[rel=next"]');
+        // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         if (
             G_pageURL.matchLink('https?://www.definebabe.com/gallery/*') // http://www.definebabe.com/gallery/2hha/ava-taylor/
         ) {
@@ -1764,6 +1765,70 @@
             // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('div.gallery div.thumbnails a[href] img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
             // });
+        };
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://www.pornpics.com')
+    ) {
+        var class_name = 'thumbwook';
+        var valid = (item) => {return item.querySelector('a.rel-link > img');};
+        var i = 1, append_text = (item) => {
+            if (valid(item)) {
+                var text = item.querySelector('p.image_number_text');
+                if (!text) {
+                    text = document.createElement('p');
+                    item.appendChild(text);
+                    text.innerText = '#' + i;
+                    text.class = 'image_number_text';
+                    text.style['font-size'] = 'x-large';
+                    text.style.margin = '0';
+                };
+                i++;
+            };
+        };
+        var array = document.querySelectorAll('.' + class_name);
+        for (let item of array) {append_text(item);}
+        document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
+            var item = event.target;
+            var item_class = item.className ? item.className.trim() : '';
+            if (item_class == class_name) { append_text(item); }
+        }, false);
+        if (
+            G_pageURL.matchLink('https?://www.pornpics.com/galleries/*')
+        ) {
+            G_funcToRun = function () {
+                var linksArray = document.querySelectorAll('#main li.thumbwook > a'), imagesArray = [], thumbsArray = [];
+                for (let link of linksArray) {
+                    var imageURL = link.href, img = link.querySelector('img');
+                    if (img) {
+                        var thumbURL = img.src;
+                        thumbsArray.push(thumbURL);
+                        imagesArray.push(imageURL);
+                    };
+                };
+                G_contentTitle = document.querySelector('title').innerText.trim(); // Frisky teenagers Natalie Monroe and Ava Taylor are giving their mouths and nubs for fuck
+                G_contentURL = imagesArray[imagesArray.length-1];
+                G_posterURL = imagesArray[imagesArray.length-1]; // thumbsArray[0];
+                G_postersArray = imagesArray; //thumbsArray; console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('#main'); G_stickPosition = 1;
+                G_standartAddEmbedCodeFunc();
+                for (let i in thumbsArray) {
+                    G_contentURL = imagesArray[i];
+                    G_posterURL = thumbsArray[i];
+                    let link = linksArray[i];
+                    G_videoWidth = link.dataset && link.dataset.size ? link.dataset.size.split('x')[0] : null;
+                    G_videoHeight = link.dataset && link.dataset.size ? link.dataset.size.split('x')[1] : null;
+                    updateEmbedCodeText(G_embedCodeTextArea, i == 0, G_delimiter);
+                }
+                // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
+            };
+            // --------------------------------------------------------------------------------
+            document.addEventListener("DOMContentLoaded", function(event) {
+                waitForElement('#main', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            });
+            //
+            // return; // SKIP REST OF THE CODE
         };
     }
 
@@ -1803,7 +1868,7 @@
             G_funcToRun = function () {
                 let source = document.querySelector('.image_frame img');
                 G_contentURL = source.src.replace(/(.*?)\?.*/, '$1');
-                G_posterURL = document.querySelector('meta[itemprop=thumbnail]').content;
+                G_posterURL = document.querySelector('meta[itemprop="thumbnail"]').content;
                 G_stickTo = document.querySelector('.image_frame'); G_stickPosition = 1;
                 G_videoWidth = source.naturalWidth; G_videoHeight = source.naturalHeight;
                 G_standartAddEmbedCodeFunc();
@@ -1822,21 +1887,21 @@
     }
 
 
-    else if (
-        G_pageURL.matchLink('*.jpg')
-    ) {
-        G_funcToRun = function () {
-            var val = 0;
-            G_contentURL = G_shortURL;
-            G_posterURL = G_shortURL;
-            G_stickTo = document.querySelector('body'); G_stickPosition = 0;
-            G_standartAddEmbedCodeFunc();
-        };
-        waitForElement('img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-        return; // SKIP REST OF THE CODE
-    }
+        else if (
+            G_pageURL.matchLink('*.jpg')
+        ) {
+            G_funcToRun = function () {
+                var val = 0;
+                G_contentURL = G_shortURL;
+                G_posterURL = G_shortURL;
+                G_stickTo = document.querySelector('body'); G_stickPosition = 0;
+                G_standartAddEmbedCodeFunc();
+            };
+            waitForElement('img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            return; // SKIP REST OF THE CODE
+        }
 
-    else {
-        // alert(G_pageURL);
-    }
+        else {
+            // alert(G_pageURL);
+        }
 })();
