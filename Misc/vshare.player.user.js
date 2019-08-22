@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.11
+// @version      0.0.12
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -9,7 +9,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
-// @run-at       document-start
+// @run-at       document-end
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/vshare.player.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Misc
 // @match        *://vshare.io/v/404/*
@@ -64,16 +64,37 @@
     )
     // */
     // ---------------------------------------------------
+    function failed(e) {
+        // video playback failed - show a message saying why
+        switch (e.target.error.code) {
+            case e.target.error.MEDIA_ERR_ABORTED:
+                console.log('You aborted the video playback.');
+                break;
+            case e.target.error.MEDIA_ERR_NETWORK:
+                console.log('A network error caused the video download to fail part-way.');
+                break;
+            case e.target.error.MEDIA_ERR_DECODE:
+                console.log('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
+                break;
+            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                console.log('The video could not be loaded, either because the server or network failed or because the format is not supported.');
+                break;
+            default:
+                console.log('An unknown error occurred.');
+                break;
+        };
+    };
+    // ---------------------------------------------------
     var video = document.createElement('video');
+    video.addEventListener('error', failed);
     video.setAttribute('id', 'cleaned_video');
-    video.setAttribute('src', '');
     video.setAttribute('preload', 'metadata'); // none
     video.setAttribute('controls', '');
     video.setAttribute('webkitallowfullscreen', '');
     video.setAttribute('mozallowfullscreen', '');
     video.setAttribute('allowfullscreen', '');
-    video.setAttribute('onerror', 'failed(event);');
-    // video.addEventListener('error', function(event){failed(event);});
+    // video.setAttribute('onerror', 'failed(event);');
+    // video.setAttribute('src', '');
     document.body.appendChild(video);
     // video.src = 'https://s902.vshare.io:440/s,128-1000-22-1-2191707-bkxdtksrwj/186745/351673/185658/ff-8840c3e48fc8f80f67eeacc4b3fc3cdbb94c86b4,5c584cc5,2f23e49_480.mp4';
     // ---------------------------------------------------
@@ -522,15 +543,17 @@
                 useGMVolumeCookie("body > video", "video");
                 window.addEventListener('message', function(e) {
                     if(e.data.sender === 'QUESTION') {
-                        window.top.postMessage({
-                            sender: 'ANSWER',
-                            // data: {
-                            duration: video.duration,
-                            currentTime: video.currentTime,
-                            videoWidth: video.videoWidth,
-                            videoHeight: video.videoHeight,
-                            // }
-                        }, '*');
+                        setTimeout(function() {
+                            window.top.postMessage({
+                                sender: 'ANSWER',
+                                // data: {
+                                duration: video.duration,
+                                currentTime: video.currentTime,
+                                videoWidth: video.videoWidth,
+                                videoHeight: video.videoHeight,
+                                // }
+                            }, '*');
+                        }, 50);
                     }
                 });
                 // useLocalVolumeCookie("body > video", "video");
@@ -540,24 +563,4 @@
     initPlayer();
     // ---------------------------------------------------
     // video.src = 'https://vshare.io/err105.mp4?error=expired&#t=5';
-    function failed(e) {
-        // video playback failed - show a message saying why
-        switch (e.target.error.code) {
-            case e.target.error.MEDIA_ERR_ABORTED:
-                console.log('You aborted the video playback.');
-                break;
-            case e.target.error.MEDIA_ERR_NETWORK:
-                console.log('A network error caused the video download to fail part-way.');
-                break;
-            case e.target.error.MEDIA_ERR_DECODE:
-                console.log('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
-                break;
-            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                console.log('The video could not be loaded, either because the server or network failed or because the format is not supported.');
-                break;
-            default:
-                console.log('An unknown error occurred.');
-                break;
-        }
-    }
 })();
