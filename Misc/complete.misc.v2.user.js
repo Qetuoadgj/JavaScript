@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.21
+// @version      2.0.22
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -11,7 +11,6 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
-// @grant        GM_addValueChangeListener
 // @grant        GM_registerMenuCommand
 // @grant        unsafeWindow
 // @match        file:///*/2.*.*.html*
@@ -445,18 +444,15 @@
     // ================================================================================
     if (location.href.match('autoplay=true')) {
         GM_setValue('autoplay', true);
-        // var autoplay = GM_getValue('autoplay', null);
     };
     var duration = location.href.match(/\bt\b=((\d+)(,\d+)?)/);
     if (duration) {
         GM_setValue('t', duration[1]);
-        // var t = GM_getValue('t', null);
     };
     // ================================================================================
     function refineVideo(url, noPlayerExtension = false) {
         var autoplay = GM_getValue('autoplay', null), t = GM_getValue('t', null);
         console.log('autoplay: ' + autoplay || 'false');
-        // alert('autoplay: ' + autoplay || 'false');
         var url_base = url.split('?')[1] ? url.split('?')[0] : url,
             url_keys = url.split('?')[1] ? url.split('?')[1] : null
         ;
@@ -471,11 +467,8 @@
             else {url = url + '?t=' + t; url_keys = url.replace(url_base, '');}
             GM_deleteValue('t');
         }
-        // alert(url);
-        // alert(url_keys);
         var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
         var playerPath = 'chrome-extension://bbaidcdbgbiachhpighhjgbeahoikjbp/player.html';
-        // alert(window.location.href + '\nisInstalled:' + isInstalled);
         if (noPlayerExtension) {
             playerPath = location.protocol + '//' + G_pageDomain + '/v/404/';
             return playerPath + url;
@@ -778,40 +771,25 @@
         else if (contentURL.match(/^\/\//)) contentURL = location.protocol + G_contentURL;
         else if (contentURL.match(/^\//)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         console.log('contentURL: ', contentURL);
-        //
-        G_funcToTest = function() {
-            if (window.top === window.self) {
-                return 1;
-            }
-            // var queryURL = GM_getValue('queryURL', null);
-            // return (G_pageURL == queryURL || G_pageURL.match(queryURL) || !queryURL);
-            return 1;
-        };
+        // G_funcToTest = function() {if (window.top === window.self) {return 1;} return 1;};
         G_funcToRun = function() {
-            // var queryURL = GM_getValue('queryURL', null);
-            // GM_setValue('queryURL', null); //  GM_deleteValue('queryURL');
-            // console.log('queryURL: ', queryURL);
             var mediaData = {};
-            mediaData.url = G_pageURL; // queryURL;
+            mediaData.url = G_pageURL;
             mediaData.src = contentURL;
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
             if (window.top === window.self) {
-                // GM_setValue('mediaData', mediaData);
                 window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
-                // openURL(mediaData.refined);
-                // window.close();
             }
             else {
-                // GM_setValue('mediaData', mediaData);
                 window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
                 openURL(mediaData.refined);
             };
-            // setTimeout(function(){GM_setValue('queryURL', null);}, 1000);
         };
-        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries*2, G_timerGroup);
+        G_funcToRun();
+        // waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries*2, G_timerGroup);
     };
     // ================================================================================
     function updateEmbedCodeTextColor() {
@@ -864,31 +842,6 @@
         }
         addKeyComboCtrlC(G_embedCodeTextArea, 1, 0);
         if (G_postersArray && G_postersArray.length > 1) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
-        // --------------------------------------------------------------------------------
-        /*
-        GM_setValue('queryURL', null); //  GM_deleteValue('queryURL');
-        console.log('G_standartAddEmbedCodeFunc: queryURL: ', G_queryURL);
-        if (G_queryURL) {
-            GM_setValue('queryURL', G_queryURL);
-            let mediaDataOld = GM_getValue('mediaData', null);
-            GM_setValue('mediaData', null); GM_addValueChangeListener('mediaData', function(name, old_value, new_value, remote) {
-                if (new_value.url == G_queryURL) {
-                    console.log('mediaData:', new_value);
-                    G_sampleURL = new_value.src;
-                    G_videoWidth = new_value.width;
-                    G_videoHeight = new_value.height;
-                    G_videoDuration = new_value.duration;
-                    G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
-                        updateEmbedCodeTextColor();
-                    }, function onErrorFunc() {
-                        log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
-                        updateEmbedCodeTextColor();
-                    }, G_forceLoad);
-                }
-            });
-            if (!(G_videoWidth && G_videoHeight) && mediaDataOld) GM_setValue('mediaData', mediaDataOld);
-        }
-        */
         // --------------------------------------------------------------------------------
         log(G_debugMode, G_contentURL, '\n', G_sampleURL, '\n', G_posterURL);
     };
@@ -1004,32 +957,11 @@
     if (
         G_pageURL.matchLink('#ReCast')
     ) {
-        /*
-        GM_setValue('mediaData', null); GM_addValueChangeListener('mediaData', function(name, old_value, new_value, remote) {
-            window.close();
-        })
-        // return
-        */
+        return
     }
     else if (
         G_pageURL.matchLink('file:///*/2.*.*.html')
     ) {
-        /*
-        GM_setValue('mediaData', null); GM_addValueChangeListener('mediaData', function(name, old_value, new_value, remote) {
-            if (new_value && new_value != "") {
-                var outputs = document.getElementById('content'), iframeOutput, imgOutput, outputsArray = [];
-                if (outputs) {
-                    iframeOutput = outputs.querySelector('#content_iframe');
-                    imgOutput = outputs.querySelector('#content_img');
-                    outputsArray.push(iframeOutput, imgOutput);
-                    if (iframeOutput.style.display == 'block') {
-                        iframeOutput.src = new_value.refined; //+ '?autoplay=true'; // refineVideo(videoURL);
-                        // GM_deleteValue('mediaData');
-                    }
-                }
-            }
-        })
-        */
         return
     }
     // ================================================================================
@@ -1133,7 +1065,7 @@
                 );
                 // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
-                console.log(G_posterURL);
+                // console.log(G_posterURL);
                 G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
@@ -1544,7 +1476,7 @@
                 );
                 // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
                 // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
-                console.log(G_posterURL);
+                // console.log(G_posterURL);
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
@@ -1641,14 +1573,9 @@
             var contentURL = location.protocol + '//' + location.host + '/stream/' + url.innerText + '?mime=true';
             // var posterURL = document.querySelector('#olvideo_html5_api').poster;
             console.log('contentURL: ', contentURL);
-            // G_contentURL = contentURL; G_standartReCastFunc();
-            // /*
-            // var queryURL = GM_getValue('queryURL', null);
             var mediaData = {};
             mediaData.url = G_pageURL; // queryURL;
             mediaData.src = contentURL;
-            // GM_setValue('mediaData', mediaData);
-            // */
             window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
             openURL(refineVideo(contentURL));
         };
@@ -1886,22 +1813,21 @@
         return; // SKIP REST OF THE CODE
     }
 
+    else if (
+        G_pageURL.matchLink('*.jpg')
+    ) {
+        G_funcToRun = function () {
+            var val = 0;
+            G_contentURL = G_shortURL;
+            G_posterURL = G_shortURL;
+            G_stickTo = document.querySelector('body'); G_stickPosition = 0;
+            G_standartAddEmbedCodeFunc();
+        };
+        waitForElement('img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        return; // SKIP REST OF THE CODE
+    }
 
-        else if (
-            G_pageURL.matchLink('*.jpg')
-        ) {
-            G_funcToRun = function () {
-                var val = 0;
-                G_contentURL = G_shortURL;
-                G_posterURL = G_shortURL;
-                G_stickTo = document.querySelector('body'); G_stickPosition = 0;
-                G_standartAddEmbedCodeFunc();
-            };
-            waitForElement('img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            return; // SKIP REST OF THE CODE
-        }
-
-        else {
-            // alert(G_pageURL);
-        }
+    else {
+        // alert(G_pageURL);
+    }
 })();
