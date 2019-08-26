@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.15
+// @version      1.0.16
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -125,7 +125,7 @@
         return 'https://drive.google.com/uc?id=' + id + '&authuser=0&export=download';
     };
 
-    var Reticle_GREEN = 'https://drive.google.com/open?id=1dtTu1wGLq8NAiHE6dkJmy3TZSzVvG9Aw';
+    var Reticle_GREEN = 'https://drive.google.com/open?id=1nUB5HC_x9ZYBH_t2s5rMKWRX-woY4xkg';
     var Reticle_RED = 'https://drive.google.com/open?id=11SoQbfgg-2Exq3Nxn7jQdribTfgxJrjR';
     var Reticle_Scope_PU = 'https://drive.google.com/file/d/19OzzNGLKh7RmlcQqW3cpUPqBkMc_-xSm/view?usp=sharing';
 
@@ -144,9 +144,9 @@
         localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || localStorage.kro_setngss_sensitivity*1.20;
         localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || OFF;
         localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || ON;
-        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#ff8000"; // "#00ff00";
+        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#ff8040"; // "#ff8000"; // "#00ff00";
         localStorage.kro_setngss_crosshairShadow = "#000000"; // "#ff0000";
-        localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || 95;
+        localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || 85;
         localStorage.kro_setngss_fpsFOV = localStorage.kro_setngss_fpsFOV || localStorage.kro_setngss_fov + 5; // 120;
         localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || OFF;
         localStorage.kro_setngss_particles = localStorage.kro_setngss_particles || OFF;
@@ -159,7 +159,7 @@
         // localStorage.color = "#000000";
         localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || "#ff0000";
         localStorage.kro_setngss_customScope = png_sight_sniper;
-        localStorage.kro_setngss_customADSDot = png_sight_dot;
+        // localStorage.kro_setngss_customADSDot = png_sight_dot;
         //
         localStorage.kro_setngss_crosshairSho = 3;
         localStorage.kro_setngss_crosshairStyle = 1;
@@ -396,8 +396,8 @@
                 /* LOAD MODS */
                 if (localStorage.kro_setngss_canLoadMods == 'true') {
                     let modsArray = [
-                        ["NoSight", "https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0", "2723"],
-//                         ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
+                        // ["NoSight", "https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0", "2723"],
+                        // ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
                     ];
                     loadMods(modsArray, 1000);
                 };
