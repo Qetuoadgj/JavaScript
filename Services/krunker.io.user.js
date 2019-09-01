@@ -138,6 +138,8 @@
             OFF = 'false'
         ;
         // Your code here...
+        localStorage.clear();
+        //
         localStorage.classindex = localStorage.classindex || 12;
         localStorage.consent = localStorage.consent || 1;
         localStorage.krk_record = localStorage.krk_record || OFF;
@@ -145,8 +147,8 @@
         localStorage.kro_setngss_aimSensitivity = localStorage.kro_setngss_aimSensitivity || localStorage.kro_setngss_sensitivity*1.20;
         localStorage.kro_setngss_ambientShading = localStorage.kro_setngss_ambientShading || OFF;
         localStorage.kro_setngss_canLoadMods = localStorage.kro_setngss_canLoadMods || ON;
-        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || "#ffffff"; // "#ff8040"; // "#ff8000"; // "#00ff00";
-        localStorage.kro_setngss_crosshairShadow = "#000000"; // "#ff0000";
+        localStorage.kro_setngss_crosshairColor = localStorage.kro_setngss_crosshairColor || '#ffffff'; // '#ff8040'; // '#ff8000'; // '#00ff00';
+        localStorage.kro_setngss_crosshairShadow = '#000000'; // '#ff0000';
         localStorage.kro_setngss_fov = localStorage.kro_setngss_fov || 85;
         localStorage.kro_setngss_fpsFOV = /* localStorage.kro_setngss_fpsFOV || */ localStorage.kro_setngss_fov*1 + 5; // 120;
         localStorage.kro_setngss_muzzleFlash = localStorage.kro_setngss_muzzleFlash || OFF;
@@ -157,8 +159,8 @@
         localStorage.krunker_streamMode = localStorage.krunker_streamMode || OFF;
         localStorage.sprayindex = localStorage.sprayindex || 12;
         //
-        // localStorage.color = "#000000";
-        localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || "#ff0000";
+        // localStorage.color = '#000000';
+        localStorage.color = localStorage.color || localStorage.kro_setngss_crosshairShadow || '#ff0000';
         localStorage.kro_setngss_customScope = png_sight_sniper;
         localStorage.kro_setngss_customADSDot = png_sight_dot;
         //
@@ -172,13 +174,15 @@
         localStorage.kro_setngss_crosshairStyle = 1;
         */
         localStorage.kro_setngss_showDeaths = ON;
-        // localStorage.kro_setngss_showTrails = "false";
-        // localStorage.kro_setngss_particles = "true";
+        // localStorage.kro_setngss_showTrails = 'false';
+        // localStorage.kro_setngss_particles = 'true';
         //
-        // localStorage.kro_setngss_crosshairSho = "3";
+        // localStorage.kro_setngss_crosshairSho = '3';
         //
         localStorage.kro_setngss_dynamicHP = OFF;
         localStorage.kro_setngss_showUnboxings = OFF;
+        //
+        localStorage.kro_setngss_autoLoadLast = ON;
     };
     initSettings();
     //
@@ -194,7 +198,7 @@
         if (fill) context.fill();
         context.lineWidth = lineWidth;
         context.strokeStyle = lineColor;
-        context.lineCap = "round";
+        context.lineCap = 'round';
         context.stroke();
         context.globalAlpha = 1.0;
     };
@@ -207,7 +211,7 @@
         context.lineTo(x, y);
         context.lineWidth = lineWidth;
         context.strokeStyle = lineColor;
-        context.lineCap = "round";
+        context.lineCap = 'round';
         context.stroke();
         context.globalAlpha = 1.0;
     };
@@ -218,11 +222,11 @@
         context.lineTo(x2, y2);
         context.lineWidth = lineWidth;
         context.strokeStyle = lineColor;
-        context.lineCap = "round";
+        context.lineCap = 'round';
         context.stroke();
         context.globalAlpha = 1.0;
     };
-    /* REGISTER "ON PAGE LOADED" EVENT */
+    /* REGISTER 'ON PAGE LOADED' EVENT */
     document.addEventListener('DOMContentLoaded', function() {
         var canLoad = function() {
             let ui = document.querySelector('#inGameUI');
@@ -244,13 +248,13 @@
             showCanvasBorders = false; // true;
             lineWidth = 1.50 * markThicknessMult;
             globalOpacity = 1.00;
-            lineColor = "rgb(127, 255, 127)"; // "rgb(255, 255, 170)";
+            lineColor = 'rgb(127, 255, 127)'; // 'rgb(255, 255, 170)';
             scaleValue = 24 * markScaleMult;
             showCicleMark = true;
             cicleMarkGap = 0.40;
             showDot = true;
             dotRadiusPX = 1.00 + lineWidth*1.50 - 1.25;
-            dotColor = "rgb(255, 255, 127)"; // "#ff6000"; // "#ffff00";
+            dotColor = 'rgb(255, 255, 127)'; // '#ff6000'; // '#ffff00';
             dotOpacity = 1.00;
             dotFill = false;
             shade = true;
@@ -262,11 +266,11 @@
         resetMarkSettings();
         /* CREATE PREPARE CANVAS FUNCTION */
         function prepareCanvas() {
-            var canvas_id = "canvas_1";
+            var canvas_id = 'canvas_1';
             var canvas = document.getElementById(canvas_id);
             if (canvas) {canvas.remove(); canvas = null;}
             else {
-                canvas = document.createElement("canvas");
+                canvas = document.createElement('canvas');
                 document.body.appendChild(canvas);
                 canvas.id = canvas_id;
             };
@@ -310,36 +314,36 @@
             if (mode == 1) {
                 let offsetY = 4;
                 radius = scaleValue;
-                if (shade) drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red", lineWidth * 2.0 + 1, 0, "Red", dotOpacity * 0.5);
+                if (shade) drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, 'Red', lineWidth * 2.0 + 1, 0, 'Red', dotOpacity * 0.5);
                 drawChevron(context, x, y+offsetY, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
                 showCicleMark = false;
             };
             if (mode == 2) {
                 let lineLengthPX = 28, gapPX = 8;
-                if (shade) drawLine(context, x+gapPX, y, x+lineLengthPX, y, "Red", lineWidth * 2.0, globalOpacity);
+                if (shade) drawLine(context, x+gapPX, y, x+lineLengthPX, y, 'Red', lineWidth * 2.0, globalOpacity);
                 drawLine(context, x+gapPX, y, x+lineLengthPX, y, lineColor, lineWidth, globalOpacity);
-                if (shade) drawLine(context, x-gapPX, y, x-lineLengthPX, y, "Red", lineWidth * 2.0, globalOpacity);
+                if (shade) drawLine(context, x-gapPX, y, x-lineLengthPX, y, 'Red', lineWidth * 2.0, globalOpacity);
                 drawLine(context, x-gapPX, y, x-lineLengthPX, y, lineColor, lineWidth, globalOpacity);
                 lineLengthPX *= 0.75;
-                if (shade) drawLine(context, x, y+gapPX, x, y+lineLengthPX, "Red", lineWidth * 2.0, globalOpacity);
+                if (shade) drawLine(context, x, y+gapPX, x, y+lineLengthPX, 'Red', lineWidth * 2.0, globalOpacity);
                 drawLine(context, x, y+gapPX, x, y+lineLengthPX, lineColor, lineWidth, globalOpacity);
                 showCicleMark = false;
                 showDot = true;
             };
             if (showDot) {
-                if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, "Red" /*localStorage.color*/, lineWidth * 2.0 + 1, 0, "Red", dotOpacity * 0.5);
-                drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*"White"*/ dotColor, lineWidth, 0, lineColor, dotOpacity);
+                if (shade) drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, 'Red' /*localStorage.color*/, lineWidth * 2.0 + 1, 0, 'Red', dotOpacity * 0.5);
+                drawArc(context, x, y, radius, (0.50 + 0 / 2) * Math.PI, (2.50 - 0 / 2) * Math.PI, /*'White'*/ dotColor, lineWidth, 0, lineColor, dotOpacity);
             };
             if (showCicleMark) {
                 radius = scaleValue;
-                if (shade) drawArc(context, x, y, radius, arc[0] * Math.PI, arc[1] * Math.PI, localStorage.color, lineWidth * 2.5 + 1, 0, "Red", dotOpacity * 0.5);
+                if (shade) drawArc(context, x, y, radius, arc[0] * Math.PI, arc[1] * Math.PI, localStorage.color, lineWidth * 2.5 + 1, 0, 'Red', dotOpacity * 0.5);
                 drawArc(context, x, y, radius, arc[0] * Math.PI, arc[1] * Math.PI, lineColor, lineWidth, 0, lineColor, dotOpacity);
             };
             if (parentElement) {
                 var rect = parentElement.getBoundingClientRect();
                 var rect_center_x = rect.left + rect.width/2, rect_center_y = rect.top + rect.height/2;
-                canvas.style.left = rect_center_x + "px";
-                canvas.style.top = rect_center_y + "px";
+                canvas.style.left = rect_center_x + 'px';
+                canvas.style.top = rect_center_y + 'px';
                 console.log(rect_center_x+', '+rect_center_y);
                 // canvas.style.zoom = 1;
             };
@@ -360,7 +364,7 @@
             if (code) e.keyCode = code;
             if (!(targetType == 'input' || targetType == 'textarea')) {
                 if (e.keyCode == KEY_ADD) {
-                    // console.log("showCanvas: " + showCanvas);
+                    // console.log('showCanvas: ' + showCanvas);
                     //*
                     if (showCanvas == false) {
                         clearCanvas(canvas);
@@ -388,7 +392,8 @@
 
         function loadMods(modsArray, interval = 1000) {
             for (let i = 0; modsArray.length; i++) {
-                let mod_name = modsArray[i][0], mod_url = modsArray[i][1], mod_id = modsArray[i][2];
+                let modData = modsArray[i] || [null, null, null];
+                let mod_name = modData[0], mod_url = modData[1], mod_id = modData[2];
                 if (mod_name && mod_url && mod_id) {
                     console.log('Loading mod: [', mod_name, '|', mod_url, '|', mod_id,'] (', interval*i, ')');
                     setTimeout(function() {window.loadUserMod(mod_name, mod_url, mod_id);}, interval*i);
@@ -402,10 +407,8 @@
             if (canLoad()) {
                 /* LOAD MODS */
                 if (localStorage.kro_setngss_canLoadMods == 'true') {
-                    let modsArray = [
-                        ["NoSight", "https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0", "2723"],
-                        // ["RUST_SOUNDS", "https://www.dropbox.com/s/ppiqggky4iuvhtf/Rust%20Mod.zip?dl=1", "2624"],
-                    ];
+                    let modsArray = [];
+                    modsArray.push(['NoSight', 'https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0', '2723']);
                     loadMods(modsArray, 1000);
                     // localStorage.krk_lastMod = 'https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0';
                 };
