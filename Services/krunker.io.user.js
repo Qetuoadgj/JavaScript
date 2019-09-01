@@ -134,11 +134,8 @@
     var png_sight_sniper = googl(Reticle_Scope_PU);
 
     function initSettings() {
-        let ON = 'true',
-            OFF = 'false'
-        ;
-        // Your code here...
-        localStorage.clear();
+        let ON = 'true', OFF = 'false' ;
+        // localStorage.clear();
         //
         localStorage.classindex = localStorage.classindex || 12;
         localStorage.consent = localStorage.consent || 1;
@@ -391,12 +388,14 @@
         };
 
         function loadMods(modsArray, interval = 1000) {
-            for (let i = 0; modsArray.length; i++) {
-                let modData = modsArray[i] || [null, null, null];
-                let mod_name = modData[0], mod_url = modData[1], mod_id = modData[2];
-                if (mod_name && mod_url && mod_id) {
-                    console.log('Loading mod: [', mod_name, '|', mod_url, '|', mod_id,'] (', interval*i, ')');
-                    setTimeout(function() {window.loadUserMod(mod_name, mod_url, mod_id);}, interval*i);
+            let modCount = 0; for (let modData of modsArray) {
+                if (typeof modData === 'object') {
+                    let mod_name = modData[0], mod_url = modData[1], mod_id = modData[2];
+                    if (mod_name && mod_url && mod_id) {
+                        console.log('Loading mod: [', mod_name, '|', mod_url, '|', mod_id,'] (', interval * modCount, ')');
+                        setTimeout(function(){window.loadUserMod(mod_name, mod_url, mod_id);}, interval * modCount);
+                        modCount++;
+                    };
                 };
             };
         };
