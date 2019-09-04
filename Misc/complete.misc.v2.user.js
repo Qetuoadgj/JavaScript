@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.23
+// @version      2.0.24
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -766,6 +766,7 @@
     }
     // ================================================================================
     var G_noPlayerExtension = false, G_triesReCastMult = 2, G_standartReCastFunc = function() {
+        console.log('G_standartReCastFunc:', G_pageURL);
         var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         else if (contentURL.match(/^\/\//)) contentURL = location.protocol + G_contentURL;
@@ -929,8 +930,10 @@
         else if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.src) {
             if (G_pageURL.matchLink('#ReCast')) {
                 console.log('e.data:',e.data);
-                window.opener.postMessage(e.data, '*');
-                window.close();
+                if (window.opener) {
+                    window.opener.postMessage(e.data, '*');
+                    window.close();
+                };
             }
             else if (G_pageURL.matchLink('file:///*/2.*.*.html')) {
                 let outputs = document.getElementById('content');
@@ -954,12 +957,13 @@
         };
     });
     // ================================================================================
+    /*
     if (
         G_pageURL.matchLink('#ReCast')
     ) {
         return
     }
-    else if (
+    else*/ if (
         G_pageURL.matchLink('file:///*/2.*.*.html')
     ) {
         return
@@ -1838,5 +1842,8 @@
 
     else {
         // alert(G_pageURL);
+        console.log('No Match:', G_pageURL);
     }
+
+    console.log('G_matchedLink:', G_matchedLink);
 })();
