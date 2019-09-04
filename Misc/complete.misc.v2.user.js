@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.22
+// @version      2.0.23
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -985,6 +985,15 @@
                 G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div[aria-label="Video Player"]');
+                    media = media ? media : document.querySelector('video#EPvideo_html5_api');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
                 /*
                 setTimeout(function() {
                     var eventCatcher = document.querySelector('div#moviexxx'), media = document.querySelector('body video[src]');
@@ -1550,7 +1559,7 @@
             if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
             else {
                 if (!src_span) {
-                    document.querySelectorAll('div > p, span').forEach(function (item) { // https://www.eporner.com/embed/HYmQUXbhRrR
+                    document.querySelectorAll('div > p, span').forEach(function (item) {
                         var text = item.innerText;
                         // var match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
                         // http://pron.tv/l/Jenna-Reid-MP4-mp4/ezcexss2 // yybXOZwKGAg~1523412842~37.25.0.0~_27EYtA9
