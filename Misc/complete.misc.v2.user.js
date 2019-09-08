@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.24
+// @version      2.0.25
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -809,7 +809,7 @@
         G_embedCodePoster.style.zoom = 1.0;
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_queryURL = null, G_standartAddEmbedCodeFunc = function() {
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_standartAddEmbedCodeFunc = function() {
         // --------------------------------------------------------------------------------
         G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         G_delimiter = ''; // '<!-- ' + G_contentTitle + ' -->\n';
@@ -1060,11 +1060,11 @@
             window.stop();
             location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
         }
-        /*
+        // /*
         else if (G_pageURL.match('#ReCast')) {
             return;
         }
-        */
+        // */
         else if (
             G_pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/306756151
         ) {
@@ -1083,7 +1083,6 @@
                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_queryURL = document.querySelector('iframe').src;
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
@@ -1457,7 +1456,6 @@
                 G_sampleURL = null;
                 G_stickTo = document.querySelector('.box.info'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_queryURL = G_contentURL;
                 G_standartAddEmbedCodeFunc();
             };
             function initFunc(e) {
@@ -1493,7 +1491,6 @@
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_queryURL = document.querySelector('iframe').src;
                 G_standartAddEmbedCodeFunc();
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
