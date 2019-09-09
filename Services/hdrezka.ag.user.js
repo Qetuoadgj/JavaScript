@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.13
+// @version      1.0.14
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -122,7 +122,7 @@
     addGlobalStyle(css, 'pageFix');
     function toggleNightMode(force) {
         var css = [
-            "div, body, .night_mode, body.active-brand #wrapper {background: black !important; background-color: black !important}",
+            "div, body, .night_mode, body.active-brand #wrapper, .comments-tree-list, .ava {background: black !important; background-color: black !important}",
             "h2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}",
             "/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/",
             "::-webkit-scrollbar {width: 18px; height: 18px;}",
