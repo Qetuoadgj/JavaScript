@@ -343,17 +343,21 @@
         G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
         G_titleFull = G_title_1 + ' / ' + G_title_2
     ;
+    //
     window.addEventListener('message', function(e) {
         if(typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
             // alert('ANSWER.data.url: ' + e.data.url);
             let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
             if (G_messageTarget) {
+                let titleActive = document.querySelector('.b-simple_episode__item.active');
+                titleActive = titleActive ? titleActive.innerText : null;
                 G_messageTarget.postMessage({
                     sender: 'ANSWER',
                     title: G_titleFull,
                     url: window.location.href,
                     origin: window.location.origin,
-                    pathname: window.location.pathname
+                    pathname: window.location.pathname,
+                    active : titleActive,
                 }, '*');
             };
         };

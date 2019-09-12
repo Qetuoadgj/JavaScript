@@ -28,20 +28,23 @@
         '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
-    var G_videoPage, G_videoTitle, G_videoOrigin;
+    var G_videoPage, G_videoTitle, G_videoOrigin, G_titleActive, G_titleCheck;
     window.addEventListener('message', function(e) {
         if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.url) {
             // alert('ANSWER.data.url: ' + e.data.url);
             G_videoPage = e.data.url;
             G_videoTitle = e.data.title;
             G_videoOrigin = e.data.origin + '' + e.data.pathname;
+            G_titleActive = e.data.active || 'Фильм';
+            G_titleCheck = /*G_videoOrigin + ' -- ' +*/ G_titleActive;
         };
         //
         let videoData = GM_getValue('videoData') || {};
         let videoDataIndex = 0;
-        for (let key of Object.keys(videoData)) {
-            if (key == G_videoTitle) {
-                let data = videoData[key][G_videoPage];
+        for (let title of Object.keys(videoData)) {
+            if (title == G_videoTitle) {
+                let data = videoData[title][G_videoOrigin];
+                data = data ? data[G_titleCheck] : null;
                 if (typeof data === "object") {
                     if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
                     break;
@@ -49,29 +52,49 @@
             };
             videoDataIndex++;
         };
-        var G_timePlayingCur = 0, G_timePlayingLast = 0;
+        var G_timePlayingLast = 0, isBusy = false;
         function updateData(ignoreDelays = false) {
+            if (isBusy) return;
+            isBusy = true;
             if (G_videoElement) {
                 if (G_videoElement.paused === false) {
-                    G_timePlayingCur++;
-                    if (ignoreDelays || (G_timePlayingCur - G_timePlayingLast) >= 10) {
-                        let name = G_videoTitle;
-                        if (typeof videoData[G_videoTitle] === "object" && typeof videoData[G_videoTitle][G_videoPage] === "object" && (G_videoElement.currentTime < G_skipSec)) {
-                            delete videoData[G_videoTitle][G_videoPage];
+                    if (
+                        ignoreDelays ||
+                        (Math.abs(G_videoElement.currentTime - G_timePlayingLast) >= 10) ||
+                        ((G_videoElement.currentTime < G_skipSec) || ((G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec))
+                    ) {
+                        if (
+                            typeof videoData[G_videoTitle] === "object" &&
+                            typeof videoData[G_videoTitle][G_videoOrigin] === "object" &&
+                            typeof videoData[G_videoTitle][G_videoOrigin][G_titleCheck] === "object" &&
+                            (
+                                G_videoElement.currentTime < G_skipSec ||
+                                (G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec
+                            )
+                        ) {
+                            delete videoData[G_videoTitle][G_videoOrigin][G_titleCheck];
+                            if (typeof Object.keys(videoData[G_videoTitle][G_videoOrigin])[0] === "undefined") delete videoData[G_videoTitle][G_videoOrigin];
                             if (typeof Object.keys(videoData[G_videoTitle])[0] === "undefined") delete videoData[G_videoTitle];
-                            console.log(G_videoPage, G_timePlayingCur, G_videoElement.currentTime, 'ERASED');
+                            console.log(G_titleCheck, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
                         }
-                        else if (G_videoElement.currentTime >= G_skipSec) {
+                        else if (
+                            !(
+                                G_videoElement.currentTime < G_skipSec ||
+                                (G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec
+                            )
+                        ) {
                             videoData[G_videoTitle] = videoData[G_videoTitle] || {};
-                            videoData[G_videoTitle][G_videoPage] = videoData[G_videoTitle][G_videoPage] || {};
-                            videoData[G_videoTitle][G_videoPage].currentTime = G_videoElement.currentTime;
-                            console.log(G_videoPage, G_timePlayingCur, G_videoElement.currentTime, 'SAVED');
+                            videoData[G_videoTitle][G_videoOrigin] = videoData[G_videoTitle][G_videoOrigin] || {};
+                            videoData[G_videoTitle][G_videoOrigin][G_titleCheck] = videoData[G_videoTitle][G_videoOrigin][G_titleCheck] || {};
+                            videoData[G_videoTitle][G_videoOrigin][G_titleCheck].currentTime = Math.floor(G_videoElement.currentTime);
+                            console.log(G_titleCheck, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'SAVED');
                         };
                         GM_setValue('videoData', videoData);
-                        G_timePlayingLast = G_timePlayingCur;
+                        G_timePlayingLast = G_videoElement.currentTime;
                     };
                 };
             };
+            setTimeout(function(){isBusy = false;}, 10);
         };
         G_videoElement.addEventListener('timeupdate', function(){updateData(false)}, false); // IE9, Chrome, Safari, Opera
         G_videoElement.addEventListener('seeked', function(){updateData(true)}, false); // IE9, Chrome, Safari, Opera
