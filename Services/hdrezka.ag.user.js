@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         hdrezka.ag
-// @icon         https://www.google.com/s2/favicons?domain=hdrezka.ag
-// @version      1.0.14
+// @name         Rezka.ag
+// @icon         https://www.google.com/s2/favicons?domain=rezka.ag
+// @version      1.0.15
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -337,5 +337,23 @@
 
     addEvent(window, 'resize', function(event) {
         toggleAutoScale();
+    });
+
+    var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').innerText,
+        G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
+        G_titleFull = G_title_1 + ' / ' + G_title_2
+    ;
+    window.addEventListener('message', function(e) {
+        if(typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
+            // alert('ANSWER.data.url: ' + e.data.url);
+            let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
+            if (G_messageTarget) {
+                G_messageTarget.postMessage({
+                    sender: 'ANSWER',
+                    title: G_titleFull,
+                    url: window.location.href
+                }, '*');
+            };
+        };
     });
 })();
