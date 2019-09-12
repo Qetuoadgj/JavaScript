@@ -21,6 +21,7 @@
     'use strict';
 
     // Your code here...
+    var G_skipSec = 30;
     var G_videoElement, G_messageTarget;
     var videoElementSelector = [
         '.html5-video-container > video', // [YouTube.com]
@@ -51,6 +52,7 @@
             videoDataIndex++;
         };
         //
+        /*
         let checkTime = setInterval(function() {
             if (G_videoElement) {
                 if (G_videoElement.paused === false) {
@@ -58,12 +60,32 @@
                     let name = index + ' ==> ' + G_videoTitle;
                     videoData[name] = {};
                     videoData[name].url = G_videoPage;
-                    videoData[name].currentTime = G_videoElement.currentTime;
+                    videoData[name].currentTime = G_videoElement.currentTime >= G_timeSplitsSec ? G_videoElement.currentTime : null;
                     GM_setValue('videoData', videoData);
                     // console.log('videoDataIndex:', index);
                 };
             };
-        }, 1000);
+        }, 1000 * G_timeSplitsSec);
+        */
+        function updateData() {
+            if (G_videoElement) {
+                if (G_videoElement.paused === false) {
+                    let index = dataFoundIndex ? dataFoundIndex : videoDataIndex;
+                    let name = index + ' ==> ' + G_videoTitle;
+                    if (typeof videoData[name] === "object" && (G_videoElement.currentTime < G_skipSec)) {
+                        delete videoData[name];
+                    }
+                    else {
+                        videoData[name] = {};
+                        videoData[name].url = G_videoPage;
+                        videoData[name].currentTime = G_videoElement.currentTime;
+                    };
+                    GM_setValue('videoData', videoData);
+                    // console.log('videoDataIndex:', index);
+                };
+            };
+        };
+        G_videoElement.addEventListener('timeupdate', updateData, false); // IE9, Chrome, Safari, Opera
     });
     function initFunction() {
         G_videoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
