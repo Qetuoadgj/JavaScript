@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Rezka.ag
+// @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
 // @version      1.0.15
 // @description  Pure JavaScript version.
@@ -351,7 +351,9 @@
                 G_messageTarget.postMessage({
                     sender: 'ANSWER',
                     title: G_titleFull,
-                    url: window.location.href
+                    url: window.location.href,
+                    origin: window.location.origin,
+                    pathname: window.location.pathname
                 }, '*');
             };
         };
