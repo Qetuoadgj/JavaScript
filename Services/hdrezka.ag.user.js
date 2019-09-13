@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.15
+// @version      1.0.16
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -11,7 +11,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
 // @run-at       document-end
-// @noframes
+/// @noframes
 // @match        *://hdrezka.ag/films/*.html
 // @match        *://hdrezka.ag/series/*.html
 // @match        *://hdrezka.me/films/*.html
@@ -25,6 +25,9 @@
 
 // @match        *://filmix.co/uzhasy/*.html
 // @match        *://filmix.co/play/*
+
+// @match        *://magicianer.cc/video/*
+// @match        *://streamguard.cc/*
 //// @grant        none
 // ==/UserScript==
 
@@ -48,129 +51,6 @@
     'use strict';
 
     // Your code here...
-    var userLang = navigator.language || navigator.userLanguage;
-    var str_title_nightMode = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Ночной режим' : 'Night Mode',
-        str_title_autoScale = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Авто-размер' : 'Auto-Scale'
-    ;
-    var nightModeEnable = GM_getValue('nightModeEnable', 1);
-    var autoScaleEnable = GM_getValue('autoScaleEnable', 1);
-    var videoScale = GM_getValue('videoScale', 1);
-    var ignoreResize = 0;
-
-    function addGlobalStyle(css, cssClass) {
-        var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
-        var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
-        if (cssClass) style.setAttribute('class', cssClass);
-        head.appendChild(style);
-    }
-    function scaleToElement(element, defaultWidth = 640, defaultHeight = 360) {
-        var elementWidth = element ? element.clientWidth : defaultWidth;
-        var elementHeight = element ? element.clientHeight : defaultHeight;
-        var ratio = 1; //elementWidth / elementHeight;
-        return Math.min((window.innerWidth - (20 + 4)*ratio) / elementWidth, (window.innerHeight - (20 + 4)) / elementHeight);
-    }
-    // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
-    var playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
-    var playerWidth = playerElement ? playerElement.clientWidth : 640;
-    var playerHeight = playerElement ? playerElement.clientHeight : 360;
-    // initScale = 2.0 * window.innerWidth/(1200 + 50);
-    var initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
-    var minScale = 1, maxScale = initScale; // 2.5;
-    var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
-    function scalePlayer(scale) {
-        var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
-        var css = [
-            "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
-            "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}",
-        ].join('\n');
-        if (window.location.href.match('/filmix.co/')) {
-            css += [
-                '.player-item, .players {width: auto !important; height: auto !important;}',
-            ].join('\n');
-        };
-        style = addGlobalStyle(css, "zoomMode");
-        GM_setValue('videoScale', scale);
-    }
-    // scalePlayer(scale);
-    function toggleAutoScale() {
-        if (ignoreResize) return;
-        if (autoScaleEnable) {
-            playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
-            playerWidth = playerElement ? playerElement.clientWidth : 640;
-            playerHeight = playerElement ? playerElement.clientHeight : 360;
-            initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
-            minScale = 1;
-            maxScale = initScale; // 2.5;
-            scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
-            autoScaleEnable = 1;
-        }
-        else {
-            scale = 1;
-            autoScaleEnable = 0;
-        }
-        scalePlayer(scale);
-        GM_setValue('autoScaleEnable', autoScaleEnable);
-    }
-    toggleAutoScale();
-    //
-    // https://filmix.co/uzhasy/3857-vozvraschenie-zhivyh-mertvecov-the-return-of-the-living-dead-1985.html
-    var css = [
-        '.container-main.main-block{width: auto;}',
-        '\n#content {width: 100%;}',
-        '\naside, .android-telegram-main, #top {display: none !important;}'
-    ].join('\n');
-    addGlobalStyle(css, 'pageFix');
-    function toggleNightMode(force) {
-        var css = [
-            "div, body, .night_mode, body.active-brand #wrapper, .comments-tree-list, .ava {background: black !important; background-color: black !important}",
-            "h2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}",
-            "/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/",
-            "::-webkit-scrollbar {width: 18px; height: 18px;}",
-            "::-webkit-scrollbar-button {background: no-repeat #222; background-size: 18px; background-position: center bottom;}",
-            "::-webkit-scrollbar-button:vertical:decrement {background-image: url(" +
-            '"' +
-            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +
-            '");}',
-            "::-webkit-scrollbar-button:vertical:increment {background-image: url(" +
-            '"' +
-            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +
-            '");}',
-            "::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" +
-            '"' +
-            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +
-            '");}',
-            "::-webkit-scrollbar-button:horizontal:increment {background-image: url(" +
-            '"' +
-            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +
-            '");}',
-            "::-webkit-scrollbar-track-piece {background: #111;}",
-            "::-webkit-scrollbar-thumb {background: #222; border-radius: 3px;}",
-            "::-webkit-scrollbar-thumb:hover {background: #444;}",
-            "::-webkit-scrollbar-corner {background-color: #111;}",
-            //
-            "iframe#cdn-player {border: 1px #111 solid;}",
-        ].join('\n');
-        if (window.location.href.match('/filmix.co/')) {
-            css += [
-                'body * {color: wheat !important;}',
-                '#content {width: 100%; background-color: black;}',
-            ].join('\n');
-        };
-        document.body.classList.add('night_mode');
-        var style = document.querySelector('head > style.nightMode');
-        if (force && style) style.remove();
-        if (style) {
-            style.remove();
-            nightModeEnable = 0;
-        }
-        else {
-            addGlobalStyle(css, 'nightMode');
-            nightModeEnable = 1;
-        }
-        GM_setValue('nightModeEnable', nightModeEnable);
-    }
-    if (nightModeEnable) toggleNightMode(1);
-    //
     var KEY_BACKSPACE = 8,
         KEY_TAB = 9,
         KEY_ENTER = 13,
@@ -271,95 +151,264 @@
         KEY_CLOSE_BRAKET = 221,
         KEY_SINGLE_QUOTE = 222
     ;
-    function onKeyDown(e, code) {
-        e = e || window.event;
-        var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
-        var shiftDown = !!window.event.shiftKey;
-        var targetType = e.target.tagName.toLowerCase();
-        if (code) e.keyCode = code;
-        if (!(targetType == 'input' || targetType == 'textarea')) {
-            if (shiftDown && e.keyCode == KEY_UP_ARROW) {
-                ignoreResize = 1;
-                scale += 0.1;
-                scale = Math.min(Math.max(minScale, scale), maxScale);
-                scalePlayer(scale);
-                e.preventDefault();
+    if (location.href.match('streamguard.cc')) {
+        window.addEventListener('message', function(e) {
+            if (typeof e.data === 'object' && e.data.sender === 'ACTION' && e.data.reason === 'PAUSE') {
+                // alert('ACTION.data.reason: ' + e.data.reason);
+                let video = document.querySelector('#player video');
+                if (video) {if (video.paused) {video.play();} else { video.pause();};};
+            };
+        });
+        let G_messageTarget = window.parent;
+        let onKeyDown = function(e, code) {
+            e = e || window.event;
+            var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
+            var shiftDown = !!window.event.shiftKey;
+            var targetType = e.target.tagName.toLowerCase();
+            if (code) e.keyCode = code;
+            if (!(targetType == 'input' || targetType == 'textarea')) {
+                if (shiftDown && e.keyCode == KEY_SPACE) {
+                    if (G_messageTarget) G_messageTarget.postMessage({sender: 'ACTION', reason: 'SCROLL'}, '*');
+                    e.preventDefault();
+                }
+                else if (e.keyCode == KEY_K) {
+                    let video = document.querySelector('#player video');
+                    if (video) {if (video.paused) {video.play();} else { video.pause();};};
+                };
+            };
+        };
+        window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+    }
+    else {
+
+        var userLang = navigator.language || navigator.userLanguage;
+        var str_title_nightMode = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Ночной режим' : 'Night Mode',
+            str_title_autoScale = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Авто-размер' : 'Auto-Scale'
+        ;
+        var nightModeEnable = GM_getValue('nightModeEnable', 1);
+        var autoScaleEnable = GM_getValue('autoScaleEnable', 1);
+        var videoScale = GM_getValue('videoScale', 1);
+        var ignoreResize = 0;
+
+        function addGlobalStyle(css, cssClass) {
+            var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
+            var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+            if (cssClass) style.setAttribute('class', cssClass);
+            head.appendChild(style);
+        }
+        function scaleToElement(element, defaultWidth = 640, defaultHeight = 360) {
+            var elementWidth = element ? element.clientWidth : defaultWidth;
+            var elementHeight = element ? element.clientHeight : defaultHeight;
+            var ratio = 1; //elementWidth / elementHeight;
+            return Math.min((window.innerWidth - (20 + 4)*ratio) / elementWidth, (window.innerHeight - (20 + 4)) / elementHeight);
+        }
+        // addGlobalStyle("#ownplayer, #videoplayer, #player, #cdn-player {zoom: 1.15; z-index: 10;}\nbody.active-brand #wrapper, .b-wrapper {width: 1200px;}", "zoomMode");
+        var playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
+        var playerWidth = playerElement ? playerElement.clientWidth : 640;
+        var playerHeight = playerElement ? playerElement.clientHeight : 360;
+        // initScale = 2.0 * window.innerWidth/(1200 + 50);
+        var initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
+        var minScale = 1, maxScale = initScale; // 2.5;
+        var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
+        function scalePlayer(scale) {
+            var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
+            var css = [
+                "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
+                "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}",
+            ].join('\n');
+            if (window.location.href.match('/filmix.co/')) {
+                css += [
+                    '.player-item, .players {width: auto !important; height: auto !important;}',
+                ].join('\n');
+            };
+            style = addGlobalStyle(css, "zoomMode");
+            GM_setValue('videoScale', scale);
+        }
+        // scalePlayer(scale);
+        function toggleAutoScale() {
+            if (ignoreResize) return;
+            if (autoScaleEnable) {
+                playerElement = document.querySelectorAll('#videoplayer, iframe[allowfullscreen=true]')[0];
+                playerWidth = playerElement ? playerElement.clientWidth : 640;
+                playerHeight = playerElement ? playerElement.clientHeight : 360;
+                initScale = scaleToElement(playerElement); // Math.min((window.innerWidth - (20 - 8)) / playerWidth, (window.innerHeight - (20 - 8)) / playerHeight);
+                minScale = 1;
+                maxScale = initScale; // 2.5;
+                scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
+                autoScaleEnable = 1;
             }
-            else if (shiftDown && e.keyCode == KEY_DOWN_ARROW) {
-                ignoreResize = 1;
-                scale -= 0.1;
-                scale = Math.min(Math.max(minScale, scale), maxScale);
-                scalePlayer(scale);
-                e.preventDefault();
+            else {
+                scale = 1;
+                autoScaleEnable = 0;
             }
-            else if (shiftDown && e.keyCode == KEY_ENTER) {
-                toggleNightMode();
-                e.preventDefault();
+            scalePlayer(scale);
+            GM_setValue('autoScaleEnable', autoScaleEnable);
+        }
+        toggleAutoScale();
+        //
+        // https://filmix.co/uzhasy/3857-vozvraschenie-zhivyh-mertvecov-the-return-of-the-living-dead-1985.html
+        var css = [
+            '.container-main.main-block{width: auto;}',
+            '\n#content {width: 100%;}',
+            '\naside, .android-telegram-main, #top {display: none !important;}'
+        ].join('\n');
+        addGlobalStyle(css, 'pageFix');
+        function toggleNightMode(force) {
+            var css = [
+                "div, body, .night_mode, body.active-brand #wrapper, .comments-tree-list, .ava {background: black !important; background-color: black !important}",
+                "h2, .b-post__description_text, td, .misc, div#hd-comments-list * {color: wheat;}",
+                "/*.b-post__social_holder_wrapper, table.b-post__rating_table, table.b-post__actions {display: none;}*/",
+                "::-webkit-scrollbar {width: 18px; height: 18px;}",
+                "::-webkit-scrollbar-button {background: no-repeat #222; background-size: 18px; background-position: center bottom;}",
+                "::-webkit-scrollbar-button:vertical:decrement {background-image: url(" +
+                '"' +
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,66 50,33 75,66'/></svg>" +
+                '");}',
+                "::-webkit-scrollbar-button:vertical:increment {background-image: url(" +
+                '"' +
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='25,33 50,66 75,33'/></svg>" +
+                '");}',
+                "::-webkit-scrollbar-button:horizontal:decrement {background-image: url(" +
+                '"' +
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,50 66,75 66,25'/></svg>" +
+                '");}',
+                "::-webkit-scrollbar-button:horizontal:increment {background-image: url(" +
+                '"' +
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%235a6268'><polygon points='33,75 66,50 33,25'/></svg>" +
+                '");}',
+                "::-webkit-scrollbar-track-piece {background: #111;}",
+                "::-webkit-scrollbar-thumb {background: #222; border-radius: 3px;}",
+                "::-webkit-scrollbar-thumb:hover {background: #444;}",
+                "::-webkit-scrollbar-corner {background-color: #111;}",
+                //
+                "iframe#cdn-player {border: 1px #111 solid;}",
+            ].join('\n');
+            if (window.location.href.match('/filmix.co/')) {
+                css += [
+                    'body * {color: wheat !important;}',
+                    '#content {width: 100%; background-color: black;}',
+                ].join('\n');
+            };
+            document.body.classList.add('night_mode');
+            var style = document.querySelector('head > style.nightMode');
+            if (force && style) style.remove();
+            if (style) {
+                style.remove();
+                nightModeEnable = 0;
             }
-            else if (shiftDown && e.keyCode == KEY_LEFT_ARROW) {
+            else {
+                addGlobalStyle(css, 'nightMode');
+                nightModeEnable = 1;
+            }
+            GM_setValue('nightModeEnable', nightModeEnable);
+        }
+        if (nightModeEnable) toggleNightMode(1);
+        //
+        function scrollToPlayer() {
+            let player_window = document.querySelectorAll('#ownplayer, iframe[allowfullscreen=true]')[0];
+            if (player_window) {
+                player_window.scrollIntoView();
+                window.scrollBy(0, -1);
+            }
+        };
+        function onKeyDown(e, code) {
+            e = e || window.event;
+            var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
+            var shiftDown = !!window.event.shiftKey;
+            var targetType = e.target.tagName.toLowerCase();
+            if (code) e.keyCode = code;
+            if (!(targetType == 'input' || targetType == 'textarea')) {
+                if (shiftDown && e.keyCode == KEY_UP_ARROW) {
+                    ignoreResize = 1;
+                    scale += 0.1;
+                    scale = Math.min(Math.max(minScale, scale), maxScale);
+                    scalePlayer(scale);
+                    e.preventDefault();
+                }
+                else if (shiftDown && e.keyCode == KEY_DOWN_ARROW) {
+                    ignoreResize = 1;
+                    scale -= 0.1;
+                    scale = Math.min(Math.max(minScale, scale), maxScale);
+                    scalePlayer(scale);
+                    e.preventDefault();
+                }
+                else if (shiftDown && e.keyCode == KEY_ENTER) {
+                    toggleNightMode();
+                    e.preventDefault();
+                }
+                else if (shiftDown && e.keyCode == KEY_LEFT_ARROW) {
+                    ignoreResize = 0;
+                    autoScaleEnable = !autoScaleEnable;
+                    toggleAutoScale();
+                    e.preventDefault();
+                }
+                else if (shiftDown && e.keyCode == KEY_SPACE) {
+                    scrollToPlayer();
+                    e.preventDefault();
+                }
+                else if (e.keyCode == KEY_K) {
+                    let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
+                    if (G_messageTarget) {
+                        let titleActive = document.querySelector('.b-simple_episode__item.active');
+                        titleActive = titleActive ? titleActive.innerText : null;
+                        G_messageTarget.postMessage({sender: 'ACTION', reason: 'PAUSE'}, '*');
+                    };
+                };
+            }
+        }
+
+        window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+
+        setTimeout(function() {
+            GM_registerMenuCommand(str_title_nightMode, toggleNightMode, '');
+            GM_registerMenuCommand(str_title_autoScale, function() {
                 ignoreResize = 0;
                 autoScaleEnable = !autoScaleEnable;
                 toggleAutoScale();
-                e.preventDefault();
+            }, '');
+        }, 1000);
+
+        var addEvent = function(object, type, callback) {
+            if (object == null || typeof(object) == 'undefined') return;
+            if (object.addEventListener) {
+                object.addEventListener(type, callback, false);
+            } else if (object.attachEvent) {
+                object.attachEvent('on' + type, callback);
+            } else {
+                object['on'+type] = callback;
             }
-            else if (shiftDown && e.keyCode == KEY_SPACE) {
-                var player_window = document.querySelectorAll('#ownplayer, iframe[allowfullscreen=true]')[0];
-                if (player_window) {
-                    player_window.scrollIntoView();
-                    window.scrollBy(0, -1);
-                }
-                e.preventDefault();
-            }
-        }
-    }
-
-    window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
-
-    setTimeout(function() {
-        GM_registerMenuCommand(str_title_nightMode, toggleNightMode, '');
-        GM_registerMenuCommand(str_title_autoScale, function() {
-            ignoreResize = 0;
-            autoScaleEnable = !autoScaleEnable;
-            toggleAutoScale();
-        }, '');
-    }, 1000);
-
-    var addEvent = function(object, type, callback) {
-        if (object == null || typeof(object) == 'undefined') return;
-        if (object.addEventListener) {
-            object.addEventListener(type, callback, false);
-        } else if (object.attachEvent) {
-            object.attachEvent('on' + type, callback);
-        } else {
-            object['on'+type] = callback;
-        }
-    };
-
-    addEvent(window, 'resize', function(event) {
-        toggleAutoScale();
-    });
-
-    var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').innerText,
-        G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
-        G_titleFull = G_title_1 + ' / ' + G_title_2
-    ;
-    //
-    window.addEventListener('message', function(e) {
-        if(typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
-            // alert('ANSWER.data.url: ' + e.data.url);
-            let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
-            if (G_messageTarget) {
-                let titleActive = document.querySelector('.b-simple_episode__item.active');
-                titleActive = titleActive ? titleActive.innerText : null;
-                G_messageTarget.postMessage({
-                    sender: 'ANSWER',
-                    title: G_titleFull,
-                    url: window.location.href,
-                    origin: window.location.origin,
-                    pathname: window.location.pathname,
-                    active : titleActive,
-                }, '*');
-            };
         };
-    });
+
+        addEvent(window, 'resize', function(event) {
+            toggleAutoScale();
+        });
+
+        var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').innerText,
+            G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
+            G_titleFull = G_title_1 + ' / ' + G_title_2
+        ;
+        //
+        window.addEventListener('message', function(e) {
+            if (typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
+                // alert('ANSWER.data.url: ' + e.data.url);
+                let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
+                if (G_messageTarget) {
+                    let titleActive = document.querySelector('.b-simple_episode__item.active');
+                    titleActive = titleActive ? titleActive.innerText : null;
+                    G_messageTarget.postMessage({
+                        sender: 'ANSWER',
+                        title: G_titleFull,
+                        url: window.location.href,
+                        origin: window.location.origin,
+                        pathname: window.location.pathname,
+                        active : titleActive,
+                    }, '*');
+                };
+            }
+            else if (typeof e.data === 'object' && e.data.sender === 'ACTION' && e.data.reason === 'SCROLL') {
+                // alert('ACTION.data.reason: ' + e.data.reason);
+                scrollToPlayer();
+            };
+        });
+    };
 })();
