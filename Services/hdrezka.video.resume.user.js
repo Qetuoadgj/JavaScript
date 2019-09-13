@@ -84,7 +84,7 @@
                         if (Object.keys(videoData[G_videoTitle][G_videoOrigin][G_titleSeason]).length == 0) delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason];
                         if (Object.keys(videoData[G_videoTitle][G_videoOrigin]).length == 0) delete videoData[G_videoTitle][G_videoOrigin];
                         if (Object.keys(videoData[G_videoTitle]).length == 0) delete videoData[G_videoTitle];
-                        if (Object.keys(videoData).length == 0) GM_deleteValue('videoData');
+                        // if (Object.keys(videoData).length == 0) GM_deleteValue('videoData');
                         console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
                     }
                     else if (
@@ -101,7 +101,7 @@
                         videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime = Math.floor(G_videoElement.currentTime);
                         console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'SAVED');
                     };
-                    /*if (Object.keys(videoData).length > 0)*/ GM_setValue('videoData', videoData);
+                    if (Object.keys(videoData).length > 0) {GM_setValue('videoData', videoData)} else {GM_deleteValue('videoData');};;
                     G_timePlayingLast = G_videoElement.currentTime;
                 };
                 //};
