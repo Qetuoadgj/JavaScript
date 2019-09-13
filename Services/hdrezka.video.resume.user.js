@@ -62,6 +62,7 @@
             if (isBusy) return;
             isBusy = true;
             if (G_videoElement) {
+                let videoData = GM_getValue('videoData') || {};
                 //if (G_videoElement.paused === false) {
                 if (
                     ignoreDelays ||
