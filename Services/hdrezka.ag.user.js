@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.16
+// @version      1.0.17
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -385,9 +385,63 @@
 
         var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').innerText,
             G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
-            G_titleFull = G_title_1 + ' / ' + G_title_2
+            G_titleFull = G_title_1 + ' / ' + G_title_2,
+            G_videoOrigin = window.location.origin + '' + window.location.pathname
         ;
         //
+        function updateButtonProgress(videoData) {
+            /*
+            "videoData": {
+                "Страна фей / The Magical Legend of the Leprechauns": {
+                    "https://rezka.ag/films/fantasy/15057-strana-fey-1999.html": {
+                        "Без сезонов": {
+                            "Серия 2": {
+                                "currentTime": 3165
+                            }
+                        }
+                    }
+                }
+            }
+            */
+            let seasonActive = document.querySelector('.b-simple_season__item.active');
+            let G_titleSeason = seasonActive ? seasonActive.innerText : 'Без сезонов';
+            let episodeButtons = document.querySelectorAll('.b-simple_episode__item');
+            for (let button of episodeButtons) {
+                button.removeAttribute('style');
+            };
+            for (let title of Object.keys(videoData)) {
+                // console.log(title, G_titleFull);
+                if (title == G_titleFull) {
+                    for (let origin of Object.keys(videoData[title])) {
+                        // console.log(origin, G_videoOrigin);
+                        if (origin == G_videoOrigin) {
+                            for (let season of Object.keys(videoData[title][origin])) {
+                                // console.log(season, G_titleSeason);
+                                if (season == G_titleSeason) {
+                                    for (let serie of Object.keys(videoData[title][origin][season])) {
+                                        // console.log(serie);
+                                        for (let button of episodeButtons) {
+                                            if (button.innerText == serie) {
+                                                // console.log(button);
+                                                let currentTime = videoData[title][origin][season][serie].currentTime;
+                                                let duration = videoData[title][origin][season][serie].duration;
+                                                let progress = Math.round(currentTime/duration*100);
+                                                let color = button.classList.contains('active') ? '#673ab7' : '#795548';
+                                                button.setAttribute(
+                                                    'style',
+                                                    'border: 0.5px solid '+color+';' +
+                                                    ' background: linear-gradient(90deg, '+color+' '+(progress)+'%, Black '+(progress)+'%) !important;' // +
+                                                );
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
         window.addEventListener('message', function(e) {
             if (typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
                 // alert('ANSWER.data.url: ' + e.data.url);
@@ -411,6 +465,10 @@
             else if (typeof e.data === 'object' && e.data.sender === 'ACTION' && e.data.reason === 'SCROLL') {
                 // alert('ACTION.data.reason: ' + e.data.reason);
                 scrollToPlayer();
+            }
+            else if (typeof e.data === 'object' && e.data.sender === 'ACTION' && e.data.reason === 'UPDATE_BUTTON_PROGRESS' && typeof e.data.videoData === 'object') {
+                // alert('ACTION.data.reason: ' + e.data.reason);
+                updateButtonProgress(e.data.videoData);
             };
         });
     };

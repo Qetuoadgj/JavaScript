@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.00
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -40,7 +40,6 @@
         };
         //
         let videoData = GM_getValue('videoData') || {};
-        let videoDataIndex = 0;
         for (let title of Object.keys(videoData)) {
             if (title == G_videoTitle) {
                 if (videoData[title]) {
@@ -55,7 +54,6 @@
                     };
                 };
             };
-            videoDataIndex++;
         };
         var G_timePlayingLast = 0, isBusy = false;
         function updateData(ignoreDelays = false) {
@@ -100,9 +98,15 @@
                         videoData[G_videoTitle][G_videoOrigin][G_titleSeason] = videoData[G_videoTitle][G_videoOrigin][G_titleSeason] || {};
                         videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] = videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] || {};
                         videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime = Math.floor(G_videoElement.currentTime);
+                        videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].duration = Math.ceil(G_videoElement.duration);
                         console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'SAVED');
                     };
-                    if (Object.keys(videoData).length > 0) {GM_setValue('videoData', videoData)} else {GM_deleteValue('videoData');};;
+                    if (Object.keys(videoData).length > 0) {
+                        GM_setValue('videoData', videoData);
+                        G_messageTarget.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
+                    } else {
+                        GM_deleteValue('videoData');
+                    };
                     G_timePlayingLast = G_videoElement.currentTime;
                 };
                 //};
@@ -128,4 +132,8 @@
             initFunction();
         };
     } , false);
+    let videoData = GM_getValue('videoData') || {};
+    if (Object.keys(videoData).length > 0) {
+        window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
+    };
 })();
