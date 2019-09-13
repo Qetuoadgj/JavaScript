@@ -75,8 +75,8 @@
                         typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] === "object" &&
                         (
-                            G_videoElement.currentTime < G_skipSec ||
-                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
+                            G_videoElement.currentTime < G_skipSec /*||
+                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec*/
                         )
                     ) {
                         delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime;
@@ -90,8 +90,8 @@
                     else if (
                         G_videoElement.duration > 0 &&
                         !(
-                            G_videoElement.currentTime < G_skipSec ||
-                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
+                            G_videoElement.currentTime < G_skipSec /*||
+                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec*/
                         )
                     ) {
                         videoData[G_videoTitle] = videoData[G_videoTitle] || {};
