@@ -11,6 +11,7 @@
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @match        https://encrypted.google.com/*
 // @match        https://google.com/*
+// @match        https://www.google.com/*
 // ==/UserScript==
 
 (function() {
