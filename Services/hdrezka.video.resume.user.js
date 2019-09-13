@@ -28,26 +28,31 @@
         '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
-    var G_videoPage, G_videoTitle, G_videoOrigin, G_titleActive, G_titleCheck;
+    var G_videoPage, G_videoTitle, G_videoOrigin, G_titleSerie, G_titleSeason;
     window.addEventListener('message', function(e) {
         if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.url) {
             // alert('ANSWER.data.url: ' + e.data.url);
             G_videoPage = e.data.url;
             G_videoTitle = e.data.title;
             G_videoOrigin = e.data.origin + '' + e.data.pathname;
-            G_titleActive = e.data.active || 'Фильм';
-            G_titleCheck = /*G_videoOrigin + ' -- ' +*/ G_titleActive;
+            G_titleSerie = e.data.serie || 'Без серий';
+            G_titleSeason = e.data.season || 'Без сезонов';
         };
         //
         let videoData = GM_getValue('videoData') || {};
         let videoDataIndex = 0;
         for (let title of Object.keys(videoData)) {
             if (title == G_videoTitle) {
-                let data = videoData[title][G_videoOrigin];
-                data = data ? data[G_titleCheck] : null;
-                if (typeof data === "object") {
-                    if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
-                    break;
+                if (videoData[title]) {
+                    if (videoData[title][G_videoOrigin]) {
+                        if (videoData[title][G_videoOrigin][G_titleSeason]) {
+                            let data = videoData[title][G_videoOrigin][G_titleSeason][G_titleSerie];
+                            if (typeof data === "object") {
+                                if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
+                                break;
+                            };
+                        };
+                    };
                 };
             };
             videoDataIndex++;
@@ -67,17 +72,19 @@
                         G_videoElement.duration > 0 &&
                         typeof videoData[G_videoTitle] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin] === "object" &&
-                        typeof videoData[G_videoTitle][G_videoOrigin][G_titleCheck] === "object" &&
+                        typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason] === "object" &&
+                        typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] === "object" &&
                         (
                             G_videoElement.currentTime < G_skipSec ||
                             G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
                         )
                     ) {
-                        delete videoData[G_videoTitle][G_videoOrigin][G_titleCheck];
+                        delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie];
+                        if (Object.keys(videoData[G_videoTitle][G_videoOrigin][G_titleSeason]).length == 0) delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason];
                         if (Object.keys(videoData[G_videoTitle][G_videoOrigin]).length == 0) delete videoData[G_videoTitle][G_videoOrigin];
                         if (Object.keys(videoData[G_videoTitle]).length == 0) delete videoData[G_videoTitle];
                         if (Object.keys(videoData).length == 0) GM_deleteValue('videoData');
-                        console.log(G_titleCheck, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
+                        console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
                     }
                     else if (
                         G_videoElement.duration > 0 &&
@@ -88,9 +95,10 @@
                     ) {
                         videoData[G_videoTitle] = videoData[G_videoTitle] || {};
                         videoData[G_videoTitle][G_videoOrigin] = videoData[G_videoTitle][G_videoOrigin] || {};
-                        videoData[G_videoTitle][G_videoOrigin][G_titleCheck] = videoData[G_videoTitle][G_videoOrigin][G_titleCheck] || {};
-                        videoData[G_videoTitle][G_videoOrigin][G_titleCheck].currentTime = Math.floor(G_videoElement.currentTime);
-                        console.log(G_titleCheck, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'SAVED');
+                        videoData[G_videoTitle][G_videoOrigin][G_titleSeason] = videoData[G_videoTitle][G_videoOrigin][G_titleSeason] || {};
+                        videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] = videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] || {};
+                        videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime = Math.floor(G_videoElement.currentTime);
+                        console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'SAVED');
                     };
                     if (Object.keys(videoData).length > 0) GM_setValue('videoData', videoData);
                     G_timePlayingLast = G_videoElement.currentTime;

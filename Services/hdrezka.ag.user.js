@@ -393,15 +393,18 @@
                 // alert('ANSWER.data.url: ' + e.data.url);
                 let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
                 if (G_messageTarget) {
-                    let titleActive = document.querySelector('.b-simple_episode__item.active');
-                    titleActive = titleActive ? titleActive.innerText : null;
+                    let serieActive = document.querySelector('.b-simple_episode__item.active');
+                    let seasonActive = document.querySelector('.b-simple_season__item.active');
+                    serieActive = serieActive ? serieActive.innerText : null;
+                    seasonActive = seasonActive ? seasonActive.innerText : null;
                     G_messageTarget.postMessage({
                         sender: 'ANSWER',
                         title: G_titleFull,
                         url: window.location.href,
                         origin: window.location.origin,
                         pathname: window.location.pathname,
-                        active : titleActive,
+                        season : seasonActive,
+                        serie : serieActive,
                     }, '*');
                 };
             }
