@@ -64,12 +64,13 @@
                     ((G_videoElement.currentTime < G_skipSec) || ((G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec))
                 ) {
                     if (
+                        G_videoElement.duration > 0 &&
                         typeof videoData[G_videoTitle] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin][G_titleCheck] === "object" &&
                         (
                             G_videoElement.currentTime < G_skipSec ||
-                            (G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec
+                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
                         )
                     ) {
                         delete videoData[G_videoTitle][G_videoOrigin][G_titleCheck];
@@ -79,9 +80,10 @@
                         console.log(G_titleCheck, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
                     }
                     else if (
+                        G_videoElement.duration > 0 &&
                         !(
                             G_videoElement.currentTime < G_skipSec ||
-                            (G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec
+                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
                         )
                     ) {
                         videoData[G_videoTitle] = videoData[G_videoTitle] || {};
