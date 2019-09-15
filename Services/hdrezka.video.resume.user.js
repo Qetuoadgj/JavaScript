@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -29,6 +29,23 @@
         'body video', // any page
     ].join(', ')
     var G_videoPage, G_videoTitle, G_videoOrigin, G_titleSerie, G_titleSeason;
+    var userLang = navigator.language || navigator.userLanguage;
+    var str_remove = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Удалить из просмотреных' : 'Remove From Viewed';
+    var cmdRemove = GM_registerMenuCommand(str_remove, function() {
+        initFunction();
+        if (!G_videoElement) return;
+        if (!G_videoElement.paused) G_videoElement.pause();
+        let videoData = GM_getValue('videoData');
+        delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime;
+        delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie];
+        if (Object.keys(videoData[G_videoTitle][G_videoOrigin][G_titleSeason]).length == 0) delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason];
+        if (Object.keys(videoData[G_videoTitle][G_videoOrigin]).length == 0) delete videoData[G_videoTitle][G_videoOrigin];
+        if (Object.keys(videoData[G_videoTitle]).length == 0) delete videoData[G_videoTitle];
+        // if (Object.keys(videoData).length == 0) GM_deleteValue('videoData');
+        GM_setValue('videoData', videoData);
+        G_messageTarget.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
+        console.log(G_titleSerie, 'ERASED');
+    }, '');
     window.addEventListener('message', function(e) {
         if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.url) {
             // alert('ANSWER.data.url: ' + e.data.url);
@@ -67,15 +84,15 @@
                     (Math.abs(G_videoElement.currentTime - G_timePlayingLast) >= 10) ||
                     ((G_videoElement.currentTime < G_skipSec) || ((G_videoElement.duration - G_videoElement.currentTime) <= G_skipSec))
                 ) {
-                    if (
+                    /* if (
                         G_videoElement.duration > 0 &&
                         typeof videoData[G_videoTitle] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason] === "object" &&
                         typeof videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie] === "object" &&
                         (
-                            G_videoElement.currentTime < G_skipSec /*||
-                            G_videoElement.duration-G_videoElement.currentTime <= G_skipSec*/
+                            G_videoElement.currentTime < G_skipSec // ||
+                            // G_videoElement.duration-G_videoElement.currentTime <= G_skipSec
                         )
                     ) {
                         delete videoData[G_videoTitle][G_videoOrigin][G_titleSeason][G_titleSerie].currentTime;
@@ -86,7 +103,7 @@
                         // if (Object.keys(videoData).length == 0) GM_deleteValue('videoData');
                         console.log(G_titleSerie, Math.floor(Math.abs(G_videoElement.currentTime - G_timePlayingLast)), Math.floor(G_videoElement.currentTime), 'ERASED');
                     }
-                    else if (
+                    else */ if (
                         G_videoElement.duration > 0 &&
                         !(
                             G_videoElement.currentTime < G_skipSec /*||
@@ -117,7 +134,7 @@
         G_videoElement.addEventListener('seeked', function(){updateData(true)}, false); // IE9, Chrome, Safari, Opera
     });
     function initFunction() {
-        G_videoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
+        G_videoElement = G_videoElement || document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (G_videoElement) {
             G_messageTarget = G_messageTarget || window.parent;
             G_messageTarget.postMessage({sender: 'QUESTION', reason: 'HREF'}, '*');

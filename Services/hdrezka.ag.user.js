@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.17
+// @version      1.0.18
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -426,7 +426,13 @@
                                                 let currentTime = videoData[title][origin][season][serie].currentTime;
                                                 let duration = videoData[title][origin][season][serie].duration;
                                                 let progress = Math.round(currentTime/duration*100);
-                                                let color = button.classList.contains('active') ? '#673ab7' : '#795548';
+                                                let color;
+                                                if (progress >= 98 || duration-currentTime <= 60) {
+                                                    color = button.classList.contains('active') ? '#607d8b' : '#795548';
+                                                }
+                                                else {
+                                                    color = button.classList.contains('active') ? '#8bc34a' : '#673ab7';
+                                                };
                                                 button.setAttribute(
                                                     'style',
                                                     'border: 0.5px solid '+color+';' +
