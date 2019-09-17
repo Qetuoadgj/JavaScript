@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.04
+// @version      1.0.05
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -94,14 +94,16 @@
                     var reader = new FileReader();
                     reader.readAsText(file, 'UTF-8');
                     reader.onload = function (evt) {
-                        let videoData = GM_getValue('videoData');
                         let text = evt.target.result;
+                        document.body.removeChild(e.target);
+                        let videoData = GM_getValue('videoData');
                         console.log(text);
                         let data = JSON.parse(text);
-                        Object.assign(videoData, videoData, data);
-                        // console.log(videoData);
-                        GM_setValue('videoData', videoData);
-                        document.body.removeChild(e.target);
+                        if (typeof data === 'object') {
+                            Object.assign(videoData, videoData, data);
+                            // console.log(videoData);
+                            GM_setValue('videoData', videoData);
+                        };
                         alert('OK');
                         if (G_videoElement && G_timePlayingLast) {
                             if (!G_videoElement.paused) G_videoElement.pause();
