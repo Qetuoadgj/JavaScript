@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.02
+// @version      1.0.04
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -29,8 +29,11 @@
         'body video', // any page
     ].join(', ')
     var G_videoPage, G_videoTitle, G_videoOrigin, G_titleSerie, G_titleSeason;
+    var G_timePlayingLast = 0;
     var userLang = navigator.language || navigator.userLanguage;
-    var str_remove = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Удалить из просмотреных' : 'Remove From Viewed';
+    var str_remove = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Удалить из просмотреных' : 'Remove from Viewed';
+    var str_create_backup = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Сохранить историю в файл' : 'Save History as File';
+    var str_restore_backup = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Восстановить историю из файла' : 'Restore History from File';
     var cmdRemove = GM_registerMenuCommand(str_remove, function() {
         initFunction();
         if (!G_videoElement) return;
@@ -45,6 +48,74 @@
         GM_setValue('videoData', videoData);
         G_messageTarget.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
         console.log(G_titleSerie, 'ERASED');
+    }, '');
+
+    function downloadString(text, fileType, fileName) {
+        var blob = new Blob([text], { type: fileType });
+        var a = document.createElement('a');
+        a.download = fileName;
+        a.href = URL.createObjectURL(blob);
+        a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+    }
+
+    // downloadString("a,b,c\n1,2,3", "text/csv", "myCSV.csv");
+
+    function timeStamp() {
+        let today = new Date;
+        let date = today.toLocaleDateString('en-US', {year:'numeric', month:'2-digit', day:'2-digit'}).split('/');
+        let time = today.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'}).split(':');
+        return (date[2] + '' + date[0] + '' + date[1] + '' + time[0] + '' + time[1] + '' + time[2]);
+    };
+
+    var cmdCreateBackup = GM_registerMenuCommand(str_create_backup, function() {
+        let videoData = GM_getValue('videoData');
+        let text = JSON.stringify(videoData);
+        downloadString(text, 'text/plain', 'video_history_' + timeStamp() +'.txt');
+    }, '');
+
+    var cmdRestoreBackup = GM_registerMenuCommand(str_restore_backup, function() {
+        let id = 'myFileSelectorID', name = 'myFileSelector';
+        let i = document.querySelector('input#' + id + '[name=' + name + ']');
+        if (!i) {
+            i = document.createElement('input');
+            i.id = id;
+            i.name = name;
+            i.type = 'file';
+            i.style.display = 'none';
+            document.body.appendChild(i);
+            i.onchange = function(e) {
+                let file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.readAsText(file, 'UTF-8');
+                    reader.onload = function (evt) {
+                        let videoData = GM_getValue('videoData');
+                        let text = evt.target.result;
+                        console.log(text);
+                        let data = JSON.parse(text);
+                        Object.assign(videoData, videoData, data);
+                        // console.log(videoData);
+                        GM_setValue('videoData', videoData);
+                        document.body.removeChild(e.target);
+                        alert('OK');
+                        if (G_videoElement && G_timePlayingLast) {
+                            if (!G_videoElement.paused) G_videoElement.pause();
+                            location.reload();
+                        }
+                    };
+                    reader.onerror = function (evt) {
+                        alert('error reading file');
+                        document.body.removeChild(e.target);
+                    };
+                };
+            };
+        };
+        i.click();
     }, '');
     window.addEventListener('message', function(e) {
         if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.url) {
@@ -72,7 +143,7 @@
                 };
             };
         };
-        var G_timePlayingLast = 0, isBusy = false;
+        var /*G_timePlayingLast = 0,*/ isBusy = false;
         function updateData(ignoreDelays = false) {
             if (isBusy) return;
             isBusy = true;
