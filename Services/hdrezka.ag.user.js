@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.18
+// @version      1.0.19
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -51,6 +51,19 @@
     'use strict';
 
     // Your code here...
+
+    Element.prototype.immediateText = function() {
+        // return this.contents().not(this.children()).text();
+        let child = this.firstChild, texts = [];
+        while (child) {
+            if (child.nodeType == 3) {
+                texts.push(child.data);
+            }
+            child = child.nextSibling;
+        }
+        return texts.join('').trim();
+    };
+
     var KEY_BACKSPACE = 8,
         KEY_TAB = 9,
         KEY_ENTER = 13,
@@ -350,7 +363,7 @@
                     let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
                     if (G_messageTarget) {
                         let titleActive = document.querySelector('.b-simple_episode__item.active');
-                        titleActive = titleActive ? titleActive.innerText : null;
+                        titleActive = titleActive ? titleActive.immediateText() : null;
                         G_messageTarget.postMessage({sender: 'ACTION', reason: 'PAUSE'}, '*');
                     };
                 };
@@ -383,8 +396,8 @@
             toggleAutoScale();
         });
 
-        var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').innerText,
-            G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').innerText,
+        var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').immediateText(),
+            G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').immediateText(),
             G_titleFull = G_title_1 + ' / ' + G_title_2,
             G_videoOrigin = window.location.origin + '' + window.location.pathname
         ;
@@ -404,7 +417,7 @@
             }
             */
             let seasonActive = document.querySelector('.b-simple_season__item.active');
-            let G_titleSeason = seasonActive ? seasonActive.innerText : 'Без сезонов';
+            let G_titleSeason = seasonActive ? seasonActive.immediateText() : 'Без сезонов';
             let episodeButtons = document.querySelectorAll('.b-simple_episode__item');
             for (let button of episodeButtons) {
                 button.removeAttribute('style');
@@ -421,7 +434,7 @@
                                     for (let serie of Object.keys(videoData[title][origin][season])) {
                                         // console.log(serie);
                                         for (let button of episodeButtons) {
-                                            if (button.innerText == serie) {
+                                            if (button.immediateText() == serie) {
                                                 // console.log(button);
                                                 let currentTime = videoData[title][origin][season][serie].currentTime;
                                                 let duration = videoData[title][origin][season][serie].duration;
@@ -455,8 +468,8 @@
                 if (G_messageTarget) {
                     let serieActive = document.querySelector('.b-simple_episode__item.active');
                     let seasonActive = document.querySelector('.b-simple_season__item.active');
-                    serieActive = serieActive ? serieActive.innerText : null;
-                    seasonActive = seasonActive ? seasonActive.innerText : null;
+                    serieActive = serieActive ? serieActive.immediateText() : null;
+                    seasonActive = seasonActive ? seasonActive.immediateText() : null;
                     G_messageTarget.postMessage({
                         sender: 'ANSWER',
                         title: G_titleFull,
