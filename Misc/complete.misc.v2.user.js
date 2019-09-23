@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.25
+// @version      2.0.26
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -697,7 +697,7 @@
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
-        if (G_contentURL !== G_pageURL) G_embedCodeText += ' title="' + G_contentTitle + '"';
+        if (G_contentURL !== G_pageURL) G_embedCodeText += ' data-title="' + G_contentTitle + '"';
         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
         if (G_previewURL) G_embedCodeText += ' data-video="' + G_previewURL + '"';
         G_embedCodeText += ' data-content="' + G_contentURL + '"';
@@ -1601,15 +1601,20 @@
         if (
             G_pageURL.matchLink('https?://www.jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
         ) {
+            var imagesArray = [], thumbsArray = [];
             G_funcToRun = function () {
-                var imagesArray = [], thumbsArray = [];
-                for (let link of document.querySelectorAll('div.related > a[href*="://pics.jjgirls.com/pictures/"]')) {
-                    var imageURL = link.href, img = link.querySelector('img');
-                    if (img) {
-                        var thumbURL = ''; //img.src;
-                        thumbsArray.push(thumbURL);
-                        imagesArray.push(imageURL);
-                    }
+                if (imagesArray.length == 0) {
+                    for (let link of document.querySelectorAll('div.related > a[href*="://pics.jjgirls.com/pictures/"]')) {
+                        var imageURL = link.href, img = link.querySelector('img');
+                        if (img) {
+                            var thumbURL = ''; //img.src;
+                            thumbsArray.push(thumbURL);
+                            imagesArray.push(imageURL);
+                        }
+                    };
+                    for (let img of document.querySelectorAll('a[href] > img[src]')) {
+                        img.src = img.src.replace(/(.*)\/hd-(.*)/i, '$1/$2');
+                    };
                 };
                 G_contentTitle = document.querySelector('h1.info.fss').innerText.trim(); // Free PornPics SexPhotos XXxImages HD Gallery!
                 G_contentURL = imagesArray[imagesArray.length-1];

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.12
+// @version      0.0.13
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -438,12 +438,11 @@
             var mediaMuted = localStorage.getItem(cookieName+"_muted");
             if (mediaMuted == "false") mediaMuted = false; // normalize
             var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
-            function saveSettings() {
-                localStorage.setItem(cookieName+"_volume", mediaElement.volume || 0);
-                localStorage.setItem(cookieName+"_muted", mediaElement.muted);
-            }
-            for (var i = 0; i < mediaElementsArray.length; ++i) {
-                var mediaElement = mediaElementsArray[i];
+            for (let mediaElement of mediaElementsArray) {
+                let saveSettings = function() {
+                    localStorage.setItem(cookieName+"_volume", mediaElement.volume || 0);
+                    localStorage.setItem(cookieName+"_muted", mediaElement.muted);
+                };
                 if (mediaVolume) mediaElement.volume = mediaVolume;
                 mediaElement.muted = mediaMuted;
                 mediaElement.addEventListener("volumechange", saveSettings, false);
@@ -459,12 +458,11 @@
             var mediaMuted = GM_getValue(cookieName+"_muted");
             if (mediaMuted == "false") mediaMuted = false; // normalize
             var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
-            function saveSettings() {
-                GM_setValue(cookieName+"_volume", mediaElement.volume || 0);
-                GM_setValue(cookieName+"_muted", mediaElement.muted);
-            }
-            for (var i = 0; i < mediaElementsArray.length; ++i) {
-                var mediaElement = mediaElementsArray[i];
+            for (let mediaElement of mediaElementsArray) {
+                let saveSettings = function() {
+                    GM_setValue(cookieName+"_volume", mediaElement.volume || 0);
+                    GM_setValue(cookieName+"_muted", mediaElement.muted);
+                };
                 if (mediaVolume) mediaElement.volume = mediaVolume;
                 mediaElement.muted = mediaMuted;
                 mediaElement.addEventListener("volumechange", saveSettings, false);
