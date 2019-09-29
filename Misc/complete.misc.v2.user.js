@@ -1291,6 +1291,7 @@
         // --------------------------------------------------------------------------------
         let actualSource = () => {
             var video = document.querySelector('video[data-qualities]');
+            if (!video) return;
             var qualities = video.dataset.qualities.split('|');
             var maxQuality = qualities[qualities.length-1];
             var contentURL = video.dataset['src' + maxQuality];
