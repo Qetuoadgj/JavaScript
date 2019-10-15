@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.27
+// @version      2.0.30
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -46,6 +46,12 @@
 // @match        *://www.sex.com/pin/*/
 // @match        *://www.sex.com/*
 // @match        *://www.pornpics.com/*
+
+// @match        *://biqle.ru/watch/*
+// @match        *://daxab.com/player/*
+
+// @match        *://www.pornesq.com/video/*/*
+// @match        *://www.pornesq.com/embed/*
 // ==/UserScript==
 
 (function() {
@@ -418,8 +424,9 @@
         var Ret = [];
         if (Haystack.match(NeedleRegEx)) {
             var Result = Haystack.replace(NeedleRegEx, Replacement);
-            StartNum = StartNum > 1 ? StartNum : 1; EndNum = EndNum > 1 ? EndNum : 1;
-            for (let i = StartNum; i < EndNum; i++) {
+            StartNum = StartNum || 0; // StartNum > 1 ? StartNum : 1;
+            EndNum = EndNum > StartNum ? EndNum : StartNum; // EndNum > 1 ? EndNum : 1;
+            for (let i = StartNum; i <= EndNum; i++) {
                 Ret[i] = Result.replace('$NUM', i);
             }
             // console.log('G_posters:\n', G_posters);
@@ -697,11 +704,11 @@
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
-        if (G_contentURL !== G_pageURL) G_embedCodeText += ' data-title="' + G_contentTitle + '"';
+        /*if (G_contentURL !== G_pageURL)*/ G_embedCodeText += ' data-title="' + G_contentTitle + '"';
         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
         if (G_previewURL) G_embedCodeText += ' data-video="' + G_previewURL + '"';
         G_embedCodeText += ' data-content="' + G_contentURL + '"';
-        if (G_contentURL !== G_pageURL) G_embedCodeText += ' data-url="' + G_pageURL + '"';
+        /*if (G_contentURL !== G_pageURL)*/ G_embedCodeText += ' data-url="' + G_pageURL + '"';
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
         // if (G_videoQuality) G_embedCodeText += ' data-quality="' + G_videoQuality + 'p"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
@@ -1020,11 +1027,18 @@
                 // --------------------------------------------------------------------------------
                 var maxQuality = 0, menuItem;
                 for (let item of document.querySelectorAll('.vjs-menu-content > .vjs-menu-item')) {
-                    var button = item.querySelector('.vjs-menu-item-text');
-                    var text = button ? button.innerText : '';
-                    var buttonQuality = Number(text.match(/\d+/));
-                    if (buttonQuality > maxQuality) { maxQuality = buttonQuality; menuItem = item; }
-                }
+                    let button = item.querySelector('.vjs-menu-item-text');
+                    let text = button ? button.innerText : '';
+                    let fps = text.match('1080p@60fps HD');
+                    console.log(text,fps);
+                    if (fps) {
+                        continue;
+                    }
+                    else {
+                        let buttonQuality = Number(text.match(/\d+/));
+                        if (buttonQuality > maxQuality) { maxQuality = buttonQuality; menuItem = item; };
+                    };
+                };
                 // --------------------------------------------------------------------------------
                 if (menuItem) menuItem.click();
                 // --------------------------------------------------------------------------------
@@ -1265,7 +1279,7 @@
                 G_contentURL = document.querySelector('meta[name="twitter:player"]').content.replace(/(https?:\/\/).*?\.(pornhub\.com\/)/i, '$1$2'); //pageURL + '#ReCast';
                 G_posterURL = document.querySelector('meta[name="twitter:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
-                G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15+2); console.log('G_posters:\n', G_postersArray);
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 0, 15+2); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.video-actions-container'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
@@ -1842,6 +1856,135 @@
         };
         waitForElement('img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         return; // SKIP REST OF THE CODE
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://biqle.ru/*')
+    ) {
+        /*
+        if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
+            // window.stop();
+            G_funcToTest = function () {return document.querySelector('body iframe[src*="/player/"]');};
+            G_funcToRun = function () {G_contentURL = G_funcResult.src; G_standartReCastFunc();};
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        else if (
+            G_pageURL.matchLink('https?://biqle.ru/watch/*') // https://biqle.ru/watch/-159565098_456242372
+        ) {
+            G_funcToRun = function () {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL + '#ReCast';
+                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
+                // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('.video > .heading'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                // G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
+                // G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+            };
+            waitForElement('iframe[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        */
+        // /*
+        if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
+            return;
+        }
+        // */
+        else if (
+            G_pageURL.matchLink('https?://biqle.ru/watch/*') // https://biqle.ru/watch/-159565098_456242372
+        ) {
+            G_funcToRun = function() {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL; // + '#ReCast';
+                G_posterURL = (
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]') ?
+                    document.querySelector('meta[property="og:image"]').content :
+                    null
+                );
+                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
+                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
+                // console.log(G_posterURL);
+                // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                // G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
+                G_stickTo = document.querySelector('.video > .heading'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                G_standartAddEmbedCodeFunc();
+                G_messageTarget = document.querySelector('iframe').contentWindow;
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('iframe[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://daxab.com/player/*')
+    ) {
+        G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+        waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://*.pornesq.com/*')
+    ) {
+        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
+        // --------------------------------------------------------------------------------
+        let actualSource = () => {
+            var source = document.querySelector('video#video_html5_api > source[src]');
+            if (!source) return;
+            var contentURL = source.src;
+            return contentURL;
+        };
+        // --------------------------------------------------------------------------------
+        if (G_pageURL.match('#ReCast')) { // https://www.pornesq.com/video/21809/lana-rhoades-19-year-old-natural-busty-teen-gets-covered-in-cream#ReCast
+            // window.stop();
+            G_funcToTest = function() {return actualSource();};
+            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        }
+        // --------------------------------------------------------------------------------
+        else if (
+            G_pageURL.matchLink('https?://www.pornesq.com/embed/*') // https://www.pornesq.com/embed/a531f21d4128a5efcf31
+        ) {
+            G_funcToRun = function () {
+                G_contentURL = actualSource();
+                G_contentURL = G_contentURL ? G_contentURL : G_funcResult.src;
+                if (G_contentURL) openURL(refineVideo(G_contentURL));
+            };
+            waitForElement('video#video_html5_api > source[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        // --------------------------------------------------------------------------------
+        else if (
+            G_pageURL.matchLink('https?://www.pornesq.com/video/*/*') // https://www.pornesq.com/video/21809/lana-rhoades-19-year-old-natural-busty-teen-gets-covered-in-cream
+        ) {
+            G_funcToRun = function () {
+                G_sampleURL = actualSource();
+                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
+                G_contentURL = document.querySelector('textarea#video_embed_code').value.match(/.*src="(.*?)".*/i)[1]; // https://www.pornesq.com/embed/a531f21d4128a5efcf31
+                G_posterURL = document.querySelector('video#video_html5_api').poster; // https://www.pornesq.com/media/videos/tmb/21809/1.jpg
+                // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/.*?.jpg$/i, '$1/$NUM.jpg', 1, 20); console.log('G_posters:\n', G_postersArray);
+                G_postersArray = [G_posterURL].concat(G_postersArray);
+                G_stickTo = document.querySelector('.video-container'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                G_standartAddEmbedCodeFunc();
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.video-container');
+                    media = media ? media : document.querySelector('video#video_html5_api'); // document.querySelector('div#player video > source');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('video#video_html5_api > source[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
     }
 
     else {
