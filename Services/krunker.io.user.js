@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         krunker.io
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
-// @version      1.0.18
+// @version      1.0.19
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/krunker.io.user.js
@@ -125,6 +125,7 @@
         return 'https://drive.google.com/uc?id=' + id + '&authuser=0&export=download';
     };
 
+    var Texture_EMPTY = 'https://drive.google.com/file/d/1cc94xi7Puw_zelKnhgIIPeCy80nZygnx/view?usp=sharing';
     var Reticle_GREEN = 'https://drive.google.com/open?id=1nUB5HC_x9ZYBH_t2s5rMKWRX-woY4xkg';
     var Reticle_RED = 'https://drive.google.com/open?id=11SoQbfgg-2Exq3Nxn7jQdribTfgxJrjR';
     var Reticle_Scope_PU = 'https://drive.google.com/file/d/19OzzNGLKh7RmlcQqW3cpUPqBkMc_-xSm/view?usp=sharing';
@@ -132,6 +133,21 @@
     var png_crosshair = googl('https://drive.google.com/open?id=1kuuMyJiALyQrMTNNUi20CKSDfwMv-yD5');
     var png_sight_dot = googl(Reticle_RED);
     var png_sight_sniper = googl(Reticle_Scope_PU);
+
+    // png_sight_dot = googl(Reticle_GREEN);
+    png_sight_dot = "";
+
+    var modsArray = [];
+    function loadUserMod(a, b, c) {modsArray.push([a, b, c]);};
+
+    loadUserMod('NoSight', 'https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0', '2723');
+    loadUserMod("Holosight","https://www.dropbox.com/s/q88bf5s84xnrz9e/EoTech%20Holosight.zip?dl=0","3610");
+    // loadUserMod("M98B","https://www.dropbox.com/s/7zvng2s73gztini/M98B.zip?dl=0","3496");
+
+
+    // png_sight_dot = googl(Texture_EMPTY);
+    // modsArray.push(["CsGoMegaPack", "https://www.dropbox.com/s/n5bcs9ehr8w8qt3/CSGO_MEGAPACK_V2.zip?dl=0", "3438"]);
+
 
     function initSettings() {
         let ON = 'true', OFF = 'false' ;
@@ -179,7 +195,7 @@
         localStorage.kro_setngss_dynamicHP = OFF;
         localStorage.kro_setngss_showUnboxings = OFF;
         //
-        localStorage.kro_setngss_autoLoadLast = ON;
+        localStorage.kro_setngss_autoLoadLast = OFF;
     };
     initSettings();
     //
@@ -405,12 +421,7 @@
         setTimeout(function() {
             if (canLoad()) {
                 /* LOAD MODS */
-                if (localStorage.kro_setngss_canLoadMods == 'true') {
-                    let modsArray = [];
-                    modsArray.push(['NoSight', 'https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0', '2723']);
-                    loadMods(modsArray, 1000);
-                    // localStorage.krk_lastMod = 'https://www.dropbox.com/s/8kojf1bjy6djzbq/NoSight.zip?dl=0';
-                };
+                if (localStorage.kro_setngss_canLoadMods == 'true') {loadMods(modsArray, 1000);};
             };
         }, 2500);
     });

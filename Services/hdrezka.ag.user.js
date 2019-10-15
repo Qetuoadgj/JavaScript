@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.19
+// @version      1.0.20
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -295,6 +295,8 @@
                 "::-webkit-scrollbar-corner {background-color: #111;}",
                 //
                 "iframe#cdn-player {border: 1px #111 solid;}",
+                //
+                ".title, .num {color: wheat !important; font-weight: 100 !important;}",
             ].join('\n');
             if (window.location.href.match('/filmix.co/')) {
                 css += [
