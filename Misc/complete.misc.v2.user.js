@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.31
+// @version      2.0.32
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -74,6 +74,10 @@
         console.log(string);
         if (showAlert) alert(string);
     }
+    // ================================================================================
+    var G_userLang = navigator.language || navigator.userLanguage;
+    var G_userLangShort = G_userLang.substr(0, 2);
+    document.documentElement.lang = G_userLangShort; // disable "Google Translate Page" prompt
     // ================================================================================
     var G_funcToTest, G_funcToRun, G_funcResult, G_delay = 100, G_tries = 50, G_timerGroup = [];
     function waitForCondition(funcToTest = false, funcToRun = false, delay = 50, tries = 5, timerGroup = []) {
