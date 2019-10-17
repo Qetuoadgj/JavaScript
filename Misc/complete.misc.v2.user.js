@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.30
+// @version      2.0.31
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -23,6 +23,7 @@
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
 // @match        *://sxyprn.com/post/*.html*
+// @match        *://*.pornhub.com/*
 // @match        *://*.pornhub.com/view_video.php?viewkey=*
 // @match        *://www.pornhub.com/embed/*
 // @match        *://www.playvids.com/*/*
@@ -1224,6 +1225,8 @@
         G_pageURL.matchLink('https?://*.pornhub.com/*')
     ) {
         // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
+        addGlobalStyle('span.title a {font-size: 1vw;}', 'ph_Style_1');
+        addGlobalStyle('.menu.realsex, .menu.community {display: none !important;}', 'ph_Style_2');
         // --------------------------------------------------------------------------------
         var actualSource = () => {
             var contentURL;
@@ -1923,8 +1926,18 @@
     else if (
         G_pageURL.matchLink('https?://daxab.com/player/*')
     ) {
-        G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-        waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        G_funcToRun = function() {
+            G_contentURL = document.querySelector('.videoplayer_dl_select ._item').href; // 1080p, 720p ...
+            if (!G_contentURL || G_contentURL == '') {
+                document.querySelector('.videoplayer_dl_select ._item').click();
+                let G_funcToRun_2 = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+                waitForElement('.videoplayer_dl_select ._item', 'href', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+            }
+            else {
+                G_standartReCastFunc();
+            };
+        };
+        waitForElement('.videoplayer_dl_select ._item', null, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
     else if (
