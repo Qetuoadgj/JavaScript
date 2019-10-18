@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.32
+// @version      2.0.34
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -102,9 +102,13 @@
                         return;
                     }
                     else {
-                        let state = 'keepRun'; log(0, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')');
+                        let state = 'keepRun'; log(
+                            0, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')',
+                            '\n' +
+                            funcToTest.toString().replace(/\n+[ ]{4}/g, '').replace(/[{][ ]{4,}/g, '{').replace(/[ ]{4,}[}]/g, '}')
+                        );
                         startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
-                    }
+                    };
                 }
                 else {
                     let state = 'FAIL'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')');
@@ -641,8 +645,18 @@
         embedCodeFrame.appendChild(element);
         // --------------------------------------------------------------------------------
         element.addEventListener('click', onClickFunc, false);
+        element.addEventListener('mouseover', function(){resizeEmbedCodePoster(1.0, 0.5, 5000);}, false);
         // --------------------------------------------------------------------------------
         return element;
+    };
+    // --------------------------------------------------------------------------------
+    var G_embedCodePosterResizeTimer = null;
+    function resizeEmbedCodePoster(before = 1.0, after = 0.5, delay = 5000) {
+        G_embedCodePoster.style.zoom = before;
+        clearTimeout(G_embedCodePosterResizeTimer);
+        G_embedCodePosterResizeTimer = setTimeout(function() {
+            G_embedCodePoster.style.zoom = after;
+        }, delay);
     };
     // --------------------------------------------------------------------------------
     var G_embedCodeLink, G_contentURL; function addEmbedCodeLink(embedCodeFrame) {
@@ -686,20 +700,27 @@
             G_videoDuration = e.target.duration;
             G_videoQuality = G_videoQuality || G_videoHeight;
             if (onLoadFunc && (typeof onLoadFunc).toLowerCase() == 'function') onLoadFunc();
+            if (forceLoad) e.target.remove();
         });
         element.addEventListener('error', function(e) {
             if (onErrorFunc && (typeof onErrorFunc).toLowerCase() == 'function') onErrorFunc();
         });
         // --------------------------------------------------------------------------------
-        if (forceLoad) {
-            element.setAttribute('controls', '');
-            setTimeout(function() {
-                element.addEventListener('loadedmetadata', function(e) {e.target.remove();});
-                element.play();
-            }, 250);
-        }
+        element.setAttribute('muted', 'muted');
+        element.setAttribute('autoplay', 'autoplay');
         // --------------------------------------------------------------------------------
         element.setAttribute('src', G_sampleURL);
+        // --------------------------------------------------------------------------------
+        if (forceLoad) {
+            element.setAttribute('controls', '');
+            let funcToTest = function() {return element.src && element.src !== ''};
+            let funcToRun = function() {
+                if (typeof element !== 'undefined' && typeof element.play == 'function' && element.paused) {
+                    element.play();
+                };
+            };
+            waitForCondition(funcToTest, funcToRun, 50, 5*10, []);
+        };
         // --------------------------------------------------------------------------------
         return element;
     }
@@ -756,6 +777,7 @@
                 updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
                 // G_embedCodeTextArea.value = G_embedCodeText;
                 G_embedCodePoster.setAttribute('src', G_posterURL);
+                resizeEmbedCodePoster(1.0, 0.5, 5000);
             }
             for (let posterURL of URLArray) {
                 var img = document.createElement('img');
@@ -819,6 +841,7 @@
         G_embedCodePoster.style.borderWidth = '2px';
         G_embedCodePoster.style.borderStyle = 'dashed';
         G_embedCodePoster.style.zoom = 1.0;
+        resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
     var G_noQualitySample = false, G_qualitySampleSource = null, G_standartAddEmbedCodeFunc = function() {
@@ -1164,6 +1187,7 @@
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 var eventCatcher, media;
+                /*
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
                     media = media ? media : document.querySelector('.fp-player > video'); // || eventCatcher;
@@ -1172,6 +1196,22 @@
                     mediaMouseControls(eventCatcher, media, 1);
                     G_messageTarget = media;
                 }, G_delay*2, 300, G_timerGroup);
+                */
+                let handleNewElements = function (e) {
+                    let element = e.target;
+                    console.log('element.tagName:', element.tagName);
+                    if (element.tagName == 'VIDEO') {
+                        document.removeEventListener('DOMNodeInserted', handleNewElements, false);
+                        // alert(element);
+                        if (element == document.querySelector('.fp-player > video')) {
+                            eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
+                            media = media ? media : element; // || eventCatcher;
+                            mediaMouseControls(eventCatcher, media, 1);
+                            G_messageTarget = media;
+                        };
+                    };
+                };
+                document.addEventListener('DOMNodeInserted', handleNewElements, false);
             };
             /*
             // document.addEventListener("DOMContentLoaded", function(event) {
