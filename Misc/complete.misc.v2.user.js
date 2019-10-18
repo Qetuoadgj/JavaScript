@@ -1199,7 +1199,7 @@
                 */
                 let handleNewElements = function (e) {
                     let element = e.target;
-                    console.log('element.tagName:', element.tagName);
+                    // console.log('element.tagName:', element.tagName);
                     if (element.tagName == 'VIDEO') {
                         document.removeEventListener('DOMNodeInserted', handleNewElements, false);
                         // alert(element);
