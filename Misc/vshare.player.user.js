@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.13
+// @version      0.0.14
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -20,6 +20,9 @@
     'use strict';
 
     // Your code here...
+    var G_USE_AS_EXTENSION = typeof GM == 'undefined';
+    console.log('G_USE_AS_EXTENSION:', G_USE_AS_EXTENSION);
+
     // https://vshare.io/v/404/https://s902.vshare.io:440/s,128-1000-22-1-2191707-bkxdtksrwj/186745/351673/185658/ff-8840c3e48fc8f80f67eeacc4b3fc3cdbb94c86b4,5c584cc5,2f23e49_480.mp4
     window.stop();
     // ---------------------------------------------------
@@ -101,8 +104,14 @@
     function initPlayer() {
         // console.clear();
 
-        var pageDomain = location.host.replace(/.*\.(.*\..*)/, '$1'); var paramStart = location.protocol + '//' + pageDomain + '/v/404/'; // paramStart;
-        // var paramStart = /^.*?player\.html#/;
+        if (G_USE_AS_EXTENSION) {
+            var paramStart = /^.*?player\.html#/;
+        }
+        else {
+            var pageDomain = location.host.replace(/.*\.(.*\..*)/, '$1');
+            var paramStart = location.protocol + '//' + pageDomain + '/v/404/';
+        };
+
         console.log('location.href: ' + location.href);
         console.log('paramStart: ' + paramStart);
 
@@ -381,7 +390,6 @@
             };
         }
 
-
         function getDomain(url, subdomain) {
             subdomain = subdomain || false;
             url = url.replace(/(https?:\/\/)?(www.)?/i, '');
@@ -529,7 +537,7 @@
                 console.log('params: ', params);
                 listParams(params);
                 if (params.autoplay && params.autoplay == 'true') {
-                    video.setAttribute('autoplay', true);
+                    video.setAttribute('autoplay', '');
                 };
                 var videoSrc = params.main_url;
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
@@ -538,7 +546,12 @@
                 mediaKeyboardControls(video);
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
-                useGMVolumeCookie("body > video", "video");
+                if (G_USE_AS_EXTENSION) {
+                    useLocalVolumeCookie("body > video", "video");
+                }
+                else {
+                    useGMVolumeCookie("body > video", "video");
+                };
                 window.addEventListener('message', function(e) {
                     if(e.data.sender === 'QUESTION') {
                         setTimeout(function() {
@@ -554,7 +567,6 @@
                         }, 50);
                     }
                 });
-                // useLocalVolumeCookie("body > video", "video");
             }
         }
     };

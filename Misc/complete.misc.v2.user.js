@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.34
+// @version      2.0.35
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -81,6 +81,7 @@
     // ================================================================================
     var G_funcToTest, G_funcToRun, G_funcResult, G_delay = 100, G_tries = 50, G_timerGroup = [];
     function waitForCondition(funcToTest = false, funcToRun = false, delay = 50, tries = 5, timerGroup = []) {
+        let funcText = funcToTest.toString().replace(/\n+[ ]{4}/g, '').replace(/[{][ ]{4,}/g, '{').replace(/[ ]{4,}[}]/g, '}');
         // --------------------------------------------------------------------------------
         if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function' && funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
             var timerGroupIndex = timerGroup.length;
@@ -96,22 +97,18 @@
                 if (tries && (count < tries)) {
                     /*var*/ G_funcResult = funcToTest();
                     if (G_funcResult) {
-                        let state = 'SUCCESS'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')');
+                        let state = 'SUCCESS'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')', '\n' + funcText);
                         clearTimers(timerGroup);
                         funcToRun();
                         return;
                     }
                     else {
-                        let state = 'keepRun'; log(
-                            0, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')',
-                            '\n' +
-                            funcToTest.toString().replace(/\n+[ ]{4}/g, '').replace(/[{][ ]{4,}/g, '{').replace(/[ ]{4,}[}]/g, '}')
-                        );
+                        let state = 'keepRun'; log(0, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')', '\n' + funcText);
                         startIteration(iteration, delay, count, timerGroup, timerGroupIndex);
                     };
                 }
                 else {
-                    let state = 'FAIL'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')');
+                    let state = 'FAIL'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')', '\n' + funcText);
                     // console.trace();
                 }
             };
@@ -707,7 +704,7 @@
         });
         // --------------------------------------------------------------------------------
         element.setAttribute('muted', 'muted');
-        element.setAttribute('autoplay', 'autoplay');
+        element.setAttribute('autoplay', '');
         // --------------------------------------------------------------------------------
         element.setAttribute('src', G_sampleURL);
         // --------------------------------------------------------------------------------
@@ -857,14 +854,16 @@
         G_embedCodePoster = addEmbedCodePoster(G_embedCodeFrame, G_funcToRun);
         if (G_qualitySampleSource) {
             // document.querySelector('#EPvideo_html5_api').addEventListener('play', function(e) {
-            G_qualitySampleSource.addEventListener('playing', function(e) {
+            function updateValues(e) {
                 G_sampleURL = e.target.src;
                 G_videoWidth = e.target.videoWidth;
                 G_videoHeight = e.target.videoHeight;
                 G_videoDuration = e.target.duration;
                 G_videoQuality = G_videoHeight;
                 updateEmbedCodeTextColor();
-            });
+            };
+            G_qualitySampleSource.addEventListener('playing', function(e){updateValues(e)});
+            G_qualitySampleSource.addEventListener('loadedmetadata', function(e){updateValues(e)});
         }
         else {
             if (G_sampleURL && !G_noQualitySample) {
