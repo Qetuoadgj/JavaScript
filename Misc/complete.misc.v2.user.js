@@ -53,6 +53,8 @@
 
 // @match        *://www.pornesq.com/video/*/*
 // @match        *://www.pornesq.com/embed/*
+
+// @match        *://www.porngo.com/videos/*/*
 // ==/UserScript==
 
 (function() {
@@ -1261,6 +1263,49 @@
                 }, G_delay, G_tries, G_timerGroup);
             };
             waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://www.porngo.com/*')
+    ) {
+        if (G_pageURL.match('#ReCast')) { // https://www.porngo.com/videos/28489/passing-me-around/#ReCast
+            // window.stop();
+            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        }
+        else if (
+            G_pageURL.matchLink('https?://www.porngo.com/videos/*/*') // https://www.porngo.com/videos/28489/passing-me-around/
+        ) {
+            G_funcToRun = function () {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL + '#ReCast';
+                G_posterURL = document.querySelector('.player video').poster;
+                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/(.*)\.jpg/i, '$1/$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('div.player-holder'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                G_sampleURL = document.querySelector('.player video > source[src]').src;
+                // G_previewURL = G_posterURL.replace('(.*)/(.*)\.jpg', '$1/$2.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                /*
+                setTimeout(function() {
+                    var eventCatcher = document.querySelector('body video[src]'), media = eventCatcher;
+                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
+                }, 500);
+                */
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.player video');
+                    media = media ? media : eventCatcher;
+                    G_messageTarget = media;
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
     }
 
