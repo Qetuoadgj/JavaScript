@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.05
+// @version      1.0.06
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -15,6 +15,7 @@
 /// @noframes
 // @match        *://magicianer.cc/video/*
 // @match        *://streamguard.cc/*
+// @match        *://rezka.ag/*/*/*
 // ==/UserScript==
 
 (function() {
@@ -203,8 +204,11 @@
             };
             setTimeout(function(){isBusy = false;}, 10);
         };
-        G_videoElement.addEventListener('timeupdate', function(){updateData(false)}, false); // IE9, Chrome, Safari, Opera
-        G_videoElement.addEventListener('seeked', function(){updateData(true)}, false); // IE9, Chrome, Safari, Opera
+        if(typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
+            G_videoElement.addEventListener('timeupdate', function(){updateData(false)}, false); // IE9, Chrome, Safari, Opera
+            G_videoElement.addEventListener('seeked', function(){updateData(true)}, false); // IE9, Chrome, Safari, Opera
+            console.log('G_videoElement:', G_videoElement);
+        };
     });
     function initFunction() {
         G_videoElement = G_videoElement || document.querySelectorAll(videoElementSelector)[0]; // 1st match
@@ -220,6 +224,7 @@
         }
         else if (element.tagName == 'VIDEO') {
             initFunction();
+            // console.log('G_videoElement:', element);
         };
     } , false);
     let videoData = GM_getValue('videoData') || {};

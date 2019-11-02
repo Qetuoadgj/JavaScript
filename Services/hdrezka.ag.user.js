@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.20
+// @version      1.0.21
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -224,6 +224,11 @@
         var minScale = 1, maxScale = initScale; // 2.5;
         var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
         function scalePlayer(scale) {
+            let embedVideo = document.querySelector('video');
+            if (embedVideo) {
+                console.log('Disabling zoom mode. REASSON:', embedVideo);
+                return;
+            };
             var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
             var css = [
                 "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
@@ -362,11 +367,19 @@
                     e.preventDefault();
                 }
                 else if (e.keyCode == KEY_K) {
-                    let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
+                    let iframe = document.querySelector('iframe#cdn-player');
+                    let G_messageTarget = iframe ? iframe.contentWindow : window.parent;
+                    console.log('G_messageTarget:', G_messageTarget);
                     if (G_messageTarget) {
                         let titleActive = document.querySelector('.b-simple_episode__item.active');
                         titleActive = titleActive ? titleActive.immediateText() : null;
-                        G_messageTarget.postMessage({sender: 'ACTION', reason: 'PAUSE'}, '*');
+                        if (window.parent == window) {
+                            let video = document.querySelector('#player video');
+                            if (video) {if (video.paused) {video.play();} else { video.pause();};};
+                        }
+                        else {
+                            G_messageTarget.postMessage({sender: 'ACTION', reason: 'PAUSE'}, '*');
+                        };
                     };
                 };
             }
@@ -466,7 +479,9 @@
         window.addEventListener('message', function(e) {
             if (typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
                 // alert('ANSWER.data.url: ' + e.data.url);
-                let G_messageTarget = document.querySelector('iframe#cdn-player').contentWindow;
+                let iframe = document.querySelector('iframe#cdn-player');
+                let G_messageTarget = iframe ? iframe.contentWindow : window.parent;
+                console.log('G_messageTarget:', G_messageTarget);
                 if (G_messageTarget) {
                     let serieActive = document.querySelector('.b-simple_episode__item.active');
                     let seasonActive = document.querySelector('.b-simple_season__item.active');
