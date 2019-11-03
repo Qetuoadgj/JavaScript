@@ -1,17 +1,16 @@
 // ==UserScript==
 // @name         GoogleFavicons
 // @icon         https://www.google.com/s2/favicons?domain=google.com
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        none
+// @noframes
 // @run-at       document-end
-/// @require      https://github.com/Qetuoadgj/JavaScript/raw/master/Libs/JS.Functions.Lib.user.js
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/GoogleFavicons.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
-// @match        https://encrypted.google.com/*
-// @match        https://google.com/*
-// @match        https://www.google.com/*
+// @match        *://google.com/*
+// @match        *://www.google.com/*
 // ==/UserScript==
 
 (function() {
