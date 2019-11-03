@@ -39,6 +39,7 @@
 // @match        *://oload.biz/embed/*
 // @match        *://oload.tv/embed/*
 // @match        *://www.jjgirls.com/pornpics/*
+// @match        *://jjgirls.com/pornpics/*
 // @match        *://www.babesandstars.com/*/*/*/
 // @match        *://www.definebabe.com/gallery/*
 // @match        *://hqporner.com/hdporn/*.html
@@ -1714,11 +1715,11 @@
     }
 
     else if (
-        G_pageURL.matchLink('https?://www.jjgirls.com/*')
+        G_pageURL.matchLink('https?://(www.)?jjgirls.com/*')
     ) {
         // addPageControlKeys('a[rel="prev"]', 'a[rel="next"]');
         if (
-            G_pageURL.matchLink('https?://www.jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
+            G_pageURL.matchLink('https?://(www.)?jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
         ) {
             var imagesArray = [], thumbsArray = [];
             G_funcToRun = function () {
