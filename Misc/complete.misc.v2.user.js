@@ -772,13 +772,14 @@
             element.setAttribute('id', elementID);
             G_embedCodeFrame.appendChild(element);
             function updateMainPoster(e) {
-                var img = e.target;
+                let img = e.target;
                 G_posterURL = img.getAttribute('src');
                 updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
                 // G_embedCodeTextArea.value = G_embedCodeText;
                 G_embedCodePoster.setAttribute('src', G_posterURL);
                 resizeEmbedCodePoster(1.0, 0.5, 5000);
             }
+            /*
             for (let posterURL of URLArray) {
                 var img = document.createElement('img');
                 img.setAttribute('style', G_embedCodePoster.getAttribute('style'));
@@ -788,6 +789,27 @@
                 G_embedCodeFrame.appendChild(img);
                 img.addEventListener('click', updateMainPoster.bind(this), false);
             }
+            */
+            let imageStyle = G_embedCodePoster.getAttribute('style');
+            let imageIndex = 1;
+            let loadImage = function() {
+                let img = document.createElement('img');
+                img.setAttribute('style', imageStyle);
+                img.style.zoom = 0.5;
+                img.setAttribute('src', URLArray[imageIndex]);
+                img.setAttribute('onerror', 'this.remove();');
+                G_embedCodeFrame.appendChild(img);
+                img.addEventListener('click', updateMainPoster.bind(this), false);
+                if (imageIndex < URLArray.length) {
+                    img.addEventListener('load', function(){
+                        imageIndex++;
+                        loadImage();
+                    }, false);
+                };
+                // console.log(URLArray[imageIndex], img);
+                return img;
+            };
+            loadImage();
             //
             G_embedCodePoster.style.position = 'fixed';
             G_embedCodePoster.style.bottom = '10px';
@@ -1185,7 +1207,7 @@
                 G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
                 G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/')
                 G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, 15); // console.log('G_posters:\n', G_postersArray);
-                let timeLineThumbsMaxIndex = (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
+                let timeLineThumbsMaxIndex = 500; // (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
                 for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
                     //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
                     G_postersArray[G_postersArray.length] = unsafeWindow.flashvars.timeline_screens_url.
