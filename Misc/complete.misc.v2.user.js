@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.36
+// @version      2.0.37
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1205,8 +1205,8 @@
                 );
                 G_forceLoad = true;
                 G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
-                G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/')
-                G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, 15); // console.log('G_posters:\n', G_postersArray);
+                G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/');
+                G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
                 let timeLineThumbsMaxIndex = 500; // (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
                 for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
                     //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg

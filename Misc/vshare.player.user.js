@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.14
+// @version      0.0.15
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -88,6 +88,643 @@
         };
     };
     // ---------------------------------------------------
+    var html = [
+        // `<!DOCTYPE html>`,
+        `<html>`,
+        `    <head>`,
+        `        <meta charset="UTF-8">`,
+        `        <meta name="viewport" content="width=device-width, initial-scale=1">`,
+        // `        <link rel="stylesheet" href="player.css">`,
+        `        <title>HTML5 Custom Video Player</title>`,
+        `    </head>`,
+        `    <body>`,
+        `        <div class="player">`,
+        `            <!-- <video class="player-video" src="https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4"></video> -->`,
+        `            <!-- <video class="player-video" src="https://s14-n5-nl-cdn.eporner.com/f52e6d9176f8487ece155009451283fa/5dccc140010600/1101004-480p.mp4"></video> -->`,
+        `            <video class="player-video"></video>`,
+        `            <div class="player-controls">`,
+        `                <div class="progress">`,
+        `                    <div class="progress-background">`,
+        `                        <span class="current-time">00:00</span>`,
+        `                        <video class="progress-thumbnail"></video>`,
+        `                    </div>`,
+        `                    <div class="filled-buffer"></div>`,
+        `                    <div class="filled-progress"></div>`,
+        `                </div>`,
+        `                <div class="ply-btn">`,
+        `                    <button class="player-btn toggle-play" title="Toggle Play">`,
+        `                        <!-- <svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><path d="M3 2l10 6-10 6z"></path></svg> -->`,
+        `                        <svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`,
+        `                    </button>`,
+        `                </div>`,
+        `                <span class="current-time-display">00:00</span>`,
+        `                <div class="audio">`,
+        `                    <div class="speaker"><span></span></div>`,
+        `                    <input type="range" name="volume" class="player-slider" min="0" max="1" step="0.05" value="1">`,
+        `                </div>`,
+        `                <div class="sliders">`,
+        `                    <!-- <input type="range" name="volume" class="player-slider" min="0" max="1" step="0.05" value="1"> -->`,
+        `                    <input type="range" name="playbackRate" class="player-slider" min="0.5" max="2" step="0.1" value="1">`,
+        `                </div>`,
+        `                <button data-skip="-10" class="player-btn skip">- 10s</button>`,
+        `                <button data-skip="10" class="player-btn skip">+ 10s</button>`,
+        `            </div>`,
+        `        </div>`,
+        // `        <script src="player.js"></script>`,
+        `    </body>`,
+        `</html>`,
+    ].join('\n');
+    document.documentElement.innerHTML = html;
+    // ---------------------------------------------------
+    var css = [
+        `body {`,
+        `    align-items: center;`,
+        `    background: #000046;`,
+        `    background: linear-gradient(to right, #1CB5E0, #000046);`,
+        `    display: flex;`,
+        `    height: 100vh;`,
+        `    justify-content: center;`,
+        `    margin: 0;`,
+        `    padding: 0;`,
+        `}`,
+        ``,
+        `.player {`,
+        `    max-width: 800px;`,
+        `    border: 6px solid rgba(255, 255, 255, 0.2);`,
+        `    box-shadow: 0 0 25px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.1);`,
+        `    position: relative;`,
+        `    overflow: hidden;`,
+        `}`,
+        `.player:hover .progress {`,
+        `    height: 10px;`,
+        `}`,
+        `.player:hover .player-controls {`,
+        `    -webkit-transform: translateY(0);`,
+        `    transform: translateY(0);`,
+        `}`,
+        ``,
+        `.player:-webkit-full-screen,`,
+        `.player:-webkit-full-screen {`,
+        `    max-width: none;`,
+        `    width: 100%;`,
+        `}`,
+        ``,
+        `.player:-webkit-full-screen,`,
+        `.player:fullscreen {`,
+        `    max-width: none;`,
+        `    width: 100%;`,
+        `}`,
+        ``,
+        `.play-btn {`,
+        `    flex: 1;`,
+        `}`,
+        ``,
+        `.player-video {`,
+        `    width: 100%;`,
+        `    display: block;`,
+        `}`,
+        ``,
+        `.player-btn {`,
+        `    background: none;`,
+        `    border: 0;`,
+        `    color: white;`,
+        `    text-align: center;`,
+        `    max-width: 60px;`,
+        `    padding: 5px 8px;`,
+        `}`,
+        `.player-btn svg {`,
+        `    fill: #FFFFFF;`,
+        `}`,
+        `.player-btn:hover, .player-btn:focus {`,
+        `    border-color: #FFEC41;`,
+        `    background: rgba(255, 255, 255, 0.2);`,
+        `}`,
+        ``,
+        `.player-slider {`,
+        `    width: 10px;`,
+        `    height: 30px;`,
+        `}`,
+        ``,
+        `.player-controls {`,
+        `    align-items: center;`,
+        `    display: flex;`,
+        `    position: absolute;`,
+        `    bottom: 0;`,
+        `    width: 100%;`,
+        `    -webkit-transform: translateY(100%) /*translateY(-5px)*/;`,
+        `    transform: translateY(100%) /*translateY(-5px)*/;`,
+        `    transition: all 0.3s;`,
+        `    flex-wrap: wrap;`,
+        `    background: rgba(0, 0, 0, 0.3);`,
+        `    height: 60px;`,
+        `}`,
+        ``,
+        `.player-controls > * {`,
+        `    flex: 1;`,
+        `}`,
+        ``,
+        `.progress {`,
+        `    position: relative;`,
+        `    display: flex;`,
+        `    flex: 10;`,
+        `    flex-basis: 100%;`,
+        `    height: 4px;`,
+        `    transition: height 0.3s;`,
+        `    background: rgba(0, 0, 0, 0.5);`,
+        `    top: -6px;`,
+        `}`,
+        ``,
+        `.filled-progress {`,
+        `    width: 50%;`,
+        `    background: #FFEC41;`,
+        `    flex: 0;`,
+        `    flex-basis: 50%;`,
+        `}`,
+        ``,
+        `.sliders {`,
+        `    max-width: 200px;`,
+        `    display: flex;`,
+        `}`,
+        ``,
+        `input[type=range] {`,
+        `    -webkit-appearance: none;`,
+        `    background: transparent;`,
+        `    width: 100%;`,
+        `    margin: 0 5px;`,
+        `}`,
+        ``,
+        `input[type=range]:focus {`,
+        `    outline: none;`,
+        `}`,
+        ``,
+        `input[type=range]::-webkit-slider-runnable-track {`,
+        `    width: 100%;`,
+        `    height: 8px;`,
+        `    cursor: pointer;`,
+        `    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);`,
+        `    background: rgba(255, 255, 255, 0.5);`,
+        `    border-radius: 10px;`,
+        `    border: 0.2px solid rgba(1, 1, 1, 0);`,
+        `}`,
+        ``,
+        `input[type=range]::-webkit-slider-thumb {`,
+        `    height: 15px;`,
+        `    width: 15px;`,
+        `    border-radius: 50px;`,
+        `    background: white;`,
+        `    cursor: pointer;`,
+        `    -webkit-appearance: none;`,
+        `    margin-top: -3.5px;`,
+        `    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);`,
+        `}`,
+        ``,
+        `input[type=range]:focus::-webkit-slider-runnable-track {`,
+        `    background: rgba(255, 255, 255, 0.8);`,
+        `}`,
+        ``,
+        `input[type=range]::-moz-range-track {`,
+        `    width: 100%;`,
+        `    height: 8px;`,
+        `    cursor: pointer;`,
+        `    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);`,
+        `    background: #ffffff;`,
+        `    border-radius: 10px;`,
+        `    border: 0.2px solid rgba(1, 1, 1, 0);`,
+        `}`,
+        ``,
+        `input[type=range]::-moz-range-thumb {`,
+        `    box-shadow: 0 0 3px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);`,
+        `    height: 15px;`,
+        `    width: 15px;`,
+        `    border-radius: 50px;`,
+        `    background: white;`,
+        `    cursor: pointer;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.player, .player-video {`,
+        `    max-width: 100%;`,
+        `    max-height: 100%;`,
+        `    height: 100%;`,
+        `    width: 100%;`,
+        `    box-shadow: none;`,
+        `    border: none;`,
+        `}`,
+        `body {`,
+        `    margin: 0;`,
+        `    padding: 0;`,
+        `    background: #000;`,
+        `}`,
+        `.progress {`,
+        `    height: 4px;`,
+        `    cursor: pointer;`,
+        `}`,
+        `.player:hover .progress {`,
+        `    height: 8px;`,
+        `}`,
+        `.filled-progress {`,
+        `    width: 0%;`,
+        `    flex-basis: 0%;`,
+        `    background: #FF0000;`,
+        `}`,
+        ``,
+        `/*`,
+        `    .player .player-controls {`,
+        `    -webkit-transform: translateY(0);`,
+        `    transform: translateY(0);`,
+        `    }`,
+        `*/`,
+        ``,
+        `input[type=range]::-webkit-slider-runnable-track {`,
+        `    height: 2px;`,
+        `    border-radius: 1px;`,
+        `}`,
+        `input[type=range]::-webkit-slider-thumb {`,
+        `    height: 16px;`,
+        `    width: 16px;`,
+        `    margin-top: -7px;`,
+        `}`,
+        `.progress .progress-background {`,
+        `    visibility: hidden;`,
+        `    height: 60px;`,
+        `    width: 100%;`,
+        `    background: none;`,
+        `    display: block;`,
+        `    position: fixed;`,
+        `    top: -60px;`,
+        `    `,
+        `    font-family: 'Arial', Arial, Sans-serif;`,
+        `    font-size: 14px;`,
+        `    color: #FFFFFF;`,
+        `    `,
+        `    min-width: 10%;`,
+        `    max-width: 90%;`,
+        `}`,
+        `.progress:hover .progress-background {`,
+        `    visibility: visible;`,
+        `}`,
+        `.progress-background .current-time {`,
+        `    heigh: 30px;`,
+        `    width: auto;`,
+        `    background: rgba(0, 0, 0, 0.5);`,
+        `    display: block;`,
+        `    position: absolute;`,
+        `    bottom: 1px;`,
+        `    right: 0;`,
+        `    transform: translateX(50%);`,
+        `    padding: 2px 4px;`,
+        `    border-radius: 4px;`,
+        `    z-index: 0;`,
+        `}`,
+        ``,
+        `.progress-background .progress-thumbnail {`,
+        `    display: block;`,
+        `    position: absolute;`,
+        `    height: 90px;`,
+        `    width: 150px;`,
+        `    background: #000;`,
+        `    bottom: 22px;`,
+        `    right: 0;`,
+        `    transform: translateX(50%);`,
+        `    padding: 0px;`,
+        `    z-index: -1;`,
+        `    border: 1px solid rgba(32, 32, 32, 0.5);`,
+        `}`,
+        ``,
+        `.player .progress {`,
+        `    background: rgba(255, 255, 255, 0.1);`,
+        `}`,
+        ``,
+        `.player-slider[name='playbackRate'] {`,
+        `    display: none;`,
+        `}`,
+        `.sliders {`,
+        `    max-width: 120px;`,
+        `}`,
+        ``,
+        `.ply-btn {`,
+        `    width: 40px;`,
+        `    max-width: 40px;`,
+        `}`,
+        ``,
+        `.current-time-display {`,
+        `    color: white;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.audio {`,
+        `    display: flex;`,
+        `}`,
+        `.speaker {`,
+        `    height: 30px;`,
+        `    width: 30px;`,
+        `    max-width: 30px;`,
+        `    position: relative;`,
+        `    overflow: hidden;`,
+        `    display: inline-block;`,
+        `    /* background: red; */`,
+        `    margin: 0px 5px;`,
+        `    left: 0px;`,
+        `    /* top: 2px; */`,
+        `}`,
+        `.speaker span {`,
+        `    display: inherit;`,
+        `    width: 8px;`,
+        `    height: 8px;`,
+        `    background: #fff;`,
+        `    margin: 11px 0 0 2px;`,
+        `}`,
+        `.speaker span:after {`,
+        `    content: '';`,
+        `    position: absolute;`,
+        `    width: 0;`,
+        `    height: 0;`,
+        `    border-style: solid;`,
+        `    border-color: transparent #fff transparent transparent;`,
+        `    border-width: 10px 14px 10px 15px;`,
+        `    left: -13px;`,
+        `    top: 5px;`,
+        `}`,
+        `.speaker span:before {`,
+        `    transform: rotate(45deg);`,
+        `    border-radius: 0 50px 0 0;`,
+        `    content: '';`,
+        `    position: absolute;`,
+        `    width: 5px;`,
+        `    height: 5px;`,
+        `    border-style: double;`,
+        `    border-color: #fff;`,
+        `    border-width: 7px 7px 0 0;`,
+        `    left: 18px;`,
+        `    top: 9px;`,
+        `    transition: all 0.2s ease-out;`,
+        `}`,
+        `.speaker:hover span:before {`,
+        `    transform: scale(0.8) translate(-3px, 0) rotate(42deg);`,
+        `}`,
+        `.speaker.mute span:before {`,
+        `    transform: scale(0.5) translate(-15px, 0) rotate(36deg);`,
+        `    opacity: 0;`,
+        `}`,
+        ``,
+        `input[type=range] {`,
+        `    -webkit-appearance: none;`,
+        `    background: transparent;`,
+        `    width: 100px;`,
+        `    /* width: 0; */`,
+        `    /* margin: 0 5px; */`,
+        `    /* display: flex; */`,
+        `    /* left: 40px; */`,
+        `    position: relative;`,
+        `    /* top: 2px; */`,
+        `}`,
+        ``,
+        `.audio input {`,
+        `    display: none;`,
+        `}`,
+        `.audio:hover input {`,
+        `    display: inline-block;`,
+        `    width: 100px;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.ply-btn {`,
+        `    width: 40px;`,
+        `    max-width: 40px;`,
+        `    display: contents;`,
+        `}`,
+        ``,
+        `.current-time-display {`,
+        `    color: white;`,
+        `    /* max-width: 118px; */`,
+        `    display: contents;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.progress {`,
+        `    height: 6px;`,
+        `    top: 0px;`,
+        `    position: absolute;`,
+        `    width: 100%;`,
+        `}`,
+        `.player:hover .progress {`,
+        `    height: 6px;`,
+        `}`,
+        `/* ----------------------------------- */`,
+        ``,
+        `.filled-progress, .filled-buffer {`,
+        `    flex: 0;`,
+        `    position: absolute;`,
+        `    background: #FFEC41;`,
+        `    height: 100%;`,
+        `    width: 50%;`,
+        `    flex-basis: 50%;`,
+        `}`,
+        ``,
+        `.filled-buffer {`,
+        `    background: #FFFF00;`,
+        `    flex-basis: 75%;`,
+        `    width: 75%;`,
+        `    opacity: 0.2;`,
+        `}`,
+        `/**/`,
+        `.filled-progress, .filled-buffer {`,
+        `    width: 0%;`,
+        `    flex-basis: 0%;`,
+        `}`,
+        `/**/`,
+        `.filled-progress {`,
+        `    background: #FF0000;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.player-btn {`,
+        `    margin: 5px;`,
+        `}`,
+        ``,
+        `/* ----------------------------------- */`,
+        ``,
+        `.progress-background *, .filled-progress, .filled-buffer {`,
+        `    pointer-events: none;`,
+        `}`,
+    ].join('\n');
+    addGlobalStyle(css, 'playerStyle_1');
+    // ---------------------------------------------------
+    /*
+	Let's Build: With JavaScript - Web-Crunch.com
+	Subscribe on YouTube - https://youtube.com/c/webcrunch
+	Let's Build: HTML5 Video Player
+	Overall Concept Credit: Wes Bos https://wesbos.com
+    */
+    const player = document.querySelector('.player');
+    const video = player.querySelector('.player-video');
+    const progress = player.querySelector('.progress');
+    const progressFilled = player.querySelector('.filled-progress');
+    const toggle = player.querySelector('.toggle-play');
+    const skippers = player.querySelectorAll('[data-skip]');
+    const ranges = player.querySelectorAll('.player-slider');
+
+    // Logic
+    function togglePlay() {
+        const playState = video.paused ? 'play' : 'pause';
+        let promise = video[playState](); // Call play or paused method
+        if (promise !== undefined) {
+            promise.then(_ => {
+                // Autoplay started!
+            }).catch(error => {
+                // Autoplay was prevented.
+            });
+        };
+    }
+
+    function updateButton() {
+        const togglePlayBtn = document.querySelector('.toggle-play');
+        if(this.paused) {
+            // togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><path d="M3 2l10 6-10 6z"></path></svg>`;
+            togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`;
+            // togglePlayBtn.classList.remove('pause-btn');
+            // togglePlayBtn.classList.add('play-btn');
+        }
+        else {
+            // togglePlayBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><title>pause</title><path d="M2 2h5v12H2zm7 0h5v12H9z"></path></svg>`;
+            togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>pause</title><polygon points="0 0 0 16 5 16 5 0"></polygon><polygon points="16 0 16 16 11 16 11 0"></polygon></svg>`;
+            // togglePlayBtn.classList.remove('play-btn');
+            // togglePlayBtn.classList.add('pause-btn');
+        }
+    }
+
+    function skip() {
+        video.currentTime += parseFloat(this.dataset.skip);
+    }
+
+    function rangeUpdate() {
+        video[this.name] = this.value;
+    }
+
+    const toggleMuteBtn = document.querySelector('.speaker');
+    function updateMuteButton() {
+        if(video.muted) {
+            toggleMuteBtn.classList.add('mute');
+        }
+        else {
+            toggleMuteBtn.classList.remove('mute');
+        }
+    }
+
+    video.addEventListener("volumechange", function(e) {
+        const slider = document.querySelector('input[name="volume"]');
+        slider.value = video.volume;
+        updateMuteButton();
+    }, false);
+
+    const currentTimeDisplay = document.querySelector('.current-time-display');
+    video.addEventListener('loadedmetadata', () => {currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);});
+
+    const bufferFilled = player.querySelector('.filled-buffer');
+
+    function bufferUpdate() {
+        const timeRanges = video.buffered;
+        const currentTime = video.currentTime;
+        var curTimeRange = 0;
+        for (var i = 0; i < timeRanges.length; i++) {
+            let end = timeRanges.end(i);
+            let start = timeRanges.start(i);
+            if (currentTime >= start && currentTime <= end) {
+                curTimeRange = end;
+                break;
+            }
+        }
+        // console.log(currentTime, curTimeRange, timeRanges.length);
+        const percent = (curTimeRange / video.duration) * 100;
+        bufferFilled.style.flexBasis = `${percent}%`;
+        bufferFilled.style.width = `${percent}%`;
+    }
+
+    function progressUpdate() {
+        const percent = (video.currentTime / video.duration) * 100;
+        progressFilled.style.flexBasis = `${percent}%`;
+        progressFilled.style.width = `${percent}%`;
+        currentTimeDisplay.innerText = toHHMMSS(video.currentTime) + "/" + toHHMMSS(video.duration);
+        bufferUpdate();
+    }
+
+    video.addEventListener('loadedmetadata', progressUpdate);
+
+    function scrub(e) {
+        const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
+        video.currentTime = Math.round(scrubTime || 0); // scrubTime;
+    }
+
+    function toggleMute(e) {
+        e.preventDefault();
+        video.muted = !video.muted;
+    }
+
+    toggleMuteBtn.addEventListener('click', toggleMute);
+
+    // Event listeners
+
+    video.addEventListener('click', togglePlay);
+    video.addEventListener('play', updateButton);
+    video.addEventListener('pause', updateButton);
+    video.addEventListener('timeupdate', progressUpdate);
+
+    video.addEventListener('load', rangeUpdate);
+
+    toggle.addEventListener('click', togglePlay);
+    skippers.forEach(button => button.addEventListener('click', skip));
+    ranges.forEach(range => range.addEventListener('change', rangeUpdate));
+    ranges.forEach(range => range.addEventListener('mousemove', rangeUpdate));
+
+    let mousedown = false;
+    progress.addEventListener('click', scrub);
+    progress.addEventListener('mousemove', (e) => {mousedown && scrub(e)});
+    progress.addEventListener('mousedown', () => {mousedown = true});
+    progress.addEventListener('mouseup', () => {mousedown = false});
+
+    function toHHMMSS(secs = 0) {
+        const sec_num = parseInt(secs, 10);
+        const hours = Math.floor(sec_num / 3600) % 24;
+        const minutes = Math.floor(sec_num / 60) % 60;
+        const seconds = sec_num % 60;
+        return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v, i) => v !== "00" || i > 0).join(":");
+    };
+
+    function scrub2(e, el) {
+        const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
+        const percent = (e.offsetX / progress.offsetWidth) * 100;
+        el.style.width = `${percent}%`;
+        return {
+            percent: percent,
+            currentTime: Math.round(scrubTime)
+        };
+    }
+
+    const progressBackground = player.querySelector('.progress-background');
+    const currentTime = player.querySelector('.current-time');
+    progress.addEventListener('mousemove', function (e) {
+        let ret = scrub2(e, progressBackground);
+        currentTime.innerText = toHHMMSS(ret.currentTime);
+        displayThumb(ret.currentTime);
+    });
+
+    var timeLast = 0;
+    const progressThumbnail = player.querySelector('.progress-thumbnail');
+    function displayThumb(time) {
+        // console.log(time, timeLast, Math.abs(time - timeLast));
+        if ((Math.abs(time - timeLast)) < 2) return;
+        timeLast = time;
+        let url = video.currentSrc.replace(/#t=\d+\b/ig, '') + "#t=" + time;
+        progressThumbnail.src = url;
+    }
+    // ---------------------------------------------------
+    /*
+    // ---------------------------------------------------
     var video = document.createElement('video');
     video.addEventListener('error', failed);
     video.setAttribute('id', 'cleaned_video');
@@ -101,15 +738,17 @@
     document.body.appendChild(video);
     // video.src = 'https://s902.vshare.io:440/s,128-1000-22-1-2191707-bkxdtksrwj/186745/351673/185658/ff-8840c3e48fc8f80f67eeacc4b3fc3cdbb94c86b4,5c584cc5,2f23e49_480.mp4';
     // ---------------------------------------------------
+    */
     function initPlayer() {
         // console.clear();
 
+        var paramStart, pageDomain;
         if (G_USE_AS_EXTENSION) {
-            var paramStart = /^.*?player\.html#/;
+            paramStart = /^.*?player\.html#/;
         }
         else {
-            var pageDomain = location.host.replace(/.*\.(.*\..*)/, '$1');
-            var paramStart = location.protocol + '//' + pageDomain + '/v/404/';
+            pageDomain = location.host.replace(/.*\.(.*\..*)/, '$1');
+            paramStart = location.protocol + '//' + pageDomain + '/v/404/';
         };
 
         console.log('location.href: ' + location.href);
@@ -207,6 +846,7 @@
             return d;
         }
 
+        /*
         var toHHMMSS = function(secs) {
             var sec_num = parseInt(secs, 10);
             var hours = Math.floor(sec_num / 3600) % 24;
@@ -214,6 +854,7 @@
             var seconds = sec_num % 60;
             return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v,i) => v !== "00" || i > 0).join(":");
         };
+        */
 
         function addMediaTextIndicator(media, fontSize) {
             fontSize = fontSize || 72;
@@ -365,15 +1006,15 @@
 
         // Break apart any path into parts
         // 'http://example.com:12345/blog/foo/bar?startIndex=1&pageSize=10' ->
-        // 	{
-        // 	"host": "example.com",
-        // 	"port": "12345",
-        // 	"search": {
-        // 		"startIndex": "1",
-        // 		"pageSize": "10"
-        // 	},
-        // 	"path": "/blog/foo/bar",
-        // 	"protocol": "http:"
+        //     {
+        //     "host": "example.com",
+        //     "port": "12345",
+        //     "search": {
+        //         "startIndex": "1",
+        //         "pageSize": "10"
+        //     },
+        //     "path": "/blog/foo/bar",
+        //     "protocol": "http:"
         // }
         function getPathInfo(path) {
             //  create a link in the DOM and set its href
@@ -526,7 +1167,8 @@
 
         if (url) {
             console.log('url: ', url);
-            var video = document.querySelector("body > video");
+            var video = document.querySelector("body video");
+            console.log('video: ', video);
             if (video) {
                 let event = new Event('click');
                 video.dispatchEvent(event);
@@ -547,10 +1189,10 @@
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
                 if (G_USE_AS_EXTENSION) {
-                    useLocalVolumeCookie("body > video", "video");
+                    useLocalVolumeCookie("body video", "video");
                 }
                 else {
-                    useGMVolumeCookie("body > video", "video");
+                    useGMVolumeCookie("body video", "video");
                 };
                 window.addEventListener('message', function(e) {
                     if(e.data.sender === 'QUESTION') {
