@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.15
+// @version      0.0.16
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -99,7 +99,7 @@
         `    </head>`,
         `    <body>`,
         `        <div class="player">`,
-        `            <video class="player-video" src="https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10"></video>`,
+        `            <video class="player-video"></video>`,
         `            <div class="player-controls">`,
         `                <div class="progress">`,
         `                    <div class="progress-background">`,
