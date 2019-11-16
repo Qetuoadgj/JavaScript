@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.16
+// @version      0.0.17
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -99,7 +99,7 @@
         `    </head>`,
         `    <body>`,
         `        <div class="player">`,
-        `            <video class="player-video"></video>`,
+        `            <video class="player-video" src="https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10"></video>`,
         `            <div class="player-controls">`,
         `                <div class="progress">`,
         `                    <div class="progress-background">`,
@@ -124,6 +124,7 @@
         `                    </div>`,
         `                    <button data-skip="-10" class="player-btn skip">- 10s</button>`,
         `                    <button data-skip="10" class="player-btn skip">+ 10s</button>`,
+        `                    <span class="video-size"></span>`,
         `                </div>`,
         `            </div>`,
         `        </div>`,
@@ -216,7 +217,7 @@
         `.progress:hover .progress-background {`,
         `    visibility: visible;`,
         `}`,
-        `.progress-background, .progress-background *, .filled-progress, .filled-buffer {`,
+        `.progress-background, .progress-background *, .filled-progress, .filled-buffer, .video-size, .current-time-display {`,
         `    pointer-events: none;`,
         `}`,
         `.current-time {`,
@@ -261,10 +262,9 @@
         `    cursor: pointer;`,
         `    border-radius: 1px;`,
         `}`,
-        `.player-btn:hover,`,
-        `.player-btn:focus {`,
+        `.player-btn:hover, .player-btn:focus {`,
         `    border-color: #ffec41;`,
-        `    background: rgba(255, 255, 255, 0.2);`,
+        `    /*background: rgba(255, 255, 255, 0.2);*/`,
         `}`,
         `.player-btn svg {`,
         `    fill: #ffffff;`,
@@ -409,6 +409,46 @@
         `.speed {`,
         `    margin-left: auto;`,
         `}`,
+        `.filled-progress, .filled-buffer {`,
+        `    width: 0;`,
+        `}`,
+        `/*`,
+        `.player-btn svg {`,
+        `    fill: #ffffff;`,
+        `}`,
+        `.player-btn:hover svg {`,
+        `    fill: #00ffff;`,
+        `}`,
+        `.audio:hover .speaker span {`,
+        `    background: #00ffff;`,
+        `}`,
+        `.audio:hover .speaker span:after {`,
+        `    border-color: transparent #00ffff transparent transparent;`,
+        `}`,
+        `.audio:hover .speaker span:before {`,
+        `    border-color: #00ffff;`,
+        `}`,
+        `*/`,
+        `.player-panel {`,
+        `    padding: 0 15px;`,
+        `}`,
+        `.video-size, .current-time-display {`,
+        `    margin: 0 5px;`,
+        `}`,
+        `input[type="range"] {`,
+        `    /* background: red; */`,
+        `    height: 100%;`,
+        `    cursor: pointer;`,
+        `}`,
+        `.player-controls {`,
+        `    height: auto;`,
+        `}`,
+        `.toggle-play svg {`,
+        `    zoom: 0.9;`,
+        `}`,
+        `.speaker {`,
+        `    zoom: 0.8;`,
+        `}`,
         ``,
     ].join('\n');
     addGlobalStyle(css, 'playerStyle_1');
@@ -479,9 +519,6 @@
         updateMuteButton();
     }, false);
 
-    const currentTimeDisplay = document.querySelector('.current-time-display');
-    video.addEventListener('loadedmetadata', () => {currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);});
-
     const bufferFilled = player.querySelector('.filled-buffer');
 
     function bufferUpdate() {
@@ -510,7 +547,14 @@
         bufferUpdate();
     }
 
-    video.addEventListener('loadedmetadata', progressUpdate);
+    const currentTimeDisplay = document.querySelector('.current-time-display');
+    const currentSourceQuality = document.querySelector('.video-size');
+
+    video.addEventListener('loadedmetadata', function() {
+        currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);
+        currentSourceQuality.innerText = video.videoHeight + 'p';
+        progressUpdate();
+    }, false);
 
     function scrub(e) {
         const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
