@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.18
+// @version      0.0.19
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -542,6 +542,18 @@
         `input[type="range"] {`,
         `    padding: 0px 5px;`,
         `}`,
+        `/* ------------------------------------- */`,
+        `.speaker.mute span:before {`,
+        `    transform: rotate(0deg);`,
+        `    content: "×";`,
+        `    height: fit-content;`,
+        `    border: none;`,
+        `    border-color: #fff;`,
+        `    display: block;`,
+        `    opacity: 1;`,
+        `    /* transition: none; */`,
+        `}`,
+        `/* ------------------------------------- */`,
         ``,
     ].join('\n');
     addGlobalStyle(css, 'playerStyle_1');
