@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.17
+// @version      0.0.18
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -94,17 +94,17 @@
         `    <head>`,
         `        <meta charset="UTF-8">`,
         `        <meta name="viewport" content="width=device-width, initial-scale=1">`,
-        // `        <link rel="stylesheet" href="player.css">`,
+        // `        <link rel="stylesheet" href="style.css">`,
         `        <title>HTML5 Custom Video Player</title>`,
         `    </head>`,
         `    <body>`,
         `        <div class="player">`,
-        `            <video class="player-video" src="https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10"></video>`,
+        `            <video class="player-video" preload="metadata"></video>`,
         `            <div class="player-controls">`,
         `                <div class="progress">`,
         `                    <div class="progress-background">`,
         `                        <span class="current-time">00:00</span>`,
-        `                        <video class="progress-thumbnail"></video>`,
+        `                        <video class="progress-thumbnail" preload="metadata" muted></video>`,
         `                    </div>`,
         `                    <div class="filled-buffer"></div>`,
         `                    <div class="filled-progress"></div>`,
@@ -115,7 +115,7 @@
         `                    </button>`,
         `                    <span class="current-time-display">00:00</span>`,
         `                    <div class="slider audio">`,
-        `                        <div class="player-btn speaker"><span></span></div>`,
+        `                        <button class="player-btn speaker"><span></span></button>`,
         `                        <input type="range" name="volume" class="player-slider" min="0" max="1" step="0.05" value="1">`,
         `                    </div>`,
         `                    <div class="slider speed">`,
@@ -125,10 +125,11 @@
         `                    <button data-skip="-10" class="player-btn skip">- 10s</button>`,
         `                    <button data-skip="10" class="player-btn skip">+ 10s</button>`,
         `                    <span class="video-size"></span>`,
+        `                                 <button class="player-btn toggle-fullscreen"></button>`,
         `                </div>`,
         `            </div>`,
         `        </div>`,
-        // `        <script src="player.js"></script>`,
+        // `        <script src="script.js"></script>`,
         `    </body>`,
         `</html>`,
         ``,
@@ -179,7 +180,7 @@
         `    top: 0;`,
         `    left: 0;`,
         `    width: 100%;`,
-        `    height: 6px;`,
+        `    height: 4px;`,
         `    transform: translateY(-100%);`,
         `    background: rgba(255, 255, 255, 0.1);`,
         `    cursor: pointer;`,
@@ -193,11 +194,11 @@
         `}`,
         `.filled-progress {`,
         `    width: 40%;`,
-        `    background: #FF0000;`,
+        `    background: #ff0000;`,
         `}`,
         `.filled-buffer {`,
         `    width: 50%;`,
-        `    background: #FFFF00;`,
+        `    background: #ffff00;`,
         `    opacity: 0.2;`,
         `}`,
         `.progress-background {`,
@@ -217,7 +218,12 @@
         `.progress:hover .progress-background {`,
         `    visibility: visible;`,
         `}`,
-        `.progress-background, .progress-background *, .filled-progress, .filled-buffer, .video-size, .current-time-display {`,
+        `.progress-background,`,
+        `.progress-background *,`,
+        `.filled-progress,`,
+        `.filled-buffer,`,
+        `.video-size,`,
+        `.current-time-display {`,
         `    pointer-events: none;`,
         `}`,
         `.current-time {`,
@@ -246,10 +252,12 @@
         `.player-panel {`,
         `    display: flex;`,
         `    align-items: center;`,
-        `    /*background: yellowgreen*/;`,
+        `    /*background: yellowgreen*/`,
         `    /*background: rgba(0, 0, 0, 1);*/`,
         `}`,
-        `.player-btn, .slider, .current-speed {`,
+        `.player-btn,`,
+        `.slider,`,
+        `.current-speed {`,
         `    width: auto;`,
         `    height: 30px;`,
         `    min-width: 30px;`,
@@ -262,12 +270,14 @@
         `    cursor: pointer;`,
         `    border-radius: 1px;`,
         `}`,
-        `.player-btn:hover, .player-btn:focus {`,
+        `.player-btn:hover,`,
+        `.player-btn:focus {`,
         `    border-color: #ffec41;`,
         `    /*background: rgba(255, 255, 255, 0.2);*/`,
         `}`,
         `.player-btn svg {`,
         `    fill: #ffffff;`,
+        `    margin: auto;`,
         `}`,
         `.player * {`,
         `    font-family: "Arial", Arial, Sans-serif;`,
@@ -291,7 +301,7 @@
         `    border-radius: 1px;`,
         `    border: 0.2px solid rgba(1, 1, 1, 0);`,
         `}`,
-        `input[type=range]::-moz-range-track {`,
+        `input[type="range"]::-moz-range-track {`,
         `    width: 100%;`,
         `    height: 3px;`,
         `    cursor: pointer;`,
@@ -310,7 +320,7 @@
         `    margin-top: -7px;`,
         `    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);`,
         `}`,
-        `input[type=range]::-moz-range-thumb {`,
+        `input[type="range"]::-moz-range-thumb {`,
         `    height: 16px;`,
         `    width: 16px;`,
         `    border-radius: 50px;`,
@@ -326,6 +336,7 @@
         `    padding-right: 5px;`,
         `    /*background: blueviolet;*/`,
         `}`,
+        `/* --------------------------------- */`,
         `.speaker {`,
         `    height: 30px;`,
         `    width: 30px;`,
@@ -344,6 +355,10 @@
         `    height: 8px;`,
         `    background: #fff;`,
         `    margin: 11px 0 0 2px;`,
+        `    pointer-events: none;`,
+        `}`,
+        `button.speaker span {`,
+        `    margin: 0 -5px;`,
         `}`,
         `.speaker span:after {`,
         `    content: "";`,
@@ -377,10 +392,13 @@
         `    transform: scale(0.5) translate(-15px, 0) rotate(36deg);`,
         `    opacity: 0;`,
         `}`,
-        `.audio input, .speed input {`,
+        `/* --------------------------------- */`,
+        `.audio input,`,
+        `.speed input {`,
         `    display: none;`,
         `}`,
-        `.audio:hover input, .speed:hover input {`,
+        `.audio:hover input,`,
+        `.speed:hover input {`,
         `    display: inline-block;`,
         `    width: 100px;`,
         `}`,
@@ -409,30 +427,32 @@
         `.speed {`,
         `    margin-left: auto;`,
         `}`,
-        `.filled-progress, .filled-buffer {`,
+        `.filled-progress,`,
+        `.filled-buffer {`,
         `    width: 0;`,
         `}`,
         `/*`,
-        `.player-btn svg {`,
+        `    .player-btn svg {`,
         `    fill: #ffffff;`,
-        `}`,
-        `.player-btn:hover svg {`,
+        `    }`,
+        `    .player-btn:hover svg {`,
         `    fill: #00ffff;`,
-        `}`,
-        `.audio:hover .speaker span {`,
+        `    }`,
+        `    .audio:hover .speaker span {`,
         `    background: #00ffff;`,
-        `}`,
-        `.audio:hover .speaker span:after {`,
+        `    }`,
+        `    .audio:hover .speaker span:after {`,
         `    border-color: transparent #00ffff transparent transparent;`,
-        `}`,
-        `.audio:hover .speaker span:before {`,
+        `    }`,
+        `    .audio:hover .speaker span:before {`,
         `    border-color: #00ffff;`,
-        `}`,
+        `    }`,
         `*/`,
         `.player-panel {`,
         `    padding: 0 15px;`,
         `}`,
-        `.video-size, .current-time-display {`,
+        `.video-size,`,
+        `.current-time-display {`,
         `    margin: 0 5px;`,
         `}`,
         `input[type="range"] {`,
@@ -449,6 +469,79 @@
         `.speaker {`,
         `    zoom: 0.8;`,
         `}`,
+        `.toggle-fullscreen {`,
+        `    outline: 1px solid #fff;`,
+        `    outline-offset: -10px;`,
+        `    width: 35px;`,
+        `    height: 30px;`,
+        `}`,
+        `.speaker {`,
+        `    zoom: unset;`,
+        `}`,
+        ``,
+        `.speaker > span {`,
+        `    zoom: 0.8;`,
+        `}`,
+        ``,
+        `.slider > * {`,
+        `    margin: 0px 5px 0px 0px;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.speaker span {`,
+        `    margin: 0;`,
+        `    display: flex;`,
+        `    align-items: center;`,
+        `    align-content: center;`,
+        `}`,
+        `.speaker span:after {`,
+        `    top: unset;`,
+        `    margin: auto;`,
+        `}`,
+        `.speaker span:before {`,
+        `    top: unset;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.speaker span:before {`,
+        `    top: unset;`,
+        `    margin: 0px 3px;`,
+        `}`,
+        `.speaker span:after {`,
+        `    top: unset;`,
+        `    margin: 0px 3px;`,
+        `}`,
+        `button.speaker span {`,
+        `    margin: 0px -2px;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.player-panel {`,
+        `    padding: 0px 0px;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.player-panel * {`,
+        `    color: #fff;`,
+        `    font-family: "Arial", Arial, Sans-serif;`,
+        `    font-size: 14px;`,
+        `    -webkit-user-select: none;`,
+        `    -moz-user-select: none;`,
+        `    -ms-user-select: none;`,
+        `    user-select: none;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.skip {`,
+        `    display: inline-grid;`,
+        `    padding: 0;`,
+        `    width: 40px;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.slider > * {`,
+        `    margin: 0px 0px 0px 0px;`,
+        `}`,
+        `.slider {`,
+        `    padding-right: 0;`,
+        `}`,
+        `input[type="range"] {`,
+        `    padding: 0px 5px;`,
+        `}`,
         ``,
     ].join('\n');
     addGlobalStyle(css, 'playerStyle_1');
@@ -462,48 +555,93 @@
     const video = player.querySelector('.player-video');
     const progress = player.querySelector('.progress');
     const progressFilled = player.querySelector('.filled-progress');
-    const toggle = player.querySelector('.toggle-play');
-    const skippers = player.querySelectorAll('[data-skip]');
-    const ranges = player.querySelectorAll('.player-slider');
-
+    const bufferFilled = player.querySelector('.filled-buffer');
+    // ---------------------------------------------------
+    const togglePlayButton = player.querySelector('.toggle-play');
+    const toggleMuteBtn = player.querySelector('.speaker');
+    const toggleFullScreenButton = player.querySelector('.toggle-fullscreen');
+    // ---------------------------------------------------
+    const skipButtons = player.querySelectorAll('[data-skip]');
+    const playerSliders = player.querySelectorAll('.player-slider');
+    // ---------------------------------------------------
+    const currentTimeDisplay = document.querySelector('.current-time-display');
+    const currentSourceQualityDisplay = document.querySelector('.video-size');
+    // ---------------------------------------------------
+    const progressBackground = player.querySelector('.progress-background');
+    const currentTime = player.querySelector('.current-time');
+    const progressThumbnail = player.querySelector('.progress-thumbnail');
+    const playbackRateDisplay = player.querySelector('.current-speed');
+    // ---------------------------------------------------
+    const timeline = progress;
+    const timeline_event_catcher = progress;
+    // ---------------------------------------------------
+    // let thumbUpdatedTimeLast = 0;
+    let mouseDownState = false;
+    // ---------------------------------------------------
     // Logic
+    // ---------------------------------------------------
+    function toHHMMSS(secs = 0) {
+        const sec_num = parseInt(secs, 10);
+        const hours = Math.floor(sec_num / 3600) % 24;
+        const minutes = Math.floor(sec_num / 60) % 60;
+        const seconds = sec_num % 60;
+        return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v, i) => v !== "00" || i > 0).join(":");
+    }
+    // When the openFullscreen() function is executed, open the video in fullscreen.
+    // Note that we must include prefixes for different browsers, as they don't support the requestFullscreen method yet.
+    function requestFullscreen(elem) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        }
+        else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+        }
+        else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            elem.webkitRequestFullscreen();
+        }
+        else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+        }
+    }
+    function toggleFullscreen() {
+        requestFullscreen(video);
+    }
+    function timelineCalculatePercent(e) {
+        const delta = timeline.offsetLeft - timeline_event_catcher.offsetLeft;
+        const clickPosX = Math.max(e.offsetX - delta, 0);
+        const percent = Math.min(clickPosX / timeline.offsetWidth * 100, 100);
+        return percent;
+    }
+    function updateTimelineThumb(time, minUpdateTime = 2) {
+        // if ((Math.abs(time - thumbUpdatedTimeLast)) < minUpdateTime) return;
+        time = Math.floor(time)
+        progressThumbnail.src = video.currentSrc.replace(/#t=\d+\b/ig, '') + `#t=${time},${time+1}`; // "#t=" + time;
+        // thumbUpdatedTimeLast = time;
+    }
+    function playerDisplayTimelineTooltip(e) {
+        const percent = timelineCalculatePercent(e);
+        const time = percent / 100 * video.duration;
+        progressBackground.style.width = `${percent}%`;
+        currentTime.innerText = toHHMMSS(time);
+        updateTimelineThumb(time);
+    }
     function togglePlay() {
         const playState = video.paused ? 'play' : 'pause';
         let promise = video[playState](); // Call play or paused method
-        if (promise !== undefined) {
-            promise.then(_ => {
-                // Autoplay started!
-            }).catch(error => {
-                // Autoplay was prevented.
-            });
-        };
+        if (promise !== undefined) {promise.then(_ => {}).catch(error => {});};
     }
-
-    function updateButton() {
-        const togglePlayBtn = document.querySelector('.toggle-play');
-        if(this.paused) {
-            // togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><path d="M3 2l10 6-10 6z"></path></svg>`;
-            togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`;
-            // togglePlayBtn.classList.remove('pause-btn');
-            // togglePlayBtn.classList.add('play-btn');
+    function updatePlayButton() {
+        if (this.paused) {
+            togglePlayButton.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`;
         }
         else {
-            // togglePlayBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><title>pause</title><path d="M2 2h5v12H2zm7 0h5v12H9z"></path></svg>`;
-            togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>pause</title><polygon points="0 0 0 16 5 16 5 0"></polygon><polygon points="16 0 16 16 11 16 11 0"></polygon></svg>`;
-            // togglePlayBtn.classList.remove('play-btn');
-            // togglePlayBtn.classList.add('pause-btn');
+            togglePlayButton.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>pause</title><polygon points="0 0 0 16 5 16 5 0"></polygon><polygon points="16 0 16 16 11 16 11 0"></polygon></svg>`;
         }
     }
-
-    function skip() {
-        video.currentTime += parseFloat(this.dataset.skip);
+    function toggleMute(e) {
+        e.preventDefault();
+        video.muted = !video.muted;
     }
-
-    function rangeUpdate() {
-        video[this.name] = this.value;
-    }
-
-    const toggleMuteBtn = document.querySelector('.speaker');
     function updateMuteButton() {
         if(video.muted) {
             toggleMuteBtn.classList.add('mute');
@@ -512,20 +650,17 @@
             toggleMuteBtn.classList.remove('mute');
         }
     }
-
-    video.addEventListener("volumechange", function(e) {
-        const slider = document.querySelector('input[name="volume"]');
-        slider.value = video.volume;
-        updateMuteButton();
-    }, false);
-
-    const bufferFilled = player.querySelector('.filled-buffer');
-
-    function bufferUpdate() {
+    function onSkipButtonClkick() {
+        video.currentTime += parseFloat(this.dataset.skip);
+    }
+    function updateSliders() {
+        video[this.name] = this.value;
+    }
+    function updateVideoBufferState() {
         const timeRanges = video.buffered;
         const currentTime = video.currentTime;
-        var curTimeRange = 0;
-        for (var i = 0; i < timeRanges.length; i++) {
+        let curTimeRange = 0;
+        for (let i = 0; i < timeRanges.length; i++) {
             let end = timeRanges.end(i);
             let start = timeRanges.start(i);
             if (currentTime >= start && currentTime <= end) {
@@ -533,102 +668,61 @@
                 break;
             }
         }
-        // console.log(currentTime, curTimeRange, timeRanges.length);
         const percent = (curTimeRange / video.duration) * 100;
-        bufferFilled.style.flexBasis = `${percent}%`;
         bufferFilled.style.width = `${percent}%`;
     }
-
-    function progressUpdate() {
+    function updateProgressBar() {
         const percent = (video.currentTime / video.duration) * 100;
-        progressFilled.style.flexBasis = `${percent}%`;
         progressFilled.style.width = `${percent}%`;
+        updateVideoBufferState();
         currentTimeDisplay.innerText = toHHMMSS(video.currentTime) + "/" + toHHMMSS(video.duration);
-        bufferUpdate();
     }
-
-    const currentTimeDisplay = document.querySelector('.current-time-display');
-    const currentSourceQuality = document.querySelector('.video-size');
-
-    video.addEventListener('loadedmetadata', function() {
+    // ---------------------------------------------------
+    function onVideoLoadedMetaData() {
         currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);
-        currentSourceQuality.innerText = video.videoHeight + 'p';
-        progressUpdate();
-    }, false);
-
-    function scrub(e) {
-        const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
-        video.currentTime = Math.round(scrubTime || 0); // scrubTime;
-    }
-
-    function toggleMute(e) {
-        e.preventDefault();
-        video.muted = !video.muted;
-    }
-
-    toggleMuteBtn.addEventListener('click', toggleMute);
-
-    // Event listeners
-
-    video.addEventListener('click', togglePlay);
-    video.addEventListener('play', updateButton);
-    video.addEventListener('pause', updateButton);
-    video.addEventListener('timeupdate', progressUpdate);
-
-    video.addEventListener('load', rangeUpdate);
-
-    toggle.addEventListener('click', togglePlay);
-    skippers.forEach(button => button.addEventListener('click', skip));
-    ranges.forEach(range => range.addEventListener('change', rangeUpdate));
-    ranges.forEach(range => range.addEventListener('mousemove', rangeUpdate));
-
-    let mousedown = false;
-    progress.addEventListener('click', scrub);
-    progress.addEventListener('mousemove', (e) => {mousedown && scrub(e)});
-    progress.addEventListener('mousedown', () => {mousedown = true});
-    progress.addEventListener('mouseup', () => {mousedown = false});
-
-    function toHHMMSS(secs = 0) {
-        const sec_num = parseInt(secs, 10);
-        const hours = Math.floor(sec_num / 3600) % 24;
-        const minutes = Math.floor(sec_num / 60) % 60;
-        const seconds = sec_num % 60;
-        return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v, i) => v !== "00" || i > 0).join(":");
+        currentSourceQualityDisplay.innerText = video.videoHeight + 'p';
+        updateProgressBar();
     };
-
-    function scrub2(e, el) {
-        const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
-        const percent = (e.offsetX / progress.offsetWidth) * 100;
-        el.style.width = `${percent}%`;
-        return {
-            percent: percent,
-            currentTime: Math.round(scrubTime)
-        };
+    function onVideoVolumeChange() {
+        const slider = document.querySelector('input[name="volume"]');
+        slider.value = video.volume;
+        updateMuteButton();
     }
-
-    const progressBackground = player.querySelector('.progress-background');
-    const currentTime = player.querySelector('.current-time');
-    progress.addEventListener('mousemove', function (e) {
-        let ret = scrub2(e, progressBackground);
-        currentTime.innerText = toHHMMSS(ret.currentTime);
-        displayThumb(ret.currentTime);
-    });
-
-    var timeLast = 0;
-    const progressThumbnail = player.querySelector('.progress-thumbnail');
-    function displayThumb(time) {
-        // console.log(time, timeLast, Math.abs(time - timeLast));
-        if ((Math.abs(time - timeLast)) < 2) return;
-        timeLast = time;
-        let url = video.currentSrc.replace(/#t=\d+\b/ig, '') + "#t=" + time;
-        progressThumbnail.src = url;
-    }
-
-    const playbackRateDisplay = player.querySelector('.current-speed');
-    video.onratechange = function(){myFunction();};
-    function myFunction() {
+    function onVideoRateChange() {
         playbackRateDisplay.innerText = '×' + parseFloat(video.playbackRate).toFixed(2);
     }
+    function onTimelineClick(e) {
+        const percent = timelineCalculatePercent(e);
+        video.currentTime = percent / 100 * video.duration;
+    }
+    // ---------------------------------------------------
+    // Event listeners
+    // ---------------------------------------------------
+    video.addEventListener('load', updateSliders);
+    video.addEventListener('loadedmetadata', onVideoLoadedMetaData);
+    video.addEventListener('timeupdate', updateProgressBar);
+    video.addEventListener('volumechange', onVideoVolumeChange);
+    video.addEventListener('ratechange', onVideoRateChange);
+    //
+    video.addEventListener('click', togglePlay);
+    video.addEventListener('play', updatePlayButton);
+    video.addEventListener('pause', updatePlayButton);
+    //
+    togglePlayButton.addEventListener('click', togglePlay);
+    toggleMuteBtn.addEventListener('click', toggleMute);
+    toggleFullScreenButton.addEventListener('click', toggleFullscreen);
+    //
+    skipButtons.forEach(button => button.addEventListener('click', onSkipButtonClkick));
+    //
+    playerSliders.forEach(range => range.addEventListener('change', updateSliders));
+    playerSliders.forEach(range => range.addEventListener('mousemove', updateSliders));
+    //
+    progress.addEventListener('click', onTimelineClick);
+    progress.addEventListener('mousemove', (e) => {mouseDownState && onTimelineClick(e); playerDisplayTimelineTooltip(e)});
+    progress.addEventListener('mousedown', () => {mouseDownState = true});
+    progress.addEventListener('mouseup', () => {mouseDownState = false});
+    // ---------------------------------------------------
+    // video.src = "https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10";
     // ---------------------------------------------------
     /*
     // ---------------------------------------------------
