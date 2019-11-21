@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.07
+// @version      1.0.08
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -13,8 +13,12 @@
 // @grant        GM_unregisterMenuCommand
 // @run-at       document-start
 /// @noframes
-// @match        *://www.youtube.com/watch?v=*
+// @match        *://www.youtube.com/watch?*
 // @match        *://magicianer.cc/video/*
+// @match        *://streamguard.cc/*
+//
+// @match        *://www.youtube.com/*
+// @match        *://magicianer.cc/*
 // @match        *://streamguard.cc/*
 // ==/UserScript==
 
@@ -98,11 +102,32 @@
             if (G_gainNode || (limit && (iteration >= limit))) {clearInterval(findSource);};
         }, interval);
     */
+    function onVideoVolumeChange(e) {
+        GM_setValue('volume', e.target.volume);
+    }
+    let firstPlay = 1;
+    function onVideoLoadedMetaData(e) {
+        let media = e.target;
+        if (firstPlay) {
+            media.addEventListener('volumechange', onVideoVolumeChange);
+            firstPlay = 0;
+        }
+        let val = GM_getValue('volume') || (G_gainNode ? 0.5 / G_gainNode.gain.value : 0.5);
+        var setVol = function () {if (media.volume == val) {return;} else {media.volume = val;}};
+        setVol();
+        setTimeout(setVol, 250);
+        setTimeout(setVol, 500);
+        setTimeout(setVol, 1000);
+        setTimeout(setVol, 1250);
+        setTimeout(setVol, 1500);
+        setTimeout(setVol, 2000);
+    }
     function initFunction() {
         let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (myVideoElement) {
             G_gainNode = connectBoost(myVideoElement);
             if (G_gainNode) {
+                myVideoElement.addEventListener('loadedmetadata', onVideoLoadedMetaData);
                 GM_registerMenuCommand(str_title_menu, function(){callPrompt(G_gainNode);}, '');
                 if (GM_getValue('enabled') == true) {
                     cmdOff = GM_registerMenuCommand(str_off_menu, function(){turnOff();}, '');
