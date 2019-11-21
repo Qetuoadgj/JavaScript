@@ -37,12 +37,13 @@
         GM_setValue('volume_mult', 4);
     };
     if (GM_getValue('enabled', null) === null) { // assign default value
-        GM_setValue('enabled', false);
+        GM_setValue('enabled', true);
     };
     function callPrompt(gainNode) {
         let volume_mult = GM_getValue('volume_mult');
         let result = prompt(str_title_prompt, volume_mult);
-        if (result === null) {return;}
+        if (result === null) return;
+        result = parseFloat(result);
         GM_setValue('volume_mult', result);
         result = GM_getValue('enabled') == true ? result : 1;
         gainNode.gain.value = result*1; // boost the volume
@@ -102,11 +103,8 @@
             if (G_gainNode || (limit && (iteration >= limit))) {clearInterval(findSource);};
         }, interval);
     */
-    function onVideoVolumeChange(e) {
-        GM_setValue('volume', e.target.volume);
-    }
-    let firstPlay = 1;
-    function onVideoLoadedMetaData(e) {
+    function onVideoVolumeChange(e) {GM_setValue('volume', e.target.volume);};
+    let firstPlay = 1; function onVideoLoadedMetaData(e) {
         let media = e.target;
         if (firstPlay) {
             media.addEventListener('volumechange', onVideoVolumeChange);
