@@ -14,6 +14,7 @@
 // @run-at       document-start
 /// @noframes
 // @include        *://www.youtube.com/watch?*
+// @include        *://youtube.com/watch?*
 // @include        *://magicianer.cc/video/*
 // @include        *://streamguard.cc/*
 // ==/UserScript==
