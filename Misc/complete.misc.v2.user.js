@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.37
+// @version      2.0.38
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -22,6 +22,7 @@
 // @match        *://vshare.io/v/*
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
+// @match        *://www.porntrex.com/*
 // @match        *://sxyprn.com/post/*.html*
 // @match        *://*.pornhub.com/*
 // @match        *://*.pornhub.com/view_video.php?viewkey=*
@@ -1168,62 +1169,68 @@
     }
 
     else if (
-        G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
+        G_pageURL.matchLink('https?://www.porntrex.com/*')
     ) {
-        if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
-            // window.stop();
-            G_funcToTest = function () {
-                return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
-            };
-            G_funcToRun = function () {
-                var contentURL = (
-                    unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 :
-                    unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
-                    unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
-                    unsafeWindow.flashvars.video_url
-                );
-                var posterURL = unsafeWindow.flashvars.preview_url;
-                console.log('contentURL: ', contentURL);
-                openURL(refineVideo(contentURL));
-            };
-            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
-        else {
-            localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '1080p HD';
-            G_funcToTest = function () {
-                return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
-            };
-            G_funcToRun = function () {
-                G_contentURL = G_shortURL + '#OnlyVideo';
-                G_sampleURL = (
-                    unsafeWindow.flashvars.video_alt_url5 ? unsafeWindow.flashvars.video_alt_url5 :
-                    unsafeWindow.flashvars.video_alt_url4 ? unsafeWindow.flashvars.video_alt_url4 :
-                    unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 : // 1080
-                    unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
-                    unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
-                    unsafeWindow.flashvars.video_url
-                );
-                G_forceLoad = true;
-                G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
-                G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/');
-                G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
-                let timeLineThumbsMaxIndex = 500; // (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
-                for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
-                    //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
-                    G_postersArray[G_postersArray.length] = unsafeWindow.flashvars.timeline_screens_url.
-                    replace('{time}', i).
-                    replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/')
-                    ;
+       addGlobalStyle(`.inf a {color: red; font-size: 9px;}`, 'style-1');
+       addGlobalStyle(`.block-video .video-holder {width: 100%;}`, 'style-2');
+        if (
+            G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
+        ) {
+            if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
+                // window.stop();
+                G_funcToTest = function () {
+                    return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
                 };
-                // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
-                //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
-                G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
-                // G_stickTo = document.querySelector('div#tab_video_info'); G_stickPosition = 1;
-                // --------------------------------------------------------------------------------
-                G_standartAddEmbedCodeFunc();
-                // --------------------------------------------------------------------------------
-                var eventCatcher, media;
-                /*
+                G_funcToRun = function () {
+                    var contentURL = (
+                        unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 :
+                        unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
+                        unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
+                        unsafeWindow.flashvars.video_url
+                    );
+                    var posterURL = unsafeWindow.flashvars.preview_url;
+                    console.log('contentURL: ', contentURL);
+                    openURL(refineVideo(contentURL));
+                };
+                waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }
+            else {
+                localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '1080p HD';
+                G_funcToTest = function () {
+                    return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
+                };
+                G_funcToRun = function () {
+                    G_contentURL = G_shortURL + '#OnlyVideo';
+                    G_sampleURL = (
+                        unsafeWindow.flashvars.video_alt_url5 ? unsafeWindow.flashvars.video_alt_url5 :
+                        unsafeWindow.flashvars.video_alt_url4 ? unsafeWindow.flashvars.video_alt_url4 :
+                        unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 : // 1080
+                        unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
+                        unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
+                        unsafeWindow.flashvars.video_url
+                    );
+                    localStorage.kvsplayer_selected_format = unsafeWindow.flashvars.video_alt_url3 ? '1080p HD' : '720p HD';
+                    G_forceLoad = true;
+                    G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
+                    G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/');
+                    G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
+                    let timeLineThumbsMaxIndex = 500; // (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
+                    for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
+                        //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
+                        G_postersArray[G_postersArray.length] = unsafeWindow.flashvars.timeline_screens_url.
+                        replace('{time}', i).
+                        replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/')
+                        ;
+                    };
+                    // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
+                    //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
+                    G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
+                    // G_stickTo = document.querySelector('div#tab_video_info'); G_stickPosition = 1;
+                    // --------------------------------------------------------------------------------
+                    G_standartAddEmbedCodeFunc();
+                    // --------------------------------------------------------------------------------
+                    var eventCatcher, media;
+                    /*
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
                     media = media ? media : document.querySelector('.fp-player > video'); // || eventCatcher;
@@ -1233,28 +1240,29 @@
                     G_messageTarget = media;
                 }, G_delay*2, 300, G_timerGroup);
                 */
-                let handleNewElements = function (e) {
-                    let element = e.target;
-                    // console.log('element.tagName:', element.tagName);
-                    if (element.tagName == 'VIDEO') {
-                        document.removeEventListener('DOMNodeInserted', handleNewElements, false);
-                        // alert(element);
-                        if (element == document.querySelector('.fp-player > video')) {
-                            eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
-                            media = media ? media : element; // || eventCatcher;
-                            mediaMouseControls(eventCatcher, media, 1);
-                            G_messageTarget = media;
+                    let handleNewElements = function (e) {
+                        let element = e.target;
+                        // console.log('element.tagName:', element.tagName);
+                        if (element.tagName == 'VIDEO') {
+                            document.removeEventListener('DOMNodeInserted', handleNewElements, false);
+                            // alert(element);
+                            if (element == document.querySelector('.fp-player > video')) {
+                                eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
+                                media = media ? media : element; // || eventCatcher;
+                                mediaMouseControls(eventCatcher, media, 1);
+                                G_messageTarget = media;
+                            };
                         };
                     };
+                    document.addEventListener('DOMNodeInserted', handleNewElements, false);
                 };
-                document.addEventListener('DOMNodeInserted', handleNewElements, false);
-            };
-            /*
+                /*
             // document.addEventListener("DOMContentLoaded", function(event) {
                 waitForElement('meta[property="og:image"]', 'content', G_funcToRun, G_delay, G_tries, G_timerGroup);
             // });
             */
-            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+                waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }
         }
     }
 
@@ -2052,9 +2060,10 @@
         G_funcToRun = function() {
             G_contentURL = document.querySelector('.videoplayer_dl_select ._item').href; // 1080p, 720p ...
             if (!G_contentURL || G_contentURL == '') {
-                document.querySelector('.videoplayer_dl_select ._item').click();
+                document.querySelector('.videoplayer_quality_select ._item').click();
                 let G_funcToRun_2 = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-                waitForElement('.videoplayer_dl_select ._item', 'href', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+                // waitForElement('.videoplayer_dl_select ._item', 'href', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+                waitForElement('.videoplayer_media_el', 'src', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
             }
             else {
                 G_standartReCastFunc();

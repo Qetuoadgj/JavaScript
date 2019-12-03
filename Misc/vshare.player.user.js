@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.19
+// @version      0.0.22
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -410,7 +410,7 @@
         `    width: 100%;`,
         `    transition: all 0.3s;`,
         `    flex-wrap: wrap;`,
-        `    background: rgba(0, 0, 0, 0.3);`,
+        `    background: rgba(0, 0, 0, 0.9);`,
         `    height: 60px;`,
         `}`,
         `.player-controls {`,
@@ -552,6 +552,18 @@
         `    display: block;`,
         `    opacity: 1;`,
         `    /* transition: none; */`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.player-panel {`,
+        `    box-shadow: 0px 0px 24px #000;`,
+        `}`,
+        `.progress {`,
+        `    background: rgba(255, 255, 255, 0.2);`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.progress-background {`,
+        `    min-width: 80px;`,
+        `    max-width: calc(100% - 80px);`,
         `}`,
         `/* ------------------------------------- */`,
         ``,
