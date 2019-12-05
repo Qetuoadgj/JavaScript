@@ -7,7 +7,7 @@
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.URL.TimeStamp.Remove.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @grant        none
-// @run-at       document-start
+// @run-at       document-end
 // @noframes
 // @match        *://www.youtube.com/watch*&t=*
 // @match        *://www.youtube.com/watch?t=*

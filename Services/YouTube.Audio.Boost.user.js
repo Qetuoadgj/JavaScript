@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.08
+// @version      1.0.09
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -11,7 +11,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
-// @run-at       document-start
+// @run-at       document-end
 // @noframes
 // @match        *://www.youtube.com/watch?v=*
 // @match        *://magicianer.cc/video/*
@@ -61,43 +61,21 @@
         '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
-    var cmdOff, cmdOn,
-        turnOn = function() {
-            GM_setValue('enabled', true);
-            G_gainNode.gain.value = GM_getValue('volume_mult');
-            GM_unregisterMenuCommand(cmdOn);
-            cmdOff = GM_registerMenuCommand(str_off_menu, function(){
-                turnOff();
-            }, '');
-        },
-        turnOff = function() {
-            GM_setValue('enabled', false);
-            G_gainNode.gain.value = 1;
-            GM_unregisterMenuCommand(cmdOff);
-            cmdOn = GM_registerMenuCommand(str_on_menu, function(){
-                turnOn();
-            }, '');
-        };
-    ;
-    /*
-        var iteration = 0, interval = 1000, limit = 60*5, findSource = setInterval(function() {
-            iteration++;
-            let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
-            if (!G_gainNode && myVideoElement) {
-                G_gainNode = connectBoost(myVideoElement);
-                if (G_gainNode) {
-                    GM_registerMenuCommand(str_title_menu, function(){callPrompt(G_gainNode);}, '');
-                    if (GM_getValue('enabled') == true) {
-                        cmdOff = GM_registerMenuCommand(str_off_menu, function(){turnOff();}, '');
-                    }
-                    else {
-                        cmdOn = GM_registerMenuCommand(str_on_menu, function(){turnOn();}, '');
-                    };
-                };
-            };
-            if (G_gainNode || (limit && (iteration >= limit))) {clearInterval(findSource);};
-        }, interval);
-    */
+    // --------------------------------------------------
+    var cmdOff, cmdOn, turnOn, turnOff;
+    turnOn = function() {
+        GM_setValue('enabled', true);
+        G_gainNode.gain.value = GM_getValue('volume_mult');
+        GM_unregisterMenuCommand(cmdOn);
+        cmdOff = GM_registerMenuCommand(str_off_menu, function(){turnOff();}, '');
+    };
+    turnOff = function() {
+        GM_setValue('enabled', false);
+        G_gainNode.gain.value = 1;
+        GM_unregisterMenuCommand(cmdOff);
+        cmdOn = GM_registerMenuCommand(str_on_menu, function(){turnOn();}, '');
+    };
+    // --------------------------------------------------
     function initFunction() {
         let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (myVideoElement) {
@@ -122,4 +100,5 @@
             initFunction();
         };
     } , false);
+    if (!G_gainNode) {initFunction();}
 })();
