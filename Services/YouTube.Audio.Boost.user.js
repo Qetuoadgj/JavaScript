@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.11
+// @version      1.0.08
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -12,10 +12,10 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @run-at       document-start
-/// @noframes
-// @include        *://www.youtube.com/*
-// @include        *://magicianer.cc/video/*
-// @include        *://streamguard.cc/*
+// @noframes
+// @match        *://www.youtube.com/watch?v=*
+// @match        *://magicianer.cc/video/*
+// @match        *://streamguard.cc/*
 // ==/UserScript==
 
 (function() {
@@ -79,8 +79,27 @@
             }, '');
         };
     ;
-    function initFunction(myVideoElement) {
-        myVideoElement = myVideoElement || document.querySelectorAll(videoElementSelector)[0]; // 1st match
+    /*
+        var iteration = 0, interval = 1000, limit = 60*5, findSource = setInterval(function() {
+            iteration++;
+            let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
+            if (!G_gainNode && myVideoElement) {
+                G_gainNode = connectBoost(myVideoElement);
+                if (G_gainNode) {
+                    GM_registerMenuCommand(str_title_menu, function(){callPrompt(G_gainNode);}, '');
+                    if (GM_getValue('enabled') == true) {
+                        cmdOff = GM_registerMenuCommand(str_off_menu, function(){turnOff();}, '');
+                    }
+                    else {
+                        cmdOn = GM_registerMenuCommand(str_on_menu, function(){turnOn();}, '');
+                    };
+                };
+            };
+            if (G_gainNode || (limit && (iteration >= limit))) {clearInterval(findSource);};
+        }, interval);
+    */
+    function initFunction() {
+        let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (myVideoElement) {
             G_gainNode = connectBoost(myVideoElement);
             if (G_gainNode) {
@@ -100,7 +119,7 @@
             return;
         }
         else if (element.tagName == 'VIDEO') {
-            initFunction(element);
+            initFunction();
         };
     } , false);
 })();
