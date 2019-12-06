@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.09
+// @version      1.0.10
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -13,7 +13,7 @@
 // @grant        GM_unregisterMenuCommand
 // @run-at       document-end
 // @noframes
-// @match        *://www.youtube.com/watch?v=*
+// @match        *://www.youtube.com/*
 // @match        *://magicianer.cc/video/*
 // @match        *://streamguard.cc/*
 // ==/UserScript==
@@ -76,9 +76,10 @@
         cmdOn = GM_registerMenuCommand(str_on_menu, function(){turnOn();}, '');
     };
     // --------------------------------------------------
-    function initFunction() {
+    let handleNewElements; function initFunction() {
         let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (myVideoElement) {
+            document.removeEventListener('DOMNodeInserted', handleNewElements);
             G_gainNode = connectBoost(myVideoElement);
             if (G_gainNode) {
                 GM_registerMenuCommand(str_title_menu, function(){callPrompt(G_gainNode);}, '');
@@ -91,7 +92,7 @@
             };
         };
     };
-    document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
+    handleNewElements = function(event) {
         let element = event.target;
         if (G_gainNode) {
             return;
@@ -99,6 +100,7 @@
         else if (element.tagName == 'VIDEO') {
             initFunction();
         };
-    } , false);
+    };
+    document.addEventListener('DOMNodeInserted', handleNewElements, false);
     if (!G_gainNode) {initFunction();}
 })();
