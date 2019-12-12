@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.22
+// @version      0.0.24
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -636,10 +636,11 @@
         const percent = Math.min(clickPosX / timeline.offsetWidth * 100, 100);
         return percent;
     }
+    let G_progressThumbnailSrc;
     function updateTimelineThumb(time, minUpdateTime = 2) {
         // if ((Math.abs(time - thumbUpdatedTimeLast)) < minUpdateTime) return;
         time = Math.floor(time)
-        progressThumbnail.src = video.currentSrc.replace(/#t=\d+\b/ig, '') + `#t=${time},${time+1}`; // "#t=" + time;
+        progressThumbnail.src = (G_progressThumbnailSrc || video.currentSrc).replace(/#t=\d+\b/ig, '') + `#t=${time},${time+1}`; // "#t=" + time;
         // thumbUpdatedTimeLast = time;
     }
     function playerDisplayTimelineTooltip(e) {
@@ -1167,6 +1168,7 @@
                 else params[key] = [].concat(params[key], value);
                 params = pairs.length == 1 ? params : parse(params, pairs.slice(1));
                 params.main_url = searchString;
+                // params.main_url = params.main_url.replace(/&thumb_src=.*/, '');
                 var firstCustomKeyIndex = GetFirstCustomKey(Object.keys(params), customKeysArray);
                 // console.log('firstCustomKeyIndex = ' + firstCustomKeyIndex);
                 if (firstCustomKeyIndex) {
@@ -1195,8 +1197,8 @@
             var video = document.querySelector("body video");
             console.log('video: ', video);
             if (video) {
-                let event = new Event('click');
-                video.dispatchEvent(event);
+                // let event = new Event('click');
+                // video.dispatchEvent(event);
                 //
                 var href = location.href.replace(paramStart, ''); // location.href.split(paramStart)[1];
                 console.log('href: ', href);
@@ -1206,6 +1208,7 @@
                 if (params.autoplay && params.autoplay == 'true') {
                     video.setAttribute('autoplay', '');
                 };
+                // if (params.thumb_src) {G_progressThumbnailSrc = params.thumb_src;};
                 var videoSrc = params.main_url;
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
                 video.setAttribute('src', videoSrc);

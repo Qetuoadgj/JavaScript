@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.38
+// @version      2.0.41
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -822,7 +822,7 @@
         }
     }
     // ================================================================================
-    var G_noPlayerExtension = false, G_triesReCastMult = 2, G_standartReCastFunc = function() {
+    var G_noPlayerExtension = false, G_triesReCastMult = 2, /*G_progressThumbnailSrc,*/ G_standartReCastFunc = function() {
         console.log('G_standartReCastFunc:', G_pageURL);
         var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
@@ -835,6 +835,7 @@
             mediaData.url = G_pageURL;
             mediaData.src = contentURL;
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
+            // if (G_progressThumbnailSrc) {mediaData.refined += '&thumb_src=' + G_progressThumbnailSrc;};
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
@@ -1164,15 +1165,40 @@
         G_pageURL.matchLink('https?://vshare.io/v/*/width-*/height-*/*')
     ) {
         G_noPlayerExtension = true;
-        G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+        G_funcToRun = function() {
+            G_contentURL = G_funcResult;
+            // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
+            G_standartReCastFunc();
+        };
         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
     else if (
         G_pageURL.matchLink('https?://www.porntrex.com/*')
     ) {
-       addGlobalStyle(`.inf a {color: red; font-size: 9px;}`, 'style-1');
-       addGlobalStyle(`.block-video .video-holder {width: 100%;}`, 'style-2');
+        // https://www.porntrex.com/models/Brooklyn%20Gray/hd/longest/
+        if (location.pathname.match('%20')) {
+            let newPath = location.pathname.replace(/%20/g, '-');
+            location.pathname = newPath;
+        };
+        let show = function() {let css = document.querySelectorAll('head > style.hide-private');for (let s of css) {s.remove();};}
+        let hide = function() {show(); addGlobalStyle(`.video-preview-screen.video-item.thumb-item.private {display: none;}`, 'hide-private');};
+        function toggleShowPrivate() {
+            let hidePrivate = GM_getValue('hidePrivate', false);
+            if (hidePrivate) {
+                show();
+                GM_setValue('hidePrivate', false)
+            }
+            else {
+                hide();
+                GM_setValue('hidePrivate', true)
+            }
+        }
+        let hidePrivate = GM_getValue('hidePrivate', false);
+        if (hidePrivate) {hide();};
+        GM_registerMenuCommand('Toggle Show Private', function(){toggleShowPrivate();}, '');
+        addGlobalStyle(`.inf a {color: red; font-size: 9px;}`, 'style-1');
+        addGlobalStyle(`.block-video .video-holder {width: 100%;}`, 'style-2');
         if (
             G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
         ) {
@@ -1625,6 +1651,11 @@
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
+            // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
+            let header = document.querySelector('.box.page-content header');
+            let iframe = document.createElement('iframe');
+            iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText;
+            header.appendChild(iframe);
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src;
