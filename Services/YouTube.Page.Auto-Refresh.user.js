@@ -4,7 +4,7 @@
 // @version      1.0.00
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.URL.TimeStamp.Remove.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Page.Auto-Refresh.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @grant        none
 // @run-at       document-start
