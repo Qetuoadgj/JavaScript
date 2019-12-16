@@ -121,22 +121,29 @@
             if (!sortingArray.includes(table.height)) sortingArray.push(table.height)
         };
         sortingArray.sort(function(a, b){return a - b;});
+        let noVideo = true;
         for (let quality of sortingArray) {
             let quality_table = sortedTable[quality.toString()];
             for (let fps of Object.keys(quality_table)) {
                 let fps_table = quality_table[fps];
                 for (let mimeType of Object.keys(fps_table)) {
                     let table = fps_table[mimeType];
-                    console.log(quality, fps, mimeType, table);
-                    let type = mimeType.replace(/;.*/, '');
-                    let ext = type.replace(/^.*\//, '');
-                    let cmd = GM_registerMenuCommand(`${quality}p, ${fps}fps`, function() {
-                        let title = t_info.author + ' - ' + t_info.title; // document.title;
-                        let fileName = `${title} - ${quality}p_${fps}fps.${ext}`;
-                        download(table.url, fileName)
-                    }, '');
+                    // console.log(quality, fps, mimeType, table);
+                    if (table.url) {
+                        noVideo = false;
+                        let type = mimeType.replace(/;.*/, '');
+                        let ext = type.replace(/^.*\//, '');
+                        let cmd = GM_registerMenuCommand(`${quality}p, ${fps}fps`, function() {
+                            let title = t_info.author + ' - ' + t_info.title; // document.title;
+                            let fileName = `${title} - ${quality}p_${fps}fps.${ext}`;
+                            download(table.url, fileName)
+                        }, '');
+                    };
                 };
             };
+        };
+        if (noVideo === true) {
+            let cmd = GM_registerMenuCommand('Видео защищено от скачивания', function() {return;}, '');
         };
     };
     getQualityList();
