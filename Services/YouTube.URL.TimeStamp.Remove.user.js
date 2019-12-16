@@ -9,8 +9,7 @@
 // @grant        none
 // @run-at       document-start
 // @noframes
-// @match        *://www.youtube.com/watch*&t=*
-// @match        *://www.youtube.com/watch?t=*
+// @include     /^https?:\/\/www\.youtube\.com\/watch[?].*\bt=\d+s.*$/
 // ==/UserScript==
 
 (function() {
@@ -19,5 +18,9 @@
     // Your code here...
     let b_Refresh = 1, s_Berfore = location.href, s_After = s_Berfore.replace(/^(.*)\bt=\d+s(.*)$/, '$1$2').replace(/&$/, '');
     console.log('YouTube.URL.TimeStamp.Remove', s_Berfore, s_After);
-    if (b_Refresh) location.href = s_After; else history.pushState(location.pathname, '', s_After);
+    if (b_Refresh) {
+        localStorage.alreadyRefreshed = true;
+        location.href = s_After;
+    }
+    else history.pushState(location.pathname, '', s_After);
 })();
