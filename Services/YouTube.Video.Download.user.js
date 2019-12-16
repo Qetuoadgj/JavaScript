@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Video.Download
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.00
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Video.Download.user.js
@@ -20,8 +20,9 @@
     // Your code here...
     // --------------------------------------------------
     // https://stackoverflow.com/a/11384018
-    function openInNewTab(url) {
+    function openInNewTab(url, title) {
         var win = window.open(url, '_blank');
+        if (title) win.document.title = title;
         win.focus();
     }
     // --------------------------------------------------
@@ -46,7 +47,7 @@
         };
         xhr.onerror = function(event){
             // yourErrorFunction()
-            openInNewTab(url);
+            openInNewTab(url, fileName);
         };
         xhr.send();
     }
@@ -97,7 +98,9 @@
     //     getQualityList();
     // --------------------------------------------------
     function getQualityList() {
-        const t_table = JSON.parse(unsafeWindow.ytplayer.config.args.player_response).streamingData.adaptiveFormats;
+        const t_player_response = JSON.parse(unsafeWindow.ytplayer.config.args.player_response);
+        const t_info = t_player_response.videoDetails;
+        const t_table = t_player_response.streamingData.adaptiveFormats;
         let t_matched = {};
         for (let t of Object.keys(t_table)) {
             let table = t_table[t];
@@ -124,11 +127,11 @@
                 let fps_table = quality_table[fps];
                 for (let mimeType of Object.keys(fps_table)) {
                     let table = fps_table[mimeType];
-                    // console.log(quality, fps, mimeType, table);
+                    console.log(quality, fps, mimeType, table);
                     let type = mimeType.replace(/;.*/, '');
                     let ext = type.replace(/^.*\//, '');
                     let cmd = GM_registerMenuCommand(`${quality}p, ${fps}fps`, function() {
-                        let title = document.title;
+                        let title = t_info.author + ' - ' + t_info.title; // document.title;
                         let fileName = `${title} - ${quality}p_${fps}fps.${ext}`;
                         download(table.url, fileName)
                     }, '');
