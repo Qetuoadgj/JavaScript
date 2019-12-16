@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         YouTube.URL.TimeStamp.Remove
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.URL.TimeStamp.Remove.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @grant        none
-// @run-at       document-end
+// @run-at       document-start
 // @noframes
 // @match        *://www.youtube.com/watch*&t=*
 // @match        *://www.youtube.com/watch?t=*
