@@ -9,7 +9,6 @@
 // @grant        none
 // @run-at       document-start
 // @noframes
-/// @include     /^https?:\/\/www\.youtube\.com\/watch[?].*\bt=\d+s.*$/
 // @match        *://www.youtube.com/*
 // ==/UserScript==
 
