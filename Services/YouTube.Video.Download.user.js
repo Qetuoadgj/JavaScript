@@ -161,9 +161,9 @@
                     let mimeType = table.mimeType;
                     let type = mimeType.replace(/;.*/, '');
                     let ext = type.replace(/^.*\//, '');
-                    let cmd = GM_registerMenuCommand(`${quality} kHz.${ext}`, function() {
+                    let cmd = GM_registerMenuCommand(`${quality} Hz.${ext}`, function() {
                         let title = t_info.author + ' - ' + t_info.title; // document.title;
-                        let fileName = `${title} - ${quality}kHz.${ext}`;
+                        let fileName = `${title} - ${quality}Hz.${ext}`;
                         download(table.url, fileName)
                     }, '');
                 };
