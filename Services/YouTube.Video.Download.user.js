@@ -28,6 +28,7 @@
     // --------------------------------------------------
     // Code by Jingsong Zhao: https://stackoverflow.com/a/45332232
     function download(url, fileName) {
+        console.log(url);
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'blob';
@@ -155,7 +156,7 @@
             // console.log(quality, quality_table);
             for (let mimeType of Object.keys(quality_table)) {
                 let table = quality_table[mimeType];
-                if (table.audioSampleRate) {
+                if (table.audioSampleRate && table.url) {
                     // noVideo = false;
                     let mimeType = table.mimeType;
                     let type = mimeType.replace(/;.*/, '');
