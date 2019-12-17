@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Video.Download
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Video.Download.user.js
@@ -107,18 +107,25 @@
             if (table.itag) {
                 let itag = table.itag.toString();
                 let format = table.mimeType;
-                if (format && format.match('video/mp4')) {
+                if (format && (format.match('video/mp4') || format.match('audio/mp4'))) {
                     t_matched[itag] = table;
                 };
             };
         };
-        let sortingArray = [], sortedTable = {};
+        let sortingArray = [], sortedTable = {}, audioTable = {};
         for (let t of Object.keys(t_matched)) {
             let table = t_matched[t];
-            sortedTable[table.height] = sortedTable[table.height] ? sortedTable[table.height] : {};
-            sortedTable[table.height][table.fps] = sortedTable[table.height][table.fps] ? sortedTable[table.height][table.fps] : {};
-            sortedTable[table.height][table.fps][table.mimeType] = table;
-            if (!sortingArray.includes(table.height)) sortingArray.push(table.height)
+            if (table.height) {
+                sortedTable[table.height] = sortedTable[table.height] ? sortedTable[table.height] : {};
+                sortedTable[table.height][table.fps] = sortedTable[table.height][table.fps] ? sortedTable[table.height][table.fps] : {};
+                sortedTable[table.height][table.fps][table.mimeType] = table;
+                if (!sortingArray.includes(table.height)) sortingArray.push(table.height);
+            }
+            else if (table.audioSampleRate) {
+                // console.log(table);
+                audioTable[table.audioSampleRate] = table;
+                // if (!sortingArray.includes(table.height)) sortingArray.push(table.height);
+            };
         };
         sortingArray.sort(function(a, b){return a - b;});
         let noVideo = true;
@@ -133,13 +140,28 @@
                         noVideo = false;
                         let type = mimeType.replace(/;.*/, '');
                         let ext = type.replace(/^.*\//, '');
-                        let cmd = GM_registerMenuCommand(`${quality}p, ${fps}fps`, function() {
+                        let cmd = GM_registerMenuCommand(`${quality}p`, function() {
                             let title = t_info.author + ' - ' + t_info.title; // document.title;
                             let fileName = `${title} - ${quality}p_${fps}fps.${ext}`;
                             download(table.url, fileName)
                         }, '');
                     };
                 };
+            };
+        };
+        for (let quality of Object.keys(audioTable)) {
+            let table = audioTable[quality.toString()];
+            console.log(quality, table);
+            if (table.audioSampleRate) {
+                // noVideo = false;
+                let mimeType = table.mimeType;
+                let type = mimeType.replace(/;.*/, '');
+                let ext = type.replace(/^.*\//, '');
+                let cmd = GM_registerMenuCommand(`${quality} kHz.${ext}`, function() {
+                    let title = t_info.author + ' - ' + t_info.title; // document.title;
+                    let fileName = `${title} - ${quality}kHz.${ext}`;
+                    download(table.url, fileName)
+                }, '');
             };
         };
         if (noVideo === true) {
