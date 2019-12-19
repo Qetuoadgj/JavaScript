@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Polymer.Disable.Plus
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.0
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Polymer.Disable.Plus.user.js
@@ -22,6 +22,8 @@
         //No preferences, return new ones with design setting
         if (!prefs) {
             console.log("prefs not set in cookie");
+            document.cookie = "PREF=f6=8;domain=.youtube.com;path=/";
+            window.setTimeout(location.reload.bind(location,true),100);
             return "PREF=f6=8";
         }
         //Process all settings
