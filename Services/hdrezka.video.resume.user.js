@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.06
+// @version      1.0.07
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -28,7 +28,8 @@
         '.html5-video-container > video', // [YouTube.com]
         '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
-    ].join(', ')
+    ].join(', ');
+    videoElementSelector = location.host == 'rezka.ag' ? 'video[src^="blob:"]' : videoElementSelector;
     var G_videoPage, G_videoTitle, G_videoOrigin, G_titleSerie, G_titleSeason;
     var G_timePlayingLast = 0;
     var userLang = navigator.language || navigator.userLanguage;

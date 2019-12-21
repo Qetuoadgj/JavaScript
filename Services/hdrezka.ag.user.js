@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.21
+// @version      1.0.22
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -411,11 +411,11 @@
             toggleAutoScale();
         });
 
-        var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').immediateText(),
-            G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]').immediateText(),
-            G_titleFull = G_title_1 + ' / ' + G_title_2,
-            G_videoOrigin = window.location.origin + '' + window.location.pathname
-        ;
+        var G_title_1 = document.querySelector('.b-content__main > .b-post__title > h1[itemprop="name"]').immediateText();
+        var G_title_2 = document.querySelector('.b-content__main div[itemprop="alternativeHeadline"]');
+        G_title_2 = G_title_2 !== null ? G_title_2.immediateText() : G_title_1;
+        var G_titleFull = G_title_2 == '' ? G_title_1 : G_title_1 + ' / ' + G_title_2;
+        var G_videoOrigin = window.location.origin + '' + window.location.pathname;
         //
         function updateButtonProgress(videoData) {
             /*
