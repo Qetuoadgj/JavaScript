@@ -139,7 +139,7 @@
                             if (videoData[title][G_videoOrigin][G_titleSeason]) {
                                 let data = videoData[title][G_videoOrigin][G_titleSeason][G_titleSerie];
                                 if (typeof data === "object") {
-                                    console.log(242424);
+                                    // console.log(242424);
                                     if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
                                     break;
                                 };
