@@ -131,6 +131,11 @@
             G_titleSeason = e.data.season || 'Без сезонов';
             // };
             //
+            let resume = (data) => {
+                setTimeout(function(){
+                    if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
+                }, 2500);
+            };
             let videoData = GM_getValue('videoData') || {};
             for (let title of Object.keys(videoData)) {
                 if (title == G_videoTitle) {
@@ -140,7 +145,8 @@
                                 let data = videoData[title][G_videoOrigin][G_titleSeason][G_titleSerie];
                                 if (typeof data === "object") {
                                     // console.log(242424);
-                                    if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
+                                    // if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
+                                    resume(data);
                                     break;
                                 };
                             };
