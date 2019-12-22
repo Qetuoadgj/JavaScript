@@ -129,18 +129,20 @@
             G_videoOrigin = e.data.origin + '' + e.data.pathname;
             G_titleSerie = e.data.serie || 'Без серий';
             G_titleSeason = e.data.season || 'Без сезонов';
-        };
-        //
-        let videoData = GM_getValue('videoData') || {};
-        for (let title of Object.keys(videoData)) {
-            if (title == G_videoTitle) {
-                if (videoData[title]) {
-                    if (videoData[title][G_videoOrigin]) {
-                        if (videoData[title][G_videoOrigin][G_titleSeason]) {
-                            let data = videoData[title][G_videoOrigin][G_titleSeason][G_titleSerie];
-                            if (typeof data === "object") {
-                                if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
-                                break;
+            // };
+            //
+            let videoData = GM_getValue('videoData') || {};
+            for (let title of Object.keys(videoData)) {
+                if (title == G_videoTitle) {
+                    if (videoData[title]) {
+                        if (videoData[title][G_videoOrigin]) {
+                            if (videoData[title][G_videoOrigin][G_titleSeason]) {
+                                let data = videoData[title][G_videoOrigin][G_titleSeason][G_titleSerie];
+                                if (typeof data === "object") {
+                                    console.log(242424);
+                                    if (data.currentTime) G_videoElement.currentTime = data.currentTime; // <===
+                                    break;
+                                };
                             };
                         };
                     };
@@ -196,7 +198,8 @@
                     if (Object.keys(videoData).length > 0) {
                         GM_setValue('videoData', videoData);
                         G_messageTarget.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
-                    } else {
+                    }
+                    else {
                         GM_deleteValue('videoData');
                     };
                     G_timePlayingLast = G_videoElement.currentTime;
@@ -223,6 +226,7 @@
         };
     };
     function updateButtons() {
+        console.log('updateButtons');
         let videoData = GM_getValue('videoData') || {};
         if (Object.keys(videoData).length > 0) {
             window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
