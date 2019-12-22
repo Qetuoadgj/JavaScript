@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Page.Auto-Refresh
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.00
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Page.Auto-Refresh.user.js
@@ -16,14 +16,29 @@
     'use strict';
 
     // Your code here...
-    let b_alreadyRefreshed = localStorage.alreadyRefreshed
-    if (b_alreadyRefreshed && typeof b_alreadyRefreshed !== 'undefined') {
-        localStorage.removeItem('alreadyRefreshed');
-        console.log('YouTube.Page.Auto-Refresh: ','localStorage.alreadyRefreshed =', localStorage.alreadyRefreshed, '\nOK');
-    }
-    else {
-        console.log('YouTube.Page.Auto-Refresh: ','localStorage.alreadyRefreshed =', localStorage.alreadyRefreshed, '\nReloading');
-        localStorage.alreadyRefreshed = true;
-        location.reload();
-    }
+    function mainFunc(e) {
+        if (location.href !== localStorage.lastPlayed) {
+            localStorage.lastPlayed = location.href;
+            location.reload();
+        };
+    };
+    // --------------------------------------------------
+    mainFunc();
+    // --------------------------------------------------
+    var videoElementSelector = [
+        '.html5-video-container > video', // [YouTube.com]
+    ].join(', ');
+    // --------------------------------------------------
+    function handleNewElements(event) {
+        let element = event.target;
+        if (element.tagName == 'VIDEO') {
+            let myVideoElement = document.querySelectorAll(videoElementSelector)[0];
+            if (myVideoElement && myVideoElement == element) {
+                document.removeEventListener('DOMNodeInserted', handleNewElements);
+                myVideoElement.addEventListener('loadedmetadata', mainFunc);
+            };
+        };
+    };
+    // --------------------------------------------------
+    document.addEventListener('DOMNodeInserted', handleNewElements, false);
 })();
