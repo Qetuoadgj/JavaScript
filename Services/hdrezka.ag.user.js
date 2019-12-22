@@ -477,6 +477,7 @@
             };
         };
         window.addEventListener('message', function(e) {
+            console.log('message ==> e.data:', e.data);
             if (typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
                 // alert('ANSWER.data.url: ' + e.data.url);
                 let iframe = document.querySelector('iframe#cdn-player');

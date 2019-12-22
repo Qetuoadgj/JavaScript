@@ -208,28 +208,33 @@
         if(typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
             G_videoElement.addEventListener('timeupdate', function(){updateData(false)}, false); // IE9, Chrome, Safari, Opera
             G_videoElement.addEventListener('seeked', function(){updateData(true)}, false); // IE9, Chrome, Safari, Opera
-            console.log('G_videoElement:', G_videoElement);
+            let videoData = GM_getValue('videoData') || {};
+            if (Object.keys(videoData).length > 0) {
+                window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
+            };
+            console.log('message ==> G_videoElement:', G_videoElement);
         };
     });
     function initFunction() {
-        G_videoElement = G_videoElement || document.querySelectorAll(videoElementSelector)[0]; // 1st match
+        G_videoElement = /*G_videoElement ||*/ document.querySelectorAll(videoElementSelector)[0]; // 1st match
         if (G_videoElement) {
             G_messageTarget = G_messageTarget || window.parent;
             G_messageTarget.postMessage({sender: 'QUESTION', reason: 'HREF'}, '*');
         };
     };
+    function updateButtons() {
+        let videoData = GM_getValue('videoData') || {};
+        if (Object.keys(videoData).length > 0) {
+            window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
+        };
+    };
     document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
         let element = event.target;
-        if (G_videoElement) {
-            return;
-        }
-        else if (element.tagName == 'VIDEO') {
+        if (element.tagName == 'VIDEO') {
             initFunction();
-            // console.log('G_videoElement:', element);
+            updateButtons();
+            console.log('DOMNodeInserted ==> element:', element);
         };
     } , false);
-    let videoData = GM_getValue('videoData') || {};
-    if (Object.keys(videoData).length > 0) {
-        window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
-    };
+    updateButtons();
 })();
