@@ -215,7 +215,7 @@
             if (Object.keys(videoData).length > 0) {
                 window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
             };
-            console.log('message ==> G_videoElement:', G_videoElement);
+            // console.log('message ==> G_videoElement:', G_videoElement);
         };
     });
     function initFunction() {
@@ -226,7 +226,7 @@
         };
     };
     function updateButtons() {
-        console.log('updateButtons');
+        // console.log('updateButtons');
         let videoData = GM_getValue('videoData') || {};
         if (Object.keys(videoData).length > 0) {
             window.parent.postMessage({sender: 'ACTION', reason: 'UPDATE_BUTTON_PROGRESS', videoData: videoData}, '*');
@@ -237,7 +237,7 @@
         if (element.tagName == 'VIDEO') {
             initFunction();
             updateButtons();
-            console.log('DOMNodeInserted ==> element:', element);
+            // console.log('DOMNodeInserted ==> element:', element);
         };
     } , false);
     updateButtons();

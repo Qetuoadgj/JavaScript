@@ -226,7 +226,7 @@
         function scalePlayer(scale) {
             let embedVideo = document.querySelector('video');
             if (embedVideo) {
-                console.log('Disabling zoom mode. REASSON:', embedVideo);
+                console.log('Disabling zoom mode. REASON:', embedVideo);
                 return;
             };
             var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
@@ -369,7 +369,7 @@
                 else if (e.keyCode == KEY_K) {
                     let iframe = document.querySelector('iframe#cdn-player');
                     let G_messageTarget = iframe ? iframe.contentWindow : window.parent;
-                    console.log('G_messageTarget:', G_messageTarget);
+                    // console.log('G_messageTarget:', G_messageTarget);
                     if (G_messageTarget) {
                         let titleActive = document.querySelector('.b-simple_episode__item.active');
                         titleActive = titleActive ? titleActive.immediateText() : null;
@@ -477,12 +477,12 @@
             };
         };
         window.addEventListener('message', function(e) {
-            console.log('message ==> e.data:', e.data);
+            // console.log('message ==> e.data:', e.data);
             if (typeof e.data === 'object' && e.data.sender === 'QUESTION' && e.data.reason === 'HREF') {
                 // alert('ANSWER.data.url: ' + e.data.url);
                 let iframe = document.querySelector('iframe#cdn-player');
                 let G_messageTarget = iframe ? iframe.contentWindow : window.parent;
-                console.log('G_messageTarget:', G_messageTarget);
+                // console.log('G_messageTarget:', G_messageTarget);
                 if (G_messageTarget) {
                     let serieActive = document.querySelector('.b-simple_episode__item.active');
                     let seasonActive = document.querySelector('.b-simple_season__item.active');
