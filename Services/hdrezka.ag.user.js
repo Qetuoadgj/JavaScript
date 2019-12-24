@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.22
+// @version      1.0.23
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -431,6 +431,10 @@
                 }
             }
             */
+            var css = [
+                '.b-simple_episode__item {border: 0.5px solid #2d2d2d; text-align: center; width: 76px;}',
+            ].join('\n');
+            addGlobalStyle(css, 'pageFix');
             let seasonActive = document.querySelector('.b-simple_season__item.active');
             let G_titleSeason = seasonActive ? seasonActive.immediateText() : 'Без сезонов';
             let episodeButtons = document.querySelectorAll('.b-simple_episode__item');
