@@ -235,6 +235,8 @@
                 //                 "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}",
                 `div#cdnplayer, div#cdnplayer-container, #player {width: calc(100vw - 12px) !important; height: calc(100vh - 24px) !important; z-index: 10; padding: 0 !important; margin: 0 !important}`,
                 `#wrapper, .b-container.b-wrapper {width: 100vw !important; padding: 0 !important; margin: 0 !important}`,
+                `.b-post__support_holder {width: fit-content;}`,
+                `.clearfix.b-post__status_wrapper {display: none;}`,
             ].join('\n');
             if (window.location.href.match('/filmix.co/')) {
                 css += [
