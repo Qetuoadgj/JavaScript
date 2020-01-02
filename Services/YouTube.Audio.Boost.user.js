@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.10
+// @version      1.0.11
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -16,6 +16,7 @@
 // @match        *://www.youtube.com/*
 // @match        *://magicianer.cc/video/*
 // @match        *://streamguard.cc/*
+// @match        *://rezka.ag/*/*/*
 // ==/UserScript==
 
 (function() {
@@ -61,6 +62,7 @@
         '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
+    videoElementSelector = location.host == 'rezka.ag' ? 'video[src^="blob:"]' : videoElementSelector;
     // --------------------------------------------------
     var cmdOff, cmdOn, turnOn, turnOff;
     turnOn = function() {
