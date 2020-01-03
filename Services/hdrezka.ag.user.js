@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.25
+// @version      1.0.26
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -266,6 +266,7 @@
             }
             scalePlayer(scale);
             GM_setValue('autoScaleEnable', autoScaleEnable);
+            scrollToPlayer();
         }
         toggleAutoScale();
         //
@@ -380,12 +381,16 @@
                         titleActive = titleActive ? titleActive.immediateText() : null;
                         if (window.parent == window) {
                             let video = document.querySelector('#player video');
-                            if (video) {if (video.paused) {video.play();} else { video.pause();};};
+                            if (video) {if (video.paused) {video.play();} else {video.pause();};};
+                            scrollToPlayer();
                         }
                         else {
                             G_messageTarget.postMessage({sender: 'ACTION', reason: 'PAUSE'}, '*');
                         };
                     };
+                }
+                else if (e.keyCode == KEY_SPACE) {
+                    e.preventDefault();
                 };
             }
         }
