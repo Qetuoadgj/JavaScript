@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.ag
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.24
+// @version      1.0.25
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.ag.user.js
@@ -224,12 +224,14 @@
         var minScale = 1, maxScale = initScale; // 2.5;
         var scale = initScale; scale = Math.min(Math.max(minScale, scale), maxScale);
         function scalePlayer(scale) {
+            GM_setValue('videoScale', scale);
             //             let embedVideo = document.querySelector('video');
             //             if (embedVideo) {
             //                 console.log('Disabling zoom mode. REASON:', embedVideo);
             //                 return;
             //             };
             var style = document.querySelector('head > style.zoomMode'); if (style) style.remove();
+            if (scale == 1) return;
             var css = [
                 //                 "#player {zoom: "+(scale)+"; z-index: 10; padding: 0;}",
                 //                 "body.active-brand #wrapper, .b-wrapper {width: "+Math.max(640*scale, 1000)+"px; padding: 10px 20px;}",
@@ -244,7 +246,6 @@
                 ].join('\n');
             };
             style = addGlobalStyle(css, "zoomMode");
-            GM_setValue('videoScale', scale);
         }
         // scalePlayer(scale);
         function toggleAutoScale() {
