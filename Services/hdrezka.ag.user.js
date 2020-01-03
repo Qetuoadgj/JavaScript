@@ -333,7 +333,7 @@
             let player_window = document.querySelectorAll('#ownplayer, iframe[allowfullscreen=true]')[0];
             if (player_window) {
                 player_window.scrollIntoView();
-                window.scrollBy(0, -1);
+                window.scrollBy(0, -1*7);
             }
         };
         function onKeyDown(e, code) {
