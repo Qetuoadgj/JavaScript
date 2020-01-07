@@ -1089,7 +1089,8 @@
                 host = hosts[host] ? host + '\n['+hosts[host]+']' : host;
                 var msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
                 msg.style.right = 0 + 'px';
-                msg.style.bottom = 32 + 'px';
+                // msg.style.bottom = 32 + 'px';
+                msg.style.top = 0 + 'px';
             };
             var onKeyDown = function(e) {
                 e = e || window.event;

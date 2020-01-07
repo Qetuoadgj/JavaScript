@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.41
+// @version      2.0.46
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -19,6 +19,7 @@
 // @match        *://www.eporner.com/embed/*
 // @match        *://yespornplease.com/v/*
 // @match        *://yespornplease.com/view/*
+// @match        *://e.yespornplease.com/v/*
 // @match        *://vshare.io/v/*
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
@@ -51,12 +52,15 @@
 // @match        *://www.pornpics.com/*
 
 // @match        *://biqle.ru/watch/*
+// @match        *://daftsex.com/watch/*
 // @match        *://daxab.com/player/*
 
 // @match        *://www.pornesq.com/video/*/*
 // @match        *://www.pornesq.com/embed/*
 
 // @match        *://www.porngo.com/videos/*/*
+// @match        *://txxx.com/videos/*/*
+// @match        *://txxx.com/embed/*
 // ==/UserScript==
 
 (function() {
@@ -564,6 +568,8 @@
         // --------------------------------------------------------------------------------
         embedCodeFrame.appendChild(element);
         // --------------------------------------------------------------------------------
+        initSaveCategories(element);
+        // --------------------------------------------------------------------------------
         return element;
     };
     var G_embedCodeTextStart = '00:00:00';
@@ -590,6 +596,50 @@
         element.addEventListener('change', function(e){
             G_embedCodeTextStart = e.target.value;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+        }, false);
+        // element.value = '';
+        // --------------------------------------------------------------------------------
+        embedCodeFrame.appendChild(element);
+        // --------------------------------------------------------------------------------
+        return element;
+    };
+    // --------------------------------------------------------------------------------
+    var G_embedCodeTextImage = '';
+    var G_embedCodeImageInput; function addEmbedCodeImageInput(embedCodeFrame) {
+        var elementID = 'uniqueEmbedCodeImageInput';
+        for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element = document.createElement('input');
+        element.setAttribute('id', elementID);
+        element.style.setProperty('display', 'block', 'important');
+        element.style.border = 'none';
+        element.style['background-color'] = 'transparent';
+        element.style.width = '100%';
+        element.style['max-width'] = '100%';
+        // element.style.rows = '2';
+        element.style.overflow = 'hidden';
+        element.style['font-size'] = '12px';
+        element.style.color = G_embedCodeTextAreaColor;
+        // element.setAttribute('readonly', 'readonly');
+        // element.setAttribute('onclick', 'this.focus(); this.select();');
+        G_embedCodeTextImage = G_posterURL.trim();
+        if (G_embedCodeTextImage !== '') {
+            element.value = G_embedCodeTextImage;
+            element.placeholder = G_embedCodeTextImage;
+        };
+        element.addEventListener('change', function(e){
+            G_embedCodeTextImage = e.target.value.trim();
+            if (!G_embedCodeTextImage.match(/^http/)) {
+                G_embedCodeTextImage = location.protocol + '//' + G_embedCodeTextImage.replace(/^\/\//, '');
+                element.value = G_embedCodeTextImage;
+            };
+            //
+            G_posterURL = G_embedCodeTextImage;
+            G_embedCodePoster.setAttribute('src', G_posterURL);
+            resizeEmbedCodePoster(1.0, 0.5, 5000);
+            //
+            updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+            console.log('G_embedCodeTextImage:', G_embedCodeTextImage);
         }, false);
         // element.value = '';
         // --------------------------------------------------------------------------------
@@ -647,6 +697,10 @@
         // --------------------------------------------------------------------------------
         element.addEventListener('click', onClickFunc, false);
         element.addEventListener('mouseover', function(){resizeEmbedCodePoster(1.0, 0.5, 5000);}, false);
+        element.addEventListener('load', function(e){
+            G_embedCodeTextImage = e.target.src;
+            G_embedCodeImageInput.value = G_embedCodeTextImage;
+        }, false);
         // --------------------------------------------------------------------------------
         return element;
     };
@@ -732,6 +786,7 @@
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
         /*if (G_contentURL !== G_pageURL)*/ G_embedCodeText += ' data-title="' + G_contentTitle + '"';
+        // if (G_embedCodeTextImage !== '') G_posterURL = G_embedCodeTextImage;
         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
         if (G_previewURL) G_embedCodeText += ' data-video="' + G_previewURL + '"';
         G_embedCodeText += ' data-content="' + G_contentURL + '"';
@@ -875,6 +930,7 @@
         G_embedCodeFrame = addEmbedCodeFrame(G_funcToRun);
         G_embedCodeCatInput = addEmbedCodeCatInput(G_embedCodeFrame);
         G_embedCodeStartInput = addEmbedCodeStartInput(G_embedCodeFrame);
+        G_embedCodeImageInput = addEmbedCodeImageInput(G_embedCodeFrame);
         G_embedCodeTextArea = addEmbedCodeTextArea(G_embedCodeFrame);
         G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         G_embedCodeLink = addEmbedCodeLink(G_embedCodeFrame);
@@ -951,20 +1007,55 @@
         setCookie(name, null, { expires: -1 });
     }
     // ================================================================================
-    function setCategory() {
-        let category = GM_getValue('category', '');
-        let result = prompt('Category', category || '');
-        if (result === null) {
-            return;
+    function setCategory(category) {
+        let result;
+        if (typeof category == 'undefined') {
+            category = GM_getValue('category', '');
+            result = prompt('Category', category || '');
+            if (result === null) {
+                return;
+            };
+            GM_setValue('category', result);
+            G_embedCodeTextCategorie = result;
+            G_embedCodeCatInput.value = G_embedCodeTextCategorie;
+            eventFire(G_embedCodeCatInput, 'change');
         }
-        GM_setValue('category', result);
-        G_embedCodeTextCategorie = result;
-        G_embedCodeCatInput.value = G_embedCodeTextCategorie;
-        eventFire(G_embedCodeCatInput, 'change');
+        else {
+            result = category;
+            GM_setValue('category', result);
+        };
     };
-    GM_registerMenuCommand('Set Category', function(){
-        setCategory();
+    GM_registerMenuCommand('Set Category', function(){setCategory();}, "");
+    let updateVal = function(e) {setCategory(G_embedCodeCatInput.value);};
+    function toggleSaveCategories() {
+        let save_categories = !GM_getValue('save_categories', false) || false;
+        G_embedCodeCatInput.removeEventListener('change', updateVal);
+        if (save_categories) {
+            G_embedCodeCatInput.style.color = 'cornflowerblue';
+            G_embedCodeCatInput.addEventListener('change', updateVal);
+            updateVal();
+        }
+        else {
+            G_embedCodeCatInput.style.color = 'grey';
+            setCategory('');
+        };
+        GM_setValue('save_categories', save_categories);
+    };
+    GM_registerMenuCommand('Toggle Save Category', function() {
+        toggleSaveCategories();
     }, "");
+    function initSaveCategories(input) {
+        let save_categories = GM_getValue('save_categories', false) || false;
+        input.removeEventListener('change', updateVal);
+        if (save_categories) {
+            input.style.color = 'cornflowerblue';
+            input.addEventListener('change', updateVal);
+        }
+        else {
+            input.style.color = 'grey';
+            setCategory('');
+        };
+    };
     var G_messageTarget; GM_registerMenuCommand('Set Start Time', function(){
         if (!G_messageTarget) {
             return;
@@ -1121,9 +1212,10 @@
     }
     // ================================================================================
     else if (
-        G_pageURL.matchLink('https?://yespornplease.com')
+        G_pageURL.matchLink('https?://(e\.)?yespornplease.com')
     ) {
-        if (
+        if (G_pageHost == 'e.yespornplease.com') {location.host = 'yespornplease.com';} // https://e.yespornplease.com/v/235160374
+        else if (
             G_pageURL.matchLink('https?://yespornplease.com/view/*') // https://yespornplease.com/view/306756151
         ) {
             window.stop();
@@ -1587,6 +1679,58 @@
     }
 
     else if (
+        G_pageURL.matchLink('https?://txxx.com/*')
+    ) {
+        // --------------------------------------------------------------------------------
+        if (
+            G_pageURL.matchLink('https?://txxx.com/embed/*') // https://txxx.com/embed/3049145
+        ) {
+            G_funcToRun = function () {
+                G_contentURL = G_funcResult.currentSrc;
+                if (G_contentURL) openURL(refineVideo(G_contentURL));
+            };
+            waitForElement('.jwplayer video[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        // --------------------------------------------------------------------------------
+        else if (
+            G_pageURL.matchLink('https://txxx.com/videos/*') // https://txxx.com/videos/3049145/horny-pornstar-gigi-rivera-in-fabulous-big-dick-cumshots-porn-video/
+        ) {
+            G_funcToRun = function () {
+                // G_sampleURL = actualSource();
+                G_qualitySampleSource = document.querySelector('#videoplayer video[src]');
+                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
+                G_contentURL = G_pageURL.replace(/^(.*)\/videos\/(.*?)\/.*$/, '$1/embed/$2');
+                // https://cdn37804682.ahacdn.me/contents/videos_sources/3049000/3049145/screenshots/2.jpg
+                // https://cdn37804682.ahacdn.me/contents/videos_screenshots/3049000/3049145/timelines/hq_mp4/150x113/sprite_1.jpg
+                G_posterURL = document.querySelector('.jw-preview').style.backgroundImage.replace().replace(/^.*\("(.*)"\)$/, '$1');
+                // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('.content'); G_stickPosition = -1;
+                // --------------------------------------------------------------------------------
+                // https://cdn56191079.ahacdn.me/c8/videos/3049000/3049145/3049145_tr.mp4
+                // https://cdn37804682.ahacdn.me/c8/videos/13632000/13632958/13632958_tr.mp4
+                // https://cdn62004373.ahacdn.me/c12/videos/13632000/13632958/13632958_tr.mp4
+                G_previewURL = G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '$1/c8/videos/$2/$3_tr.mp4');
+                G_previewURL = 'https://' + unsafeWindow.EoCR4[22] + G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '/$2/$3_tr.mp4');
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#videoplayer');
+                    media = media ? media : document.querySelector('.jwplayer video[src]');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('.jwplayer video[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
+    }
+
+    else if (
         G_pageURL.matchLink('https?://www.youjizz.com/videos/*.html')
     ) {
         if (G_pageURL.match('#OnlyVideo')) { // https://www.youjizz.com/videos/hot-white-girl-smooth-massage-32782801.html#OnlyVideo
@@ -1651,12 +1795,12 @@
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
-            // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
-            let header = document.querySelector('.box.page-content header');
-            let iframe = document.createElement('iframe');
-            iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText;
-            header.appendChild(iframe);
             G_funcToRun = function() {
+                // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
+                let header = document.querySelector('.box.page-content header');
+                let iframe = document.createElement('iframe');
+                iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText;
+                header.appendChild(iframe);
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src;
                 G_posterURL = (
@@ -2024,7 +2168,8 @@
     }
 
     else if (
-        G_pageURL.matchLink('https?://biqle.ru/*')
+        G_pageURL.matchLink('https?://biqle.ru/*') ||
+        G_pageURL.matchLink('https?://daftsex.com/*')
     ) {
         /*
         if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
@@ -2057,7 +2202,8 @@
         }
         // */
         else if (
-            G_pageURL.matchLink('https?://biqle.ru/watch/*') // https://biqle.ru/watch/-159565098_456242372
+            G_pageURL.matchLink('https?://biqle.ru/watch/*') || // https://biqle.ru/watch/-159565098_456242372
+            G_pageURL.matchLink('https?://daftsex.com/watch/*') // https://daftsex.com/watch/-111379583_171930025
         ) {
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
@@ -2074,7 +2220,7 @@
                 // console.log(G_posterURL);
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 // G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
-                G_stickTo = document.querySelector('.video > .heading'); G_stickPosition = 1;
+                G_stickTo = document.querySelectorAll('.video > .heading, .video_info_wrapper > .heading')[0]; G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
