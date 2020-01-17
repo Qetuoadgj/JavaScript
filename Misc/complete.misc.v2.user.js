@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.46
+// @version      2.0.47
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1800,6 +1800,31 @@
                 let header = document.querySelector('.box.page-content header');
                 let iframe = document.createElement('iframe');
                 iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText;
+                function checkIframeContent(iframe) {
+                    /*
+                    // let w = document.querySelectorAll('iframe[src*="/hqporner.com/?q="]')[0].contentWindow;
+                    let win = iframe.contentWindow
+                    let globals = Object.keys(win);
+                    for (let variable of globals) {
+                        if (variable.match(/^preload_\d+$/)) console.log(variable, '=', win[variable]);
+                    };
+                    */
+                    let matched = location.pathname.match(/.*\/(\d+).*$/);
+                    if (matched) {
+                        let id = matched[1];
+                        if (id.match(/^\d+$/)) {
+                            let win = iframe.contentWindow
+                            let globals = Object.keys(win);
+                            let variable = 'preload_' + id;
+                            if (variable) {
+                                G_postersArray = win[variable];
+                                G_posterURL = G_postersArray[G_postersArray.length-1];
+                                if (G_postersArray && G_postersArray.length > 1) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                            };
+                        };
+                    };
+                };
+                iframe.onload = function(){checkIframeContent(iframe);};
                 header.appendChild(iframe);
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src;
