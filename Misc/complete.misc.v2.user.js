@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.47
+// @version      2.0.48
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -554,6 +554,7 @@
         if (G_embedCodeTextCategorie !== '') element.value = G_embedCodeTextCategorie;
         element.addEventListener('change', function(e){
             G_embedCodeTextCategorie = e.target.value.trim().
+            replace(/[,.\s]+(com)\b/g, '.$1').
             replace(/\s+,/g, ',').
             replace(/,\s+/g, ',').
             replace(/,+/g, ',').
