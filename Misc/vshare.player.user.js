@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.24
+// @version      0.0.25
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -125,8 +125,15 @@
         `                    <button data-skip="-10" class="player-btn skip">- 10s</button>`,
         `                    <button data-skip="10" class="player-btn skip">+ 10s</button>`,
         `                    <span class="video-size"></span>`,
-        `                                 <button class="player-btn toggle-fullscreen"></button>`,
+        `                    <button class="player-btn toggle-fullscreen"></button>`,
         `                </div>`,
+        `            </div>`,
+        `            <div class="icon-load hidden">`,
+        `                <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">`,
+        `                    <path fill="#fff" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50" transform="rotate(263.471 50 50)">`,
+        `                        <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="360 50 50" repeatCount="indefinite"></animateTransform>`,
+        `                    </path>`,
+        `                </svg>`,
         `            </div>`,
         `        </div>`,
         // `        <script src="script.js"></script>`,
@@ -566,6 +573,28 @@
         `    max-width: calc(100% - 80px);`,
         `}`,
         `/* ------------------------------------- */`,
+        `.icon-load {`,
+        `    display: block;`,
+        `    position: absolute;`,
+        `    width: fit-content;`,
+        `    height: fit-content;`,
+        `    margin: 0;`,
+        `    padding: 0;`,
+        `    top: 50%;`,
+        `    left: 50%;`,
+        `    transform: translateX(-50%) translateY(-50%);`,
+        `    opacity: 0.1;`,
+        `}`,
+        `.icon-load svg {`,
+        `    width: 100px;`,
+        `    height: 100px;`,
+        `    margin: auto;`,
+        `    display: inline-block;`,
+        `}`,
+        `.hidden {`,
+        `    display: none;`,
+        `}`,
+        `/* ------------------------------------- */`,
         ``,
     ].join('\n');
     addGlobalStyle(css, 'playerStyle_1');
@@ -580,6 +609,8 @@
     const progress = player.querySelector('.progress');
     const progressFilled = player.querySelector('.filled-progress');
     const bufferFilled = player.querySelector('.filled-buffer');
+    // ---------------------------------------------------
+    const loadingIndicator = player.querySelector('.icon-load');
     // ---------------------------------------------------
     const togglePlayButton = player.querySelector('.toggle-play');
     const toggleMuteBtn = player.querySelector('.speaker');
@@ -720,6 +751,12 @@
         const percent = timelineCalculatePercent(e);
         video.currentTime = percent / 100 * video.duration;
     }
+    function showLoadingIndicator() {
+        loadingIndicator.classList.remove('hidden');
+    }
+    function hideLoadingIndicator() {
+        loadingIndicator.classList.add('hidden');
+    }
     // ---------------------------------------------------
     // Event listeners
     // ---------------------------------------------------
@@ -732,6 +769,9 @@
     video.addEventListener('click', togglePlay);
     video.addEventListener('play', updatePlayButton);
     video.addEventListener('pause', updatePlayButton);
+    //
+    video.addEventListener('waiting', showLoadingIndicator);
+    video.addEventListener('playing', hideLoadingIndicator);
     //
     togglePlayButton.addEventListener('click', togglePlay);
     toggleMuteBtn.addEventListener('click', toggleMute);
