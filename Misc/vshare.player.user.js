@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.25
+// @version      0.0.26
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -583,13 +583,20 @@
         `    top: 50%;`,
         `    left: 50%;`,
         `    transform: translateX(-50%) translateY(-50%);`,
-        `    opacity: 0.1;`,
         `}`,
         `.icon-load svg {`,
         `    width: 100px;`,
         `    height: 100px;`,
         `    margin: auto;`,
         `    display: inline-block;`,
+        `}`,
+        `.icon-load svg path{`,
+        `    width: 100px;`,
+        `    height: 100px;`,
+        `    margin: auto;`,
+        `    display: inline-block;`,
+        `    opacity: 0.25;`,
+        `    fill: #fff;`,
         `}`,
         `.hidden {`,
         `    display: none;`,
