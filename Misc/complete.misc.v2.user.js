@@ -434,6 +434,13 @@
         mediaTextIndicator.style.top = '5px';
     };
     // ================================================================================
+    function fixURLProtocol(URL) {
+        if (!URL.match(/^http/)) {
+            URL = location.protocol + '//' + URL.replace(/^\/\//, '');
+        };
+        return URL;
+    }
+    // ================================================================================
     function CreateLinksList(Haystack, NeedleRegEx, Replacement, StartNum, EndNum) {
         var Ret = [];
         if (Haystack.match(NeedleRegEx)) {
@@ -441,7 +448,7 @@
             StartNum = StartNum || 0; // StartNum > 1 ? StartNum : 1;
             EndNum = EndNum > StartNum ? EndNum : StartNum; // EndNum > 1 ? EndNum : 1;
             for (let i = StartNum; i <= EndNum; i++) {
-                Ret[i] = Result.replace('$NUM', i);
+                Ret[i] = fixURLProtocol(Result.replace('$NUM', i));
             }
             // console.log('G_posters:\n', G_posters);
             return Ret;
@@ -783,6 +790,7 @@
     // --------------------------------------------------------------------------------
     var G_previewURL;
     var G_embedCodeText, G_contentTitle, G_altText, G_delimiter; function updateEmbedCodeText(embedCodeTextArea, startNew = 0, delimiter = '') {
+        G_posterURL = fixURLProtocol(G_posterURL);
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
@@ -822,16 +830,6 @@
     var G_embedCodePosterSelector, G_postersArray = [];
     function addEmbedCodePosterSelector(URLArray) {
         if (URLArray.length > 1) {
-            let URLArray2 = [];
-            for (let item of URLArray) {
-                item = item.trim();
-                if (!item.match(/^http/)) {
-                    item = location.protocol + '//' + item.replace(/^\/\//, '');
-                };
-                URLArray2.push(item);
-            };
-            if (G_postersArray == URLArray) G_postersArray == URLArray2;
-            URLArray = URLArray2;
             var elementID = 'uniqueEmbedCodePosterSelector';
             for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
             // --------------------------------------------------------------------------------
