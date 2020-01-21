@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.48
+// @version      2.0.49
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -822,6 +822,16 @@
     var G_embedCodePosterSelector, G_postersArray = [];
     function addEmbedCodePosterSelector(URLArray) {
         if (URLArray.length > 1) {
+            let URLArray2 = [];
+            for (let item of URLArray) {
+                item = item.trim();
+                if (!item.match(/^http/)) {
+                    item = location.protocol + '//' + item.replace(/^\/\//, '');
+                };
+                URLArray2.push(item);
+            };
+            if (G_postersArray == URLArray) G_postersArray == URLArray2;
+            URLArray = URLArray2;
             var elementID = 'uniqueEmbedCodePosterSelector';
             for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
             // --------------------------------------------------------------------------------
