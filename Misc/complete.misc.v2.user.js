@@ -630,7 +630,9 @@
         element.style.color = G_embedCodeTextAreaColor;
         // element.setAttribute('readonly', 'readonly');
         // element.setAttribute('onclick', 'this.focus(); this.select();');
-        G_embedCodeTextImage = G_posterURL.trim();
+        if (typeof G_posterURL !== 'undefined') {
+            G_embedCodeTextImage = G_posterURL.trim();
+        };
         if (G_embedCodeTextImage !== '') {
             element.value = G_embedCodeTextImage;
             element.placeholder = G_embedCodeTextImage;
@@ -695,7 +697,7 @@
         element.style.height = 'auto';
         element.style['min-width'] = '215px';
         element.style.height = '120px';
-        element.setAttribute('src', G_posterURL);
+        element.setAttribute('src', fixURLProtocol(G_posterURL));
         for (var key in G_posterStyle) {
             element.style[key] = G_posterStyle[key];
             console.log(key, G_posterStyle[key])
@@ -790,7 +792,7 @@
     // --------------------------------------------------------------------------------
     var G_previewURL;
     var G_embedCodeText, G_contentTitle, G_altText, G_delimiter; function updateEmbedCodeText(embedCodeTextArea, startNew = 0, delimiter = '') {
-        G_posterURL = fixURLProtocol(G_posterURL);
+        G_posterURL = fixURLProtocol(G_posterURL)
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
@@ -829,7 +831,7 @@
     // --------------------------------------------------------------------------------
     var G_embedCodePosterSelector, G_postersArray = [];
     function addEmbedCodePosterSelector(URLArray) {
-        if (URLArray.length > 1) {
+        if (URLArray.length > 0) {
             var elementID = 'uniqueEmbedCodePosterSelector';
             for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
             // --------------------------------------------------------------------------------
@@ -968,7 +970,7 @@
             }
         }
         addKeyComboCtrlC(G_embedCodeTextArea, 1, 0);
-        if (G_postersArray && G_postersArray.length > 1) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+        if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
         // --------------------------------------------------------------------------------
         log(G_debugMode, G_contentURL, '\n', G_sampleURL, '\n', G_posterURL);
     };
@@ -1827,8 +1829,16 @@
                             let variable = 'preload_' + id;
                             if (variable) {
                                 G_postersArray = win[variable];
-                                G_posterURL = G_postersArray[G_postersArray.length-1];
-                                if (G_postersArray && G_postersArray.length > 1) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                                if (G_postersArray && G_postersArray.length > 0) {
+                                    let tmp = []; for (let item of G_postersArray) {
+                                        if (typeof item !== 'undefined') tmp.push(item);
+                                    };
+                                    G_postersArray = tmp;
+                                    G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                                    G_posterURL = G_postersArray[G_postersArray.length-1];
+                                    G_embedCodeImageInput.value = G_posterURL;
+                                    G_embedCodePoster.src = G_posterURL;
+                                };
                             };
                         };
                     };
