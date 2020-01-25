@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.13
+// @version      1.0.14
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -17,6 +17,7 @@
 // @match        *://magicianer.cc/video/*
 // @match        *://streamguard.cc/*
 // @match        *://rezka.ag/*/*/*
+// @match        *://filmix.co/*/*.html
 // ==/UserScript==
 
 (function() {
