@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.49
+// @version      2.0.51
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -537,6 +537,56 @@
         return element;
     };
     // --------------------------------------------------------------------------------
+    function autoReplace(str) {
+        str = str.trim().
+        replace(/[,.\s]+(com)\b/g, '.$1').
+        replace(/\s+,/g, ',').
+        replace(/,\s+/g, ',').
+        replace(/,+/g, ',').
+        replace(/^,/g, '').
+        replace(/,$/g, '').
+        replace(/,/g, ', ')
+        ;
+        const table = [
+            'TeensLoveHugeCocks.com',
+            'RealityKings.com',
+            'Tiny4K.com',
+            'Exotic4K.com',
+            'Cum4K.com',
+            'BangBros.com',
+            'EvilAngel.com',
+            'TeenFidelity.com',
+            'PornFidelity.com',
+            'JulesJordan.com',
+            'NaughtyAmerica.com',
+            'MySistersHotFriend.com',
+            'Passion-HD.com',
+            'EroticaX.com',
+            'DarkX.com',
+            'HardX.com',
+            'NubilesPorn.com',
+            'NubileFilms.com',
+            'PornPros.com',
+            'TeamSkeet.com',
+        ];
+        for (let word of table) {
+            let re = new RegExp(word.replace(/\./g, '\.'), 'gi');
+            str = str.replace(re, word);
+        };
+        let a = [];
+        for (let word of str.split(', ')) {
+            if (typeof word !== 'undefined') {
+                word = word.trim()
+                if (word !== '') {
+                    word = word[0].toUpperCase() + word.slice(1);
+                    a.push(word);
+                };
+            };
+        };
+        str = a.join(', ');
+        console.log(str);
+        return str;
+    };
     var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
         var elementID = 'uniqueEmbedCodeCatInput';
@@ -560,7 +610,8 @@
         G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim();
         if (G_embedCodeTextCategorie !== '') element.value = G_embedCodeTextCategorie;
         element.addEventListener('change', function(e){
-            G_embedCodeTextCategorie = e.target.value.trim().
+            G_embedCodeTextCategorie = e.target.value;
+            /*.trim().
             replace(/[,.\s]+(com)\b/g, '.$1').
             replace(/\s+,/g, ',').
             replace(/,\s+/g, ',').
@@ -569,6 +620,8 @@
             replace(/,$/g, '').
             replace(/,/g, ', ')
             ;
+            */
+            G_embedCodeTextCategorie = autoReplace(G_embedCodeTextCategorie);
             e.target.value = G_embedCodeTextCategorie;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         }, false);
@@ -1809,8 +1862,8 @@
             G_funcToRun = function() {
                 // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
                 let header = document.querySelector('.box.page-content header');
-                let iframe = document.createElement('iframe');
-                iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText;
+                let iframe_id = 'thumbs';
+                let iframe = document.querySelector('iframe#' + iframe_id);
                 function checkIframeContent(iframe) {
                     /*
                     // let w = document.querySelectorAll('iframe[src*="/hqporner.com/?q="]')[0].contentWindow;
@@ -1843,8 +1896,15 @@
                         };
                     };
                 };
-                iframe.onload = function(){checkIframeContent(iframe);};
-                header.appendChild(iframe);
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = iframe_id;
+                    iframe.onload = function(){checkIframeContent(iframe);};
+                    header.appendChild(iframe);
+                };
+                let stars = document.querySelector('.icon.fa-star-o');
+                stars = stars ? (' ' + stars.innerText) : '';
+                iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText + stars;
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src;
                 G_posterURL = (
