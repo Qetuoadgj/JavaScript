@@ -568,6 +568,7 @@
             'NubileFilms.com',
             'PornPros.com',
             'TeamSkeet.com',
+            'POVD.com',
         ];
         for (let word of table) {
             let re = new RegExp(word.replace(/\./g, '\.'), 'gi');
