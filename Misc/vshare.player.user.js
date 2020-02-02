@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.26
+// @version      0.0.27
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -938,6 +938,10 @@
             mediaTextIndicator.style['z-index'] = 2147483647; // Always on TOP
             mediaTextIndicator.style.top = '0px';
             mediaTextIndicator.style.left = (fontSize/4) + 'px';
+            mediaTextIndicator.style['-webkit-user-select'] = 'none';
+            mediaTextIndicator.style['-ms-user-select'] = 'none';
+            mediaTextIndicator.style['user-select: none;'] = 'none';
+            mediaTextIndicator.style['-webkit-user-select'] = 'none';
             media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
             var volumeTextFade = function(fadeDelay) {
                 fadeDelay = fadeDelay || 2000;
