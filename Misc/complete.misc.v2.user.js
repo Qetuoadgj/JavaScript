@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.51
+// @version      2.0.53
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -553,8 +553,11 @@
             'Tiny4K.com',
             'Exotic4K.com',
             'Cum4K.com',
+            'Vixen.com',
             'BangBros.com',
+            'BigTitsRoundAsses.com',
             'EvilAngel.com',
+            'BurningAngel.com',
             'TeenFidelity.com',
             'PornFidelity.com',
             'JulesJordan.com',
@@ -569,6 +572,10 @@
             'PornPros.com',
             'TeamSkeet.com',
             'POVD.com',
+            'CherryPimps.com',
+            'Bang.com',
+            'FamilyHookups.com',
+            'MetroHD.com',
         ];
         for (let word of table) {
             let re = new RegExp(word.replace(/\./g, '\.'), 'gi');
@@ -590,12 +597,23 @@
     };
     var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
+        var element0ID = 'uniqueEmbedCodeCatInputHolder';
+        for (let element of document.querySelectorAll('#' + element0ID)) {element.remove();};
+        var element0 = document.createElement('div');
+        element0.setAttribute('id', element0ID);
+        //         element0.style.background = 'red';
+        element0.style.display = 'flex';
+        element0.style.alignItems = 'center';
+        // element0.style.border = '1px grey solid';
+        element0.style.height = '26px';
+        embedCodeFrame.appendChild(element0);
+        // --------------------------------------------------------------------------------
         var elementID = 'uniqueEmbedCodeCatInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
         var element = document.createElement('input');
         element.setAttribute('id', elementID);
-        element.style.setProperty('display', 'block', 'important');
+        element.style.setProperty('display', 'inline-block', 'important');
         element.style.border = 'none';
         element.style['background-color'] = 'transparent';
         element.style.width = '100%';
@@ -603,6 +621,7 @@
         // element.style.rows = '2';
         element.style.overflow = 'hidden';
         element.style['font-size'] = '12px';
+        element.style.padding = '4px';
         element.style.color = G_embedCodeTextAreaColor;
         // element.setAttribute('readonly', 'readonly');
         // element.setAttribute('onclick', 'this.focus(); this.select();');
@@ -628,9 +647,132 @@
         }, false);
         // element.value = '';
         // --------------------------------------------------------------------------------
-        embedCodeFrame.appendChild(element);
+        element0.appendChild(element);
         // --------------------------------------------------------------------------------
         initSaveCategories(element);
+        // --------------------------------------------------------------------------------
+        /*
+        <input type="text" list="browsers" />
+<datalist id="browsers">
+    <option value="Internet Explorer">
+    <option value="Firefox">
+    <option value="Chrome">
+    <option value="Opera">
+    <option value="Safari">
+</datalist>
+*/
+        var element3ID = 'uniqueEmbedCodeCatData';
+        for (let element of document.querySelectorAll('#' + element3ID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element3 = document.createElement('datalist');
+        element3.setAttribute('id', element3ID);
+        var l = {
+            'Creampie' : '',
+            'Cum in pussy' : '',
+            'Cum in ass' : '',
+            'Anal' : '',
+            'Only blowjob' : '',
+            '3some' : '',
+            '4some' : '',
+            'Orgy' : '',
+            'Fuck after cumshot' : '',
+            '★' : '',
+        };
+        for (let k of Object.keys(l)) {
+            let option = document.createElement('option');
+            option.value = k;
+            element3.appendChild(option);
+            console.log(option);
+        };
+        // --------------------------------------------------------------------------------
+        var element2ID = 'uniqueEmbedCodeCatList';
+        for (let element of document.querySelectorAll('#' + element2ID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element2 = document.createElement('input');
+        element2.setAttribute('id', element2ID);
+        element2.type = 'search';
+        element2.style.display = 'inline';
+        element2.style.width = '200px';
+        element0.appendChild(element2);
+        // --------------------------------------------------------------------------------
+        element0.appendChild(element3);
+        element2.setAttribute('list', element3ID);
+        // --------------------------------------------------------------------------------
+        var element4ID = 'uniqueEmbedCodeCatButtonAdd';
+        for (let element of document.querySelectorAll('#' + element4ID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        var element4 = document.createElement('button');
+        element4.setAttribute('id', element4ID);
+        element4.style.display = 'inline-flex';
+        element4.style.width = '40px';
+        element4.style.margin = '0px 0px 0px 1px'
+        element4.style.height = '26px';
+        element4.style.position = 'relative';
+        // element4.style.top = '-2px';
+        //         element4.style['align-content'] = 'center';
+        element4.style.justifyContent = 'center';
+        element4.style.fontSize = '10px';
+        /*
+element.style {
+    display: inline-flex;
+    width: 20px;
+    margin: 0px 0px 0px 1px;
+    height: 20px;
+    position: relative;
+    top: -2px;
+    place-content: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    font-size: 10px;
+    padding: 0;
+}
+        */
+
+        element4.innerHTML = '+';
+        element0.appendChild(element4);
+        // --------------------------------------------------------------------------------
+        element4.onclick = function(e) {
+            let value1 = element.value.trim();
+            let value2 = element2.value.trim();
+            let notInArray = true;
+            if (value2 == '') {
+                notInArray = false;
+            }
+            else {
+                for (let word of value1.split(', ')) {
+                    if (typeof word !== 'undefined') {
+                        word = word.trim()
+                        if (word !== '' && word.toLowerCase() == value2.toLowerCase()) {
+                            notInArray = false;
+                        };
+                    };
+                };
+            };
+            if (notInArray) {
+                let a = [];
+                for (let word of value1.split(', ')) {
+                    if (typeof word !== 'undefined') {
+                        word = word.trim()
+                        if (word !== '') {
+                            a.push(word);
+                        };
+                    };
+                };
+                a.push(value2);
+                value1 = a.join(', ');
+                element.value = value1;
+                // Create a new 'change' event
+                var event = new Event('change');
+                // Dispatch it.
+                element.dispatchEvent(event);
+            };
+            console.log(value1, notInArray);
+        };
+        // --------------------------------------------------------------------------------
+        element.style.height = '100%'; element2.style.height = '100%'; // element4.style.height = '100%';
+        element.style.width = 'calc(100% - ' + element2.style.width + ' - ' + element4.style.width + ' - 1px)';
+        element.style['max-width'] = element.style.width;
         // --------------------------------------------------------------------------------
         return element;
     };
@@ -885,6 +1027,7 @@
     // --------------------------------------------------------------------------------
     var G_embedCodePosterSelector, G_postersArray = [];
     function addEmbedCodePosterSelector(URLArray) {
+        console.log('G_embedCodePosterSelector --> URLArray:', URLArray);
         if (URLArray.length > 0) {
             var elementID = 'uniqueEmbedCodePosterSelector';
             for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
@@ -912,7 +1055,7 @@
             }
             */
             let imageStyle = G_embedCodePoster.getAttribute('style');
-            let imageIndex = 1;
+            let imageIndex = URLArray[0] ? 0 : 1;
             let loadImage = function() {
                 let img = document.createElement('img');
                 img.setAttribute('style', imageStyle);
@@ -1888,8 +2031,11 @@
                                         if (typeof item !== 'undefined') tmp.push(item);
                                     };
                                     G_postersArray = tmp;
-                                    G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                                    let main_poster = G_postersArray[G_postersArray.length-1].replace(/^(.*)_\d+\.jpg$/, '$1_main.jpg');
+                                    G_postersArray.push(main_poster);
                                     G_posterURL = G_postersArray[G_postersArray.length-1];
+                                    console.log('G_postersArray:', G_postersArray);
+                                    G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
                                     G_embedCodeImageInput.value = G_posterURL;
                                     G_embedCodePoster.src = G_posterURL;
                                 };
@@ -1957,7 +2103,7 @@
             };
             console.log('data:', data);
             let compare = 0; for (let quality of Object.keys(data)) {
-                if (quality > compare) {
+                if (quality > compare /*&& quality < 2000*/) {
                     G_contentURL = location.protocol + data[quality];
                     console.log('url:', G_contentURL);
                     console.log('quality:', quality);
