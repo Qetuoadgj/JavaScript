@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.55
+// @version      2.0.57
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1410,14 +1410,14 @@ element.style {
                 for (let item of document.querySelectorAll('.vjs-menu-content > .vjs-menu-item')) {
                     let button = item.querySelector('.vjs-menu-item-text');
                     let text = button ? button.innerText : '';
-                    let fps = text.match('1080p@60fps HD');
+                    let fps = false; //text.match('1080p@60fps HD');
                     console.log(text,fps);
                     if (fps) {
                         continue;
                     }
                     else {
                         let buttonQuality = Number(text.match(/\d+/));
-                        if (buttonQuality > maxQuality) { maxQuality = buttonQuality; menuItem = item; };
+                        if (buttonQuality > maxQuality && buttonQuality < G_qualityLimit) { maxQuality = buttonQuality; menuItem = item; };
                     };
                 };
                 // --------------------------------------------------------------------------------
