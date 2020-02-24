@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hdrezka.video.resume
 // @icon         https://www.google.com/s2/favicons?domain=rezka.ag
-// @version      1.0.07
+// @version      1.0.08
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/hdrezka.video.resume.user.js
@@ -98,7 +98,7 @@
                     reader.onload = function (evt) {
                         let text = evt.target.result;
                         document.body.removeChild(e.target);
-                        let videoData = GM_getValue('videoData');
+                        let videoData = GM_getValue('videoData') || {};
                         console.log(text);
                         let data = JSON.parse(text);
                         if (typeof data === 'object') {
