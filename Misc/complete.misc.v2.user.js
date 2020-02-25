@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.58
+// @version      2.0.59
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -610,16 +610,18 @@
     };
     var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_categories = {
-        'Creampie' : '',
-        'Creampie, Cum in pussy' : '',
-        'Creampie, Cum in ass' : '',
+        '.com' : '',
         'Anal' : '',
-        'Only blowjob' : '',
         '3some' : '',
         '4some' : '',
         'Orgy' : '',
-        'Fuck after cumshot' : '',
+        'Only blowjob' : '',
+        'Creampie' : '',
+        'Creampie, Cum in Pussy' : '',
+        'Creampie, Cum in Ass' : '',
+        'Fuck after Cumshot' : '',
         '★' : '',
+        '-----------------------------' : '',
     };
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
         var element0ID = 'uniqueEmbedCodeCatInputHolder';
@@ -798,8 +800,24 @@ element.style {
             element2.value = '';
         };
         // --------------------------------------------------------------------------------
+        var element5ID = 'uniqueEmbedCodeCatButtonRemove';
+        for (let element of document.querySelectorAll('#' + element5ID)) {element.remove();};
+        var element5 = element4.cloneNode(true);
+        element5.innerHTML = '-';
+        element.parentNode.insertBefore(element5, element2);
+        element5.onclick = function(e) {
+            let value1 = element.value.trim();
+            let firstValue = value1.split(', ')[0];
+            firstValue = firstValue ? firstValue.trim() : ''
+            if (firstValue !== '') {
+                element.value = firstValue + ', ';
+                var event = new Event('change');
+                element.dispatchEvent(event);
+            };
+        };
+        // --------------------------------------------------------------------------------
         element.style.height = '100%'; element2.style.height = '100%'; // element4.style.height = '100%';
-        element.style.width = 'calc(100% - ' + element2.style.width + ' - ' + element4.style.width + ' - 1px)';
+        element.style.width = 'calc(100% - ' + element2.style.width + ' - ' + element4.style.width + ' - 1px - ' + element5.style.width + ' - 1px)';
         element.style['max-width'] = element.style.width;
         // --------------------------------------------------------------------------------
         return element;
