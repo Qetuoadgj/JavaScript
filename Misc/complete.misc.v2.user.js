@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.57
+// @version      2.0.58
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1029,6 +1029,7 @@ element.style {
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
         // if (G_videoQuality) G_embedCodeText += ' data-quality="' + G_videoQuality + 'p"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
+        if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality-limit="' + 1080 + '"';
         if (G_videoDuration) {
             console.log('G_videoDuration:', G_videoDuration);
             if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
