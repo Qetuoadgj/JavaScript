@@ -810,9 +810,10 @@ element.style {
             let firstValue = value1.split(', ')[0];
             firstValue = firstValue ? firstValue.trim() : ''
             if (firstValue !== '') {
-                element.value = firstValue + ', ';
+                element.value = firstValue;
                 var event = new Event('change');
                 element.dispatchEvent(event);
+                element.value += ', ';
             };
         };
         // --------------------------------------------------------------------------------
