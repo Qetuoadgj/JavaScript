@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.59
+// @version      2.0.60
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -648,7 +648,7 @@
         // element.style.rows = '2';
         element.style.overflow = 'hidden';
         element.style['font-size'] = '12px';
-        element.style.padding = '4px';
+        element.style.padding = '0px'; // '4px';
         element.style.color = G_embedCodeTextAreaColor;
         // element.setAttribute('readonly', 'readonly');
         // element.setAttribute('onclick', 'this.focus(); this.select();');
@@ -722,6 +722,7 @@
         element2.type = 'search';
         element2.style.display = 'inline';
         element2.style.width = '200px';
+        element2.style.margin = '0 1px';
         element0.appendChild(element2);
         // --------------------------------------------------------------------------------
         element0.appendChild(element3);
@@ -734,7 +735,7 @@
         element4.setAttribute('id', element4ID);
         element4.style.display = 'inline-flex';
         element4.style.width = '40px';
-        element4.style.margin = '0px 0px 0px 1px'
+        element4.style.margin = '0px'; //'0px 0px 0px 1px'
         element4.style.height = '26px';
         element4.style.position = 'relative';
         // element4.style.top = '-2px';
@@ -2265,6 +2266,23 @@ element.style {
         if (
             G_pageURL.matchLink('https?://(www.)?jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
         ) {
+            let show = function() {let css = document.querySelectorAll('head > style.hide-private');for (let s of css) {s.remove();};}
+            let hide = function() {show(); addGlobalStyle(`.xcam, .related a[href^="/direct/"] {display: none;}`, 'hide-private');};
+            function toggleShowPrivate() {
+                let hidePrivate = GM_getValue('hidePrivate', false);
+                if (hidePrivate) {
+                    show();
+                    GM_setValue('hidePrivate', false)
+                }
+                else {
+                    hide();
+                    GM_setValue('hidePrivate', true)
+                }
+            }
+            let hidePrivate = GM_getValue('hidePrivate', false);
+            if (hidePrivate) {hide();};
+            GM_registerMenuCommand('Toggle Show Private', function(){toggleShowPrivate();}, '');
+            //
             var imagesArray = [], thumbsArray = [];
             G_funcToRun = function () {
                 if (imagesArray.length == 0) {
