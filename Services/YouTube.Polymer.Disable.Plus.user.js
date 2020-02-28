@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Polymer.Disable.Plus
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Polymer.Disable.Plus.user.js
@@ -55,4 +55,14 @@
     };
     //Update cookie
     document.cookie = getDesignCookie(document.cookie) + ";domain=.youtube.com;path=/";
+    //
+    function documentOnReady() {
+        const alertMsg = document.querySelector('.yt-alert-message > a[href^="/new"]');
+        if (alertMsg) {
+            window.setTimeout(function() {
+                document.querySelector('.alerts-wrapper').scrollIntoView();
+            }, 5000/2);
+        };
+    };
+    document.addEventListener('DOMContentLoaded', documentOnReady);
 })();
