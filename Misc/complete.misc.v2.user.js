@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.60
+// @version      2.0.64
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -12,7 +12,6 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
-// @grant        unsafeWindow
 // @match        file:///*/2.*.*.html*
 // @match        *://www.eporner.com/hd-porn/*/*/
 // @match        *://www.eporner.eu/hd-porn/*/*/
@@ -464,8 +463,9 @@
     }
     // ================================================================================
     function getWindowVar(varName) {
+        /* globals getVar */
         var script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
-        var result = unsafeWindow.getVar(varName);
+        var result = getVar(varName);
         script.remove();
         return result;
     }
@@ -543,6 +543,50 @@
         return element;
     };
     // --------------------------------------------------------------------------------
+    const G_RenameTable = [
+        'TeensLoveHugeCocks.com',
+        'RealityKings.com',
+        'Tiny4K.com',
+        'Exotic4K.com',
+        'Cum4K.com',
+        'Vixen.com',
+        'BangBros.com',
+        'BigTitsRoundAsses.com',
+        'EvilAngel.com',
+        'BurningAngel.com',
+        'TeenFidelity.com',
+        'PornFidelity.com',
+        'JulesJordan.com',
+        'NaughtyAmerica.com',
+        'MySistersHotFriend.com',
+        'Passion-HD.com',
+        'EroticaX.com',
+        'DarkX.com',
+        'HardX.com',
+        'NubilesPorn.com',
+        'NubileFilms.com',
+        'PornPros.com',
+        'TeamSkeet.com',
+        'POVD.com',
+        'CherryPimps.com',
+        'Bang.com',
+        'FamilyHookups.com',
+        'MetroHD.com',
+        'X-Art.com',
+        'WowGirls.com',
+        'RoccoSiffredi.com',
+        '21Sextury.com',
+        '21Naturals.com',
+        'SexArt.com',
+        'FetishNetwork.com',
+        'BrutalPickups.com',
+        'BrutalCastings.com',
+        'HelplessTeens.com',
+        'Spizoo.com',
+        'KinkySpa.com',
+        'YoungThroats.com',
+        'CreampieAngels.com',
+    ];
     function autoReplace(str) {
         str = str.trim().
         replace(/[,.\s]+(com)\b/g, '.$1').
@@ -554,43 +598,43 @@
         replace(/,/g, ', ').
         replace(/(\.com\b){2,}/g, '.com')
         ;
-        const table = [
-            'TeensLoveHugeCocks.com',
-            'RealityKings.com',
-            'Tiny4K.com',
-            'Exotic4K.com',
-            'Cum4K.com',
-            'Vixen.com',
-            'BangBros.com',
-            'BigTitsRoundAsses.com',
-            'EvilAngel.com',
-            'BurningAngel.com',
-            'TeenFidelity.com',
-            'PornFidelity.com',
-            'JulesJordan.com',
-            'NaughtyAmerica.com',
-            'MySistersHotFriend.com',
-            'Passion-HD.com',
-            'EroticaX.com',
-            'DarkX.com',
-            'HardX.com',
-            'NubilesPorn.com',
-            'NubileFilms.com',
-            'PornPros.com',
-            'TeamSkeet.com',
-            'POVD.com',
-            'CherryPimps.com',
-            'Bang.com',
-            'FamilyHookups.com',
-            'MetroHD.com',
-            'X-Art.com',
-            'WowGirls.com',
-            'RoccoSiffredi.com',
-            '21Sextury.com',
-            '21Naturals.com',
-            'SexArt.com',
-        ];
-        for (let word of table) {
+        //         const table = [
+        //             'TeensLoveHugeCocks.com',
+        //             'RealityKings.com',
+        //             'Tiny4K.com',
+        //             'Exotic4K.com',
+        //             'Cum4K.com',
+        //             'Vixen.com',
+        //             'BangBros.com',
+        //             'BigTitsRoundAsses.com',
+        //             'EvilAngel.com',
+        //             'BurningAngel.com',
+        //             'TeenFidelity.com',
+        //             'PornFidelity.com',
+        //             'JulesJordan.com',
+        //             'NaughtyAmerica.com',
+        //             'MySistersHotFriend.com',
+        //             'Passion-HD.com',
+        //             'EroticaX.com',
+        //             'DarkX.com',
+        //             'HardX.com',
+        //             'NubilesPorn.com',
+        //             'NubileFilms.com',
+        //             'PornPros.com',
+        //             'TeamSkeet.com',
+        //             'POVD.com',
+        //             'CherryPimps.com',
+        //             'Bang.com',
+        //             'FamilyHookups.com',
+        //             'MetroHD.com',
+        //             'X-Art.com',
+        //             'WowGirls.com',
+        //             'RoccoSiffredi.com',
+        //             '21Sextury.com',
+        //             '21Naturals.com',
+        //             'SexArt.com',
+        //         ];
+        for (let word of G_RenameTable) {
             let re = new RegExp(word.replace(/\./g, '\.'), 'gi');
             str = str.replace(re, word);
         };
@@ -695,21 +739,33 @@
         element3.setAttribute('id', element3ID);
         /*
         var l = {
-            'Creampie' : '',
-            'Cum in pussy' : '',
-            'Cum in ass' : '',
-            'Anal' : '',
-            'Only blowjob' : '',
-            '3some' : '',
-            '4some' : '',
-            'Orgy' : '',
-            'Fuck after cumshot' : '',
-            'в…' : '',
+        '.com' : '',
+        'Anal' : '',
+        '3some' : '',
+        '4some' : '',
+        'Orgy' : '',
+        'Only blowjob' : '',
+        'Creampie' : '',
+        'Creampie, Cum in Pussy' : '',
+        'Creampie, Cum in Ass' : '',
+        'Fuck after Cumshot' : '',
+        '★' : '',
+        '-----------------------------' : '',
         };
         */
         for (let k of Object.keys(/*l*/ G_categories )) {
             let option = document.createElement('option');
             option.value = k;
+            element3.appendChild(option);
+            console.log(option);
+        };
+        let option = document.createElement('option');
+        option.value = '-----------------------------';
+        element3.appendChild(option);
+        console.log(option);
+        for (let word of G_RenameTable) {
+            let option = document.createElement('option');
+            option.value = word;
             element3.appendChild(option);
             console.log(option);
         };
@@ -1397,6 +1453,10 @@ element.style {
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                for (let a of document.querySelectorAll('.vit-pornstar > a, .vit-category > a, .vit-tag > a')) {
+                    let s = a.innerText.trim();
+                    G_categories[s] = '';
+                };
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 var eventCatcher, media;
@@ -1581,20 +1641,21 @@ element.style {
         addGlobalStyle(`.block-video .video-holder {width: 100%;}`, 'style-2');
         if (
             G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
+            /* globals flashvars */
         ) {
             if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
                 // window.stop();
                 G_funcToTest = function () {
-                    return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
+                    return typeof flashvars !== "undefined" && flashvars.video_url;
                 };
                 G_funcToRun = function () {
                     var contentURL = (
-                        unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 :
-                        unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
-                        unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
-                        unsafeWindow.flashvars.video_url
+                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
+                        flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
+                        flashvars.video_alt_url ? flashvars.video_alt_url :
+                        flashvars.video_url
                     );
-                    var posterURL = unsafeWindow.flashvars.preview_url;
+                    var posterURL = flashvars.preview_url;
                     console.log('contentURL: ', contentURL);
                     openURL(refineVideo(contentURL));
                 };
@@ -1602,28 +1663,29 @@ element.style {
             }
             else {
                 localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '1080p HD';
+                localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '720p HD';
                 G_funcToTest = function () {
-                    return typeof unsafeWindow.flashvars !== "undefined" && unsafeWindow.flashvars.video_url;
+                    return typeof flashvars !== "undefined" && flashvars.video_url;
                 };
                 G_funcToRun = function () {
                     G_contentURL = G_shortURL + '#OnlyVideo';
                     G_sampleURL = (
-                        unsafeWindow.flashvars.video_alt_url5 ? unsafeWindow.flashvars.video_alt_url5 :
-                        unsafeWindow.flashvars.video_alt_url4 ? unsafeWindow.flashvars.video_alt_url4 :
-                        unsafeWindow.flashvars.video_alt_url3 ? unsafeWindow.flashvars.video_alt_url3 : // 1080
-                        unsafeWindow.flashvars.video_alt_url2 ? unsafeWindow.flashvars.video_alt_url2 :
-                        unsafeWindow.flashvars.video_alt_url ? unsafeWindow.flashvars.video_alt_url :
-                        unsafeWindow.flashvars.video_url
+                        flashvars.video_alt_url5 ? flashvars.video_alt_url5 :
+                        flashvars.video_alt_url4 ? flashvars.video_alt_url4 :
+                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 : // 1080
+                        flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
+                        flashvars.video_alt_url ? flashvars.video_alt_url :
+                        flashvars.video_url
                     );
-                    localStorage.kvsplayer_selected_format = unsafeWindow.flashvars.video_alt_url3 ? '1080p HD' : '720p HD';
+                    localStorage.kvsplayer_selected_format = flashvars.video_alt_url3 ? '1080p HD' : '720p HD';
                     G_forceLoad = true;
                     G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
                     G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/');
                     G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
-                    let timeLineThumbsMaxIndex = 500; // (60 * 60) / (unsafeWindow.flashvars.timeline_screens_interval * 1); // unsafeWindow.flashvars.timeline_screens_interval * 1;
+                    let timeLineThumbsMaxIndex = 500; // (60 * 60) / (flashvars.timeline_screens_interval * 1); // flashvars.timeline_screens_interval * 1;
                     for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
                         //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
-                        G_postersArray[G_postersArray.length] = unsafeWindow.flashvars.timeline_screens_url.
+                        G_postersArray[G_postersArray.length] = flashvars.timeline_screens_url.
                         replace('{time}', i).
                         replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/')
                         ;
@@ -1983,6 +2045,7 @@ element.style {
         else if (
             G_pageURL.matchLink('https://txxx.com/videos/*') // https://txxx.com/videos/3049145/horny-pornstar-gigi-rivera-in-fabulous-big-dick-cumshots-porn-video/
         ) {
+            /* globals EoCR4 */
             G_funcToRun = function () {
                 // G_sampleURL = actualSource();
                 G_qualitySampleSource = document.querySelector('#videoplayer video[src]');
@@ -1999,7 +2062,7 @@ element.style {
                 // https://cdn37804682.ahacdn.me/c8/videos/13632000/13632958/13632958_tr.mp4
                 // https://cdn62004373.ahacdn.me/c12/videos/13632000/13632958/13632958_tr.mp4
                 G_previewURL = G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '$1/c8/videos/$2/$3_tr.mp4');
-                G_previewURL = 'https://' + unsafeWindow.EoCR4[22] + G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '/$2/$3_tr.mp4');
+                G_previewURL = 'https://' + EoCR4[22] + G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '/$2/$3_tr.mp4');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 var eventCatcher, media;
@@ -2021,13 +2084,14 @@ element.style {
     else if (
         G_pageURL.matchLink('https?://www.youjizz.com/videos/*.html')
     ) {
+        /* globals mp4Encodings */
         if (G_pageURL.match('#OnlyVideo')) { // https://www.youjizz.com/videos/hot-white-girl-smooth-massage-32782801.html#OnlyVideo
             // window.stop();
             G_funcToTest = function () {
-                return typeof unsafeWindow.mp4Encodings !== "undefined" && unsafeWindow.mp4Encodings[0];
+                return typeof mp4Encodings !== "undefined" && mp4Encodings[0];
             };
             G_funcToRun = function () {
-                var contentURL = location.protocol + unsafeWindow.mp4Encodings[unsafeWindow.mp4Encodings.length-1].filename;
+                var contentURL = location.protocol + mp4Encodings[mp4Encodings.length-1].filename;
                 console.log('contentURL: ', contentURL);
                 // alert(refineVideo(contentURL));
                 openURL(refineVideo(contentURL));
@@ -2036,11 +2100,11 @@ element.style {
         }
         else {
             G_funcToTest = function () {
-                return typeof unsafeWindow.mp4Encodings !== "undefined" && unsafeWindow.mp4Encodings[0];
+                return typeof mp4Encodings !== "undefined" && mp4Encodings[0];
             };
             G_funcToRun = function () {
                 G_contentURL = G_shortURL + '#OnlyVideo';
-                G_sampleURL = location.protocol + unsafeWindow.mp4Encodings[0].filename;
+                G_sampleURL = location.protocol + mp4Encodings[0].filename;
                 // G_forceLoad = true;
                 G_posterURL = G_posterURL ? G_posterURL : location.protocol + document.querySelector('div[poster]').getAttribute('poster');
                 G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/(.*.com\/(.*?))-\d+.jpg/i, location.protocol+'//$1-$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
@@ -2168,22 +2232,25 @@ element.style {
         G_pageURL.matchLink('https://mydaddy.cc/video/*/')
     ) {
         // G_noPlayerExtension = true;
-        let regExp = /file:."(.*?\/(\d+)\.mp4)"/gi, matchedScriptText;
+        let re;
+        let regExp1 = /file:."(.*?\/(\d+)\.mp4)"/gi, matchedScriptText;
+        let regExp2 = /src=\\"(.*?\/(\d+)\.mp4)\\"/gi; // src=\"//s13.bigcdn.cc/pubs/5e601c64b7100/360.mp4\"
         let getMatchedScriptText = function(regExp) {
             for (let script of document.scripts) {
                 let text = script.text;
                 if (text.match(regExp)) {
+                    re = regExp;
                     return(text);
                 };
             };
         };
         G_funcToTest = function() {
-            matchedScriptText = getMatchedScriptText(regExp);
+            matchedScriptText = getMatchedScriptText(regExp1) || getMatchedScriptText(regExp2);
             return matchedScriptText;
         };
         G_funcToRun = function() {
             // --------------------------------------------------------------------------------
-            let data = {}, result; while((result = regExp.exec(matchedScriptText)) !== null) {
+            let data = {}, result; while((result = re.exec(matchedScriptText)) !== null) {
                 let url = result[1].trim();
                 let quality = Math.floor(result[2].trim());
                 data[quality] = url;
