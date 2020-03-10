@@ -19,6 +19,7 @@
 // @match        *://yespornplease.com/v/*
 // @match        *://yespornplease.com/view/*
 // @match        *://e.yespornplease.com/v/*
+// @match        *://www.trendyporn.com/video/*
 // @match        *://vshare.io/v/*
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
@@ -45,6 +46,7 @@
 // @match        *://www.definebabe.com/gallery/*
 // @match        *://hqporner.com/hdporn/*.html
 // @match        *://mydaddy.cc/video/*
+/// @match        *://hqwo.cc/player/*
 // @match        *://www.sex.com/picture/*/
 // @match        *://www.sex.com/pin/*/
 // @match        *://www.sex.com/*
@@ -586,7 +588,22 @@
         'KinkySpa.com',
         'YoungThroats.com',
         'CreampieAngels.com',
-    ];
+        'FamilyStrokes.com',
+        'CastingCoach-X.com',
+        'Lubed.com',
+        'HussiePass.com',
+        'JaysPOV.net',
+        'Swallowed.com',
+        'Mofos.com',
+        'GFRevenge.com',
+        'Colette.com',
+        'FantasyHD.com',
+        'DigitalPlayground.com',
+        'Twistys.com',
+        'JoyMii.com',
+        'Family.XXX',
+        'DDFNetwork.com',
+    ].sort();
     function autoReplace(str) {
         str = str.trim().
         replace(/[,.\s]+(com)\b/g, '.$1').
@@ -1259,6 +1276,7 @@ element.style {
                 updateEmbedCodeTextColor();
             };
             G_qualitySampleSource.addEventListener('playing', function(e){updateValues(e)});
+            G_qualitySampleSource.addEventListener('canplay', function(e){updateValues(e)});
             G_qualitySampleSource.addEventListener('loadedmetadata', function(e){updateValues(e)});
         }
         else {
@@ -1611,6 +1629,82 @@ element.style {
             G_standartReCastFunc();
         };
         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+    }
+
+    // ================================================================================
+    else if (
+        G_pageURL.matchLink('https?://www.trendyporn.com')
+    ) {
+        //         if (G_pageHost == 'e.yespornplease.com') {location.host = 'yespornplease.com';} // https://e.yespornplease.com/v/235160374
+        //         else if (
+        //             G_pageURL.matchLink('https?://yespornplease.com/view/*') // https://yespornplease.com/view/306756151
+        //         ) {
+        //             window.stop();
+        //             location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
+        //         }
+        // /*
+        if (G_pageURL.match('#ReCast')) {
+            return;
+        }
+        // */
+        else if (
+            location.pathname.match(/^\/video\//) // https://www.trendyporn.com/video/familystrokes-leda-lothario-twin-stepbrothers-cum-on-ledas-face-10586.html
+        ) {
+            G_funcToRun = function() {
+                let header = document.querySelector('.nav.nav-tabs');
+                let iframe_id = 'thumbs';
+                let iframe = document.querySelector('iframe#' + iframe_id);
+                function checkIframeContent(iframe) {
+                    let win = iframe.contentWindow;
+                    let selector = '.video-link[href="'+ location.pathname + '"]'; // /v/232270580
+                    let matched = win.document.querySelector(selector);
+                    if (matched) {
+                        let main_poster = matched.querySelector('.img-responsive');
+                        if (main_poster) {
+                            G_posterURL = main_poster.src;
+                            G_embedCodeImageInput.value = G_posterURL;
+                            G_embedCodePoster.src = G_posterURL;
+                            iframe.remove();
+                        };
+                    };
+                };
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = iframe_id;
+                    iframe.onload = function(){checkIframeContent(iframe);};
+                    header.appendChild(iframe);
+                };
+                //                 let stars = document.querySelector('.icon.fa-star-o');
+                //                 stars = stars ? (' ' + stars.innerText) : '';
+                //                 iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText + stars;
+                iframe.src = 'https://www.trendyporn.com/search/' + document.querySelector('.container .pull-left .hidden-xs').innerText + '/';
+                // --------------------------------------------------------------------------------
+                G_contentURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
+                G_posterURL = (
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]').content
+                );
+                //                 G_qualitySampleSource = document.querySelector('#player_html5_api');
+                G_sampleURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
+                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
+                //                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
+                // console.log(G_posterURL);
+                //                 G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                //                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
+                G_stickTo = document.querySelector('#player-container'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                for (let a of document.querySelectorAll('.video-tags > a')) {
+                    let s = a.innerText.trim();
+                    G_categories[s] = '';
+                };
+                G_standartAddEmbedCodeFunc();
+                //                 G_messageTarget = document.querySelector('iframe').contentWindow;
+            };
+            // document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElement('#player_html5_api[src], #player_html5_api > source[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            // });
+        }
     }
 
     else if (
@@ -2274,6 +2368,17 @@ element.style {
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
+//     else if (
+//         G_pageURL.matchLink('https://hqwo.cc/player/*')
+//     ) {
+//         //         G_noPlayerExtension = true;
+//         G_funcToRun = function() {
+//             G_contentURL = G_funcResult;
+//             // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
+//             G_standartReCastFunc();
+//         };
+//         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+//     }
     // ================================================================================
 
     else if (
