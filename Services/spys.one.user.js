@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         spys.one
 // @icon         https://www.google.com/s2/favicons?domain=spys.one
-// @version      1.0.6
+// @version      1.0.7
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        GM_registerMenuCommand
@@ -111,10 +111,13 @@
                 editor.value = GM_proxy_list;
                 // editor.focus();
                 // editor.scrollIntoView();
-                var get_iframe_height = setInterval(function(){
-                    var height = document.getElementById("global-wrapper").scrollHeight + "px";
+                var get_iframe_height = setInterval(function() {
+                    const targetElement = document.querySelectorAll('#global-wrapper, .table_block, #list')[0];
+                    if (!targetElement) return;
+                    var height = targetElement.scrollHeight;
                     GM_setValue("proxy_list_height", height);
                     if (GM_getValue("proxy_list_height") != height) console.log("height: ", height);
+                    //                     console.log('proxy_list_height:', height);
                 }, 1000);
             }
             GM_registerMenuCommand(MenuCommand, function(){check_proxies();}, "c");
@@ -218,12 +221,18 @@
 
             proxy_checker.focus();
 
+            GM_setValue("proxy_list_height", 0);
+            GM_addValueChangeListener("proxy_list_height", function(name, old_value, new_value, remote) {
+                proxy_checker.style.height = new_value + "px";
+            })
+            /*
             var set_iframe_height = setInterval(function(){
                 var GM_proxy_list_height = GM_getValue("proxy_list_height", 0);
-                proxy_checker.style.height = GM_proxy_list_height;
+                proxy_checker.style.height = GM_proxy_list_height + "px";
+//                 console.log('GM_proxy_list_height:', GM_proxy_list_height);
             }, 1000/10);
             // clearInterval(check_height);
-
+*/
             var check_button = document.createElement('button');
             document.body.appendChild(check_button);
             check_button.id = 'check_button';
