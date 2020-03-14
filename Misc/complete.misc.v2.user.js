@@ -603,6 +603,23 @@
         'JoyMii.com',
         'Family.XXX',
         'DDFNetwork.com',
+        'HookupHotshot.com',
+        'ToughLoveX.com',
+        'Petite.XXX',
+        'FuckingAwesome.com',
+        'VOGOV.com',
+        'Hustler.com',
+        'NuruMassage.com',
+        'FantasyMassage.com',
+        'JeshByJesh.com',
+        'HollyRandall.com',
+        'ProducersFun.com',
+        'SweetSinner.com',
+        'TrenchCoatX.com',
+        'Deeper.com',
+        'BrattySis.com',
+        'SpankMonster.com',
+        'OnlyTeenBlowjobs.com',
     ].sort();
     function autoReplace(str) {
         str = str.trim().
@@ -613,7 +630,8 @@
         replace(/^,/g, '').
         replace(/,$/g, '').
         replace(/,/g, ', ').
-        replace(/(\.com\b){2,}/g, '.com')
+        replace(/(\.com\b){2,}/g, '.com').
+        replace(/M:, /g, 'M:')
         ;
         //         const table = [
         //             'TeensLoveHugeCocks.com',
@@ -800,6 +818,10 @@
         // --------------------------------------------------------------------------------
         element0.appendChild(element3);
         element2.setAttribute('list', element3ID);
+        element2.onclick = function(e) {
+            G_embedCodeTextCategorie = GM_getValue('category', '') || '';
+            element.value = G_embedCodeTextCategorie;
+        };
         // --------------------------------------------------------------------------------
         var element4ID = 'uniqueEmbedCodeCatButtonAdd';
         for (let element of document.querySelectorAll('#' + element4ID)) {element.remove();};
