@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.64
+// @version      2.0.65
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -620,6 +620,7 @@
         'BrattySis.com',
         'SpankMonster.com',
         'OnlyTeenBlowjobs.com',
+        'BellaPass.com',
     ].sort();
     function autoReplace(str) {
         str = str.trim().
@@ -689,6 +690,7 @@
     };
     var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_categories = {
+        'M:' : '',
         '.com' : '',
         'Anal' : '',
         '3some' : '',

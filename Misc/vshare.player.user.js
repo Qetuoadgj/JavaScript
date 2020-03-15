@@ -89,25 +89,27 @@
     };
     // ---------------------------------------------------
     var html = [
-        // `<!DOCTYPE html>`,
+        //         `<!DOCTYPE html>`,
         `<html>`,
         `    <head>`,
         `        <meta charset="UTF-8">`,
         `        <meta name="viewport" content="width=device-width, initial-scale=1">`,
-        // `        <link rel="stylesheet" href="style.css">`,
+        //         `        <link rel="stylesheet" href="style.css">`,
         `        <title>HTML5 Custom Video Player</title>`,
         `    </head>`,
         `    <body>`,
         `        <div class="player">`,
         `            <video class="player-video" preload="metadata"></video>`,
         `            <div class="player-controls">`,
-        `                <div class="progress">`,
-        `                    <div class="progress-background">`,
-        `                        <span class="current-time">00:00</span>`,
-        `                        <video class="progress-thumbnail" preload="metadata" muted></video>`,
+        `                <div class="progress-container">`,
+        `                    <div class="progress">`,
+        `                        <div class="progress-background">`,
+        `                            <span class="current-time">00:00</span>`,
+        `                            <video class="progress-thumbnail" preload="metadata" muted></video>`,
+        `                        </div>`,
+        `                        <div class="filled-buffer"></div>`,
+        `                        <div class="filled-progress"></div>`,
         `                    </div>`,
-        `                    <div class="filled-buffer"></div>`,
-        `                    <div class="filled-progress"></div>`,
         `                </div>`,
         `                <div class="player-panel">`,
         `                    <button class="player-btn toggle-play" title="Toggle Play">`,
@@ -136,7 +138,7 @@
         `                </svg>`,
         `            </div>`,
         `        </div>`,
-        // `        <script src="script.js"></script>`,
+        //         `        <script src="script.js"></script>`,
         `    </body>`,
         `</html>`,
         ``,
@@ -222,7 +224,8 @@
         `    min-width: 10%;`,
         `    max-width: 90%;`,
         `}`,
-        `.progress:hover .progress-background {`,
+        `.progress:hover .progress-background,`,
+        `.progress-container:hover .progress-background {`,
         `    visibility: visible;`,
         `}`,
         `.progress-background,`,
@@ -524,14 +527,16 @@
         `    padding: 0px 0px;`,
         `}`,
         `/* ------------------------------------- */`,
-        `.player-panel * {`,
-        `    color: #fff;`,
-        `    font-family: "Arial", Arial, Sans-serif;`,
-        `    font-size: 14px;`,
+        `.player * {`,
         `    -webkit-user-select: none;`,
         `    -moz-user-select: none;`,
         `    -ms-user-select: none;`,
         `    user-select: none;`,
+        `}`,
+        `.player-panel * {`,
+        `    color: #fff;`,
+        `    font-family: "Arial", Arial, Sans-serif;`,
+        `    font-size: 14px;`,
         `}`,
         `/* ------------------------------------- */`,
         `.skip {`,
@@ -602,6 +607,26 @@
         `    display: none;`,
         `}`,
         `/* ------------------------------------- */`,
+        `.progress-container {`,
+        `    position: absolute;`,
+        `    display: block;`,
+        `    top: 0;`,
+        `    left: 0;`,
+        `    width: 100%;`,
+        `    height: 8px;`,
+        `    transform: translateY(-100%);`,
+        `    background: rgba(0, 0, 255, 0);`,
+        `    cursor: pointer;`,
+        `}`,
+        `.progress {`,
+        `    top: 100%;`,
+        `    pointer-events: none;`,
+        `}`,
+        `.progress {`,
+        `    width: calc(100% - 20px);`,
+        `    left: 10px;`,
+        `}`,
+        `/* ------------------------------------- */`,
         ``,
     ].join('\n');
     addGlobalStyle(css, 'playerStyle_1');
@@ -614,6 +639,7 @@
     const player = document.querySelector('.player');
     const video = player.querySelector('.player-video');
     const progress = player.querySelector('.progress');
+    const progressContainer = player.querySelector('.progress-container');
     const progressFilled = player.querySelector('.filled-progress');
     const bufferFilled = player.querySelector('.filled-buffer');
     // ---------------------------------------------------
@@ -635,7 +661,7 @@
     const playbackRateDisplay = player.querySelector('.current-speed');
     // ---------------------------------------------------
     const timeline = progress;
-    const timeline_event_catcher = progress;
+    const timeline_event_catcher = progressContainer; // progress;
     // ---------------------------------------------------
     // let thumbUpdatedTimeLast = 0;
     let mouseDownState = false;
@@ -672,6 +698,7 @@
         const delta = timeline.offsetLeft - timeline_event_catcher.offsetLeft;
         const clickPosX = Math.max(e.offsetX - delta, 0);
         const percent = Math.min(clickPosX / timeline.offsetWidth * 100, 100);
+        // console.log(percent);
         return percent;
     }
     let G_progressThumbnailSrc;
@@ -789,12 +816,12 @@
     playerSliders.forEach(range => range.addEventListener('change', updateSliders));
     playerSliders.forEach(range => range.addEventListener('mousemove', updateSliders));
     //
-    progress.addEventListener('click', onTimelineClick);
-    progress.addEventListener('mousemove', (e) => {mouseDownState && onTimelineClick(e); playerDisplayTimelineTooltip(e)});
-    progress.addEventListener('mousedown', () => {mouseDownState = true});
-    progress.addEventListener('mouseup', () => {mouseDownState = false});
+    timeline_event_catcher.addEventListener('click', onTimelineClick);
+    timeline_event_catcher.addEventListener('mousemove', (e) => {mouseDownState && onTimelineClick(e); playerDisplayTimelineTooltip(e)});
+    timeline_event_catcher.addEventListener('mousedown', () => {mouseDownState = true});
+    timeline_event_catcher.addEventListener('mouseup', () => {mouseDownState = false});
     // ---------------------------------------------------
-    // video.src = "https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10";
+    //     video.src = "https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10";
     // ---------------------------------------------------
     /*
     // ---------------------------------------------------
