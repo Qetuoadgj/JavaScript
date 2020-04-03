@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.65
+// @version      2.0.66
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -621,6 +621,9 @@
         'SpankMonster.com',
         'OnlyTeenBlowjobs.com',
         'BellaPass.com',
+        'StepSiblingsCaught.com',
+        'BadTeensPunished.com',
+        'PornHub.com',
     ].sort();
     function autoReplace(str) {
         str = str.trim().
@@ -905,10 +908,16 @@ element.style {
         element.parentNode.insertBefore(element5, element2);
         element5.onclick = function(e) {
             let value1 = element.value.trim();
-            let firstValue = value1.split(', ')[0];
+            let values = value1.split(', ');
+            let firstValue = values[0], lastValue = values[values.length-1];
             firstValue = firstValue ? firstValue.trim() : ''
             if (firstValue !== '') {
-                element.value = firstValue;
+                if (lastValue == firstValue) {
+                    element.value = "";
+                }
+                else {
+                    element.value = firstValue;
+                };
                 var event = new Event('change');
                 element.dispatchEvent(event);
                 element.value += ', ';
@@ -1277,8 +1286,9 @@ element.style {
         resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_standartAddEmbedCodeFunc = function() {
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_gategoriesSource = [], G_standartAddEmbedCodeFunc = function() {
         // --------------------------------------------------------------------------------
+        for (let a of G_gategoriesSource) {let s = a.innerText.trim(); G_categories[s] = '';};
         G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         G_delimiter = ''; // '<!-- ' + G_contentTitle + ' -->\n';
         G_embedCodeFrame = addEmbedCodeFrame(G_funcToRun);
@@ -1302,6 +1312,7 @@ element.style {
             G_qualitySampleSource.addEventListener('playing', function(e){updateValues(e)});
             G_qualitySampleSource.addEventListener('canplay', function(e){updateValues(e)});
             G_qualitySampleSource.addEventListener('loadedmetadata', function(e){updateValues(e)});
+            G_qualitySampleSource.addEventListener('durationchange', function(e){updateValues(e)});
         }
         else {
             if (G_sampleURL && !G_noQualitySample) {
@@ -1495,10 +1506,7 @@ element.style {
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
-                for (let a of document.querySelectorAll('.vit-pornstar > a, .vit-category > a, .vit-tag > a')) {
-                    let s = a.innerText.trim();
-                    G_categories[s] = '';
-                };
+                G_gategoriesSource = document.querySelectorAll('.vit-pornstar > a, .vit-category > a, .vit-tag > a');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 var eventCatcher, media;
@@ -1630,10 +1638,7 @@ element.style {
                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                for (let a of document.querySelectorAll('.video-tags > a')) {
-                    let s = a.innerText.trim();
-                    G_categories[s] = '';
-                };
+                G_gategoriesSource = document.querySelectorAll('.video-tags > a');
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
@@ -1718,10 +1723,7 @@ element.style {
                 //                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('#player-container'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                for (let a of document.querySelectorAll('.video-tags > a')) {
-                    let s = a.innerText.trim();
-                    G_categories[s] = '';
-                };
+                G_gategoriesSource = document.querySelectorAll('.video-tags > a');
                 G_standartAddEmbedCodeFunc();
                 //                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
@@ -1810,6 +1812,7 @@ element.style {
                     };
                     // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
                     //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
+                    G_gategoriesSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
                     G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
                     // G_stickTo = document.querySelector('div#tab_video_info'); G_stickPosition = 1;
                     // --------------------------------------------------------------------------------
@@ -2001,6 +2004,7 @@ element.style {
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 0, 15+2); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.video-actions-container'); G_stickPosition = -1;
+                G_gategoriesSource = document.querySelectorAll('.video-detailed-info > .video-info-row a[href*="/model/"], .video-detailed-info > .video-info-row a[href*="/pornstar/"]');
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 var eventCatcher, media;
@@ -2011,6 +2015,7 @@ element.style {
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
+                    G_messageTarget = media;
                 }, G_delay, G_tries, G_timerGroup);
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
@@ -2330,14 +2335,7 @@ element.style {
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                for (let a of document.querySelectorAll('.fa-star-o > a')) {
-                    let s = a.innerText.trim();
-                    G_categories[s] = '';
-                };
-                for (let a of document.querySelectorAll('.page-content section a.tag-link')) {
-                    let s = a.innerText.trim();
-                    G_categories[s] = '';
-                };
+                G_gategoriesSource = document.querySelectorAll('.fa-star-o > a, .page-content section a.tag-link');
                 G_standartAddEmbedCodeFunc();
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
@@ -2392,17 +2390,17 @@ element.style {
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
-//     else if (
-//         G_pageURL.matchLink('https://hqwo.cc/player/*')
-//     ) {
-//         //         G_noPlayerExtension = true;
-//         G_funcToRun = function() {
-//             G_contentURL = G_funcResult;
-//             // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
-//             G_standartReCastFunc();
-//         };
-//         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-//     }
+    //     else if (
+    //         G_pageURL.matchLink('https://hqwo.cc/player/*')
+    //     ) {
+    //         //         G_noPlayerExtension = true;
+    //         G_funcToRun = function() {
+    //             G_contentURL = G_funcResult;
+    //             // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
+    //             G_standartReCastFunc();
+    //         };
+    //         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+    //     }
     // ================================================================================
 
     else if (
