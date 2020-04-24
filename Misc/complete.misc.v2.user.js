@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.66
+// @version      2.0.71
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -16,6 +16,10 @@
 // @match        *://www.eporner.com/hd-porn/*/*/
 // @match        *://www.eporner.eu/hd-porn/*/*/
 // @match        *://www.eporner.com/embed/*
+// @match        *://www.4tube.com/videos/*
+// @match        *://www.4tube.com/embed/*
+// @match        *://redtube.com/*
+// @match        *://*.redtube.com/*
 // @match        *://yespornplease.com/v/*
 // @match        *://yespornplease.com/view/*
 // @match        *://e.yespornplease.com/v/*
@@ -25,6 +29,8 @@
 // @match        *://www.porntrex.com/video/*/*
 // @match        *://www.porntrex.com/*
 // @match        *://sxyprn.com/post/*.html*
+// @match        *://upornia.com/videos/*/*
+// @match        *://txxx.tube/videos/*/*
 // @match        *://*.pornhub.com/*
 // @match        *://*.pornhub.com/view_video.php?viewkey=*
 // @match        *://www.pornhub.com/embed/*
@@ -53,6 +59,7 @@
 // @match        *://www.pornpics.com/*
 
 // @match        *://biqle.ru/watch/*
+// @match        *://biqle.org/watch/*
 // @match        *://daftsex.com/watch/*
 // @match        *://daxab.com/player/*
 
@@ -60,6 +67,8 @@
 // @match        *://www.pornesq.com/embed/*
 
 // @match        *://www.porngo.com/videos/*/*
+// @match        *://www.xxxfiles.com/videos/*
+
 // @match        *://txxx.com/videos/*/*
 // @match        *://txxx.com/embed/*
 // ==/UserScript==
@@ -436,7 +445,7 @@
     };
     // ================================================================================
     function fixURLProtocol(URL) {
-        if (!URL.match(/^http/)) {
+        if (URL && !URL.match(/^http/)) {
             URL = location.protocol + '//' + URL.replace(/^\/\//, '');
         };
         return URL;
@@ -545,7 +554,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    const G_RenameTable = [
+    var G_RenameTable = [
         'TeensLoveHugeCocks.com',
         'RealityKings.com',
         'Tiny4K.com',
@@ -624,7 +633,65 @@
         'StepSiblingsCaught.com',
         'BadTeensPunished.com',
         'PornHub.com',
-    ].sort();
+        'BellaFilms.com',
+        // ---------------
+        '18VirginSex.com',
+        '21Naturals.com',
+        'AdultTime.com',
+        'Babes.com',
+        'BangBros.com',
+        'BellaPass.com',
+        'BrutalCastings.com',
+        'BrutalPickups.com',
+        'Bryci.com',
+        'BurningAngel.com',
+        'CherryPimps.com',
+        'Colette.com',
+        'Cum4K.com',
+        'DDFNetwork.com',
+        'DaneJones.com',
+        'EroticaX.com',
+        'FantasyHD.com',
+        'FetishNetwork.com',
+        'HardX.com',
+        'HelplessTeens.com',
+        'Hustler.com',
+        'JoyMii.com',
+        'JulesJordan.com',
+        'Karups.com',
+        'NubileFilms.com',
+        'NubilesPorn.com',
+        'NuruMassage.com',
+        'Passion-HD.com',
+        'Penthouse.com',
+        'PornFidelity.com',
+        'PornHub.com',
+        'PornstarCamHouse.com',
+        'PrettyDirty.com',
+        'Spizoo.com',
+        'StepSiblingsCaught.com',
+        'TeamSkeet.com',
+        'TeenFidelity.com',
+        'Tiny4K.com',
+        'TrenchCoatX.com',
+        'Tushy.com',
+        'Twistys.com',
+        'Vixen.com',
+        'WowGirls.com',
+        'X-Art.com',
+        'Xart.com',
+        // ---------------
+        'Brazzers.com',
+        'NewSensations.com',
+        'CumLouder.com',
+        'Private.com',
+        'WoodmanCastingX.com',
+        'WhteBoxxx.com',
+        'PublicAgent.com',
+        'Baeb.com',
+        'SpyFam.com',
+    ];
+    G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
         str = str.trim().
         replace(/[,.\s]+(com)\b/g, '.$1').
@@ -1286,9 +1353,10 @@ element.style {
         resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_gategoriesSource = [], G_standartAddEmbedCodeFunc = function() {
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_actorsSource = [], G_categoriesSource = [], G_standartAddEmbedCodeFunc = function() {
         // --------------------------------------------------------------------------------
-        for (let a of G_gategoriesSource) {let s = a.innerText.trim(); G_categories[s] = '';};
+        for (let a of G_actorsSource) {let s = 'M:' + a.innerText.trim(); G_categories[s] = '';};
+        for (let a of G_categoriesSource) {let s = a.innerText.trim(); G_categories[s] = '';};
         G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         G_delimiter = ''; // '<!-- ' + G_contentTitle + ' -->\n';
         G_embedCodeFrame = addEmbedCodeFrame(G_funcToRun);
@@ -1331,25 +1399,25 @@ element.style {
     };
     // ================================================================================
     // getCookie(), setCookie(), deleteCookie() -- https://gist.github.com/akaramires/7577298
-    function getCookie(name) { // РІРѕР·РІСЂР°С‰Р°РµС‚ cookie РµСЃР»Рё РµСЃС‚СЊ РёР»Рё undefined
+    function getCookie(name) { // возвращает cookie если есть или undefined
         var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
     // --------------------------------------------------------------------------------
-    // РђСЂРіСѓРјРµРЅС‚С‹:
-    // name - РЅР°Р·РІР°РЅРёРµ cookie
-    // value - Р·РЅР°С‡РµРЅРёРµ cookie (СЃС‚СЂРѕРєР°)
-    // props - РћР±СЉРµРєС‚ СЃ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹РјРё СЃРІРѕР№СЃС‚РІР°РјРё РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё cookie:
-    // expires - Р’СЂРµРјСЏ РёСЃС‚РµС‡РµРЅРёСЏ cookie. РРЅС‚РµСЂРїСЂРµС‚РёСЂСѓРµС‚СЃСЏ РїРѕ-СЂР°Р·РЅРѕРјСѓ, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР°:
-    // - Р•СЃР»Рё С‡РёСЃР»Рѕ - РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРєСѓРЅРґ РґРѕ РёСЃС‚РµС‡РµРЅРёСЏ.
-    // - Р•СЃР»Рё РѕР±СЉРµРєС‚ С‚РёРїР° Date - С‚РѕС‡РЅР°СЏ РґР°С‚Р° РёСЃС‚РµС‡РµРЅРёСЏ.
-    // - Р•СЃР»Рё expires РІ РїСЂРѕС€Р»РѕРј, С‚Рѕ cookie Р±СѓРґРµС‚ СѓРґР°Р»РµРЅРѕ.
-    // - Р•СЃР»Рё expires РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёР»Рё СЂР°РІРЅРѕ 0, С‚Рѕ cookie Р±СѓРґРµС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РєР°Рє СЃРµСЃСЃРёРѕРЅРЅРѕРµ Рё РёСЃС‡РµР·РЅРµС‚ РїСЂРё Р·Р°РєСЂС‹С‚РёРё Р±СЂР°СѓР·РµСЂР°.
-    // path - РџСѓС‚СЊ РґР»СЏ cookie.
-    // domain - Р”РѕРјРµРЅ РґР»СЏ cookie.
-    // secure - РџРµСЂРµСЃС‹Р»Р°С‚СЊ cookie С‚РѕР»СЊРєРѕ РїРѕ Р·Р°С‰РёС‰РµРЅРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ.
+    // Аргументы:
+    // name - название cookie
+    // value - значение cookie (строка)
+    // props - Объект с дополнительными свойствами для установки cookie:
+    // expires - Время истечения cookie. Интерпретируется по-разному, в зависимости от типа:
+    // - Если число - количество секунд до истечения.
+    // - Если объект типа Date - точная дата истечения.
+    // - Если expires в прошлом, то cookie будет удалено.
+    // - Если expires отсутствует или равно 0, то cookie будет установлено как сессионное и исчезнет при закрытии браузера.
+    // path - Путь для cookie.
+    // domain - Домен для cookie.
+    // secure - Пересылать cookie только по защищенному соединению.
     // --------------------------------------------------------------------------------
-    function setCookie(name, value, props) { // СѓcС‚Р°РЅР°РІР»РёРІР°РµС‚ cookie
+    function setCookie(name, value, props) { // уcтанавливает cookie
         props = props || {};
         var exp = props.expires;
         if (typeof exp == "number" && exp) {
@@ -1369,7 +1437,7 @@ element.style {
         document.cookie = updatedCookie.trim();
     }
     // --------------------------------------------------------------------------------
-    function deleteCookie(name) { // СѓРґР°Р»СЏРµС‚ cookie
+    function deleteCookie(name) { // удаляет cookie
         setCookie(name, null, { expires: -1 });
     }
     // ================================================================================
@@ -1506,7 +1574,8 @@ element.style {
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
                 // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
-                G_gategoriesSource = document.querySelectorAll('.vit-pornstar > a, .vit-category > a, .vit-tag > a');
+                G_actorsSource = document.querySelectorAll('.vit-pornstar > a');
+                G_categoriesSource = document.querySelectorAll('.vit-category > a, .vit-tag > a');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 var eventCatcher, media;
@@ -1577,6 +1646,165 @@ element.style {
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
     }
+    else if (
+        G_pageURL.matchLink('https?://www.4tube.com')
+    ) {
+        if (
+            G_pageURL.matchLink('https?://www.4tube.com/videos/*/*')
+        ) {
+            G_funcToRun = function() {
+                let header = document.querySelector('.player');
+                let iframe_id = 'thumbs';
+                let iframe = document.querySelector('iframe#' + iframe_id);
+                function checkIframeContent(iframe) {
+                    let win = iframe.contentWindow;
+                    let selector = '.thumb-link[href="'+ location.pathname + '"]'; // /v/232270580
+                    let matched = win.document.querySelector(selector);
+                    if (matched) {
+                        let main_poster = matched.querySelector('li[data-src]');
+                        if (main_poster) {
+                            G_postersArray = [];
+                            for (let item of matched.querySelectorAll('li[data-src]')) {
+                                if (item) {G_postersArray.push(item.dataset.src);};
+                            };
+                            console.log('G_posters:\n', G_postersArray);
+                            G_posterURL = G_posterURL ? G_posterURL : main_poster.dataset.src;
+                            G_embedCodeImageInput.value = G_posterURL;
+                            G_embedCodePoster.src = G_posterURL;
+                            G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                            iframe.remove();
+                        };
+                    };
+                };
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = iframe_id;
+                    iframe.onload = function(){checkIframeContent(iframe);};
+                    header.appendChild(iframe);
+                };
+                iframe.setAttribute('target', '_self');
+                iframe.setAttribute('sandbox', 'allow-same-origin');
+                iframe.src = 'https://www.4tube.com/search?q=' + document.querySelector('meta[itemprop="name"]').content.replace(/\s+/g, '+');
+                // --------------------------------------------------------------------------------
+                G_contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
+                G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[itemprop="thumbnailUrl"]').content;
+                // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*)\/\d+.(jpe?g)/i, '$1/$NUM.$2', 1, 25); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelector('.player'); G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                // G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
+                G_sampleURL = document.querySelectorAll('video#html5Videokodplayer_html5_api > source, video#html5Videokodplayer_html5_api')[0].src;
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                // G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                G_actorsSource = document.querySelectorAll('.pornlist a[href*="/pornstars/"] > span');
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.player');
+                    media = media ? media : document.querySelector('video#html5Videokodplayer_html5_api');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+                /*
+                setTimeout(function() {
+                    var eventCatcher = document.querySelector('div#moviexxx'), media = document.querySelector('body video[src]');
+                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
+                }, 500);
+                */
+            };
+            // waitForElement('#embright > .textare1 > textarea', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('video#html5Videokodplayer_html5_api', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        else if (
+            G_pageURL.matchLink('https?://www.4tube.com/embed/*') // https://www.4tube.com/embed/342362
+        ) {
+            /* globals playerloadb */
+            G_funcToTest = function () {return typeof playerloadb !== 'undefined';};
+            G_funcToRun = function() {
+                window.stop();
+                // G_contentURL = document.querySelectorAll('body video > source, body video')[0].src;
+                let keys = Object.keys(playerloadb.availableRes);
+                let maxRes = keys[keys.length-2];
+                G_contentURL = playerloadb.availableRes[maxRes][0].src;
+                log(G_debugMode, 'G_contentURL:', G_contentURL);
+                openURL(refineVideo(G_contentURL));
+                // --------------------------------------------------------------------------------
+            };
+            //             waitForElement('body video', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://redtube.com') ||
+        G_pageURL.matchLink('https?://*.redtube.com')
+    ) {
+        if (
+            location.pathname.match(/^\/\d+/)
+        ) {
+            /* globals page_params */
+            let maxQuality = 0, videoData = {};
+            G_funcToTest = function () {
+                const player = document.querySelector('#redtube-player');
+                if (player) {
+                    let playerID = player.dataset.videoId;
+                    playerID = playerID ? playerID : document.querySelector('link[hreflang="x-default"]').href;
+                    playerID = playerID ? playerID : location.pathname.replace(/^\/(\d+).*/, '$1');
+                    if (page_params && page_params.video_player_setup) {
+                        const playerVars = page_params.video_player_setup['playerDiv_' + playerID].playervars;
+                        const keys = Object.keys(playerVars);
+                        for (let keyName of keys) {
+                            let match = keyName.match(/^quality_(\d+)p?$/);
+                            if (match) {
+                                let quality = parseInt(match[1]);
+                                if (quality > maxQuality) {
+                                    maxQuality = quality;
+                                    videoData.key = match[0];
+                                    // videoData.src = videoData.key;
+                                };
+                            };
+                        };
+                        // console.log('maxQuality:', maxQuality);
+                        const maxQualitySrc = playerVars[videoData.key];
+                        if (maxQualitySrc) {
+                            videoData.src = maxQualitySrc;
+                            videoData.quality = maxQuality;
+                            return maxQualitySrc;
+                        };
+                    };
+                };
+            };
+            G_funcToRun = function() {
+                G_contentURL = document.querySelector('link[hreflang="x-default"]').href;
+                G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[property="og:image"]').content;
+                G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*)\/\d+.(jpe?g)/i, '$1/$NUM.$2', 1, 20); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelectorAll('#video_underplayer, #redtube-player')[0]; G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                // G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
+                G_sampleURL = videoData.src;
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
+                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                // G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
+                G_actorsSource = document.querySelectorAll('.video-infobox-content > .pornstar-name > a[href*="/pornstar/"]');
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                var eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#redtube-player');
+                    media = media ? media : document.querySelector('div#redtube-player video');
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+    }
+
     // ================================================================================
     else if (
         G_pageURL.matchLink('https?://(e\.)?yespornplease.com')
@@ -1620,9 +1848,6 @@ element.style {
                     iframe.onload = function(){checkIframeContent(iframe);};
                     header.appendChild(iframe);
                 };
-                //                 let stars = document.querySelector('.icon.fa-star-o');
-                //                 stars = stars ? (' ' + stars.innerText) : '';
-                //                 iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText + stars;
                 iframe.src = 'https://yespornplease.com/search?q=' + document.querySelector('.container .pull-left .hidden-xs').innerText;
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('iframe').src.replace(/\/width-\d+\/height-\d+\//i, '/width-882/height-496/');
@@ -1638,7 +1863,7 @@ element.style {
                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_gategoriesSource = document.querySelectorAll('.video-tags > a');
+                G_categoriesSource = document.querySelectorAll('.video-tags > a');
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
@@ -1703,9 +1928,6 @@ element.style {
                     iframe.onload = function(){checkIframeContent(iframe);};
                     header.appendChild(iframe);
                 };
-                //                 let stars = document.querySelector('.icon.fa-star-o');
-                //                 stars = stars ? (' ' + stars.innerText) : '';
-                //                 iframe.src = 'https://hqporner.com/?q=' + header.querySelector('h1.main-h1').innerText + stars;
                 iframe.src = 'https://www.trendyporn.com/search/' + document.querySelector('.container .pull-left .hidden-xs').innerText + '/';
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
@@ -1723,7 +1945,7 @@ element.style {
                 //                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('#player-container'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_gategoriesSource = document.querySelectorAll('.video-tags > a');
+                G_categoriesSource = document.querySelectorAll('.video-tags > a');
                 G_standartAddEmbedCodeFunc();
                 //                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
@@ -1812,7 +2034,7 @@ element.style {
                     };
                     // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
                     //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
-                    G_gategoriesSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
+                    G_actorsSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
                     G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
                     // G_stickTo = document.querySelector('div#tab_video_info'); G_stickPosition = 1;
                     // --------------------------------------------------------------------------------
@@ -1899,27 +2121,143 @@ element.style {
     }
 
     else if (
-        G_pageURL.matchLink('https?://www.porngo.com/*')
+        G_pageURL.matchLink('https?://upornia.com/*') || // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/
+        G_pageURL.matchLink('https?://txxx.tube/*') // https://txxx.tube/videos/4497531/hottest-pornstars-nikki-hunter-and-rita-faltoyano-in-best-big-tits-brunette-sex-video/
     ) {
+        var playerData;
+        /* globals pl3748 */
+        G_funcToTest = function () {
+            if (typeof pl3748 !== "undefined") {
+                if (typeof pl3748.getPlaylist == 'function') {
+                    playerData = pl3748.getPlaylist();
+                    if (playerData) {
+                        playerData = playerData[0];
+                        return playerData;
+                    };
+                };
+            };
+        };
+        if (G_pageURL.match('#ReCast')) { // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/#ReCast
+            // window.stop();
+            G_funcToRun = function() {G_contentURL = playerData.file.replace('&f=video.m3u8', ''); G_standartReCastFunc();};
+            //             document.addEventListener("DOMContentLoaded", function(event) {
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * 3, G_timerGroup);
+            //             });
+        }
+        else if (
+            // G_pageURL.matchLink('https?://upornia.com/videos/*/*') // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/
+            location.pathname.match(/^\/videos\//)
+        ) {
+            G_funcToRun = function () {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL; // + '#ReCast';https://cdn60563788.ahacdn.me/contents/videos_sources/1080000/1080364/screenshots/21.jpg
+                G_posterURL = playerData.image;
+                G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*\/screenshots)\/\d+.jpg/i, '$1/$NUM.jpg', 1, 20); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelectorAll('div.info, .underplayer')[0]; G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                // G_qualitySampleSource = document.querySelector('#kt_player video');
+                G_sampleURL = playerData.file.replace('&f=video.m3u8', '');
+                //G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                /*
+                setTimeout(function() {
+                    var eventCatcher = document.querySelector('body video[src]'), media = eventCatcher;
+                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
+                }, 500);
+                */
+                var eventCatcher = G_qualitySampleSource, media = G_qualitySampleSource;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelectorAll('#kt_player video, #videoplayer video')[0];
+                    media = media ? media : eventCatcher;
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            //             document.addEventListener("DOMContentLoaded", function(event) {
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * 3, G_timerGroup);
+            //             });
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://www.porngo.com/*') ||
+        G_pageURL.matchLink('https?://www.xxxfiles.com/*')
+    ) {
+        /* globals thumbnails player */
+        function getMaxQuality(limit = 0) {
+            let data = {};
+            data.maxQuality = 0;
+            let links = document.querySelectorAll('a.video-links__link[href*="/get_file/"]');
+            for (let link of links) {
+                let text = link.innerText;
+                let match = link.innerText.match(/(\d+)[pk]/i);
+                if (match) {
+                    let quality = parseInt(match[1]);
+                    if (quality < 16) {quality = Math.floor(1080*quality/2);};
+                    let text = match[0].trim();
+                    console.log(quality, text);
+                    data[quality+'p'] = {};
+                    data[quality+'p'].src = link.href;
+                    if (limit) {
+                        if (quality > limit*1.1) {
+                            continue;
+                        };
+                    };
+                    if (quality > data.maxQuality) data.maxQuality = quality;
+                };
+            };
+            return data;
+        };
         if (G_pageURL.match('#ReCast')) { // https://www.porngo.com/videos/28489/passing-me-around/#ReCast
             // window.stop();
-            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            G_funcToRun = function() {
+                let data = getMaxQuality(G_qualityLimit);
+                G_contentURL = data[data.maxQuality+'p'].src; // G_funcResult;
+                G_standartReCastFunc();
+            };
             waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         else if (
-            G_pageURL.matchLink('https?://www.porngo.com/videos/*/*') // https://www.porngo.com/videos/28489/passing-me-around/
+            G_pageURL.matchLink('https?://www.porngo.com/videos/*/*') || // https://www.porngo.com/videos/28489/passing-me-around/
+            G_pageURL.matchLink('https?://www.xxxfiles.com/videos/*/*') // https://www.porngo.com/videos/28489/passing-me-around/
         ) {
             G_funcToRun = function () {
+                let data = getMaxQuality(0);
+                for (let i in player.options_.sources) {
+                    if (player.options_.sources[i].label) {
+                        let match = player.options_.sources[i].label.match(/(\d+)p/i);
+                        if (match) {
+                            let quality = parseInt(match[1]);
+                            if (quality < 16) {quality = Math.floor(1080*quality/2);};
+                            let text = match[0].trim();
+                            if (data[quality+'p']) {
+                                player.options_.sources[i].src = data[quality+'p'].src;
+                                console.log(player.options_.sources[i]);
+                            };
+                        };
+                    };
+                };
+                console.log('data:', data);
+                console.log('player.options_.sources:', player.options_.sources);
                 // --------------------------------------------------------------------------------
                 G_contentURL = G_shortURL + '#ReCast';
                 G_posterURL = document.querySelector('.player video').poster;
                 G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
-                G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/(.*)\.jpg/i, '$1/$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                G_postersArray = []; // CreateLinksList(G_posterURL, /^(.*)\/(.*)\.jpg/i, '$1/$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
+                if (thumbnails) for (let item of Object.keys(thumbnails)) {let url = thumbnails[item].src; G_postersArray.push(url);}; console.log('G_posters:\n', G_postersArray);
+                G_previewURL = G_posterURL.replace(/^(.*):\/\/img(.*)\/.*\/(.*)\/(player|medium.*)\/.*/, '$1://cast$2/preview/$3.mp4');
+                G_actorsSource = document.querySelectorAll('.video-links a.video-links__link[href*="/models/"]');
                 G_stickTo = document.querySelector('div.player-holder'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_sampleURL = document.querySelector('.player video > source[src]').src;
+                // G_forceLoad = false;
+                G_sampleURL = data[data.maxQuality+'p'].src; // document.querySelector('.player video > source[src]').src;
+                // G_qualitySampleSource = document.querySelector('.player video');
                 // G_previewURL = G_posterURL.replace('(.*)/(.*)\.jpg', '$1/$2.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
                 G_standartAddEmbedCodeFunc();
+                // console.log(G_embedCodeVideo)
+                // alert(G_sampleURL);
                 // --------------------------------------------------------------------------------
                 /*
                 setTimeout(function() {
@@ -1937,14 +2275,19 @@ element.style {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            document.addEventListener('DOMContentLoaded', function onContentLoaded(event) {
+                waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }, false);
         }
     }
 
     else if (
         G_pageURL.matchLink('https?://*.pornhub.com/*')
     ) {
-        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
+        if (getCookie('lang') !== 'en') {
+            setCookie('lang', 'en', {lang: 'en', domain: 'pornhub.com', expire: 0});
+            location.host = 'pornhub.com';
+        };
         addGlobalStyle('span.title a {font-size: 1vw;}', 'ph_Style_1');
         addGlobalStyle('.menu.realsex, .menu.community {display: none !important;}', 'ph_Style_2');
         // --------------------------------------------------------------------------------
@@ -2004,7 +2347,7 @@ element.style {
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 0, 15+2); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.video-actions-container'); G_stickPosition = -1;
-                G_gategoriesSource = document.querySelectorAll('.video-detailed-info > .video-info-row a[href*="/model/"], .video-detailed-info > .video-info-row a[href*="/pornstar/"]');
+                G_actorsSource = document.querySelectorAll('.video-detailed-info > .video-info-row a[href*="/model/"], .video-detailed-info > .video-info-row a[href*="/pornstar/"]');
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 var eventCatcher, media;
@@ -2335,7 +2678,8 @@ element.style {
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                G_gategoriesSource = document.querySelectorAll('.fa-star-o > a, .page-content section a.tag-link');
+                G_actorsSource = document.querySelectorAll('a[href*="/actress/"]'); // https://hqporner.com/actress/lana-rhoades
+                G_categoriesSource = document.querySelectorAll('a[href*="/category/"]'); // https://hqporner.com/category/60fps-porn
                 G_standartAddEmbedCodeFunc();
             };
             // document.addEventListener("DOMContentLoaded", function(event) {
@@ -2720,6 +3064,7 @@ element.style {
 
     else if (
         G_pageURL.matchLink('https?://biqle.ru/*') ||
+        G_pageURL.matchLink('https?://biqle.org/*') ||
         G_pageURL.matchLink('https?://daftsex.com/*')
     ) {
         /*
@@ -2754,6 +3099,7 @@ element.style {
         // */
         else if (
             G_pageURL.matchLink('https?://biqle.ru/watch/*') || // https://biqle.ru/watch/-159565098_456242372
+            G_pageURL.matchLink('https?://biqle.org/watch/*') || //
             G_pageURL.matchLink('https?://daftsex.com/watch/*') // https://daftsex.com/watch/-111379583_171930025
         ) {
             G_funcToRun = function() {
