@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.71
+// @version      2.0.74
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -60,8 +60,10 @@
 
 // @match        *://biqle.ru/watch/*
 // @match        *://biqle.org/watch/*
+// @match        *://biqle.com/watch/*
 // @match        *://daftsex.com/watch/*
 // @match        *://daxab.com/player/*
+// @match        *://dxb.to/player/*
 
 // @match        *://www.pornesq.com/video/*/*
 // @match        *://www.pornesq.com/embed/*
@@ -71,6 +73,8 @@
 
 // @match        *://txxx.com/videos/*/*
 // @match        *://txxx.com/embed/*
+
+// @match        *://netfapx.com/*
 // ==/UserScript==
 
 (function() {
@@ -88,10 +92,10 @@
     // ================================================================================
     function log(showAlert, ...args) {
         // console.log(args);
-        var string = args.join(' ').replace(/\n[\t ]/g, '\n');
+        let string = args.join(' ').replace(/\n[\t ]/g, '\n');
         console.log(string);
         if (showAlert) alert(string);
-    }
+    };
     // ================================================================================
     var G_userLang = navigator.language || navigator.userLanguage;
     var G_userLangShort = G_userLang.substr(0, 2);
@@ -102,10 +106,10 @@
         let funcText = funcToTest.toString().replace(/\n+[ ]{4}/g, '').replace(/[{][ ]{4,}/g, '{').replace(/[ ]{4,}[}]/g, '}');
         // --------------------------------------------------------------------------------
         if ((funcToTest && (typeof funcToTest).toLowerCase() == 'function' && funcToRun && (typeof funcToRun).toLowerCase() == 'function')) {
-            var timerGroupIndex = timerGroup.length;
+            let timerGroupIndex = timerGroup.length;
             // --------------------------------------------------------------------------------
             function startIteration(iteration, delay, count, timerGroup, timerGroupIndex) {
-                var timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
+                let timer = setTimeout(iteration, delay, ++count); // setTimeout() iteration repeater variable
                 if (timerGroup) timerGroup[timerGroupIndex] = timer; // add timer to timerGroup
             };
             // --------------------------------------------------------------------------------
@@ -113,7 +117,7 @@
             // --------------------------------------------------------------------------------
             function iteration(count) {
                 if (tries && (count < tries)) {
-                    /*var*/ G_funcResult = funcToTest();
+                    G_funcResult = funcToTest();
                     if (G_funcResult) {
                         let state = 'SUCCESS'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')', '\n' + funcText);
                         clearTimers(timerGroup);
@@ -128,29 +132,29 @@
                 else {
                     let state = 'FAIL'; log(G_debugMode, location.href, '\niteration', count, ':', state, '(', G_funcResult, ')', '\n' + funcText);
                     // console.trace();
-                }
+                };
             };
             // --------------------------------------------------------------------------------
             iteration(1); // launch 1st iteration
-        }
+        };
         // --------------------------------------------------------------------------------
     };
     function waitForElement(elementSelector, attribute, funcToRun, delay, tries, timerGroup) {
         // --------------------------------------------------------------------------------
-        var funcToTest = function () {
+        let funcToTest = function () {
             console.log('elementSelector:', elementSelector, '\nattribute:', attribute);
-            var result, elementsArray = document.querySelectorAll(elementSelector);
+            let result, elementsArray = document.querySelectorAll(elementSelector);
             for (let element of elementsArray) {
-                var value = element ? element.getAttribute(attribute) : null;
+                let value = element ? /*element.getAttribute(attribute) ||*/ element[attribute] : null;
                 result = attribute ? value : element;
                 if (result && result !== '') {
                     G_funcResult = element;
                     break;
-                }
+                };
             }
             if (!result) {
                 // console.trace();
-            }
+            };
             return result;
         };
         // --------------------------------------------------------------------------------
@@ -165,7 +169,7 @@
     var G_matchedLink;
     // ================================================================================
     String.prototype.matchLink = function(link, flags) {
-        var result = this.match(new RegExp(link.replace(/[.\/]/g, "\\$&").replace(/\*/g, ".*"), flags));
+        let result = this.match(new RegExp(link.replace(/[.\/]/g, "\\$&").replace(/\*/g, ".*"), flags));
         if (result) G_matchedLink = 'matchLink: ' + link + (flags ? ' ; flags: ' + flags : '');
         return result;
     };
@@ -176,36 +180,36 @@
         else stickTo.appendChild(this);
     };
     String.prototype.capitalize = function() {
-        function capFirst(str) { return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1); }
+        function capFirst(str) { return str.length === 0 ? str : str[0].toUpperCase() + str.substr(1); };
         return this.split(' ').map(capFirst).join(' ');
     };
     String.prototype.toTitleCase = function(lower) {
-        var string = lower ? this.toLowerCase() : this;
-        var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
+        let string = lower ? this.toLowerCase() : this;
+        let smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/i;
         return string.replace(/[A-Za-z0-9\u00C0-\u00FF]+[^\s-]*/g, function (match, index, title) {
             if (index > 0 && index + match.length !== title.length &&
                 match.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
                 (title.charAt(index + match.length) !== '-' || title.charAt(index - 1) === '-') &&
                 title.charAt(index - 1).search(/[^\s-]/) < 0) {
                 return match.toLowerCase();
-            }
+            };
             if (match.substr(1).search(/[A-Z]|\../) > -1) {
                 return match;
-            }
+            };
             return match.charAt(0).toUpperCase() + match.substr(1);
         });
     };
     // ================================================================================
-    var getAbsoluteUrl = (function () { var a; return function (url) { if (!a) a = document.createElement('a'); a.href = url; return a.href; }; })();
+    var getAbsoluteUrl = (function () { let a; return function (url) { if (!a) a = document.createElement('a'); a.href = url; return a.href; }; })();
     // ================================================================================
     // expected hue range: [0, 360)
     // expected saturation range: [0, 1]
     // expected lightness range: [0, 1]
     function hslToRgb(hue, saturation, lightness) { // SOURCE: https://stackoverflow.com/questions/27653757/how-to-use-hsl-to-rgb-conversion-function/27663212#27663212
-        var red, green, blue;
+        let red, green, blue;
         // based on algorithm from http://en.wikipedia.org/wiki/HSL_and_HSV#Converting_to_RGB
         if (hue == undefined) return [0, 0, 0];
-        var chroma = (1 - Math.abs((2 * lightness) - 1)) * saturation,
+        let chroma = (1 - Math.abs((2 * lightness) - 1)) * saturation,
             huePrime = hue / 60,
             secondComponent = chroma * (1 - Math.abs((huePrime % 2) - 1))
         ;
@@ -216,7 +220,7 @@
         else if (huePrime === 3) {red = 0; green = secondComponent; blue = chroma;}
         else if (huePrime === 4) {red = secondComponent; green = 0; blue = chroma;}
         else if (huePrime === 5) {red = chroma; green = 0; blue = secondComponent;}
-        var lightnessAdjustment = lightness - (chroma / 2);
+        let lightnessAdjustment = lightness - (chroma / 2);
         red += lightnessAdjustment;
         green += lightnessAdjustment;
         blue += lightnessAdjustment;
@@ -225,23 +229,23 @@
     // --------------------------------------------------------------------------------
     function valToColor(percent = 100, clip = 0, saturation = 1.0, start = 0, end = 100, toRGB = 0) {
         percent = Math.min(percent, 160); end = Math.min(end, 100);
-        var a = (percent <= clip) ? 0 : (((percent - clip) / (100 - clip))),
+        let a = (percent <= clip) ? 0 : (((percent - clip) / (100 - clip))),
             b = Math.abs(end - start) * a,
             c = (end > start) ? (start + b) : (start - b);
-        var h = c, s = saturation, l = 0.5;
+        let h = c, s = saturation, l = 0.5;
         if (toRGB) {
-            var rgb = hslToRgb(h, s, l);
+            let rgb = hslToRgb(h, s, l);
             return 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
         }
         else {
             return 'hsl(' + h + ', ' + (s*100) + '%, ' + (l*100) + '%)';
-        }
+        };
     };
     // ================================================================================
     function addGlobalStyle(css, cssClass) {
-        var head = document.getElementsByTagName('head')[0];
+        let head = document.getElementsByTagName('head')[0];
         if (!head) return;
-        var style = document.createElement('style');
+        let style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = css;
         if (cssClass) style.setAttribute('class', cssClass);
@@ -250,34 +254,34 @@
     };
     // ================================================================================
     function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
-        var keyCodes = {'c' : 67};
-        var onKeyDown = function (e) {
+        let keyCodes = {'c' : 67};
+        let onKeyDown = function (e) {
             e = e || window.event;
-            var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
+            let ctrlDown = e.ctrlKey || e.metaKey; // Mac support
             if (targetElement && ctrlDown && e.keyCode == keyCodes.c) {
-                var selectedText = window.getSelection().toString();
+                let selectedText = window.getSelection().toString();
                 selectedText = ignoreSelections ? false : (selectedText && selectedText !== '');
                 if (!selectedText) {
                     targetElement.select();
                     document.execCommand('copy');
                     if (preventDefault) e.preventDefault();
-                }
+                };
             }
         };
         window.addEventListener('keydown', function (e) {onKeyDown(e);}, false);
     };
     // ================================================================================
     function toHHMMSS(secs) {
-        var sec_num = parseInt(secs, 10);
-        var hours = Math.floor(sec_num / 3600) % 24;
-        var minutes = Math.floor(sec_num / 60) % 60;
-        var seconds = sec_num % 60;
+        let sec_num = parseInt(secs, 10);
+        let hours = Math.floor(sec_num / 3600) % 24;
+        let minutes = Math.floor(sec_num / 60) % 60;
+        let seconds = sec_num % 60;
         return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v,i) => v !== "00" || i > 0).join(":");
     };
     // ================================================================================
     function addMediaTextIndicator(media, fontSize) {
         fontSize = fontSize || 72;
-        var mediaTextIndicator = document.createElement('div');
+        let mediaTextIndicator = document.createElement('div');
         mediaTextIndicator.style.setProperty('color', 'yellow', 'important');
         mediaTextIndicator.style['font-size'] = fontSize + 'px';
         mediaTextIndicator.style.position = 'absolute';
@@ -285,29 +289,29 @@
         mediaTextIndicator.style.top = '0px';
         mediaTextIndicator.style.left = (fontSize/4) + 'px';
         media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
-        var volumeTextFade = function(fadeDelay) {
+        let volumeTextFade = function(fadeDelay) {
             fadeDelay = fadeDelay || 2000;
-            var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+            let fadeDelaySeconds = Math.floor(fadeDelay/1000);
             function textFadeStart(show) {
-                var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+                let transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
                 mediaTextIndicator.style.opacity = show ? 1 : 0;
                 mediaTextIndicator.style.transition = transition;
                 mediaTextIndicator.style['-webkit-transition'] = transition; // Safari
-            }
+            };
             textFadeStart(true);
             setTimeout(textFadeStart, fadeDelaySeconds*1000);
         };
-        var setVolumeText = function() {
+        let setVolumeText = function() {
             volumeTextFade(2000);
             mediaTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Off';
         };
-        var setTimeText = function() {
+        let setTimeText = function() {
             volumeTextFade(2000);
-            var duration = media.duration;
-            var currentTime = media.currentTime;
+            let duration = media.duration;
+            let currentTime = media.currentTime;
             mediaTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
         };
-        var addEventHandlers = function() {
+        let addEventHandlers = function() {
             if (media.addEventListener) {
                 media.addEventListener("volumechange", setVolumeText, false); // IE9, Chrome, Safari, Opera
                 media.addEventListener("seeking", setTimeText, false); // IE9, Chrome, Safari, Opera
@@ -315,19 +319,19 @@
             else {
                 media.attachEvent("onvolumechange", setVolumeText); // IE 6/7/8
                 media.attachEvent("onseeking", setTimeText); // IE 6/7/8
-            }
+            };
         };
         setTimeout(addEventHandlers, 10);
         return mediaTextIndicator;
     };
     // ================================================================================
     function msgbox(title, message, time = 2000, width = 250, height = 120) {
-        var padding = 10;
-        var w = width - padding*2,
+        let padding = 10;
+        let w = width - padding*2,
             h = height - padding*2
         ;
-        var centerX = function(e, fix) {
-            var transform = e.style.transform;
+        let centerX = function(e, fix) {
+            let transform = e.style.transform;
             transform = transform + (fix ? 'translateY(0.5px) translateX(-50%)' : 'translateX(-50%)');
             e.style.left = 50 + '%';
             e.style['-ms-transform'] = transform;
@@ -335,8 +339,8 @@
             e.style['-webkit-transform'] = transform;
             e.style.transform = transform;
         };
-        var centerY = function(e, fix) {
-            var transform = e.style.transform;
+        let centerY = function(e, fix) {
+            let transform = e.style.transform;
             transform = transform + (fix ? 'translateX(0.5px) translateY(-50%)' : 'translateY(-50%)');
             e.style.top = 50 + '%';
             e.style['-ms-transform'] = transform;
@@ -344,27 +348,26 @@
             e.style['-webkit-transform'] = transform;
             e.style.transform = transform;
         };
-        var fade = function(element, fadeDelay) {
+        let fade = function(element, fadeDelay) {
             fadeDelay = fadeDelay || 2000;
-            var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+            let fadeDelaySeconds = Math.floor(fadeDelay/1000);
             function fadeStart(show) {
-                var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+                let transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
                 element.style.opacity = show ? 1 : 0;
                 element.style.transition = transition;
                 element.style['-webkit-transition'] = transition; // Safari
                 if (!show) setTimeout(function(){element.remove();}, fadeDelay);
-            }
+            };
             fadeStart(true);
             setTimeout(fadeStart, fadeDelaySeconds*1000);
         };
-        var d = document.createElement('div');
+        let d = document.createElement('div');
         d.style.display = 'table';
         d.style.position = 'fixed';
         d.style.right = 10 + 'px';
         d.style.bottom = 10 + 'px';
         d.style.maxWidth = 90 + '%';
         d.style.maxHeight = 90 + '%';
-        // d.style.padding = padding + 'px';
         d.style.width = w + 'px';
         d.style.height = 'auto';
         d.style.minHeight = h + 'px';
@@ -373,11 +376,8 @@
         d.style.zIndex = 2147483647;
         document.body.appendChild(d);
         //
-        // d.style.top = 50 + 'px';
-        // centerX(d);
-        //
         if (title) {
-            var titleElement = document.createElement('p');
+            let titleElement = document.createElement('p');
             titleElement.style.borderBottom = '1px solid black';
             titleElement.style.margin = 0;
             titleElement.style.padding = (padding/2) + 'px';
@@ -385,9 +385,9 @@
             titleElement.style.setProperty('color', 'white', 'important');
             titleElement.innerText = title;
             d.appendChild(titleElement);
-        }
+        };
         if (message) {
-            var messageElement = document.createElement('p');
+            let messageElement = document.createElement('p');
             messageElement.style.margin = 0;
             messageElement.style.padding = (padding/2) + 'px';
             messageElement.style.display = 'table-row';
@@ -397,40 +397,40 @@
             messageElement.style.setProperty('background-color', 'white', 'important');
             messageElement.innerText = message;
             d.appendChild(messageElement);
-        }
+        };
         if (time) fade(d, time);
         return d;
-    }
+    };
     // ================================================================================
     function mediaMouseControls(eventCatcher, media, step) {
         step = (step === 0) ? 0 : (step || 1);
-        var mouseWheelAudioHandler = function(e) {
+        let mouseWheelAudioHandler = function(e) {
             if (step !== 0) {
                 // cross-browser wheel delta
                 e = window.event || e; // old IE support
-                var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                var amount = parseInt(delta*step), volume = parseInt(media.volume*100);
-                var value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
+                let delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                let amount = parseInt(delta*step), volume = parseInt(media.volume*100);
+                let value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
                 media.volume = Math.max(0, Math.min(100, value)) / 100;
-            }
+            };
             e.preventDefault();
         };
-        var mouseWheelTimeHandler = function(e) {
+        let mouseWheelTimeHandler = function(e) {
             if (step !== 0) {
                 // cross-browser wheel delta
                 e = window.event || e; // old IE support
-                var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                var amount = parseInt(delta*step);
-                var mediaState = media.paused ? 0 : 1;
+                let delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                let amount = parseInt(delta*step);
+                let mediaState = media.paused ? 0 : 1;
                 setTimeout(function() {
                     if (delta < 0) {
                         media.pause(); media.currentTime = parseInt(media.currentTime) - 5; if (mediaState == 1) media.play();
                     }
                     else if (delta > 0) {
                         media.pause(); media.currentTime = parseInt(media.currentTime) + 5; if (mediaState == 1) media.play();
-                    }
+                    };
                 }, 10);
-            }
+            };
             e.preventDefault();
         };
         if (media.addEventListener) {
@@ -439,8 +439,8 @@
         }
         else {
             eventCatcher.attachEvent("onmousewheel", mouseWheelTimeHandler); // IE 6/7/8
-        }
-        var mediaTextIndicator = addMediaTextIndicator(media, 56/2);
+        };
+        let mediaTextIndicator = addMediaTextIndicator(media, 56/2);
         mediaTextIndicator.style.top = '5px';
     };
     // ================================================================================
@@ -449,37 +449,37 @@
             URL = location.protocol + '//' + URL.replace(/^\/\//, '');
         };
         return URL;
-    }
+    };
     // ================================================================================
     function CreateLinksList(Haystack, NeedleRegEx, Replacement, StartNum, EndNum) {
-        var Ret = [];
+        let Ret = [];
         if (Haystack.match(NeedleRegEx)) {
-            var Result = Haystack.replace(NeedleRegEx, Replacement);
+            let Result = Haystack.replace(NeedleRegEx, Replacement);
             StartNum = StartNum || 0; // StartNum > 1 ? StartNum : 1;
             EndNum = EndNum > StartNum ? EndNum : StartNum; // EndNum > 1 ? EndNum : 1;
             for (let i = StartNum; i <= EndNum; i++) {
                 Ret[i] = fixURLProtocol(Result.replace('$NUM', i));
-            }
+            };
             // console.log('G_posters:\n', G_posters);
             return Ret;
-        }
+        };
     };
     // ================================================================================
     function injectNode(tagName, parentNode, innerHTML) {
-        var e = document.createElement(tagName);
+        let e = document.createElement(tagName);
         if (typeof parentNode == "string") parentNode = document.querySelector(parentNode);
         parentNode.appendChild(e);
         if (innerHTML) e.innerHTML = innerHTML;
         return e;
-    }
+    };
     // ================================================================================
     function getWindowVar(varName) {
         /* globals getVar */
-        var script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
-        var result = getVar(varName);
+        let script = injectNode('script', document.head, 'function getVar(varName){return window[varName];}');
+        let result = getVar(varName);
         script.remove();
         return result;
-    }
+    };
     // ================================================================================
     if (location.href.match('autoplay=true')) {
         GM_setValue('autoplay', true);
@@ -493,38 +493,49 @@
         GM_setValue('qualityLimit', parseInt(qualityLimitMatch[1])*1.1); // +10%
     };
     const G_qualityLimit = GM_getValue('qualityLimit', 9999);
+    var reflectMatch = location.href.match(/reflect=(\d+deg\b)/i);
+    if (reflectMatch) {
+        GM_setValue('reflect', reflectMatch[1]);
+    };
     // ================================================================================
     function refineVideo(url, noPlayerExtension = false) {
-        var autoplay = GM_getValue('autoplay', null), t = GM_getValue('t', null);
+        let autoplay = GM_getValue('autoplay', null), t = GM_getValue('t', null);
         console.log('autoplay: ' + autoplay || 'false');
-        var url_base = url.split('?')[1] ? url.split('?')[0] : url,
+        let url_base = url.split('?')[1] ? url.split('?')[0] : url,
             url_keys = url.split('?')[1] ? url.split('?')[1] : null
         ;
         if (autoplay) {
             if (url_keys) {if (!url_keys.match('&autoplay=true')) {url = url + '&autoplay=true';}}
             else {url = url + '?autoplay=true'; url_keys = url.replace(url_base, '');}
             GM_deleteValue('autoplay');
-        }
+        };
         if (t) {
             console.log('t: ' + t);
             if (url_keys) {if (!url_keys.match('&t=' + t)) {url = url + '&t=' + t;}}
             else {url = url + '?t=' + t; url_keys = url.replace(url_base, '');}
             GM_deleteValue('t');
-        }
-        var isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
-        var playerPath = 'chrome-extension://bbaidcdbgbiachhpighhjgbeahoikjbp/player.html';
+        };
+        let reflect = GM_getValue('reflect', null);;
+        if (reflect) {
+            console.log('reflect: ' + reflect);
+            if (url_keys) {if (!url_keys.match('&reflect='+reflect)) {url = url + '&reflect='+reflect;}}
+            else {url = url + '?reflect='+reflect; url_keys = url.replace(url_base, '');}
+            GM_deleteValue('reflect');
+        };
+        let isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
+        let playerPath = 'chrome-extension://bbaidcdbgbiachhpighhjgbeahoikjbp/player.html';
         if (noPlayerExtension) {
             playerPath = location.protocol + '//' + G_pageDomain + '/v/404/';
             return playerPath + url;
-        }
+        };
         return playerPath + '#' + url;
     };
-    var openURL = function (url) {
+    function openURL(url) {
         log(G_debugMode, 'openURL.url: ' + url);
         GM_deleteValue('contentURL');
         GM_deleteValue('qualityLimit');
         // if (TEST_MODE) return;
-        /*window.*/ location.replace(url); // location.href = url;
+        location.replace(url);
     };
     // ================================================================================
     function eventFire(el, etype) {
@@ -532,19 +543,19 @@
             el.fireEvent('on' + etype);
         }
         else {
-            var evObj = document.createEvent('Events');
+            let evObj = document.createEvent('Events');
             evObj.initEvent(etype, true, false);
             el.dispatchEvent(evObj);
         };
     };
     // ================================================================================
     var G_embedCodeFrame, G_stickTo, G_stickPosition; function addEmbedCodeFrame() {
-        var parentDocument = document;
+        let parentDocument = document;
         // --------------------------------------------------------------------------------
-        var elementID = 'uniqueEmbedCodeFrame';
+        let elementID = 'uniqueEmbedCodeFrame';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = parentDocument.createElement('div');
+        let element = parentDocument.createElement('div');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'block', 'important');
         element.style['word-wrap'] = 'break-word';
@@ -555,141 +566,117 @@
     };
     // --------------------------------------------------------------------------------
     var G_RenameTable = [
-        'TeensLoveHugeCocks.com',
-        'RealityKings.com',
-        'Tiny4K.com',
-        'Exotic4K.com',
-        'Cum4K.com',
-        'Vixen.com',
-        'BangBros.com',
-        'BigTitsRoundAsses.com',
-        'EvilAngel.com',
-        'BurningAngel.com',
-        'TeenFidelity.com',
-        'PornFidelity.com',
-        'JulesJordan.com',
-        'NaughtyAmerica.com',
-        'MySistersHotFriend.com',
-        'Passion-HD.com',
-        'EroticaX.com',
-        'DarkX.com',
-        'HardX.com',
-        'NubilesPorn.com',
-        'NubileFilms.com',
-        'PornPros.com',
-        'TeamSkeet.com',
-        'POVD.com',
-        'CherryPimps.com',
-        'Bang.com',
-        'FamilyHookups.com',
-        'MetroHD.com',
-        'X-Art.com',
-        'WowGirls.com',
-        'RoccoSiffredi.com',
-        '21Sextury.com',
-        '21Naturals.com',
-        'SexArt.com',
-        'FetishNetwork.com',
-        'BrutalPickups.com',
-        'BrutalCastings.com',
-        'HelplessTeens.com',
-        'Spizoo.com',
-        'KinkySpa.com',
-        'YoungThroats.com',
-        'CreampieAngels.com',
-        'FamilyStrokes.com',
-        'CastingCoach-X.com',
-        'Lubed.com',
-        'HussiePass.com',
-        'JaysPOV.net',
-        'Swallowed.com',
-        'Mofos.com',
-        'GFRevenge.com',
-        'Colette.com',
-        'FantasyHD.com',
-        'DigitalPlayground.com',
-        'Twistys.com',
-        'JoyMii.com',
-        'Family.XXX',
-        'DDFNetwork.com',
-        'HookupHotshot.com',
-        'ToughLoveX.com',
-        'Petite.XXX',
-        'FuckingAwesome.com',
-        'VOGOV.com',
-        'Hustler.com',
-        'NuruMassage.com',
-        'FantasyMassage.com',
-        'JeshByJesh.com',
-        'HollyRandall.com',
-        'ProducersFun.com',
-        'SweetSinner.com',
-        'TrenchCoatX.com',
-        'Deeper.com',
-        'BrattySis.com',
-        'SpankMonster.com',
-        'OnlyTeenBlowjobs.com',
-        'BellaPass.com',
-        'StepSiblingsCaught.com',
-        'BadTeensPunished.com',
-        'PornHub.com',
-        'BellaFilms.com',
-        // ---------------
         '18VirginSex.com',
         '21Naturals.com',
+        '21Sextury.com',
         'AdultTime.com',
         'Babes.com',
+        'BadTeensPunished.com',
+        'Baeb.com',
+        'Bang.com',
         'BangBros.com',
+        'BellaFilms.com',
         'BellaPass.com',
+        'BigTitsRoundAsses.com',
+        'BrattySis.com',
+        'Brazzers.com',
         'BrutalCastings.com',
         'BrutalPickups.com',
         'Bryci.com',
         'BurningAngel.com',
+        'CastingCoach-X.com',
         'CherryPimps.com',
         'Colette.com',
+        'CreampieAngels.com',
         'Cum4K.com',
+        'CumLouder.com',
         'DDFNetwork.com',
         'DaneJones.com',
+        'DarkX.com',
+        'Deeper.com',
+        'DigitalPlayground.com',
         'EroticaX.com',
+        'EvilAngel.com',
+        'Exotic4K.com',
+        'Family.XXX',
+        'FamilyHookups.com',
+        'FamilyStrokes.com',
         'FantasyHD.com',
+        'FantasyMassage.com',
         'FetishNetwork.com',
+        'FuckingAwesome.com',
+        'GFRevenge.com',
         'HardX.com',
         'HelplessTeens.com',
+        'HollyRandall.com',
+        'HookupHotshot.com',
+        'HussiePass.com',
         'Hustler.com',
+        'JaysPOV.net',
+        'JeshByJesh.com',
         'JoyMii.com',
         'JulesJordan.com',
         'Karups.com',
+        'KinkySpa.com',
+        'Lubed.com',
+        'MetroHD.com',
+        'Mofos.com',
+        'MySistersHotFriend.com',
+        'NaughtyAmerica.com',
+        'NewSensations.com',
         'NubileFilms.com',
         'NubilesPorn.com',
         'NuruMassage.com',
+        'Nympho.com',
+        'OnlyTeenBlowjobs.com',
+        'POVD.com',
         'Passion-HD.com',
         'Penthouse.com',
+        'Petite.XXX',
         'PornFidelity.com',
         'PornHub.com',
+        'PornPros.com',
         'PornstarCamHouse.com',
         'PrettyDirty.com',
+        'Private.com',
+        'ProducersFun.com',
+        'PublicAgent.com',
+        'RealityKings.com',
+        'RoccoSiffredi.com',
+        'SexArt.com',
+        'SpankMonster.com',
         'Spizoo.com',
+        'SpyFam.com',
         'StepSiblingsCaught.com',
+        'Swallowed.com',
+        'SweetSinner.com',
         'TeamSkeet.com',
         'TeenFidelity.com',
+        'TeensLoveHugeCocks.com',
         'Tiny4K.com',
+        'ToughLoveX.com',
         'TrenchCoatX.com',
         'Tushy.com',
         'Twistys.com',
+        'VOGOV.com',
         'Vixen.com',
+        'WhteBoxxx.com',
+        'WoodmanCastingX.com',
         'WowGirls.com',
         'X-Art.com',
         'Xart.com',
+        'YoungThroats.com',
+        'ZTOD.com',
         // ---------------
-        'Brazzers.com',
-        'NewSensations.com',
-        'CumLouder.com',
-        'Private.com',
-        'WoodmanCastingX.com',
-        'WhteBoxxx.com',
-        'PublicAgent.com',
-        'Baeb.com',
-        'SpyFam.com',
+        'GirlCum.com',
+        'HotWifeXXX.com',
+        'Wankz.com',
+        'DevilsFilm.com',
+        'ThirdMovies.com',
+        'SheWillCheat.com',
+        'BellasaFilms.com',
+        'DetensionGirls.com',
+        'Blacked.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -704,42 +691,6 @@
         replace(/(\.com\b){2,}/g, '.com').
         replace(/M:, /g, 'M:')
         ;
-        //         const table = [
-        //             'TeensLoveHugeCocks.com',
-        //             'RealityKings.com',
-        //             'Tiny4K.com',
-        //             'Exotic4K.com',
-        //             'Cum4K.com',
-        //             'Vixen.com',
-        //             'BangBros.com',
-        //             'BigTitsRoundAsses.com',
-        //             'EvilAngel.com',
-        //             'BurningAngel.com',
-        //             'TeenFidelity.com',
-        //             'PornFidelity.com',
-        //             'JulesJordan.com',
-        //             'NaughtyAmerica.com',
-        //             'MySistersHotFriend.com',
-        //             'Passion-HD.com',
-        //             'EroticaX.com',
-        //             'DarkX.com',
-        //             'HardX.com',
-        //             'NubilesPorn.com',
-        //             'NubileFilms.com',
-        //             'PornPros.com',
-        //             'TeamSkeet.com',
-        //             'POVD.com',
-        //             'CherryPimps.com',
-        //             'Bang.com',
-        //             'FamilyHookups.com',
-        //             'MetroHD.com',
-        //             'X-Art.com',
-        //             'WowGirls.com',
-        //             'RoccoSiffredi.com',
-        //             '21Sextury.com',
-        //             '21Naturals.com',
-        //             'SexArt.com',
-        //         ];
         for (let word of G_RenameTable) {
             let re = new RegExp(word.replace(/\./g, '\.'), 'gi');
             str = str.replace(re, word);
@@ -775,21 +726,21 @@
         '-----------------------------' : '',
     };
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
-        var element0ID = 'uniqueEmbedCodeCatInputHolder';
+        let element0ID = 'uniqueEmbedCodeCatInputHolder';
         for (let element of document.querySelectorAll('#' + element0ID)) {element.remove();};
-        var element0 = document.createElement('div');
+        let element0 = document.createElement('div');
         element0.setAttribute('id', element0ID);
-        //         element0.style.background = 'red';
+        // element0.style.background = 'red';
         element0.style.display = 'flex';
         element0.style.alignItems = 'center';
         // element0.style.border = '1px grey solid';
         element0.style.height = '26px';
         embedCodeFrame.appendChild(element0);
         // --------------------------------------------------------------------------------
-        var elementID = 'uniqueEmbedCodeCatInput';
+        let elementID = 'uniqueEmbedCodeCatInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('input');
+        let element = document.createElement('input');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'inline-block', 'important');
         element.style.border = 'none';
@@ -809,57 +760,20 @@
         if (G_embedCodeTextCategorie !== '') element.value = G_embedCodeTextCategorie;
         element.addEventListener('change', function(e){
             G_embedCodeTextCategorie = e.target.value;
-            /*.trim().
-            replace(/[,.\s]+(com)\b/g, '.$1').
-            replace(/\s+,/g, ',').
-            replace(/,\s+/g, ',').
-            replace(/,+/g, ',').
-            replace(/^,/g, '').
-            replace(/,$/g, '').
-            replace(/,/g, ', ')
-            ;
-            */
             G_embedCodeTextCategorie = autoReplace(G_embedCodeTextCategorie);
             e.target.value = G_embedCodeTextCategorie;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         }, false);
-        // element.value = '';
         // --------------------------------------------------------------------------------
         element0.appendChild(element);
         // --------------------------------------------------------------------------------
         initSaveCategories(element);
         // --------------------------------------------------------------------------------
-        /*
-        <input type="text" list="browsers" />
-<datalist id="browsers">
-    <option value="Internet Explorer">
-    <option value="Firefox">
-    <option value="Chrome">
-    <option value="Opera">
-    <option value="Safari">
-</datalist>
-*/
-        var element3ID = 'uniqueEmbedCodeCatData';
+        let element3ID = 'uniqueEmbedCodeCatData';
         for (let element of document.querySelectorAll('#' + element3ID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element3 = document.createElement('datalist');
+        let element3 = document.createElement('datalist');
         element3.setAttribute('id', element3ID);
-        /*
-        var l = {
-        '.com' : '',
-        'Anal' : '',
-        '3some' : '',
-        '4some' : '',
-        'Orgy' : '',
-        'Only blowjob' : '',
-        'Creampie' : '',
-        'Creampie, Cum in Pussy' : '',
-        'Creampie, Cum in Ass' : '',
-        'Fuck after Cumshot' : '',
-        '★' : '',
-        '-----------------------------' : '',
-        };
-        */
         for (let k of Object.keys(/*l*/ G_categories )) {
             let option = document.createElement('option');
             option.value = k;
@@ -877,10 +791,10 @@
             console.log(option);
         };
         // --------------------------------------------------------------------------------
-        var element2ID = 'uniqueEmbedCodeCatList';
+        let element2ID = 'uniqueEmbedCodeCatList';
         for (let element of document.querySelectorAll('#' + element2ID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element2 = document.createElement('input');
+        let element2 = document.createElement('input');
         element2.setAttribute('id', element2ID);
         element2.type = 'search';
         element2.style.display = 'inline';
@@ -895,10 +809,10 @@
             element.value = G_embedCodeTextCategorie;
         };
         // --------------------------------------------------------------------------------
-        var element4ID = 'uniqueEmbedCodeCatButtonAdd';
+        let element4ID = 'uniqueEmbedCodeCatButtonAdd';
         for (let element of document.querySelectorAll('#' + element4ID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element4 = document.createElement('button');
+        let element4 = document.createElement('button');
         element4.setAttribute('id', element4ID);
         element4.style.display = 'inline-flex';
         element4.style.width = '40px';
@@ -906,26 +820,9 @@
         element4.style.height = '26px';
         element4.style.position = 'relative';
         // element4.style.top = '-2px';
-        //         element4.style['align-content'] = 'center';
+        // element4.style['align-content'] = 'center';
         element4.style.justifyContent = 'center';
         element4.style.fontSize = '10px';
-        /*
-element.style {
-    display: inline-flex;
-    width: 20px;
-    margin: 0px 0px 0px 1px;
-    height: 20px;
-    position: relative;
-    top: -2px;
-    place-content: center;
-    align-content: center;
-    justify-content: center;
-    justify-items: center;
-    font-size: 10px;
-    padding: 0;
-}
-        */
-
         element4.innerHTML = '+';
         element0.appendChild(element4);
         // --------------------------------------------------------------------------------
@@ -960,7 +857,7 @@ element.style {
                 value1 = a.join(', ');
                 element.value = value1;
                 // Create a new 'change' event
-                var event = new Event('change');
+                let event = new Event('change');
                 // Dispatch it.
                 element.dispatchEvent(event);
             };
@@ -968,9 +865,9 @@ element.style {
             element2.value = '';
         };
         // --------------------------------------------------------------------------------
-        var element5ID = 'uniqueEmbedCodeCatButtonRemove';
+        let element5ID = 'uniqueEmbedCodeCatButtonRemove';
         for (let element of document.querySelectorAll('#' + element5ID)) {element.remove();};
-        var element5 = element4.cloneNode(true);
+        let element5 = element4.cloneNode(true);
         element5.innerHTML = '-';
         element.parentNode.insertBefore(element5, element2);
         element5.onclick = function(e) {
@@ -985,7 +882,7 @@ element.style {
                 else {
                     element.value = firstValue;
                 };
-                var event = new Event('change');
+                let event = new Event('change');
                 element.dispatchEvent(event);
                 element.value += ', ';
             };
@@ -999,22 +896,19 @@ element.style {
     };
     var G_embedCodeTextStart = '00:00:00';
     var G_embedCodeStartInput; function addEmbedCodeStartInput(embedCodeFrame) {
-        var elementID = 'uniqueEmbedCodeStartInput';
+        let elementID = 'uniqueEmbedCodeStartInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('input');
+        let element = document.createElement('input');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'block', 'important');
         element.style.border = 'none';
         element.style['background-color'] = 'transparent';
         element.style.width = '100%';
         element.style['max-width'] = '100%';
-        // element.style.rows = '2';
         element.style.overflow = 'hidden';
         element.style['font-size'] = '12px';
         element.style.color = G_embedCodeTextAreaColor;
-        // element.setAttribute('readonly', 'readonly');
-        // element.setAttribute('onclick', 'this.focus(); this.select();');
         element.placeholder = '00:00:00';
         G_embedCodeTextStart = G_embedCodeTextStart.trim();
         if (G_embedCodeTextStart !== '') element.value = G_embedCodeTextStart;
@@ -1022,7 +916,6 @@ element.style {
             G_embedCodeTextStart = e.target.value;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         }, false);
-        // element.value = '';
         // --------------------------------------------------------------------------------
         embedCodeFrame.appendChild(element);
         // --------------------------------------------------------------------------------
@@ -1031,22 +924,19 @@ element.style {
     // --------------------------------------------------------------------------------
     var G_embedCodeTextImage = '';
     var G_embedCodeImageInput; function addEmbedCodeImageInput(embedCodeFrame) {
-        var elementID = 'uniqueEmbedCodeImageInput';
+        let elementID = 'uniqueEmbedCodeImageInput';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('input');
+        let element = document.createElement('input');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'block', 'important');
         element.style.border = 'none';
         element.style['background-color'] = 'transparent';
         element.style.width = '100%';
         element.style['max-width'] = '100%';
-        // element.style.rows = '2';
         element.style.overflow = 'hidden';
         element.style['font-size'] = '12px';
         element.style.color = G_embedCodeTextAreaColor;
-        // element.setAttribute('readonly', 'readonly');
-        // element.setAttribute('onclick', 'this.focus(); this.select();');
         if (typeof G_posterURL !== 'undefined') {
             G_embedCodeTextImage = G_posterURL.trim();
         };
@@ -1068,7 +958,6 @@ element.style {
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
             console.log('G_embedCodeTextImage:', G_embedCodeTextImage);
         }, false);
-        // element.value = '';
         // --------------------------------------------------------------------------------
         embedCodeFrame.appendChild(element);
         // --------------------------------------------------------------------------------
@@ -1076,10 +965,10 @@ element.style {
     };
     // --------------------------------------------------------------------------------
     var G_embedCodeTextArea, G_embedCodeTextAreaColor = 'grey'; function addEmbedCodeTextArea(embedCodeFrame) {
-        var elementID = 'uniqueEmbedCodeTextArea';
+        let elementID = 'uniqueEmbedCodeTextArea';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('textarea');
+        let element = document.createElement('textarea');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'block', 'important');
         element.style.border = 'none';
@@ -1092,7 +981,6 @@ element.style {
         element.style.color = G_embedCodeTextAreaColor;
         element.setAttribute('readonly', 'readonly');
         element.setAttribute('onclick', 'this.focus(); this.select();');
-        // element.value = '';
         // --------------------------------------------------------------------------------
         embedCodeFrame.appendChild(element);
         // --------------------------------------------------------------------------------
@@ -1101,21 +989,20 @@ element.style {
     // --------------------------------------------------------------------------------
     var G_embedCodePoster, G_posterURL, G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
     function addEmbedCodePoster(embedCodeFrame, onClickFunc) {
-        var elementID = 'uniqueEmbedCodePoster';
+        let elementID = 'uniqueEmbedCodePoster';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('img');
+        let element = document.createElement('img');
         element.setAttribute('id', elementID);
         element.style.setProperty('display', 'inline-block', 'important');
         element.style['vertical-align'] = 'inherit';
         element.style['max-height'] = '120px';
-        // element.style['min-width'] = '90px';
         element.style.width = 'auto';
         element.style.height = 'auto';
         element.style['min-width'] = '215px';
         element.style.height = '120px';
         element.setAttribute('src', fixURLProtocol(G_posterURL));
-        for (var key in G_posterStyle) {
+        for (let key in G_posterStyle) {
             element.style[key] = G_posterStyle[key];
             console.log(key, G_posterStyle[key])
         };
@@ -1142,10 +1029,10 @@ element.style {
     };
     // --------------------------------------------------------------------------------
     var G_embedCodeLink, G_contentURL; function addEmbedCodeLink(embedCodeFrame) {
-        var elementID = 'uniqueEmbedCodeLink';
+        let elementID = 'uniqueEmbedCodeLink';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('a');
+        let element = document.createElement('a');
         element.style.setProperty('display', 'block', 'important');
         element.style['font-size'] = '12px';
         element.style.color = '#086081';
@@ -1160,13 +1047,12 @@ element.style {
     };
     // --------------------------------------------------------------------------------
     var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoDuration, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
-        var elementID = 'uniqueEmbedCodeVideo';
+        let elementID = 'uniqueEmbedCodeVideo';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
-        var element = document.createElement('video');
+        let element = document.createElement('video');
         element.setAttribute('id', elementID);
         element.style = G_embedCodePoster.getAttribute('style');
-        // element.style.display = 'none';
         element.style['border-style'] = 'solid';
         element.style['border-width'] = (1+1) + 'px';
         element.setAttribute('preload', 'metadata');
@@ -1205,7 +1091,7 @@ element.style {
         };
         // --------------------------------------------------------------------------------
         return element;
-    }
+    };
     // --------------------------------------------------------------------------------
     var G_previewURL;
     var G_embedCodeText, G_contentTitle, G_altText, G_delimiter; function updateEmbedCodeText(embedCodeTextArea, startNew = 0, delimiter = '') {
@@ -1213,14 +1099,12 @@ element.style {
         // G_contentTitle = G_contentTitle ? G_contentTitle : document.title.replace(/^.{1} /i, '').capitalize();
         // --------------------------------------------------------------------------------
         if (G_embedCodeText && !startNew) G_embedCodeText += '\n<div class="thumbnail"'; else G_embedCodeText = '<div class="thumbnail"';
-        /*if (G_contentURL !== G_pageURL)*/ G_embedCodeText += ' data-title="' + G_contentTitle + '"';
-        // if (G_embedCodeTextImage !== '') G_posterURL = G_embedCodeTextImage;
+        G_embedCodeText += ' data-title="' + G_contentTitle + '"';
         if (G_posterURL && G_posterURL !== G_contentURL) G_embedCodeText += ' data-image="' + G_posterURL + '"';
         if (G_previewURL) G_embedCodeText += ' data-video="' + G_previewURL + '"';
         G_embedCodeText += ' data-content="' + G_contentURL + '"';
-        /*if (G_contentURL !== G_pageURL)*/ G_embedCodeText += ' data-url="' + G_pageURL + '"';
+        G_embedCodeText += ' data-url="' + G_pageURL + '"';
         if (G_altText) G_embedCodeText += ' alt="' + G_altText + '"';
-        // if (G_videoQuality) G_embedCodeText += ' data-quality="' + G_videoQuality + 'p"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality-limit="' + 1080 + '"';
         if (G_videoDuration) {
@@ -1251,31 +1135,19 @@ element.style {
     function addEmbedCodePosterSelector(URLArray) {
         console.log('G_embedCodePosterSelector --> URLArray:', URLArray);
         if (URLArray.length > 0) {
-            var elementID = 'uniqueEmbedCodePosterSelector';
+            let elementID = 'uniqueEmbedCodePosterSelector';
             for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
             // --------------------------------------------------------------------------------
-            var element = document.createElement('div');
+            let element = document.createElement('div');
             element.setAttribute('id', elementID);
             G_embedCodeFrame.appendChild(element);
             function updateMainPoster(e) {
                 let img = e.target;
                 G_posterURL = img.getAttribute('src');
                 updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
-                // G_embedCodeTextArea.value = G_embedCodeText;
                 G_embedCodePoster.setAttribute('src', G_posterURL);
                 resizeEmbedCodePoster(1.0, 0.5, 5000);
-            }
-            /*
-            for (let posterURL of URLArray) {
-                var img = document.createElement('img');
-                img.setAttribute('style', G_embedCodePoster.getAttribute('style'));
-                img.style.zoom = 0.5;
-                img.setAttribute('src', posterURL);
-                img.setAttribute('onerror', 'this.remove();');
-                G_embedCodeFrame.appendChild(img);
-                img.addEventListener('click', updateMainPoster.bind(this), false);
-            }
-            */
+            };
             let imageStyle = G_embedCodePoster.getAttribute('style');
             let imageIndex = URLArray[0] ? 0 : 1;
             let loadImage = function() {
@@ -1304,23 +1176,21 @@ element.style {
             //
             G_embedCodePosterSelector = element;
             return element;
-        }
+        };
     }
     // ================================================================================
     var G_noPlayerExtension = false, G_triesReCastMult = 2, /*G_progressThumbnailSrc,*/ G_standartReCastFunc = function() {
         console.log('G_standartReCastFunc:', G_pageURL);
-        var media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
+        let media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         else if (contentURL.match(/^\/\//)) contentURL = location.protocol + G_contentURL;
         else if (contentURL.match(/^\//)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         console.log('contentURL: ', contentURL);
-        // G_funcToTest = function() {if (window.top === window.self) {return 1;} return 1;};
         G_funcToRun = function() {
-            var mediaData = {};
+            let mediaData = {};
             mediaData.url = G_pageURL;
             mediaData.src = contentURL;
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
-            // if (G_progressThumbnailSrc) {mediaData.refined += '&thumb_src=' + G_progressThumbnailSrc;};
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
@@ -1333,17 +1203,16 @@ element.style {
             };
         };
         G_funcToRun();
-        // waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries*2, G_timerGroup);
     };
     // ================================================================================
     function updateEmbedCodeTextColor() {
-        var quality = (G_videoWidth && G_videoHeight) ? ((G_videoWidth * G_videoHeight) / (1920 * 1080)) : (G_videoQuality / 1080);
+        let quality = (G_videoWidth && G_videoHeight) ? ((G_videoWidth * G_videoHeight) / (1920 * 1080)) : (G_videoQuality / 1080);
         G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         G_embedCodeTextAreaColor = valToColor(quality * 100, 1, 1.0, 0, 100, 1);
         G_embedCodeTextArea.style.color = G_embedCodeTextAreaColor;
         log(G_debugMode, G_embedCodeTextAreaColor);
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
-        // var A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
+        // let A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
         msgbox('Video', (G_videoWidth + ' x ' + G_videoHeight) + '\n' + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
         // --------------------------------------------------------------------------------
         G_embedCodePoster.style.borderColor = G_embedCodeTextAreaColor;
@@ -1390,7 +1259,7 @@ element.style {
                     log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
                     updateEmbedCodeTextColor();
                 }, G_forceLoad);
-            }
+            };
         }
         addKeyComboCtrlC(G_embedCodeTextArea, 1, 0);
         if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
@@ -1400,9 +1269,9 @@ element.style {
     // ================================================================================
     // getCookie(), setCookie(), deleteCookie() -- https://gist.github.com/akaramires/7577298
     function getCookie(name) { // возвращает cookie если есть или undefined
-        var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+        let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
         return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
+    };
     // --------------------------------------------------------------------------------
     // Аргументы:
     // name - название cookie
@@ -1419,27 +1288,27 @@ element.style {
     // --------------------------------------------------------------------------------
     function setCookie(name, value, props) { // уcтанавливает cookie
         props = props || {};
-        var exp = props.expires;
+        let exp = props.expires;
         if (typeof exp == "number" && exp) {
-            var d = new Date();
+            let d = new Date();
             d.setTime(d.getTime() + exp*1000);
             exp = props.expires = d;
-        }
+        };
         if (exp && exp.toUTCString) props.expires = exp.toUTCString();
         value = encodeURIComponent(value)
         for (let propName in props) {if (propName == name) props[propName] = value;};
-        var updatedProps = {}; for (let propName in props) {
+        let updatedProps = {}; for (let propName in props) {
             if (!updatedProps[propName]) updatedProps[propName] = props[propName];
         };
-        var updatedCookie = ''; for (let propName in updatedProps) {
+        let updatedCookie = ''; for (let propName in updatedProps) {
             updatedCookie += (propName + '=' + updatedProps[propName] + "; ");
         };
         document.cookie = updatedCookie.trim();
-    }
+    };
     // --------------------------------------------------------------------------------
     function deleteCookie(name) { // удаляет cookie
         setCookie(name, null, { expires: -1 });
-    }
+    };
     // ================================================================================
     function setCategory(category) {
         let result;
@@ -1494,13 +1363,11 @@ element.style {
         if (!G_messageTarget) {
             return;
         }
-        // /*
         else if (G_messageTarget instanceof Element) {
             G_embedCodeTextStart = toHHMMSS(G_messageTarget.currentTime); // || '00:00:00';
             G_embedCodeStartInput.value = G_embedCodeTextStart;
             alert('G_messageTarget.currentTime: ' + G_embedCodeTextStart);
         }
-        // */
         else {
             G_messageTarget = G_messageTarget || window.parent;
             G_messageTarget.postMessage({sender: 'QUESTION', data: null}, '*');
@@ -1544,17 +1411,11 @@ element.style {
         };
     });
     // ================================================================================
-    /*
     if (
-        G_pageURL.matchLink('#ReCast')
-    ) {
-        return
-    }
-    else*/ if (
         G_pageURL.matchLink('file:///*/2.*.*.html')
     ) {
         return
-    }
+    };
     // ================================================================================
     if (
         G_pageURL.matchLink('https?://www.eporner.com') ||
@@ -1578,7 +1439,7 @@ element.style {
                 G_categoriesSource = document.querySelectorAll('.vit-category > a, .vit-tag > a');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div[aria-label="Video Player"]');
                     media = media ? media : document.querySelector('video#EPvideo_html5_api');
@@ -1587,15 +1448,35 @@ element.style {
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
-                /*
-                setTimeout(function() {
-                    var eventCatcher = document.querySelector('div#moviexxx'), media = document.querySelector('body video[src]');
-                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
-                }, 500);
-                */
+                // --------------------------------------------------------------------------------
+                let maxQuality = 0, menuItem;
+                for (let item of document.querySelectorAll('.vjs-menu-button.vjs-menu-button-popup.vjs-control.vjs-button.vjs-icon-hd')) {
+                    let button = item.querySelector('.vjs-menu-item-text');
+                    let text = button ? button.innerText : '';
+                    let match = text.match(/^(\d+)p\b.*$/);
+                    if (match) {
+                        let buttonQuality = Number(match[1]);
+                        if (buttonQuality > maxQuality) {
+                            maxQuality = buttonQuality;
+                            menuItem = button;
+                        };
+                        console.log(text, button, buttonQuality);
+                    };
+                };
+                // alert(maxQuality);
+                // --------------------------------------------------------------------------------
+                if (menuItem) {
+                    if (G_qualitySampleSource.paused) G_qualitySampleSource.play();
+                    menuItem.click();
+                    setTimeout(function(){menuItem.click();}, 100);
+                }
+                // --------------------------------------------------------------------------------
+                // setTimeout(function() {if (!G_qualitySampleSource.paused) G_qualitySampleSource.pause();}, 2500);
             };
-            // waitForElement('#embright > .textare1 > textarea', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            waitForElement('#EPvideo_html5_api', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            document.addEventListener('DOMContentLoaded', function(e) {
+                // waitForElement('#EPvideo_html5_api', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+                waitForElement('.vjs-menu-button.vjs-menu-button-popup.vjs-control.vjs-button.vjs-icon-hd .vjs-menu-item-text', 'innerText', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }, false);
         }
         else if (
             G_pageURL.matchLink('https?://www.eporner.com/embed/*') || // https://www.eporner.com/embed/uCS7LAWJ70b
@@ -1606,7 +1487,7 @@ element.style {
             };
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
-                var maxQuality = 0, menuItem;
+                let maxQuality = 0, menuItem;
                 for (let item of document.querySelectorAll('.vjs-menu-content > .vjs-menu-item')) {
                     let button = item.querySelector('.vjs-menu-item-text');
                     let text = button ? button.innerText : '';
@@ -1623,9 +1504,9 @@ element.style {
                 // --------------------------------------------------------------------------------
                 if (menuItem) menuItem.click();
                 // --------------------------------------------------------------------------------
-                var video = document.querySelector('body video'), src = video.src;
+                let video = document.querySelector('body video'), src = video.src;
                 if (src.match('blob:')) {
-                    var content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
+                    let content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
                     video.src = content;
                     waitForCondition(
                         function() {return video.src != content;},
@@ -1640,12 +1521,13 @@ element.style {
                     G_contentURL = video.src;
                     log(G_debugMode, 'G_contentURL:', G_contentURL);
                     openURL(refineVideo(G_contentURL));
-                }
+                };
                 // --------------------------------------------------------------------------------
             };
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
+        };
     }
+
     else if (
         G_pageURL.matchLink('https?://www.4tube.com')
     ) {
@@ -1688,18 +1570,13 @@ element.style {
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelector('meta[itemprop="embedUrl"]').content;
                 G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[itemprop="thumbnailUrl"]').content;
-                // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*)\/\d+.(jpe?g)/i, '$1/$NUM.$2', 1, 25); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.player'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                // G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
                 G_sampleURL = document.querySelectorAll('video#html5Videokodplayer_html5_api > source, video#html5Videokodplayer_html5_api')[0].src;
-                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
-                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
-                // G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_actorsSource = document.querySelectorAll('.pornlist a[href*="/pornstars/"] > span');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.player');
                     media = media ? media : document.querySelector('video#html5Videokodplayer_html5_api');
@@ -1708,14 +1585,7 @@ element.style {
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
-                /*
-                setTimeout(function() {
-                    var eventCatcher = document.querySelector('div#moviexxx'), media = document.querySelector('body video[src]');
-                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
-                }, 500);
-                */
             };
-            // waitForElement('#embright > .textare1 > textarea', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
             waitForElement('video#html5Videokodplayer_html5_api', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
         else if (
@@ -1733,9 +1603,8 @@ element.style {
                 openURL(refineVideo(G_contentURL));
                 // --------------------------------------------------------------------------------
             };
-            //             waitForElement('body video', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
+        };
     }
 
     else if (
@@ -1763,7 +1632,6 @@ element.style {
                                 if (quality > maxQuality) {
                                     maxQuality = quality;
                                     videoData.key = match[0];
-                                    // videoData.src = videoData.key;
                                 };
                             };
                         };
@@ -1783,15 +1651,11 @@ element.style {
                 G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*)\/\d+.(jpe?g)/i, '$1/$NUM.$2', 1, 20); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelectorAll('#video_underplayer, #redtube-player')[0]; G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
-                // G_qualitySampleSource = document.querySelector('#EPvideo_html5_api');
                 G_sampleURL = videoData.src;
-                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/10_240.jpg
-                // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
-                // G_previewURL = G_posterURL.replace(/^(.*\/(\d+))\/\d+_\d+\.jpg/, '$1/$2-preview.mp4'); // https://static-eu-cdn.eporner.com/thumbs/static4/1/11/110/1101004/1101004-preview.mp4
                 G_actorsSource = document.querySelectorAll('.video-infobox-content > .pornstar-name > a[href*="/pornstar/"]');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#redtube-player');
                     media = media ? media : document.querySelector('div#redtube-player video');
@@ -1802,10 +1666,10 @@ element.style {
                 }, G_delay, G_tries, G_timerGroup);
             };
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
+        };
     }
-
     // ================================================================================
+
     else if (
         G_pageURL.matchLink('https?://(e\.)?yespornplease.com')
     ) {
@@ -1816,11 +1680,9 @@ element.style {
             window.stop();
             location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
         }
-        // /*
         else if (G_pageURL.match('#ReCast')) {
             return;
         }
-        // */
         else if (
             G_pageURL.matchLink('https?://yespornplease.com/v/*') // https://yespornplease.com/v/306756151
         ) {
@@ -1856,9 +1718,7 @@ element.style {
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
-                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
-                // console.log(G_posterURL);
                 G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('.container > .row'); G_stickPosition = 1;
@@ -1867,40 +1727,26 @@ element.style {
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('#video_embed_code', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
         G_pageURL.matchLink('https?://vshare.io/v/*/width-*/height-*/*')
     ) {
+        // window.stop();
         G_noPlayerExtension = true;
-        G_funcToRun = function() {
-            G_contentURL = G_funcResult;
-            // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
-            G_standartReCastFunc();
-        };
+        G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
-
     // ================================================================================
+
     else if (
         G_pageURL.matchLink('https?://www.trendyporn.com')
     ) {
-        //         if (G_pageHost == 'e.yespornplease.com') {location.host = 'yespornplease.com';} // https://e.yespornplease.com/v/235160374
-        //         else if (
-        //             G_pageURL.matchLink('https?://yespornplease.com/view/*') // https://yespornplease.com/view/306756151
-        //         ) {
-        //             window.stop();
-        //             location.replace(G_pageURL.replace('/view/', 'v').replace('[?].*', '')); // window.location.href = G_pageURL.replace('/view/', 'v').replace('[?].*', '');
-        //         }
-        // /*
         if (G_pageURL.match('#ReCast')) {
             return;
         }
-        // */
         else if (
             location.pathname.match(/^\/video\//) // https://www.trendyporn.com/video/familystrokes-leda-lothario-twin-stepbrothers-cum-on-ledas-face-10586.html
         ) {
@@ -1936,23 +1782,14 @@ element.style {
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
-                //                 G_qualitySampleSource = document.querySelector('#player_html5_api');
                 G_sampleURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
-                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
-                //                 G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
-                // console.log(G_posterURL);
-                //                 G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
-                //                 G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelector('#player-container'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_categoriesSource = document.querySelectorAll('.video-tags > a');
                 G_standartAddEmbedCodeFunc();
-                //                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('#player_html5_api[src], #player_html5_api > source[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
@@ -1964,7 +1801,7 @@ element.style {
             location.pathname = newPath;
         };
         let show = function() {let css = document.querySelectorAll('head > style.hide-private');for (let s of css) {s.remove();};}
-        let hide = function() {show(); addGlobalStyle(`.video-preview-screen.video-item.thumb-item.private {display: none;}`, 'hide-private');};
+        let hide = function() {show(); addGlobalStyle('.video-preview-screen.video-item.thumb-item.private {display: none;}', 'hide-private');};
         function toggleShowPrivate() {
             let hidePrivate = GM_getValue('hidePrivate', false);
             if (hidePrivate) {
@@ -1974,13 +1811,13 @@ element.style {
             else {
                 hide();
                 GM_setValue('hidePrivate', true)
-            }
+            };
         }
         let hidePrivate = GM_getValue('hidePrivate', false);
         if (hidePrivate) {hide();};
         GM_registerMenuCommand('Toggle Show Private', function(){toggleShowPrivate();}, '');
-        addGlobalStyle(`.inf a {color: red; font-size: 9px;}`, 'style-1');
-        addGlobalStyle(`.block-video .video-holder {width: 100%;}`, 'style-2');
+        addGlobalStyle('.inf a {color: red; font-size: 9px;}', 'style-1');
+        addGlobalStyle('.block-video .video-holder {width: 100%;}', 'style-2');
         if (
             G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
             /* globals flashvars */
@@ -1991,13 +1828,13 @@ element.style {
                     return typeof flashvars !== "undefined" && flashvars.video_url;
                 };
                 G_funcToRun = function () {
-                    var contentURL = (
+                    let contentURL = (
                         flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
                         flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
                         flashvars.video_alt_url ? flashvars.video_alt_url :
                         flashvars.video_url
                     );
-                    var posterURL = flashvars.preview_url;
+                    let posterURL = flashvars.preview_url;
                     console.log('contentURL: ', contentURL);
                     openURL(refineVideo(contentURL));
                 };
@@ -2028,29 +1865,16 @@ element.style {
                     for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
                         //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
                         G_postersArray[G_postersArray.length] = flashvars.timeline_screens_url.
-                        replace('{time}', i).
-                        replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/')
-                        ;
+                        replace('{time}', i).replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/');
                     };
                     // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
-                    //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
+                    // https://statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
                     G_actorsSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
                     G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
-                    // G_stickTo = document.querySelector('div#tab_video_info'); G_stickPosition = 1;
                     // --------------------------------------------------------------------------------
                     G_standartAddEmbedCodeFunc();
                     // --------------------------------------------------------------------------------
-                    var eventCatcher, media;
-                    /*
-                waitForCondition(function(){
-                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
-                    media = media ? media : document.querySelector('.fp-player > video'); // || eventCatcher;
-                    return eventCatcher && media;
-                }, function() {
-                    mediaMouseControls(eventCatcher, media, 1);
-                    G_messageTarget = media;
-                }, G_delay*2, 300, G_timerGroup);
-                */
+                    let eventCatcher, media;
                     let handleNewElements = function (e) {
                         let element = e.target;
                         // console.log('element.tagName:', element.tagName);
@@ -2060,6 +1884,7 @@ element.style {
                             if (element == document.querySelector('.fp-player > video')) {
                                 eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
                                 media = media ? media : element; // || eventCatcher;
+                                // if (media) {media = media.parentNode};
                                 mediaMouseControls(eventCatcher, media, 1);
                                 G_messageTarget = media;
                             };
@@ -2067,13 +1892,46 @@ element.style {
                     };
                     document.addEventListener('DOMNodeInserted', handleNewElements, false);
                 };
-                /*
-            // document.addEventListener("DOMContentLoaded", function(event) {
-                waitForElement('meta[property="og:image"]', 'content', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-            */
                 waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            };
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://netfapx.com/*')
+    ) {
+        if (
+            G_pageURL.matchLink('https?://netfapx.com/*/') // https://netfapx.com/passing-me-around/
+        ) {
+            if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
+                // window.stop();
+                G_funcToRun = function () {
+                    let contentURL = G_funcResult;
+                    // let posterURL = flashvars.preview_url;
+                    console.log('contentURL: ', contentURL);
+                    openURL(refineVideo(contentURL));
+                };
+                waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
             }
+            else {
+                G_funcToRun = function () {
+                    G_contentURL = G_shortURL + '#OnlyVideo';
+                    G_qualitySampleSource = document.querySelectorAll('body video[src] > source[src], body video[src]')[0];
+                    G_forceLoad = true;
+                    G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.previewthumbnails img[src]').src;
+                    G_postersArray = CreateLinksList(G_posterURL, /^(.*\/ID\d+)_\d+.jpg/i, '$1_$NUM.jpg', 1, 10); // console.log('G_posters:\n', G_postersArray);
+                    if (G_qualitySampleSource.poster) {
+                        G_postersArray.push(G_qualitySampleSource.poster);
+                        G_posterURL = G_qualitySampleSource.poster;
+                    };
+                    G_actorsSource = document.querySelectorAll('.infovideo a[rel*="tag"]');
+                    G_stickTo = document.querySelector('.contentbox > div'); G_stickPosition = 1;
+                    // --------------------------------------------------------------------------------
+                    G_standartAddEmbedCodeFunc();
+                    // --------------------------------------------------------------------------------
+                };
+                waitForElement('body video[src] > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            };
         }
     }
 
@@ -2101,48 +1959,38 @@ element.style {
                 G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                /*
-                setTimeout(function() {
-                    var eventCatcher = document.querySelector('body video[src]'), media = eventCatcher;
-                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
-                }, 500);
-                */
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('#vid_container_id video[src]');
                     media = media ? media : eventCatcher;
+                    // if (media) {media = media.parentNode};
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
             waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
+        };
     }
 
     else if (
         G_pageURL.matchLink('https?://upornia.com/*') || // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/
         G_pageURL.matchLink('https?://txxx.tube/*') // https://txxx.tube/videos/4497531/hottest-pornstars-nikki-hunter-and-rita-faltoyano-in-best-big-tits-brunette-sex-video/
     ) {
-        var playerData;
-        /* globals pl3748 */
-        G_funcToTest = function () {
-            if (typeof pl3748 !== "undefined") {
-                if (typeof pl3748.getPlaylist == 'function') {
-                    playerData = pl3748.getPlaylist();
-                    if (playerData) {
-                        playerData = playerData[0];
-                        return playerData;
-                    };
-                };
-            };
+        let playerData;
+        /* globals jwplayer pl3748 */
+        G_funcToTest = function() {
+            try {
+                playerData = playerData ? playerData : pl3748.getPlaylist();
+                playerData = playerData ? playerData : jwplayer().getPlaylist();
+                playerData = playerData ? playerData[Object.keys(playerData).length-1] : playerData;
+                return playerData;
+            } catch(e) {};
         };
         if (G_pageURL.match('#ReCast')) { // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = playerData.file.replace('&f=video.m3u8', ''); G_standartReCastFunc();};
-            //             document.addEventListener("DOMContentLoaded", function(event) {
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * 3, G_timerGroup);
-            //             });
         }
         else if (
             // G_pageURL.matchLink('https?://upornia.com/videos/*/*') // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/
@@ -2157,28 +2005,21 @@ element.style {
                 // --------------------------------------------------------------------------------
                 // G_qualitySampleSource = document.querySelector('#kt_player video');
                 G_sampleURL = playerData.file.replace('&f=video.m3u8', '');
-                //G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                // G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                /*
-                setTimeout(function() {
-                    var eventCatcher = document.querySelector('body video[src]'), media = eventCatcher;
-                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
-                }, 500);
-                */
-                var eventCatcher = G_qualitySampleSource, media = G_qualitySampleSource;
+                let eventCatcher = G_qualitySampleSource, media = G_qualitySampleSource;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelectorAll('#kt_player video, #videoplayer video')[0];
                     media = media ? media : eventCatcher;
+                    // if (media) {media = media.parentNode};
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            //             document.addEventListener("DOMContentLoaded", function(event) {
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * 3, G_timerGroup);
-            //             });
-        }
+        };
     }
 
     else if (
@@ -2208,16 +2049,26 @@ element.style {
                     if (quality > data.maxQuality) data.maxQuality = quality;
                 };
             };
-            return data;
+            let maxQualityData = data[data.maxQuality+'p'];
+            if (maxQualityData) {
+                if (maxQualityData.src) {
+                    data.maxQualitySrc = maxQualityData.src;
+                    return data;
+                };
+            };
+        };
+        G_funcToTest = function () {
+            return getMaxQuality(0);
         };
         if (G_pageURL.match('#ReCast')) { // https://www.porngo.com/videos/28489/passing-me-around/#ReCast
             // window.stop();
             G_funcToRun = function() {
                 let data = getMaxQuality(G_qualityLimit);
+                console.log(data);
                 G_contentURL = data[data.maxQuality+'p'].src; // G_funcResult;
                 G_standartReCastFunc();
             };
-            waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
         else if (
             G_pageURL.matchLink('https?://www.porngo.com/videos/*/*') || // https://www.porngo.com/videos/28489/passing-me-around/
@@ -2259,31 +2110,32 @@ element.style {
                 // console.log(G_embedCodeVideo)
                 // alert(G_sampleURL);
                 // --------------------------------------------------------------------------------
-                /*
-                setTimeout(function() {
-                    var eventCatcher = document.querySelector('body video[src]'), media = eventCatcher;
-                    if (eventCatcher && media) {mediaMouseControls(eventCatcher, media, 1);}
-                }, 500);
-                */
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.player video');
                     media = media ? media : eventCatcher;
+                    // if (media) {media = media.parentNode};
                     G_messageTarget = media;
                     return eventCatcher && media;
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            document.addEventListener('DOMContentLoaded', function onContentLoaded(event) {
-                waitForElement('.player video > source[src], .player video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            }, false);
-        }
+            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+        };
     }
 
     else if (
         G_pageURL.matchLink('https?://*.pornhub.com/*')
     ) {
+        try {
+            let mhp1138_player_data = JSON.parse(localStorage.mhp1138_player);
+            if (mhp1138_player_data.quality !== 'hls') {
+                mhp1138_player_data.quality = 'hls';
+                localStorage.mhp1138_player = JSON.stringify(mhp1138_player_data);
+
+            };
+        } catch(e) {};
         if (getCookie('lang') !== 'en') {
             setCookie('lang', 'en', {lang: 'en', domain: 'pornhub.com', expire: 0});
             location.host = 'pornhub.com';
@@ -2291,30 +2143,30 @@ element.style {
         addGlobalStyle('span.title a {font-size: 1vw;}', 'ph_Style_1');
         addGlobalStyle('.menu.realsex, .menu.community {display: none !important;}', 'ph_Style_2');
         // --------------------------------------------------------------------------------
-        var actualSource = () => {
-            var contentURL;
-            var flashvars = getWindowVar('flashvars');
+        let actualSource = () => {
+            let contentURL;
+            let flashvars = getWindowVar('flashvars');
             if (!flashvars) {
                 for (let script of document.scripts) {
-                    var text = script.text;
-                    var match = text.match(/var flashvars_(.*?) = */i);
+                    let text = script.text;
+                    let match = text.match(/var flashvars_(.*?) = */i);
                     if (match) {
-                        var id = match[1];
+                        let id = match[1];
                         if (id) flashvars = getWindowVar('flashvars_' + id);
                         if (flashvars) break;
-                    }
+                    };
                 }
-            }
+            };
             if (flashvars) {
-                var qualityTable = flashvars.defaultQuality, maxQuality = 0;
+                let qualityTable = flashvars.defaultQuality, maxQuality = 0;
                 for (let quality of qualityTable) {
                     maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
-                }
+                };
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
                     contentURL = flashvars['quality_' + maxQuality + 'p'];
                     return (contentURL); // openURL(refineVideo(contentURL));
-                }
+                };
             }
         };
         // --------------------------------------------------------------------------------
@@ -2350,7 +2202,7 @@ element.style {
                 G_actorsSource = document.querySelectorAll('.video-detailed-info > .video-info-row a[href*="/model/"], .video-detailed-info > .video-info-row a[href*="/pornstar/"]');
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.mhp1138_eventCatcher');
                     media = media ? media : document.querySelector('.mhp1138_videoWrapper > video');
@@ -2361,23 +2213,20 @@ element.style {
                     G_messageTarget = media;
                 }, G_delay, G_tries, G_timerGroup);
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('.video-actions-container', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
         G_pageURL.matchLink('https?://*.playvids.com/*')
     ) {
-        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
         // --------------------------------------------------------------------------------
         let actualSource = () => {
-            var video = document.querySelector('video[data-qualities]');
+            let video = document.querySelector('video[data-qualities]');
             if (!video) return;
-            var qualities = video.dataset.qualities.split('|');
-            var maxQuality = qualities[qualities.length-1];
-            var contentURL = video.dataset['src' + maxQuality];
+            let qualities = video.dataset.qualities.split('|');
+            let maxQuality = qualities[qualities.length-1];
+            let contentURL = video.dataset['src' + maxQuality];
             return contentURL;
         };
         // --------------------------------------------------------------------------------
@@ -2412,7 +2261,7 @@ element.style {
                 G_stickTo = document.querySelector('.channel-info'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.mediaPlayerContainer');
                     media = media ? media : document.querySelector('video[data-qualities]'); // document.querySelector('div#player video > source');
@@ -2422,22 +2271,19 @@ element.style {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('video[data-qualities]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
         G_pageURL.matchLink('https?://*.pornoeggs.com/*')
     ) {
-        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
         // --------------------------------------------------------------------------------
         let actualSource = () => {
-            var video = document.querySelector('video[data-qualities]');
-            var qualities = video.dataset.qualities.split('|');
-            var maxQuality = qualities[qualities.length-1];
-            var contentURL = video.dataset['src' + maxQuality];
+            let video = document.querySelector('video[data-qualities]');
+            let qualities = video.dataset.qualities.split('|');
+            let maxQuality = qualities[qualities.length-1];
+            let contentURL = video.dataset['src' + maxQuality];
             log(G_debugMode, 'maxQuality', 'src' + maxQuality + ' =', contentURL);
             return contentURL;
         };
@@ -2466,19 +2312,16 @@ element.style {
             G_pageURL.matchLink('https?://www.pornoeggs.com/watch[?]v=*') // https://www.pornoeggs.com/watch?v=00RejSBM3Cl
         ) {
             G_funcToRun = function () {
-                // G_sampleURL = actualSource();
                 G_qualitySampleSource = document.querySelector('video[data-qualities]');
-                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
-                // G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.pcomments-left'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_previewURL = G_posterURL.replace(/^(.*)\/.*.jpg/, '$1/preview.mp4'); // https://cdn-img1.pornoeggs.com/thumbs/697/697331/preview.mp4
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.mediaPlayerContainer');
                     media = media ? media : document.querySelector('video[data-qualities]'); // document.querySelector('div#player video > source');
@@ -2488,10 +2331,8 @@ element.style {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('video[data-qualities]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
@@ -2513,14 +2354,11 @@ element.style {
         ) {
             /* globals EoCR4 */
             G_funcToRun = function () {
-                // G_sampleURL = actualSource();
                 G_qualitySampleSource = document.querySelector('#videoplayer video[src]');
-                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = G_pageURL.replace(/^(.*)\/videos\/(.*?)\/.*$/, '$1/embed/$2');
                 // https://cdn37804682.ahacdn.me/contents/videos_sources/3049000/3049145/screenshots/2.jpg
                 // https://cdn37804682.ahacdn.me/contents/videos_screenshots/3049000/3049145/timelines/hq_mp4/150x113/sprite_1.jpg
                 G_posterURL = document.querySelector('.jw-preview').style.backgroundImage.replace().replace(/^.*\("(.*)"\)$/, '$1');
-                // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.content'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
@@ -2531,7 +2369,7 @@ element.style {
                 G_previewURL = 'https://' + EoCR4[22] + G_posterURL.replace(/^(.*)\/contents\/videos_\w+?\/(.*?\/(.*?))\/.*/, '/$2/$3_tr.mp4');
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div#videoplayer');
                     media = media ? media : document.querySelector('.jwplayer video[src]');
@@ -2541,10 +2379,8 @@ element.style {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('.jwplayer video[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
@@ -2557,9 +2393,8 @@ element.style {
                 return typeof mp4Encodings !== "undefined" && mp4Encodings[0];
             };
             G_funcToRun = function () {
-                var contentURL = location.protocol + mp4Encodings[mp4Encodings.length-1].filename;
+                let contentURL = location.protocol + mp4Encodings[mp4Encodings.length-1].filename;
                 console.log('contentURL: ', contentURL);
-                // alert(refineVideo(contentURL));
                 openURL(refineVideo(contentURL));
             };
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
@@ -2571,7 +2406,6 @@ element.style {
             G_funcToRun = function () {
                 G_contentURL = G_shortURL + '#OnlyVideo';
                 G_sampleURL = location.protocol + mp4Encodings[0].filename;
-                // G_forceLoad = true;
                 G_posterURL = G_posterURL ? G_posterURL : location.protocol + document.querySelector('div[poster]').getAttribute('poster');
                 G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/(.*.com\/(.*?))-\d+.jpg/i, location.protocol+'//$1-$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.video-info'); G_stickPosition = 1;
@@ -2579,7 +2413,7 @@ element.style {
                 G_standartAddEmbedCodeFunc();
             };
             waitForElement('div[poster]', 'poster', G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
+        };
     }
 
     else if (
@@ -2598,12 +2432,10 @@ element.style {
             };
             function initFunc(e) {
                 waitForElement('#playerbox > iframe[src^="http"]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            }
-            // document.addEventListener("DOMContentLoaded", function(event) {
+            };
             for (let button of document.querySelectorAll('.controls > .r > a[href^="#server"]')) {
                 button.addEventListener('click', initFunc);
-            }
-            // });
+            };
         }
     }
 
@@ -2619,14 +2451,6 @@ element.style {
                 let iframe_id = 'thumbs';
                 let iframe = document.querySelector('iframe#' + iframe_id);
                 function checkIframeContent(iframe) {
-                    /*
-                    // let w = document.querySelectorAll('iframe[src*="/hqporner.com/?q="]')[0].contentWindow;
-                    let win = iframe.contentWindow
-                    let globals = Object.keys(win);
-                    for (let variable of globals) {
-                        if (variable.match(/^preload_\d+$/)) console.log(variable, '=', win[variable]);
-                    };
-                    */
                     let matched = location.pathname.match(/.*\/(\d+).*$/);
                     if (matched) {
                         let id = matched[1];
@@ -2672,20 +2496,14 @@ element.style {
                     document.querySelector('meta[property="og:image"]').content
                     : ''
                 );
-                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
-                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/i3.yespornplease.com/'); // '/i3.yespornplease.com/'
-                // console.log(G_posterURL);
-                // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('div.content.content-left > div.box.page-content'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_actorsSource = document.querySelectorAll('a[href*="/actress/"]'); // https://hqporner.com/actress/lana-rhoades
                 G_categoriesSource = document.querySelectorAll('a[href*="/category/"]'); // https://hqporner.com/category/60fps-porn
                 G_standartAddEmbedCodeFunc();
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('iframe', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
@@ -2730,21 +2548,8 @@ element.style {
             // --------------------------------------------------------------------------------
             G_standartReCastFunc();
         };
-        // waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
-
-    //     else if (
-    //         G_pageURL.matchLink('https://hqwo.cc/player/*')
-    //     ) {
-    //         //         G_noPlayerExtension = true;
-    //         G_funcToRun = function() {
-    //             G_contentURL = G_funcResult;
-    //             // G_progressThumbnailSrc = G_contentURL.replace(/(.*)_\d+\.mp4.*/i, '$1_360.mp4');
-    //             G_standartReCastFunc();
-    //         };
-    //         waitForElement('body video > source[src], body video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-    //     }
     // ================================================================================
 
     else if (
@@ -2757,17 +2562,17 @@ element.style {
         G_pageURL.matchLink('https?://oload.biz/embed/*') || // https://oload.download/embed/KPgg6tUV_n0/16396.mp4
         G_pageURL.matchLink('https?://oload.*/embed/*') // https://oload.life/embed/7zh5fZ9bofM
     ) {
-        var src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
+        let src_span = document.querySelector('#streamurl') || document.querySelector('span[id^="stream"]');
         G_funcToTest = function () {
-            var ready, url = src_span;
+            let ready, url = src_span;
             if (url && url.innerText.trim() !== '' && !url.innerText.toLowerCase().match("HERE IS THE LINK".toLowerCase())) ready = true;
             else {
                 if (!src_span) {
                     document.querySelectorAll('div > p, span').forEach(function (item) {
-                        var text = item.innerText;
-                        // var match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
+                        let text = item.innerText;
+                        // let match = text.match(/^[\w\d]+-w~\d+~\d+\.\d+\.\d+\.\d+\~[\w\d]+$/); // https://openload.co/embed/en5tCxDT7-w/
                         // http://pron.tv/l/Jenna-Reid-MP4-mp4/ezcexss2 // yybXOZwKGAg~1523412842~37.25.0.0~_27EYtA9
-                        var match = text.match(/^.+~\d+~\d+\.\d+\.\d+\.\d+~.+$/);
+                        let match = text.match(/^.+~\d+~\d+\.\d+\.\d+\.\d+~.+$/);
                         if (match && match[0]) {
                             src_span = document.createElement('span');
                             src_span.id = '#streamurl';
@@ -2775,25 +2580,24 @@ element.style {
                             document.body.appendChild(src_span);
                             src_span = item;
                             ready = true;
-                        }
+                        };
                     });
-                }
+                };
             }
             return ready;
         };
         G_funcToRun = function () {
-            var url = src_span;
-            var contentURL = location.protocol + '//' + location.host + '/stream/' + url.innerText + '?mime=true';
-            // var posterURL = document.querySelector('#olvideo_html5_api').poster;
+            let url = src_span;
+            let contentURL = location.protocol + '//' + location.host + '/stream/' + url.innerText + '?mime=true';
+            // let posterURL = document.querySelector('#olvideo_html5_api').poster;
             console.log('contentURL: ', contentURL);
-            var mediaData = {};
+            let mediaData = {};
             mediaData.url = G_pageURL; // queryURL;
             mediaData.src = contentURL;
             window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
             openURL(refineVideo(contentURL));
         };
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        // document.addEventListener('DOMContentLoaded', funcToRun, false);
         // ================================================================================
     }
 
@@ -2805,7 +2609,7 @@ element.style {
             G_pageURL.matchLink('https?://(www.)?jjgirls.com/pornpics/*') // https://www.jjgirls.com/pornpics/prettydirty-gina-valentina-brunette-latina-pee-wet
         ) {
             let show = function() {let css = document.querySelectorAll('head > style.hide-private');for (let s of css) {s.remove();};}
-            let hide = function() {show(); addGlobalStyle(`.xcam, .related a[href^="/direct/"] {display: none;}`, 'hide-private');};
+            let hide = function() {show(); addGlobalStyle('.xcam, .related a[href^="/direct/"] {display: none;}', 'hide-private');};
             function toggleShowPrivate() {
                 let hidePrivate = GM_getValue('hidePrivate', false);
                 if (hidePrivate) {
@@ -2815,22 +2619,22 @@ element.style {
                 else {
                     hide();
                     GM_setValue('hidePrivate', true)
-                }
+                };
             }
             let hidePrivate = GM_getValue('hidePrivate', false);
             if (hidePrivate) {hide();};
             GM_registerMenuCommand('Toggle Show Private', function(){toggleShowPrivate();}, '');
             //
-            var imagesArray = [], thumbsArray = [];
+            let imagesArray = [], thumbsArray = [];
             G_funcToRun = function () {
                 if (imagesArray.length == 0) {
                     for (let link of document.querySelectorAll('div.related > a[href*="://pics.jjgirls.com/pictures/"]')) {
-                        var imageURL = link.href, img = link.querySelector('img');
+                        let imageURL = link.href, img = link.querySelector('img');
                         if (img) {
-                            var thumbURL = ''; //img.src;
+                            let thumbURL = ''; //img.src;
                             thumbsArray.push(thumbURL);
                             imagesArray.push(imageURL);
-                        }
+                        };
                     };
                     for (let img of document.querySelectorAll('a[href] > img[src]')) {
                         img.src = img.src.replace(/(.*)\/hd-(.*)/i, '$1/$2');
@@ -2846,7 +2650,7 @@ element.style {
                     G_contentURL = imagesArray[i];
                     G_posterURL = thumbsArray[i];
                     updateEmbedCodeText(G_embedCodeTextArea, i == 0, G_delimiter);
-                }
+                };
                 // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
             };
             // --------------------------------------------------------------------------------
@@ -2862,15 +2666,15 @@ element.style {
             G_pageURL.matchLink('https?://www.babesandstars.com/*/*/*/') // http://www.babesandstars.com/b/bethanie-badertscher/hlgk/
         ) {
             G_funcToRun = function () {
-                var imagesArray = [], thumbsArray = [];
+                let imagesArray = [], thumbsArray = [];
                 for (let link of document.querySelectorAll('div.my_gallery figure > a[href]')) {
-                    var imageURL = link.href, img = link.querySelector('img');
+                    let imageURL = link.href, img = link.querySelector('img');
                     if (img) {
-                        var thumbURL = img.src;
-                        // var imageURL = thumbURL.replace(/(.*)\/t(\d+.jpg)/i, '$1/$2'); // http://static.babesandstars.com/galleries/62000/62874/t07.jpg --> http://static.babesandstars.com/galleries/62000/62874/07.jpg
+                        let thumbURL = img.src;
+                        // let imageURL = thumbURL.replace(/(.*)\/t(\d+.jpg)/i, '$1/$2'); // http://static.babesandstars.com/galleries/62000/62874/t07.jpg --> http://static.babesandstars.com/galleries/62000/62874/07.jpg
                         thumbsArray.push(thumbURL);
                         imagesArray.push(imageURL);
-                    }
+                    };
                 };
                 G_contentTitle = document.querySelector('title').innerText.trim(); // Frisky teenagers Natalie Monroe and Ava Taylor are giving their mouths and nubs for fuck
                 G_contentURL = imagesArray[imagesArray.length-1];
@@ -2883,13 +2687,11 @@ element.style {
                     G_contentURL = imagesArray[i];
                     G_posterURL = thumbsArray[i];
                     updateEmbedCodeText(G_embedCodeTextArea, i == 0, G_delimiter);
-                }
+                };
                 // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
             };
             // --------------------------------------------------------------------------------
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('div.my_gallery figure > a[href] img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
         };
     }
 
@@ -2901,14 +2703,14 @@ element.style {
             G_pageURL.matchLink('https?://www.definebabe.com/gallery/*') // http://www.definebabe.com/gallery/2hha/ava-taylor/
         ) {
             G_funcToRun = function () {
-                var imagesArray = [], thumbsArray = [];
+                let imagesArray = [], thumbsArray = [];
                 for (let link of document.querySelectorAll('div.gallery div.thumbnails a[href]')) {
-                    var imageURL = link.href, img = link.querySelector('img');
+                    let imageURL = link.href, img = link.querySelector('img');
                     if (img) {
-                        var thumbURL = img.src;
+                        let thumbURL = img.src;
                         thumbsArray.push(thumbURL);
                         imagesArray.push(imageURL);
-                    }
+                    };
                 };
                 G_contentTitle = document.querySelector('title').innerText.trim(); // Frisky teenagers Natalie Monroe and Ava Taylor are giving their mouths and nubs for fuck
                 G_contentURL = imagesArray[imagesArray.length-1];
@@ -2920,24 +2722,22 @@ element.style {
                     G_contentURL = imagesArray[i];
                     G_posterURL = thumbsArray[i];
                     updateEmbedCodeText(G_embedCodeTextArea, i == 0, G_delimiter);
-                }
+                };
                 // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
             };
             // --------------------------------------------------------------------------------
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('div.gallery div.thumbnails a[href] img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
         };
     }
 
     else if (
         G_pageURL.matchLink('https?://www.pornpics.com')
     ) {
-        var class_name = 'thumbwook';
-        var valid = (item) => {return item.querySelector('a.rel-link > img');};
-        var i = 1, append_text = (item) => {
+        let class_name = 'thumbwook';
+        let valid = (item) => {return item.querySelector('a.rel-link > img');};
+        let i = 1, append_text = (item) => {
             if (valid(item)) {
-                var text = item.querySelector('p.image_number_text');
+                let text = item.querySelector('p.image_number_text');
                 if (!text) {
                     text = document.createElement('p');
                     item.appendChild(text);
@@ -2949,22 +2749,22 @@ element.style {
                 i++;
             };
         };
-        var array = document.querySelectorAll('.' + class_name);
+        let array = document.querySelectorAll('.' + class_name);
         for (let item of array) {append_text(item);}
         document.addEventListener('DOMNodeInserted', function handleNewElements(event) {
-            var item = event.target;
-            var item_class = item.className ? item.className.trim() : '';
-            if (item_class == class_name) { append_text(item); }
+            let item = event.target;
+            let item_class = item.className ? item.className.trim() : '';
+            if (item_class == class_name) { append_text(item); };
         }, false);
         if (
             G_pageURL.matchLink('https?://www.pornpics.com/galleries/*')
         ) {
             G_funcToRun = function () {
-                var linksArray = document.querySelectorAll('#main li.thumbwook > a'), imagesArray = [], thumbsArray = [];
+                let linksArray = document.querySelectorAll('#main li.thumbwook > a'), imagesArray = [], thumbsArray = [];
                 for (let link of linksArray) {
-                    var imageURL = link.href, img = link.querySelector('img');
+                    let imageURL = link.href, img = link.querySelector('img');
                     if (img) {
-                        var thumbURL = img.src;
+                        let thumbURL = img.src;
                         thumbsArray.push(thumbURL);
                         imagesArray.push(imageURL);
                     };
@@ -2982,14 +2782,13 @@ element.style {
                     G_videoWidth = link.dataset && link.dataset.size ? link.dataset.size.split('x')[0] : null;
                     G_videoHeight = link.dataset && link.dataset.size ? link.dataset.size.split('x')[1] : null;
                     updateEmbedCodeText(G_embedCodeTextArea, i == 0, G_delimiter);
-                }
+                };
                 // G_embedCodeTextArea.value = '<!-- ' + G_contentTitle + ' -->\n' + G_embedCodeText;
             };
             // --------------------------------------------------------------------------------
             document.addEventListener("DOMContentLoaded", function(event) {
                 waitForElement('#main', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
             });
-            //
             // return; // SKIP REST OF THE CODE
         };
     }
@@ -2997,8 +2796,6 @@ element.style {
     else if (
         G_pageURL.matchLink('https?://www.sex.com/*')
     ) {
-        // /*
-        // document.addEventListener('DOMContentLoaded', function() {
         addGlobalStyle([
             'body * { background-color: rgb(24, 24, 24) !important; color: wheat;}',
             '::-webkit-scrollbar { width: 18px; height: 18px;}',
@@ -3021,8 +2818,6 @@ element.style {
             '::-webkit-scrollbar-corner { background-color: #111;}',
             'input * { borders: 1px wheat solid !important; color: wheat;}',
         ].join('\n'), 'misc_style');
-        //});
-        // */
         if (
             G_pageURL.matchLink('https?://www.sex.com/pin/*/') ||
             G_pageURL.matchLink('https?://www.sex.com/picture/*/')
@@ -3043,7 +2838,7 @@ element.style {
             // setTimeout(function() {
             waitForElement('.image_frame img', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
             //}, 2000);
-        }
+        };
         //
         return; // SKIP REST OF THE CODE
     }
@@ -3052,7 +2847,7 @@ element.style {
         G_pageURL.matchLink('*.jpg')
     ) {
         G_funcToRun = function () {
-            var val = 0;
+            let val = 0;
             G_contentURL = G_shortURL;
             G_posterURL = G_shortURL;
             G_stickTo = document.querySelector('body'); G_stickPosition = 0;
@@ -3063,45 +2858,21 @@ element.style {
     }
 
     else if (
-        G_pageURL.matchLink('https?://biqle.ru/*') ||
-        G_pageURL.matchLink('https?://biqle.org/*') ||
-        G_pageURL.matchLink('https?://daftsex.com/*')
+        G_pageURL.matchLink('https?://biqle.*/*') ||
+        G_pageURL.matchLink('https?://daftsex.*/*')
     ) {
-        /*
-        if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
-            // window.stop();
-            G_funcToTest = function () {return document.querySelector('body iframe[src*="/player/"]');};
-            G_funcToRun = function () {G_contentURL = G_funcResult.src; G_standartReCastFunc();};
-            waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
-        else if (
-            G_pageURL.matchLink('https?://biqle.ru/watch/*') // https://biqle.ru/watch/-159565098_456242372
-        ) {
-            G_funcToRun = function () {
-                // --------------------------------------------------------------------------------
-                G_contentURL = G_shortURL + '#ReCast';
-                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
-                // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
-                G_stickTo = document.querySelector('.video > .heading'); G_stickPosition = 1;
-                // --------------------------------------------------------------------------------
-                // G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
-                // G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
-                G_standartAddEmbedCodeFunc();
-                // --------------------------------------------------------------------------------
-            };
-            waitForElement('iframe[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-        }
-        */
-        // /*
         if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
             return;
         }
-        // */
         else if (
-            G_pageURL.matchLink('https?://biqle.ru/watch/*') || // https://biqle.ru/watch/-159565098_456242372
-            G_pageURL.matchLink('https?://biqle.org/watch/*') || //
-            G_pageURL.matchLink('https?://daftsex.com/watch/*') // https://daftsex.com/watch/-111379583_171930025
+            location.pathname.matchLink('^/watch/*') // https://biqle.ru/watch/-159565098_456242372  // https://daftsex.com/watch/-111379583_171930025
         ) {
+            document.addEventListener('DOMContentLoaded', function onDOMContentLoaded(event) {
+                for (let iframe of document.querySelectorAll('iframe')) {
+                    iframe.setAttribute('target', '_self');
+                    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+                };
+            }, false);
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
                 G_contentURL = G_shortURL; // + '#ReCast';
@@ -3112,31 +2883,25 @@ element.style {
                     document.querySelector('meta[property="og:image"]').content :
                     null
                 );
-                // G_posterURL = G_posterURL.replace('/yespornplease.com/images/', '/itmx.yespornplease.com/'); // '/i3.yespornplease.com/'
                 G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
-                // console.log(G_posterURL);
-                // G_postersArray = CreateLinksList(G_posterURL, /^(https:\/\/)?(.*yespornplease.com)\/(\d+\/.*?\/\d+x\d+)_\d+.jpg/i, location.protocol + '//$2/$3_$NUM.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
-                // G_previewURL = G_posterURL.replace(/^(.*)\/\d+x\d+_\d+\.jpg/, '$1/video.mp4'); // https://i3.yespornplease.com/201906/bcrdnlu/video.mp4
                 G_stickTo = document.querySelectorAll('.video > .heading, .video_info_wrapper > .heading')[0]; G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('iframe[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else if (
-        G_pageURL.matchLink('https?://daxab.com/player/*')
+        G_pageURL.matchLink('https?://daxab.com/player/*') ||
+        G_pageURL.matchLink('https?://dxb.to/player/*')
     ) {
         G_funcToRun = function() {
             G_contentURL = document.querySelector('.videoplayer_dl_select ._item').href; // 1080p, 720p ...
             if (!G_contentURL || G_contentURL == '') {
                 document.querySelector('.videoplayer_quality_select ._item').click();
                 let G_funcToRun_2 = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-                // waitForElement('.videoplayer_dl_select ._item', 'href', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
                 waitForElement('.videoplayer_media_el', 'src', G_funcToRun_2, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
             }
             else {
@@ -3149,12 +2914,11 @@ element.style {
     else if (
         G_pageURL.matchLink('https?://*.pornesq.com/*')
     ) {
-        // if (getCookie('lang') !== 'en') {deleteCookie('lang'); setCookie('lang', 'en', {expires: 0});};
         // --------------------------------------------------------------------------------
         let actualSource = () => {
-            var source = document.querySelector('video#video_html5_api > source[src]');
+            let source = document.querySelector('video#video_html5_api > source[src]');
             if (!source) return;
-            var contentURL = source.src;
+            let contentURL = source.src;
             return contentURL;
         };
         // --------------------------------------------------------------------------------
@@ -3181,16 +2945,14 @@ element.style {
         ) {
             G_funcToRun = function () {
                 G_sampleURL = actualSource();
-                // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = document.querySelector('textarea#video_embed_code').value.match(/.*src="(.*?)".*/i)[1]; // https://www.pornesq.com/embed/a531f21d4128a5efcf31
                 G_posterURL = document.querySelector('video#video_html5_api').poster; // https://www.pornesq.com/media/videos/tmb/21809/1.jpg
-                // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/.*?.jpg$/i, '$1/$NUM.jpg', 1, 20); console.log('G_posters:\n', G_postersArray);
                 G_postersArray = [G_posterURL].concat(G_postersArray);
                 G_stickTo = document.querySelector('.video-container'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
-                var eventCatcher, media;
+                let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('div.video-container');
                     media = media ? media : document.querySelector('video#video_html5_api'); // document.querySelector('div#player video > source');
@@ -3200,16 +2962,14 @@ element.style {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            // document.addEventListener("DOMContentLoaded", function(event) {
             waitForElement('video#video_html5_api > source[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
-            // });
-        }
+        };
     }
 
     else {
         // alert(G_pageURL);
         console.log('No Match:', G_pageURL);
-    }
+    };
 
     console.log('G_matchedLink:', G_matchedLink);
 })();

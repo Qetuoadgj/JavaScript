@@ -1290,6 +1290,11 @@
                 // if (params.thumb_src) {G_progressThumbnailSrc = params.thumb_src;};
                 var videoSrc = params.main_url;
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
+                if (params.reflect) {
+                    video.style.transform = 'rotateY(' + params.reflect + ')';
+                    video.style['-webkit-transform'] = 'rotateY(' + params.reflect + ')';
+                    video.style['-moz-transform'] = 'rotateY(' + params.reflect + ')';
+                };
                 video.setAttribute('src', videoSrc);
                 console.log('src: ', videoSrc);
                 mediaKeyboardControls(video);
