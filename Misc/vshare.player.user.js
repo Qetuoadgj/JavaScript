@@ -1236,11 +1236,12 @@
         }
 
         function getParamsFromURL(searchString) {
-            var customKeysArray = ['autoplay', '#t'];
+            var customKeysArray = ['autoplay', '#t', 'qualityLimit', 'reflect'];
             var parse = function(params, pairs) {
                 var pair = pairs[0];
                 var parts = pair.split('=');
-                var key = decodeURIComponent(parts[0]).replace(/.*?\?/, '');
+                // var key = decodeURIComponent(parts[0]).replace(/.*?\?/, '');
+                var key = decodeURIComponent(parts[0]).replace(/.*?[?#]/, '');
                 var value = decodeURIComponent(parts.slice(1).join('='));
                 // Handle multiple parameters of the same name
                 if (typeof params[key] === "undefined") params[key] = value;
@@ -1252,7 +1253,8 @@
                 // console.log('firstCustomKeyIndex = ' + firstCustomKeyIndex);
                 if (firstCustomKeyIndex) {
                     var firstCustomKey = Object.keys(params)[firstCustomKeyIndex];
-                    var startSymbol = (firstCustomKeyIndex == 0) ? '\\?' : '&';
+                    // var startSymbol = (firstCustomKeyIndex == 0) ? '\\[?' : '&';
+                    var startSymbol = (firstCustomKeyIndex == 0) ? '[?#]' : '&';
                     var re = new RegExp(startSymbol + firstCustomKey + '.*');
                     params.main_url = searchString.replace(re, '');
                     params.first_key = firstCustomKey;

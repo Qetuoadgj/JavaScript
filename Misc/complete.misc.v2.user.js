@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.74
+// @version      2.0.75
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -23,7 +23,7 @@
 // @match        *://yespornplease.com/v/*
 // @match        *://yespornplease.com/view/*
 // @match        *://e.yespornplease.com/v/*
-// @match        *://www.trendyporn.com/video/*
+// @match        *://*.trendyporn.com/*
 // @match        *://vshare.io/v/*
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
@@ -504,22 +504,24 @@
         let url_base = url.split('?')[1] ? url.split('?')[0] : url,
             url_keys = url.split('?')[1] ? url.split('?')[1] : null
         ;
+        // alert(url_keys);
+        // alert(url_base);
         if (autoplay) {
             if (url_keys) {if (!url_keys.match('&autoplay=true')) {url = url + '&autoplay=true';}}
-            else {url = url + '?autoplay=true'; url_keys = url.replace(url_base, '');}
+            else if (!url_base.match('autoplay=true')) {url = url + '?autoplay=true'; url_keys = url.replace(url_base, '');}
             GM_deleteValue('autoplay');
         };
         if (t) {
             console.log('t: ' + t);
             if (url_keys) {if (!url_keys.match('&t=' + t)) {url = url + '&t=' + t;}}
-            else {url = url + '?t=' + t; url_keys = url.replace(url_base, '');}
+            else if (!url_base.match('t=' + t)) {url = url + '?t=' + t; url_keys = url.replace(url_base, '');}
             GM_deleteValue('t');
         };
         let reflect = GM_getValue('reflect', null);;
         if (reflect) {
             console.log('reflect: ' + reflect);
             if (url_keys) {if (!url_keys.match('&reflect='+reflect)) {url = url + '&reflect='+reflect;}}
-            else {url = url + '?reflect='+reflect; url_keys = url.replace(url_base, '');}
+            else if (!url_base.match('reflect='+reflect)) {url = url + '?reflect='+reflect; url_keys = url.replace(url_base, '');}
             GM_deleteValue('reflect');
         };
         let isInstalled = document.documentElement.getAttribute('clean-media-page-extension-installed');
@@ -1742,15 +1744,24 @@
     // ================================================================================
 
     else if (
-        G_pageURL.matchLink('https?://www.trendyporn.com')
+        G_pageURL.matchLink('https?://*.trendyporn.com')
     ) {
         if (G_pageURL.match('#ReCast')) {
             return;
         }
         else if (
+            G_pageURL.matchLink('https?://videos.trendyporn.com/videos/*') // https://videos.trendyporn.com/videos/5/c/6/2/8/5c628f7518412-vixen-19-1-19-ellie-leen.mp4
+        ) {
+            window.stop();
+            let contentURL = location.href;
+            console.log('contentURL: ', contentURL);
+            openURL(refineVideo(contentURL));
+        }
+        else if (
             location.pathname.match(/^\/video\//) // https://www.trendyporn.com/video/familystrokes-leda-lothario-twin-stepbrothers-cum-on-ledas-face-10586.html
         ) {
             G_funcToRun = function() {
+                /*
                 let header = document.querySelector('.nav.nav-tabs');
                 let iframe_id = 'thumbs';
                 let iframe = document.querySelector('iframe#' + iframe_id);
@@ -1775,6 +1786,7 @@
                     header.appendChild(iframe);
                 };
                 iframe.src = 'https://www.trendyporn.com/search/' + document.querySelector('.container .pull-left .hidden-xs').innerText + '/';
+                */
                 // --------------------------------------------------------------------------------
                 G_contentURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
                 G_posterURL = (
@@ -1782,6 +1794,8 @@
                     document.querySelector('meta[name="thumbnail"]').content :
                     document.querySelector('meta[property="og:image"]').content
                 );
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*)\d+(.*?).jpg/i, '$1$NUM.jpg', 1, 10); console.log('G_posters:\n', G_postersArray);
+                G_previewURL = /*G_posterURL*/ location.pathname.replace(/^.*-(.+)\.html/, 'https://images.trendyporn.com/webm/$1/$1.webm'); // https://images.trendyporn.com/webm/6032/6032.webm
                 G_sampleURL = document.querySelectorAll('#player_html5_api[src], #player_html5_api > source[src]')[0].src;
                 G_stickTo = document.querySelector('#player-container'); G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
@@ -1791,6 +1805,7 @@
             waitForElement('#player_html5_api[src], #player_html5_api > source[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
     }
+    // ================================================================================
 
     else if (
         G_pageURL.matchLink('https?://www.porntrex.com/*')
