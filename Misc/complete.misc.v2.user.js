@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.75
+// @version      2.0.77
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -480,6 +480,13 @@
         script.remove();
         return result;
     };
+    // ================================================================================
+    Array.prototype.unique = function() {
+        var a = this.concat();
+        for(var i=0; i<a.length; ++i) {for(var j=i+1; j<a.length; ++j) {if (a[i] === a[j]) a.splice(j--, 1);}}
+        return a;
+    };
+    // G_reCastHosts = G_reCastHosts.concat([]).unique();
     // ================================================================================
     if (location.href.match('autoplay=true')) {
         GM_setValue('autoplay', true);
@@ -1192,6 +1199,7 @@
             let mediaData = {};
             mediaData.url = G_pageURL;
             mediaData.src = contentURL;
+            mediaData.poster = G_posterURL;
             mediaData.refined = refineVideo(contentURL, G_noPlayerExtension);
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
@@ -1402,12 +1410,22 @@
                 G_videoWidth = e.data.width;
                 G_videoHeight = e.data.height;
                 G_videoDuration = e.data.duration;
+                G_posterURL = e.data.poster;
+                // alert(G_posterURL);
                 if (!G_embedCodeFrame) return;
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                     updateEmbedCodeTextColor();
+                    if (G_posterURL) {
+                        G_postersArray = G_postersArray.concat([G_posterURL]).unique();
+                        G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                    };
                 }, function onErrorFunc() {
                     log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
                     updateEmbedCodeTextColor();
+                    if (G_posterURL) {
+                        G_postersArray = G_postersArray.concat([G_posterURL]).unique();
+                        G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                    };
                 }, G_forceLoad);
             };
         };
@@ -2056,11 +2074,7 @@
                     console.log(quality, text);
                     data[quality+'p'] = {};
                     data[quality+'p'].src = link.href;
-                    if (limit) {
-                        if (quality > limit*1.1) {
-                            continue;
-                        };
-                    };
+                    if (limit && quality > limit*1.1) continue;
                     if (quality > data.maxQuality) data.maxQuality = quality;
                 };
             };
@@ -2912,6 +2926,7 @@
         G_pageURL.matchLink('https?://daxab.com/player/*') ||
         G_pageURL.matchLink('https?://dxb.to/player/*')
     ) {
+        /*
         G_funcToRun = function() {
             G_contentURL = document.querySelector('.videoplayer_dl_select ._item').href; // 1080p, 720p ...
             if (!G_contentURL || G_contentURL == '') {
@@ -2924,6 +2939,38 @@
             };
         };
         waitForElement('.videoplayer_dl_select ._item', null, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        */
+        /* globals globParams */
+        function daxabGetMaxQualityURL(limit = 0) {
+            let params = globParams.video.cdn_id.split('_');
+            if (params[1]) {
+                let id1 = params[0], id2 = params[1];
+                let maxQuality = 0, maxQualityURL = null;
+                for (let key of Object.keys(globParams.video.cdn_files)) {
+                    let match = key.match(/^(.*)_(\d+)\w?$/)
+                    if (match) {
+                        let keyQuality = parseInt(match[2]);
+                        if (limit && keyQuality > limit*1.1) continue;
+                        if (keyQuality > maxQuality) {
+                            let type = match[1];
+                            maxQuality = keyQuality;
+                            maxQualityURL = globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`)
+                        };
+                    };
+                };
+                let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
+                maxQualityURL = domain + maxQualityURL;
+                // console.log('maxQualityURL:', maxQualityURL);
+                return maxQualityURL;
+            };
+        };
+        G_funcToRun = function() {
+            G_contentURL = daxabGetMaxQualityURL(0);
+            G_posterURL = G_contentURL.replace(/(^.*videos\/.*?\/.*?)\/.*/, '$1/thumb.jpg');
+            // alert(G_posterURL);
+            G_standartReCastFunc();
+        };
+        waitForElement('.videoplayer_media_el[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
     }
 
     else if (
