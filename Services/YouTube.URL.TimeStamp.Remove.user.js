@@ -33,7 +33,7 @@
             console.log(element);
             // window.stop();
         };
-        console.log('el:', element);
+        // console.log('el:', element);
     };
     document.addEventListener('DOMNodeInserted', handleNewElements, false);
     // document.addEventListener('DOMContentLoaded', mainFunc, false);
