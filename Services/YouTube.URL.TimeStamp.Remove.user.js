@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.URL.TimeStamp.Remove
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.05
+// @version      1.0.06
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.URL.TimeStamp.Remove.user.js
@@ -28,11 +28,13 @@
     mainFunc();
     function handleNewElements(event) {
         let element = event ? event.target : null;
-        if (element && element.tagName == 'DIV' && element.id == "progress" /*|| element.tagName == 'VIDEO'*/ ) {
+        if (element && element.tagName == 'DIV' /*&& element.id == "progress"*/ || element.tagName == 'VIDEO') {
             mainFunc();
             console.log(element);
             // window.stop();
         };
+        console.log('el:', element);
     };
     document.addEventListener('DOMNodeInserted', handleNewElements, false);
+    // document.addEventListener('DOMContentLoaded', mainFunc, false);
 })();
