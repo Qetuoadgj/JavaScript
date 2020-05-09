@@ -28,7 +28,8 @@
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
 // @match        *://www.porntrex.com/*
-// @match        *://sxyprn.com/post/*.html*
+// @match        *://sxyprn.com/post/*
+// @match        *://sxyprn.net/post/*
 // @match        *://upornia.com/videos/*/*
 // @match        *://txxx.tube/videos/*/*
 // @match        *://*.pornhub.com/*
@@ -1245,7 +1246,7 @@
         resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_actorsSource = [], G_categoriesSource = [], G_standartAddEmbedCodeFunc = function() {
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_qualitySampleLastSrc = null, G_actorsSource = [], G_categoriesSource = [], G_standartAddEmbedCodeFunc = function() {
         // --------------------------------------------------------------------------------
         for (let a of G_actorsSource) {let s = 'M:' + a.innerText.trim(); G_categories[s] = '';};
         for (let a of G_categoriesSource) {let s = a.innerText.trim(); G_categories[s] = '';};
@@ -1262,6 +1263,8 @@
         if (G_qualitySampleSource) {
             // document.querySelector('#EPvideo_html5_api').addEventListener('play', function(e) {
             function updateValues(e) {
+                if (G_qualitySampleLastSrc == e.target.src) return;
+                G_qualitySampleLastSrc = e.target.src;
                 G_sampleURL = e.target.src;
                 G_videoWidth = e.target.videoWidth;
                 G_videoHeight = e.target.videoHeight;
@@ -2023,8 +2026,9 @@
 
     else if (
         G_pageURL.matchLink('https?://yourporn.sexy/*') ||
-        G_pageURL.matchLink('https?://sxyprn.com/*')
-    ) {
+        G_pageURL.matchLink('https?://sxyprn.com/*') ||
+         G_pageURL.matchLink('https?://sxyprn.net/*')
+   ) {
         if (G_pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
@@ -2032,8 +2036,7 @@
             waitForElement('#vid_container_id video', 'currentSrc', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         else if (
-            G_pageURL.matchLink('https?://yourporn.sexy/post/*') || // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
-            G_pageURL.matchLink('https?://sxyprn.com/post/*')
+            location.pathname.matchLink('/post/*') // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
         ) {
             G_funcToRun = function () {
                 // --------------------------------------------------------------------------------
