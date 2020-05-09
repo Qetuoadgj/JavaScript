@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.77
+// @version      2.0.78
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -686,6 +686,8 @@
         'BellasaFilms.com',
         'DetensionGirls.com',
         'Blacked.com',
+        '5kPorn.com',
+        'RealityJunkies.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -1037,7 +1039,7 @@
         }, delay);
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeLink, G_contentURL; function addEmbedCodeLink(embedCodeFrame) {
+    var G_embedCodeLink, G_contentURL, G_allData; function addEmbedCodeLink(embedCodeFrame) {
         let elementID = 'uniqueEmbedCodeLink';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
@@ -1144,12 +1146,13 @@
     function addEmbedCodePosterSelector(URLArray) {
         console.log('G_embedCodePosterSelector --> URLArray:', URLArray);
         if (URLArray.length > 0) {
+            let justRefresh = false;
             let elementID = 'uniqueEmbedCodePosterSelector';
-            for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
+            for (let element of document.querySelectorAll('#' + elementID)) {element.remove(); justRefresh = true;};
             // --------------------------------------------------------------------------------
             let element = document.createElement('div');
             element.setAttribute('id', elementID);
-            G_embedCodeFrame.appendChild(element);
+            (document.querySelector('uniqueEmbedCodeFrame') || G_embedCodeFrame).appendChild(element);
             function updateMainPoster(e) {
                 let img = e.target;
                 G_posterURL = img.getAttribute('src');
@@ -1158,6 +1161,7 @@
                 resizeEmbedCodePoster(1.0, 0.5, 5000);
             };
             let imageStyle = G_embedCodePoster.getAttribute('style');
+            imageStyle = 'display: inline-block !important; vertical-align: inherit; max-height: 120px; width: auto; height: auto; min-width: auto; min-height: 162px; zoom: 0.5;';
             let imageIndex = URLArray[0] ? 0 : 1;
             let loadImage = function() {
                 let img = document.createElement('img');
@@ -1165,7 +1169,7 @@
                 img.style.zoom = 0.5;
                 img.setAttribute('src', URLArray[imageIndex]);
                 img.setAttribute('onerror', 'this.remove();');
-                G_embedCodeFrame.appendChild(img);
+                /*G_embedCodeFrame*/ element.appendChild(img);
                 img.addEventListener('click', updateMainPoster.bind(this), false);
                 if (imageIndex < URLArray.length) {
                     img.addEventListener('load', function(){
@@ -1178,10 +1182,12 @@
             };
             loadImage();
             //
-            G_embedCodePoster.style.position = 'fixed';
-            G_embedCodePoster.style.bottom = '10px';
-            G_embedCodePoster.style.right = '10px';
-            G_embedCodePoster.style.zIndex = '2147483647';
+            if (!justRefresh) {
+                G_embedCodePoster.style.position = 'fixed';
+                G_embedCodePoster.style.bottom = '10px';
+                G_embedCodePoster.style.right = '10px';
+                G_embedCodePoster.style.zIndex = '2147483647';
+            };
             //
             G_embedCodePosterSelector = element;
             return element;
@@ -1204,6 +1210,13 @@
             mediaData.width = media.videoWidth;
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
+            if (G_allData) {
+                mediaData.json = JSON.stringify(G_allData);
+                let symbol = mediaData.refined.match(/[?]/) ? '&' : '?';
+                mediaData.refined = mediaData.refined + symbol + 'jjs=' + mediaData.json;
+            };
+            // alert(mediaData.json);
+            // alert(mediaData.refined);
             if (window.top === window.self) {
                 window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
             }
@@ -1410,22 +1423,26 @@
                 G_videoWidth = e.data.width;
                 G_videoHeight = e.data.height;
                 G_videoDuration = e.data.duration;
-                G_posterURL = e.data.poster;
+                // G_posterURL = e.data.poster;
                 // alert(G_posterURL);
                 if (!G_embedCodeFrame) return;
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                     updateEmbedCodeTextColor();
                     if (G_posterURL) {
-                        G_postersArray = G_postersArray.concat([G_posterURL]).unique();
-                        G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                        if (!G_postersArray.includes(e.data.poster)) {
+                            G_postersArray = G_postersArray.concat([e.data.poster]).unique();
+                            if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                        }
                     };
                 }, function onErrorFunc() {
                     log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
                     updateEmbedCodeTextColor();
-                    if (G_posterURL) {
-                        G_postersArray = G_postersArray.concat([G_posterURL]).unique();
-                        G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
-                    };
+                    //                     if (G_posterURL) {
+                    //                         if (!G_postersArray.includes(e.data.poster)) {
+                    //                             G_postersArray = G_postersArray.concat([e.data.poster]).unique();
+                    //                             if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                    //                         }
+                    //                     };
                 }, G_forceLoad);
             };
         };
@@ -1861,15 +1878,51 @@
                     return typeof flashvars !== "undefined" && flashvars.video_url;
                 };
                 G_funcToRun = function () {
+                    /*
                     let contentURL = (
-                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 :
+                        flashvars.video_alt_url5 ? flashvars.video_alt_url5 :
+                        flashvars.video_alt_url4 ? flashvars.video_alt_url4 :
+                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 : // 1080
                         flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
                         flashvars.video_alt_url ? flashvars.video_alt_url :
                         flashvars.video_url
                     );
                     let posterURL = flashvars.preview_url;
                     console.log('contentURL: ', contentURL);
-                    openURL(refineVideo(contentURL));
+                    */
+                    let maxQuality = 0, contentURL;
+                    G_allData = {};
+                    for (let i = 5; i >= 0; i--) {
+                        let k = (
+                            i == 0 ? 'video_url' :
+                            i == 1 ? 'video_alt_url' :
+                            'video_alt_url' + i
+                        );
+                        let url = flashvars[k];
+                        if (url) {
+                            let quality = flashvars[k+'_text'];
+                            if (quality) {
+                                quality = quality.match(/^(\d+).*$/)[1];
+                                quality = parseInt(quality);
+                                G_allData[quality] = url;
+                                if (quality > maxQuality && quality < G_qualityLimit) {
+                                    // alert(quality);
+                                    maxQuality = quality;
+                                    contentURL = url;
+                                };
+                            };
+                        };
+                    };
+                    let posterURL = flashvars.preview_url;
+                    console.log('contentURL: ', contentURL);
+                    let refinedURL = refineVideo(contentURL);
+                    if (G_allData) {
+                        let jsonData = JSON.stringify(G_allData);
+                        let symbol = refinedURL.match(/[?]/) ? '&' : '?';
+                        refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
+                    };
+                    // openURL(refineVideo(contentURL));
+                   openURL(refinedURL);
                 };
                 waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
             }
@@ -2559,15 +2612,18 @@
             // --------------------------------------------------------------------------------
             let data = {}, result; while((result = re.exec(matchedScriptText)) !== null) {
                 let url = result[1].trim();
+                if (url.match(/^\/\//)) url = location.protocol + url;
                 let quality = Math.floor(result[2].trim());
                 data[quality] = url;
                 // console.log('url:', url);
                 // console.log('quality:', quality);
             };
+            G_allData = data;
             console.log('data:', data);
             let compare = 0; for (let quality of Object.keys(data)) {
                 if (quality > compare && quality < G_qualityLimit) {
-                    G_contentURL = location.protocol + data[quality];
+                    G_allData.quality = quality;
+                    G_contentURL = /*location.protocol + */ data[quality];
                     console.log('url:', G_contentURL);
                     console.log('quality:', quality);
                 };
@@ -2942,25 +2998,44 @@
         */
         /* globals globParams */
         function daxabGetMaxQualityURL(limit = 0) {
-            let params = globParams.video.cdn_id.split('_');
-            if (params[1]) {
-                let id1 = params[0], id2 = params[1];
+            if (globParams.video.cdn_id) {
+                let params = globParams.video.cdn_id.split('_');
+                if (params[1]) {
+                    let id1 = params[0], id2 = params[1];
+                    let maxQuality = 0, maxQualityURL = null;
+                    for (let key of Object.keys(globParams.video.cdn_files)) {
+                        let match = key.match(/^(.*)_(\d+)\w?$/)
+                        if (match) {
+                            let keyQuality = parseInt(match[2]);
+                            if (limit && keyQuality > limit*1.1) continue;
+                            if (keyQuality > maxQuality) {
+                                let type = match[1];
+                                maxQuality = keyQuality;
+                                maxQualityURL = globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`);
+                            };
+                        };
+                    };
+                    let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
+                    maxQualityURL = domain + maxQualityURL;
+                    // console.log('maxQualityURL:', maxQualityURL);
+                    return maxQualityURL;
+                };
+            }
+            else {
                 let maxQuality = 0, maxQualityURL = null;
-                for (let key of Object.keys(globParams.video.cdn_files)) {
-                    let match = key.match(/^(.*)_(\d+)\w?$/)
+                for (let item of document.querySelectorAll('.videoplayer_controls_item.videoplayer_dl *[download]')) {
+                    if (!item.download) continue;
+                    let match = item.download.match(/^(\d+)\w?/)
                     if (match) {
-                        let keyQuality = parseInt(match[2]);
-                        if (limit && keyQuality > limit*1.1) continue;
-                        if (keyQuality > maxQuality) {
-                            let type = match[1];
-                            maxQuality = keyQuality;
-                            maxQualityURL = globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`)
+                        if (!item.href) continue;
+                        let itemQuality = parseInt(match[1]);
+                        if (limit && itemQuality > limit*1.1) continue;
+                        if (itemQuality > maxQuality) {
+                            maxQuality = itemQuality;
+                            maxQualityURL = item.href;
                         };
                     };
                 };
-                let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
-                maxQualityURL = domain + maxQualityURL;
-                // console.log('maxQualityURL:', maxQualityURL);
                 return maxQualityURL;
             };
         };
@@ -2970,7 +3045,8 @@
             // alert(G_posterURL);
             G_standartReCastFunc();
         };
-        waitForElement('.videoplayer_media_el[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        waitForElement('.videoplayer_media_el[src], .videoplayer_controls_item.videoplayer_dl *[download]', null, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        // waitForCondition(daxabGetMaxQualityURL, G_funcToRun, G_delay, G_tries, G_timerGroup);
     }
 
     else if (

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.27
+// @version      0.0.28
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -89,12 +89,12 @@
     };
     // ---------------------------------------------------
     var html = [
-        //         `<!DOCTYPE html>`,
+        // `<!DOCTYPE html>`,
         `<html>`,
         `    <head>`,
         `        <meta charset="UTF-8">`,
         `        <meta name="viewport" content="width=device-width, initial-scale=1">`,
-        //         `        <link rel="stylesheet" href="style.css">`,
+        // `        <link rel="stylesheet" href="style.css">`,
         `        <title>HTML5 Custom Video Player</title>`,
         `    </head>`,
         `    <body>`,
@@ -113,7 +113,10 @@
         `                </div>`,
         `                <div class="player-panel">`,
         `                    <button class="player-btn toggle-play" title="Toggle Play">`,
-        `                        <svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`,
+        `                        <svg class="" width="16" height="16" viewBox="0 0 16 16">`,
+        `                            <title>play</title>`,
+        `                            <polygon points="0 0 0 16 16 8"></polygon>`,
+        `                        </svg>`,
         `                    </button>`,
         `                    <span class="current-time-display">00:00</span>`,
         `                    <div class="slider audio">`,
@@ -126,7 +129,12 @@
         `                    </div>`,
         `                    <button data-skip="-10" class="player-btn skip">- 10s</button>`,
         `                    <button data-skip="10" class="player-btn skip">+ 10s</button>`,
-        `                    <span class="video-size"></span>`,
+        `                    <div class="video-options">`,
+        `                        <span class="video-size">720p</span>`,
+        `                        <div class="video-size-options">`,
+        `                            <!-- <span>360p</span><span>720p</span><span>1080p</span> -->`,
+        `                        </div>`,
+        `                    </div>`,
         `                    <button class="player-btn toggle-fullscreen"></button>`,
         `                </div>`,
         `            </div>`,
@@ -138,7 +146,7 @@
         `                </svg>`,
         `            </div>`,
         `        </div>`,
-        //         `        <script src="script.js"></script>`,
+        // `        <script src="script.js"></script>`,
         `    </body>`,
         `</html>`,
         ``,
@@ -625,6 +633,30 @@
         `.progress {`,
         `    width: calc(100% - 20px);`,
         `    left: 10px;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.video-size-options {`,
+        `    position: absolute;`,
+        `    top: 0px;`,
+        `    margin: 0;`,
+        `    padding: 0 0 20px 0;`,
+        `    /* background: red; */`,
+        `    width: auto;`,
+        `    transform: translate(0, -100%) translate(0, 12px);`,
+        `    display: none;`,
+        `}`,
+        `.video-options:hover .video-size-options {`,
+        `    display: block;`,
+        `}`,
+        `.video-size-options span {`,
+        `    display: block;`,
+        `    text-align: right;`,
+        `    margin: 2px 5px;`,
+        `    /* background: black; */`,
+        `    cursor: pointer;`,
+        `}`,
+        `.video-size-options span:hover {`,
+        `    color: gold;`,
         `}`,
         `/* ------------------------------------- */`,
         ``,
@@ -1236,7 +1268,7 @@
         }
 
         function getParamsFromURL(searchString) {
-            var customKeysArray = ['autoplay', '#t', 'qualityLimit', 'reflect'];
+            var customKeysArray = ['autoplay', '#t', 'qualityLimit', 'reflect', 'jjs'];
             var parse = function(params, pairs) {
                 var pair = pairs[0];
                 var parts = pair.split('=');
@@ -1297,6 +1329,47 @@
                     video.style['-webkit-transform'] = 'rotateY(' + params.reflect + ')';
                     video.style['-moz-transform'] = 'rotateY(' + params.reflect + ')';
                 };
+                let jjs = params.jjs;
+                if (jjs) {
+                    const videoSizeOptions = player.querySelector('.video-size-options');
+                    // videoSrc = videoSrc.replace(jjs, '');
+                    let data = JSON.parse(jjs);
+                    let sources = [];
+                    let lowestQuality = 9999;
+                    for (let item of Object.keys(data)) {
+                        if (item) {
+                            let qualityMatch = item.match(/^(\d+)$/);
+                            if (qualityMatch) {
+                                let url = data[item];
+                                let quality = parseInt(item);
+                                if (lowestQuality > quality) lowestQuality = quality;
+                                let source = document.createElement('source');
+                                // <source src="//s49.bigcdn.cc/pubs/5eb5ce70d0fa8/360.mp4" title="360p" type="video/mp4">
+                                source.setAttribute('src', url);
+                                source.setAttribute('title', quality+'p');
+                                source.setAttribute('type', 'video/mp4');
+                                video.appendChild(source);
+                                sources.push(source);
+                            };
+                        };
+                    };
+                    if (lowestQuality < 9999) G_progressThumbnailSrc = data[lowestQuality];
+                    if (videoSizeOptions) {
+                        for (let source of sources) {
+                            let btn = document.createElement('span');
+                            btn.onclick = function() {
+                                if (video.currentSrc !== source.src) {
+                                    let time = video.currentTime;
+                                    video.src = source.src;
+                                    video.currentTime = time;
+                                };
+                            };
+                            videoSizeOptions.appendChild(btn);
+                            btn.innerText = source.title ? source.title : '-----' ;
+                        };
+                    };
+                };
+                video.setAttribute('autoplay', '');
                 video.setAttribute('src', videoSrc);
                 console.log('src: ', videoSrc);
                 mediaKeyboardControls(video);
