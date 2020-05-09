@@ -132,7 +132,9 @@
         `                    <div class="video-options">`,
         `                        <span class="video-size">720p</span>`,
         `                        <div class="video-size-options">`,
-        `                            <!-- <span>360p</span><span>720p</span><span>1080p</span> -->`,
+        `                            <div class="background">`,
+        `                                <!-- <span>360p</span><span>720p</span><span>1080p</span> -->`,
+        `                            </div>`,
         `                        </div>`,
         `                    </div>`,
         `                    <button class="player-btn toggle-fullscreen"></button>`,
@@ -657,6 +659,15 @@
         `}`,
         `.video-size-options span:hover {`,
         `    color: gold;`,
+        `}`,
+        `/* ------------------------------------- */`,
+        `.video-size-options .background {`,
+        `    background: rgba(0, 0, 0, 0.6);`,
+        `    box-shadow: 0px 0px 4px #000;`,
+        `    padding: 6px;`,
+        `}`,
+        `.video-size-options span {`,
+        `    padding: 2px 0px;`,
         `}`,
         `/* ------------------------------------- */`,
         ``,
@@ -1331,7 +1342,7 @@
                 };
                 let jjs = params.jjs;
                 if (jjs) {
-                    const videoSizeOptions = player.querySelector('.video-size-options');
+                    const videoSizeOptions = player.querySelector('.video-size-options > .background');
                     // videoSrc = videoSrc.replace(jjs, '');
                     let data = JSON.parse(jjs);
                     let sources = [];
