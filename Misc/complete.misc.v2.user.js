@@ -1922,7 +1922,7 @@
                         refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
                     };
                     // openURL(refineVideo(contentURL));
-                   openURL(refinedURL);
+                    openURL(refinedURL);
                 };
                 waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
             }
@@ -2028,7 +2028,8 @@
         if (G_pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
-            waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+            //  waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+            waitForElement('#vid_container_id video', 'currentSrc', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         else if (
             G_pageURL.matchLink('https?://yourporn.sexy/post/*') || // https://yourporn.sexy/post/56be2e8359051.html?sk=Carolina%20Abril&so=30
