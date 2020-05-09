@@ -130,7 +130,7 @@
         `                    <button data-skip="-10" class="player-btn skip">- 10s</button>`,
         `                    <button data-skip="10" class="player-btn skip">+ 10s</button>`,
         `                    <div class="video-options">`,
-        `                        <span class="video-size">----</span>`,
+        `                        <span class="video-size">720p</span>`,
         `                        <div class="video-size-options">`,
         `                            <div class="background">`,
         `                                <!-- <span>360p</span><span>720p</span><span>1080p</span> -->`,
