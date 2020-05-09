@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.78
+// @version      2.0.79
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -91,10 +91,14 @@
         G_pageDomain = /*window.*/ location.host.replace(/.*\.(.*\..*)/, '$1')
     ;
     // ================================================================================
+    // var G_lastLogMessage = '';
     function log(showAlert, ...args) {
         // console.log(args);
         let string = args.join(' ').replace(/\n[\t ]/g, '\n');
+        // if (G_lastLogMessage !== string) {
+        // G_lastLogMessage = string;
         console.log(string);
+        // };
         if (showAlert) alert(string);
     };
     // ================================================================================
@@ -790,7 +794,7 @@
             let option = document.createElement('option');
             option.value = k;
             element3.appendChild(option);
-            console.log(option);
+            // console.log(option);
         };
         let option = document.createElement('option');
         option.value = '-----------------------------';
@@ -1093,7 +1097,7 @@
         // --------------------------------------------------------------------------------
         if (forceLoad) {
             element.setAttribute('controls', '');
-            let funcToTest = function() {return element.src && element.src !== ''};
+            let funcToTest = function() {return element.currentSrc && element.currentSrc !== ''};
             let funcToRun = function() {
                 if (typeof element !== 'undefined' && typeof element.play == 'function' && element.paused) {
                     element.play();
@@ -1212,7 +1216,7 @@
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
             if (G_allData) {
-                mediaData.json = JSON.stringify(G_allData);
+                mediaData.json = encodeURI(JSON.stringify(G_allData));
                 let symbol = mediaData.refined.match(/[?]/) ? '&' : '?';
                 mediaData.refined = mediaData.refined + symbol + 'jjs=' + mediaData.json;
             };
@@ -1920,7 +1924,7 @@
                     console.log('contentURL: ', contentURL);
                     let refinedURL = refineVideo(contentURL);
                     if (G_allData) {
-                        let jsonData = JSON.stringify(G_allData);
+                        let jsonData = encodeURI(JSON.stringify(G_allData));
                         let symbol = refinedURL.match(/[?]/) ? '&' : '?';
                         refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
                     };
@@ -2027,8 +2031,8 @@
     else if (
         G_pageURL.matchLink('https?://yourporn.sexy/*') ||
         G_pageURL.matchLink('https?://sxyprn.com/*') ||
-         G_pageURL.matchLink('https?://sxyprn.net/*')
-   ) {
+        G_pageURL.matchLink('https?://sxyprn.net/*')
+    ) {
         if (G_pageURL.match('#ReCast')) { // https://yourporn.sexy/post/59772cebee27b.html#ReCast
             // window.stop();
             G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
@@ -2043,7 +2047,7 @@
                 G_contentURL = G_shortURL; // + '#ReCast';
                 G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
-                G_stickTo = document.querySelector('div.comments_area'); G_stickPosition = -1;
+                G_stickTo = document.querySelectorAll('div.comments_area, .combo_container')[0]; G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
                 G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
@@ -2613,6 +2617,7 @@
             return matchedScriptText;
         };
         G_funcToRun = function() {
+            window.stop();
             // --------------------------------------------------------------------------------
             let data = {}, result; while((result = re.exec(matchedScriptText)) !== null) {
                 let url = result[1].trim();
