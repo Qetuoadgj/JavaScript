@@ -22,7 +22,10 @@
     // Your code here...
     function skipAd() {
         const video = document.querySelector('.html5-main-video');
-        video.currentTime = video.duration;
+        const coloredProgress = document.querySelector('.ytp-play-progress.ytp-swatch-background-color');
+        if (window.getComputedStyle(coloredProgress, null).getPropertyValue('background-color') == 'rgb(255, 204, 0)') {
+            video.currentTime = video.duration;
+        };
     };
     // ---------------------
     function shiftKeyIsDown() {return !!window.event.shiftKey;}
