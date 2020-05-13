@@ -2289,6 +2289,7 @@
         addGlobalStyle('.menu.realsex, .menu.community {display: none !important;}', 'ph_Style_2');
         // --------------------------------------------------------------------------------
         let actualSource = () => {
+            G_allData = {};
             let contentURL;
             let flashvars = getWindowVar('flashvars');
             if (!flashvars) {
@@ -2305,20 +2306,28 @@
             if (flashvars) {
                 let qualityTable = flashvars.defaultQuality, maxQuality = 0;
                 for (let quality of qualityTable) {
-                    maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
+                    //maxQuality = quality > maxQuality && flashvars['quality_' + quality + 'p'] ? quality : maxQuality;
+                    if (quality > maxQuality) {
+                        let url = flashvars['quality_' + quality + 'p'];
+                        if (url) {
+                            maxQuality = quality;
+                            G_allData[quality+''] = url;
+                            // alert(quality + ' : ' + url);
+                        };
+                    };
                 };
                 if (maxQuality > 0) {
                     console.log('quality: ' + maxQuality);
                     contentURL = flashvars['quality_' + maxQuality + 'p'];
                     return (contentURL); // openURL(refineVideo(contentURL));
                 };
-            }
+            };
         };
         // --------------------------------------------------------------------------------
         if (G_pageURL.match('#ReCast')) { // https://www.pornhub.com/view_video.php?viewkey=ph5852ef85649df#ReCast
             // window.stop();
             G_funcToTest = function() {return actualSource();};
-            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            G_funcToRun = function() {console.log('G_allData:', G_allData); G_contentURL = G_funcResult; G_standartReCastFunc();};
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
         }
         // --------------------------------------------------------------------------------
