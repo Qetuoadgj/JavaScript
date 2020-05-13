@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.29
+// @version      0.0.30
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -1344,7 +1344,7 @@
                 if (jjs) {
                     const videoSizeOptions = player.querySelector('.video-size-options > .background');
                     // videoSrc = videoSrc.replace(jjs, '');
-                    let data = JSON.parse(decodeURI(jjs));
+                    let data = JSON.parse(decodeURIComponent(jjs)); // JSON.parse(decodeURI(jjs));
                     let sources = [];
                     let lowestQuality = 9999;
                     for (let item of Object.keys(data)) {

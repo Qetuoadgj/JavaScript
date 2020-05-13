@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.81
+// @version      2.0.82
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1261,7 +1261,7 @@
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
             if (G_allData) {
-                mediaData.json = encodeURI(JSON.stringify(G_allData));
+                mediaData.json = encodeURIComponent(JSON.stringify(G_allData)); //encodeURI(JSON.stringify(G_allData));
                 let symbol = mediaData.refined.match(/[?]/) ? '&' : '?';
                 mediaData.refined = mediaData.refined + symbol + 'jjs=' + mediaData.json;
             };
