@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.79
+// @version      2.0.81
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -678,7 +678,6 @@
         'WoodmanCastingX.com',
         'WowGirls.com',
         'X-Art.com',
-        'Xart.com',
         'YoungThroats.com',
         'ZTOD.com',
         // ---------------
@@ -693,6 +692,9 @@
         'Blacked.com',
         '5kPorn.com',
         'RealityJunkies.com',
+        'MissaX.com',
+        'PureTaboo.com',
+        'AllFineGirls.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -725,10 +727,51 @@
         console.log(str);
         return str;
     };
+    function checkArrayMatch(array, str) {
+        for (let item of array) {
+            let match = str.match(item);
+            if (match) return match;
+        };
+    };
+    function autoSort(str) {
+        let a = [];
+        let t1 = [];
+        let t2 = [];
+        let t3 = [];
+        let t4 = [];
+        let domains = [/^[^\s]+\.[^\s]+$/];
+        let extra = ['★', /^\d+fps$/, /^HQ$/, /^OK$/];
+        for (let word of str.split(', ')) {
+            if (typeof word !== 'undefined') {
+                word = word.trim()
+                if (word !== '') {
+                    if (word.match(/^M:/)) {
+                        t1.push(word);
+                    }
+                    else if (checkArrayMatch(extra, word)) {
+                        t4.push(word);
+                    }
+                    else if (checkArrayMatch(domains, word)) {
+                        t3.push(word);
+                    }
+                    else {
+                        t2.push(word);
+                    };
+                };
+            };
+        };
+        a = t1.concat(t2.sort()).concat(t3.sort()).concat(t4.sort());
+        str = a.join(', ');
+        console.log(str);
+        return str;
+    };
     var G_embedCodeTextCategorie = GM_getValue('category', '') || '';
     var G_categories = {
         'M:' : '',
         '.com' : '',
+        '60fps' : '',
+        'HQ' : '',
+        'OK' : '',
         'Anal' : '',
         '3some' : '',
         '4some' : '',
@@ -738,6 +781,7 @@
         'Creampie, Cum in Pussy' : '',
         'Creampie, Cum in Ass' : '',
         'Fuck after Cumshot' : '',
+        'Fake Cum': '',
         '★' : '',
         '-----------------------------' : '',
     };
@@ -777,6 +821,7 @@
         element.addEventListener('change', function(e){
             G_embedCodeTextCategorie = e.target.value;
             G_embedCodeTextCategorie = autoReplace(G_embedCodeTextCategorie);
+            G_embedCodeTextCategorie = autoSort(G_embedCodeTextCategorie);
             e.target.value = G_embedCodeTextCategorie;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
         }, false);
@@ -1435,10 +1480,16 @@
                 if (!G_embedCodeFrame) return;
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                     updateEmbedCodeTextColor();
-                    if (G_posterURL) {
+                    if (e.data.poster) {
                         if (!G_postersArray.includes(e.data.poster)) {
                             G_postersArray = G_postersArray.concat([e.data.poster]).unique();
                             if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                            let currentSrc = G_embedCodePoster.getAttribute('src');
+                            if ( currentSrc == '' || currentSrc.match('/vk.com/images/video/thumbs/video_l.png')) {
+                                G_embedCodePoster.setAttribute('src', e.data.poster);
+                                G_posterURL = e.data.poster;
+                                updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+                            };
                         }
                     };
                 }, function onErrorFunc() {
@@ -1527,7 +1578,7 @@
             G_pageURL.matchLink('https?://www.eporner.eu/embed/*')
         ) {
             G_funcToTest = function () {
-                return document.querySelector('body video[src]') && document.querySelector('head > meta[itemprop="contentUrl"][content]');
+                return document.querySelector('body video[src]'); // && document.querySelector('head > meta[itemprop="contentUrl"][content]');
             };
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
@@ -1548,21 +1599,25 @@
                 // --------------------------------------------------------------------------------
                 if (menuItem) menuItem.click();
                 // --------------------------------------------------------------------------------
-                let video = document.querySelector('body video'), src = video.src;
+                let video = document.querySelector('body video'), src = video.currentSrc;
                 if (src.match('blob:')) {
-                    let content = document.querySelector('head > meta[itemprop="contentUrl"]').content;
+                    let content = ''; // document.querySelector('head > meta[itemprop="contentUrl"]').content;
                     video.src = content;
+                    // setTimeout(function() {
                     waitForCondition(
-                        function() {return video.src != content;},
+                        // function() {return video.currentSrc != content;},
+                        function() {return !video.currentSrc.match('blob:') && video.currentSrc != content;},
                         function() {
-                            G_contentURL = video.src;
+                            G_contentURL = video.currentSrc;
+                            // alert(G_contentURL);
                             log(G_debugMode, 'G_contentURL:', G_contentURL);
                             openURL(refineVideo(G_contentURL));
                         }, G_delay, G_tries, G_timerGroup
                     );
+                    // }, 250);
                 }
                 else {
-                    G_contentURL = video.src;
+                    G_contentURL = video.currentSrc;
                     log(G_debugMode, 'G_contentURL:', G_contentURL);
                     openURL(refineVideo(G_contentURL));
                 };
@@ -2535,6 +2590,9 @@
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
+            let h = document.querySelector(`.main-h1.h2-main`); if (h && h.innerText == 'WHY DO I SEE IT?') {
+                location.pathname = location.pathname;
+            };
             G_funcToRun = function() {
                 // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
                 let header = document.querySelector('.box.page-content header');
@@ -2977,8 +3035,10 @@
                     document.querySelector('meta[property="og:image"]').content :
                     null
                 );
-                G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('link[itemprop="thumbnailUrl"]').getAttribute('href', 2));
-                G_stickTo = document.querySelectorAll('.video > .heading, .video_info_wrapper > .heading')[0]; G_stickPosition = 1;
+                let thumbNailSrc = document.querySelector('link[itemprop="thumbnailUrl"]');
+                G_posterURL = G_posterURL ? G_posterURL :
+                thumbNailSrc ? getAbsoluteUrl(thumbNailSrc.getAttribute('href', 2)) : G_posterURL;
+                G_stickTo = document.querySelectorAll('.video .heading, .video_info_wrapper .heading')[0]; G_stickPosition = 1;
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 G_messageTarget = document.querySelector('iframe').contentWindow;
@@ -3051,6 +3111,9 @@
         G_funcToRun = function() {
             G_contentURL = daxabGetMaxQualityURL(0);
             G_posterURL = G_contentURL.replace(/(^.*videos\/.*?\/.*?)\/.*/, '$1/thumb.jpg');
+            //psv53-1.daxab.com/videos/-146716990/456239017/thumb.jpg
+            //             location.href = G_posterURL;
+            // alert(G_contentURL);
             // alert(G_posterURL);
             G_standartReCastFunc();
         };
