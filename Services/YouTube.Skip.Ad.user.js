@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Skip.Ad
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.01
+// @version      1.0.02
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Skip.Ad.user.js
@@ -21,19 +21,32 @@
 
     // Your code here...
     function skipAd() {
-        const video = document.querySelector('.html5-main-video');
-        const coloredProgress = document.querySelector('.ytp-play-progress.ytp-swatch-background-color');
-        if (coloredProgress && window.getComputedStyle(coloredProgress, null).getPropertyValue('background-color') == 'rgb(255, 204, 0)') {
-            video.currentTime = video.duration;
-        };
+        (() => {
+            const video = document.querySelector('.html5-main-video');
+            const selector = '.ytp-play-progress.ytp-swatch-background-color';
+            const testColor = 'rgb(255, 204, 0)';
+            const coloredProgress = document.querySelector(selector);
+            if (coloredProgress && window.getComputedStyle(coloredProgress, null).getPropertyValue('background-color') == testColor) {
+                video.currentTime = video.duration;
+                console.log('skipAd:', 'progress', selector, testColor);
+            };
+        })();
         setTimeout(() => {
-            const skipAdButton = document.querySelector('.ytp-ad-skip-button');
-            if (skipAdButton) skipAdButton.click();
-        }, 250);
+            const selector = '.ytp-ad-skip-button';
+            const skipAdButton = document.querySelector(selector);
+            if (skipAdButton) {
+                skipAdButton.click();
+                console.log('skipAd:', 'skip ad', selector);
+            };
+        }, 500);
         setTimeout(() => {
-            const skipAdButton = document.querySelector('.ytp-ad-overlay-close-button');
-            if (skipAdButton) skipAdButton.click();
-        }, 250);
+            const selector = '.ytp-ad-overlay-close-button';
+            const skipAdButton = document.querySelector(selector);
+            if (skipAdButton) {
+                skipAdButton.click();
+                console.log('skipAd:', 'close ad', selector);
+            };
+        }, 500);
     };
     // ---------------------
     function shiftKeyIsDown() {return !!window.event.shiftKey;}
@@ -154,5 +167,13 @@
     // ---------------------
     window.onkeydown = function(e){onKeyDown(e);};
     // ---------------------
-
+    function handleNewElements(event) {
+        let element = event ? event.target : null;
+        if (element && element.tagName == 'DIV' /*&& element.id == "progress"*/ || element.tagName == 'VIDEO') {
+            window.onkeydown = function(e){onKeyDown(e);};
+            // window.stop();
+        };
+        // console.log('el:', element);
+    };
+    document.addEventListener('DOMNodeInserted', handleNewElements, false);
 })();
