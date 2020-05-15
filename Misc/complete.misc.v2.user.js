@@ -695,6 +695,18 @@
         'MissaX.com',
         'PureTaboo.com',
         'AllFineGirls.com',
+        'InTheCrack.com',
+        'ATKGirlfriends.com',
+        'MyLifeInMiami.com',
+        'Wicked.com',
+        'ElegantAngel.com',
+        'DaughterSwap.com',
+        'Submissived.com',
+        'LesbianX.com',
+        'Clips4Sale.com',
+        'AllGirlMassage.com',
+        'BlacksOnBlondes.com',
+        'DeviceBondage.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -1583,17 +1595,23 @@
             G_funcToRun = function() {
                 // --------------------------------------------------------------------------------
                 let maxQuality = 0, menuItem;
+                let buttonData = {};
                 for (let item of document.querySelectorAll('.vjs-menu-content > .vjs-menu-item')) {
                     let button = item.querySelector('.vjs-menu-item-text');
                     let text = button ? button.innerText : '';
-                    let fps = false; //text.match('1080p@60fps HD');
-                    console.log(text,fps);
-                    if (fps) {
-                        continue;
-                    }
-                    else {
-                        let buttonQuality = Number(text.match(/\d+/));
-                        if (buttonQuality > maxQuality && buttonQuality < G_qualityLimit) { maxQuality = buttonQuality; menuItem = item; };
+                    let matched = text.match(/(\d+)/);
+                    if (matched) {
+                        let buttonQuality = Number(matched[1]);
+                        buttonData[String(buttonQuality)] = item;
+                    };
+                };
+                let keys = Object.keys(buttonData);
+                for (let item of keys) {
+                    let quality = Number(item);
+                    let button = buttonData[String(quality)];
+                    if (quality > maxQuality && quality < G_qualityLimit) {
+                        maxQuality = quality;
+                        menuItem = button;
                     };
                 };
                 // --------------------------------------------------------------------------------
@@ -2599,9 +2617,11 @@
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
-            let h = document.querySelector(`.main-h1.h2-main`); if (h && h.innerText == 'WHY DO I SEE IT?') {
-                location.pathname = location.pathname;
-            };
+            document.addEventListener("DOMContentLoaded", function(event) {
+                let h = document.querySelector(`.main-h1.h2-main`); if (h && h.innerText == 'WHY DO I SEE IT?') {
+                    location.pathname = location.pathname;
+                };
+            });
             G_funcToRun = function() {
                 // https://hqporner.com/?q=GINA LOOKS GOOD IN RED
                 let header = document.querySelector('.box.page-content header');
@@ -3076,9 +3096,11 @@
         */
         /* globals globParams */
         function daxabGetMaxQualityURL(limit = 0) {
+            G_allData = {};
             if (globParams.video.cdn_id) {
                 let params = globParams.video.cdn_id.split('_');
                 if (params[1]) {
+                    let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
                     let id1 = params[0], id2 = params[1];
                     let maxQuality = 0, maxQualityURL = null;
                     for (let key of Object.keys(globParams.video.cdn_files)) {
@@ -3089,12 +3111,13 @@
                             if (keyQuality > maxQuality) {
                                 let type = match[1];
                                 maxQuality = keyQuality;
-                                maxQualityURL = globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`);
+                                maxQualityURL = domain + globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`);
+                                G_allData[String(keyQuality)] = maxQualityURL;
                             };
                         };
                     };
-                    let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
-                    maxQualityURL = domain + maxQualityURL;
+                    // let domain = location.protocol + document.querySelectorAll('body video > source[src], body video[src]')[0].src.replace(/.*\/\/(.*?)\/.*/, '//$1');
+                    // maxQualityURL = domain + maxQualityURL;
                     // console.log('maxQualityURL:', maxQualityURL);
                     return maxQualityURL;
                 };
