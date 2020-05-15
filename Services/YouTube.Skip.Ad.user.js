@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Skip.Ad
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.00
+// @version      1.0.01
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Skip.Ad.user.js
@@ -23,9 +23,17 @@
     function skipAd() {
         const video = document.querySelector('.html5-main-video');
         const coloredProgress = document.querySelector('.ytp-play-progress.ytp-swatch-background-color');
-        if (window.getComputedStyle(coloredProgress, null).getPropertyValue('background-color') == 'rgb(255, 204, 0)') {
+        if (coloredProgress && window.getComputedStyle(coloredProgress, null).getPropertyValue('background-color') == 'rgb(255, 204, 0)') {
             video.currentTime = video.duration;
         };
+        setTimeout(() => {
+            const skipAdButton = document.querySelector('.ytp-ad-skip-button');
+            if (skipAdButton) skipAdButton.click();
+        }, 250);
+        setTimeout(() => {
+            const skipAdButton = document.querySelector('.ytp-ad-overlay-close-button');
+            if (skipAdButton) skipAdButton.click();
+        }, 250);
     };
     // ---------------------
     function shiftKeyIsDown() {return !!window.event.shiftKey;}
