@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.82
+// @version      2.0.85
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -28,6 +28,7 @@
 // @exclude      *://vshare.io/v/404/*
 // @match        *://www.porntrex.com/video/*/*
 // @match        *://www.porntrex.com/*
+// @match        *://www.ebalovo.pro/video/*
 // @match        *://sxyprn.com/post/*
 // @match        *://sxyprn.net/post/*
 // @match        *://upornia.com/videos/*/*
@@ -53,7 +54,7 @@
 // @match        *://www.definebabe.com/gallery/*
 // @match        *://hqporner.com/hdporn/*.html
 // @match        *://mydaddy.cc/video/*
-/// @match        *://hqwo.cc/player/*
+// @match        *://hqwo.cc/player/*
 // @match        *://www.sex.com/picture/*/
 // @match        *://www.sex.com/pin/*/
 // @match        *://www.sex.com/*
@@ -550,6 +551,7 @@
         GM_deleteValue('qualityLimit');
         // if (TEST_MODE) return;
         location.replace(url);
+        // location.href = url;
     };
     // ================================================================================
     function eventFire(el, etype) {
@@ -707,6 +709,8 @@
         'AllGirlMassage.com',
         'BlacksOnBlondes.com',
         'DeviceBondage.com',
+        'TrueAnal.com',
+        'KellyMadison.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -752,7 +756,7 @@
         let t3 = [];
         let t4 = [];
         let domains = [/^[^\s]+\.[^\s]+$/];
-        let extra = ['★', /^\d+fps$/, /^HQ$/, /^OK$/];
+        let extra = ['★', /^\d+fps$/, /^(HQ|OK|[^\w]+|\d+)$/];
         for (let word of str.split(', ')) {
             if (typeof word !== 'undefined') {
                 word = word.trim()
@@ -1274,6 +1278,7 @@
             mediaData.duration = media.duration;
             if (G_allData) {
                 mediaData.json = encodeURIComponent(JSON.stringify(G_allData)); //encodeURI(JSON.stringify(G_allData));
+                // console.log(JSON.stringify(G_allData), mediaData.json, decodeURIComponent(mediaData.json)); alert(JSON.stringify(G_allData) == decodeURIComponent(mediaData.json));
                 let symbol = mediaData.refined.match(/[?]/) ? '&' : '?';
                 mediaData.refined = mediaData.refined + symbol + 'jjs=' + mediaData.json;
             };
@@ -1605,7 +1610,8 @@
                         buttonData[String(buttonQuality)] = item;
                     };
                 };
-                let keys = Object.keys(buttonData);
+                let video = document.querySelector('body video'), src = video.currentSrc;
+                let keys = Object.keys(buttonData), maxIndex = keys.length-1;
                 for (let item of keys) {
                     let quality = Number(item);
                     let button = buttonData[String(quality)];
@@ -1614,10 +1620,54 @@
                         menuItem = button;
                     };
                 };
+                let data = {}, index = 0;
+                video.addEventListener('loadstart', function(e){
+                    let media = e.target;
+                    let src = media.currentSrc;
+                    let match = src.match(/(\d+)p\.mp4/); // https://s15-n5-nl-cdn.eporner.com/403e70468a1f8d51c1d77daae18a3043/5ebf2186010600/1101004-480p.mp4
+                    if (match) {
+                        let quality = Number(match[1]);
+                        let key = String(quality);
+                        if (!data[key]) {
+                            data[key] = src;
+                            index++;
+                            if (index <= maxIndex + 1) {
+                                if (index <= maxIndex) {
+                                    let button = buttonData[String(keys[index])];
+                                    if (button) button.click();
+                                }
+                                else if (index == maxIndex + 1) {
+                                    console.log('data:', data);
+                                    // --------------
+                                    G_allData = data;
+                                    G_contentURL = G_allData[String(maxQuality)];
+                                    // alert(maxQuality + ' : ' + G_contentURL);
+                                    log(G_debugMode, 'G_contentURL:', G_contentURL);
+                                    // --------------
+                                    let refinedURL = refineVideo(G_contentURL);
+                                    if (G_allData) {
+                                        let jsonData = encodeURIComponent(JSON.stringify(G_allData));
+                                        let symbol = refinedURL.match(/[?]/) ? '&' : '?';
+                                        refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
+                                    };
+                                    // openURL(refineVideo(contentURL));
+                                    openURL(refinedURL);
+                                    // --------------
+                                };
+                            };
+                        };
+                    };
+                    console.log(e.target.currentSrc);
+                });
+                video.src = location.pathname;
+                let button = buttonData[String(keys[index])];
+                // alert(button);
+                button.click();
+                return;
                 // --------------------------------------------------------------------------------
                 if (menuItem) menuItem.click();
                 // --------------------------------------------------------------------------------
-                let video = document.querySelector('body video'), src = video.currentSrc;
+                // let video = document.querySelector('body video'), src = video.currentSrc;
                 if (src.match('blob:')) {
                     let content = ''; // document.querySelector('head > meta[itemprop="contentUrl"]').content;
                     video.src = content;
@@ -1949,55 +1999,48 @@
         addGlobalStyle('.inf a {color: red; font-size: 9px;}', 'style-1');
         addGlobalStyle('.block-video .video-holder {width: 100%;}', 'style-2');
         if (
-            G_pageURL.matchLink('https?://www.porntrex.com/video/*/*')
-            /* globals flashvars */
+            location.pathname.match(/^\/video\//)
         ) {
-            if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
-                // window.stop();
-                G_funcToTest = function () {
-                    return typeof flashvars !== "undefined" && flashvars.video_url;
-                };
-                G_funcToRun = function () {
-                    /*
-                    let contentURL = (
-                        flashvars.video_alt_url5 ? flashvars.video_alt_url5 :
-                        flashvars.video_alt_url4 ? flashvars.video_alt_url4 :
-                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 : // 1080
-                        flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
-                        flashvars.video_alt_url ? flashvars.video_alt_url :
-                        flashvars.video_url
+            /* globals flashvars */
+            G_funcToTest = function () {
+                return typeof flashvars !== "undefined" && flashvars.video_url;
+            };
+            function getMaxQualityURL(limit = 0) {
+                let maxQuality = 0, contentURL;
+                G_allData = {};
+                for (let i = 5; i >= 0; i--) {
+                    let k = (
+                        i == 0 ? 'video_url' :
+                        i == 1 ? 'video_alt_url' :
+                        'video_alt_url' + i
                     );
-                    let posterURL = flashvars.preview_url;
-                    console.log('contentURL: ', contentURL);
-                    */
-                    let maxQuality = 0, contentURL;
-                    G_allData = {};
-                    for (let i = 5; i >= 0; i--) {
-                        let k = (
-                            i == 0 ? 'video_url' :
-                            i == 1 ? 'video_alt_url' :
-                            'video_alt_url' + i
-                        );
-                        let url = flashvars[k];
-                        if (url) {
-                            let quality = flashvars[k+'_text'];
-                            if (quality) {
-                                quality = quality.match(/^(\d+).*$/)[1];
-                                quality = parseInt(quality);
-                                G_allData[quality] = url;
-                                if (quality > maxQuality && quality < G_qualityLimit) {
-                                    // alert(quality);
-                                    maxQuality = quality;
-                                    contentURL = url;
-                                };
+                    let url = flashvars[k];
+                    if (url) {
+                        let quality = flashvars[k+'_text'];
+                        if (quality) {
+                            quality = quality.match(/^(\d+).*$/)[1];
+                            quality = parseInt(quality);
+                            G_allData[quality] = url;
+                            if (quality > maxQuality) {
+                                if (limit && quality > limit) continue;
+                                // alert(quality);
+                                maxQuality = quality;
+                                contentURL = url;
                             };
                         };
                     };
+                };
+                return contentURL;
+            };
+            if (G_pageURL.match('#OnlyVideo')) { // https://www.porntrex.com/video/162636/kiera-winters-sex-queen-and-her-prince#OnlyVideo
+                // window.stop();
+                G_funcToRun = function () {
+                    let contentURL = getMaxQualityURL(G_qualityLimit);
                     let posterURL = flashvars.preview_url;
                     console.log('contentURL: ', contentURL);
                     let refinedURL = refineVideo(contentURL);
                     if (G_allData) {
-                        let jsonData = encodeURI(JSON.stringify(G_allData));
+                        let jsonData = encodeURIComponent(JSON.stringify(G_allData));
                         let symbol = refinedURL.match(/[?]/) ? '&' : '?';
                         refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
                     };
@@ -2009,29 +2052,125 @@
             else {
                 localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '1080p HD';
                 localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '720p HD';
-                G_funcToTest = function () {
-                    return typeof flashvars !== "undefined" && flashvars.video_url;
-                };
                 G_funcToRun = function () {
                     G_contentURL = G_shortURL + '#OnlyVideo';
-                    G_sampleURL = (
-                        flashvars.video_alt_url5 ? flashvars.video_alt_url5 :
-                        flashvars.video_alt_url4 ? flashvars.video_alt_url4 :
-                        flashvars.video_alt_url3 ? flashvars.video_alt_url3 : // 1080
-                        flashvars.video_alt_url2 ? flashvars.video_alt_url2 :
-                        flashvars.video_alt_url ? flashvars.video_alt_url :
-                        flashvars.video_url
-                    );
+                    G_sampleURL = getMaxQualityURL(0);
                     localStorage.kvsplayer_selected_format = flashvars.video_alt_url3 ? '1080p HD' : '720p HD';
                     G_forceLoad = true;
                     G_posterURL = G_posterURL ? G_posterURL : document.querySelector('.block-screenshots > a > img.thumb[src]').src;
-                    G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/www.porntrex.com/');
-                    G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
+                    G_posterURL = G_posterURL.replace('/statics.cdntrex.com/', '/' + location.host + '/');
+                    // G_postersArray = CreateLinksList(G_posterURL, /^.*\/\/.*.com\/(contents\/videos_screenshots\/\d+\/\d+\/\d+x\d+)\/\d+.jpg/i, location.protocol+'//www.porntrex.com/$1/$NUM.jpg', 1, document.querySelectorAll(".thumb.lazy-load").length); // console.log('G_posters:\n', G_postersArray);
+                    G_postersArray = CreateLinksList(G_posterURL, /\/((?:contents\/)?videos_screenshots\/\d+\/\d+(?:\/.*)?\/\d+x\d+)\/\d+.jpg/i, '/$1/$NUM.jpg', 1, document.querySelectorAll('.block-screenshots > a > img.thumb[src]').length); // console.log('G_posters:\n', G_postersArray);
                     let timeLineThumbsMaxIndex = 500; // (60 * 60) / (flashvars.timeline_screens_interval * 1); // flashvars.timeline_screens_interval * 1;
                     for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
                         //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
                         G_postersArray[G_postersArray.length] = flashvars.timeline_screens_url.
-                        replace('{time}', i).replace('//statics.cdntrex.com/', location.protocol+'//www.porntrex.com/');
+                        replace('{time}', i).replace('^.*?//statics.cdntrex.com/', location.origin+'/');
+                    };
+                    // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
+                    // https://statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
+                    G_actorsSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
+                    G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
+                    // --------------------------------------------------------------------------------
+                    G_standartAddEmbedCodeFunc();
+                    // --------------------------------------------------------------------------------
+                    let eventCatcher, media;
+                    let handleNewElements = function (e) {
+                        let element = e.target;
+                        // console.log('element.tagName:', element.tagName);
+                        if (element.tagName == 'VIDEO') {
+                            document.removeEventListener('DOMNodeInserted', handleNewElements, false);
+                            // alert(element);
+                            if (element == document.querySelector('.fp-player > video')) {
+                                eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.fp-player');
+                                media = media ? media : element; // || eventCatcher;
+                                // if (media) {media = media.parentNode};
+                                mediaMouseControls(eventCatcher, media, 1);
+                                G_messageTarget = media;
+                            };
+                        };
+                    };
+                    document.addEventListener('DOMNodeInserted', handleNewElements, false);
+                };
+                waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            };
+        }
+    }
+
+    else if (
+        G_pageURL.matchLink('https?://www.ebalovo.pro/*')
+    ) {
+        if (
+            location.pathname.match(/^\/video\//)
+        ) {
+            //* globals flashvars */
+            G_funcToTest = function () {
+                return typeof flashvars !== "undefined" && flashvars.video_url;
+            };
+            function getMaxQualityURL(limit = 0) {
+                let maxQuality = 0, contentURL;
+                G_allData = {};
+                for (let i = 5; i >= 0; i--) {
+                    let k = (
+                        i == 0 ? 'video_url' :
+                        i == 1 ? 'video_alt_url' :
+                        'video_alt_url' + i
+                    );
+                    let url = flashvars[k];
+                    if (url) {
+                        let quality = flashvars[k+'_text'];
+                        if (quality) {
+                            quality = quality.match(/^(\d+).*$/)[1];
+                            quality = parseInt(quality);
+                            G_allData[quality] = url;
+                            if (quality > maxQuality) {
+                                if (limit && quality > limit) continue;
+                                // alert(quality);
+                                maxQuality = quality;
+                                contentURL = url;
+                            };
+                        };
+                    };
+                };
+                return contentURL;
+            };
+            if (G_pageURL.match('#OnlyVideo')) { // https://www.ebalovo.pro/video/fotomodel-obslujivaet-tolpu-chernokojih/#OnlyVideo
+                // window.stop();
+                G_funcToRun = function () {
+                    let contentURL = getMaxQualityURL(G_qualityLimit);
+                    let posterURL = flashvars.preview_url;
+                    console.log('contentURL: ', contentURL);
+                    let refinedURL = refineVideo(contentURL);
+                    if (G_allData) {
+                        let jsonData = encodeURIComponent(JSON.stringify(G_allData));
+                        let symbol = refinedURL.match(/[?]/) ? '&' : '?';
+                        refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
+                    };
+                    // openURL(refineVideo(contentURL));
+                    openURL(refinedURL);
+                };
+                waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }
+            else {
+                localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '1080p';
+                localStorage.kvsplayer_selected_format = localStorage.kvsplayer_selected_format || '720p';
+                G_funcToRun = function () {
+                    G_contentURL = G_shortURL + '#OnlyVideo';
+                    G_sampleURL = getMaxQualityURL(0);
+                    localStorage.kvsplayer_selected_format = flashvars.video_alt_url3 ? '1080p' : '720p';
+                    G_forceLoad = true;
+                    G_posterURL = G_posterURL ? G_posterURL : document.querySelector('#tab_screenshots .screenshot > img[data-src]').dataset.src;
+                    G_posterURL = G_posterURL.replace(/^(.*)?(\/\/.*\.\w+?)\//, location.protocol+'$2/');
+                    // console.log(document.querySelectorAll("#tab_screenshots .screenshot > img[data-src]"), G_posterURL, G_posterURL.replace(/^.*\/\/.*\.\w+\/((?:contents\/)?videos_screenshots\/\d+\/\d+(?:\/.*)?\/\d+x\d+)\/\d+.jpg/i, location.origin+'/$1/$NUM.jpg'));
+                    // https://img.ebacdn.com/videos_screenshots/49000/49734/timelines/mp4/160x90/26.jpg
+                    console.log(G_posterURL);
+                    G_postersArray = CreateLinksList(G_posterURL, /\/((?:contents\/)?videos_screenshots\/\d+\/\d+(?:\/.*)?\/\d+x\d+)\/\d+.jpg/i, '/$1/$NUM.jpg', 1, document.querySelectorAll("#tab_screenshots .screenshot > img[data-src]").length); console.log('G_posters:\n', G_postersArray);
+                    console.log(G_posterURL);
+                    let timeLineThumbsMaxIndex = 500; // (60 * 60) / (flashvars.timeline_screens_interval * 1); // flashvars.timeline_screens_interval * 1;
+                    for (let i = 1; i <= timeLineThumbsMaxIndex; i++) {
+                        //statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/{time}.jpg
+                        G_postersArray[G_postersArray.length] = flashvars.timeline_screens_url.
+                        replace('{time}', i); //.replace('^.*?//statics.cdntrex.com/', location.origin+'/');
                     };
                     // https://www.porntrex.com/contents/videos_screenshots/62000/62730/300x168/1.jpg
                     // https://statics.cdntrex.com/contents/videos_screenshots/62000/62730/timelines/timeline_mp4/200x116/69.jpg
@@ -2730,6 +2869,42 @@
             G_standartReCastFunc();
         };
         waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+    }
+    // ================================================================================
+    else if (
+        G_pageURL.matchLink('https?://hqwo.cc/player/*') // https://hqwo.cc/player/ae3dea093fc0da4e19dae39cc2a2d9f5?img=Ly9ocXBvcm5lci5jb20vaW1ncy90aHVtYnMvNDcvNTUvYWUzZGVhMDkzZmMwZGE0X2NvdmVyLmpwZw==
+    ) {
+        G_funcToTest = function () {try {return jwplayer().getConfig().playlist[0].allSources;} catch(e){};};
+        G_funcToRun = function() {
+            // --------------------------------------------------------------------------------
+            let data = {};
+            let maxQuality = 0;
+            let playerData = G_funcResult;
+            let keys = Object.keys(playerData);
+            for (let item of keys) {
+                let label = playerData[item].label;
+                if (label) {
+                    let match = label.match(/(\d+)/);
+                    if (match) {
+                        let quality = Number(match[0]);
+                        data[String(quality)] = playerData[item].file;
+                        if (quality > maxQuality && quality < G_qualityLimit) {
+                            maxQuality = quality;
+                        };
+                    };
+                };
+            };
+            console.log('data:', data);
+            // --------------
+            G_allData = data;
+            G_contentURL = G_allData[String(maxQuality)];
+            // alert(maxQuality + ' : ' + G_contentURL);
+            log(G_debugMode, 'G_contentURL:', G_contentURL);
+            // --------------
+            G_standartReCastFunc();
+            // --------------------------------------------------------------------------------
+        };
+        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
     }
     // ================================================================================
 
