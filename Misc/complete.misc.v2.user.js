@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.85
+// @version      2.0.87
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -711,6 +711,18 @@
         'DeviceBondage.com',
         'TrueAnal.com',
         'KellyMadison.com',
+        'SisLovesMe.com',
+        '1000Facials.com',
+        'JesseLoadsMonsterFacials.com',
+        'DirtyFlix.com',
+        'DadCrush.com',
+        'ScrewBox.com',
+        'FamilySinners.com',
+        'CherryPop.com',
+        'ErotiqueTvLive.com',
+        'DeviantHardcore.com',
+        'Throated.com',
+        'PropertySex.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -802,6 +814,17 @@
         '-----------------------------' : '',
     };
     var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
+        let buttonHolderID = 'uniqueEmbedCodeCatButtonHolder';
+        for (let element of document.querySelectorAll('#' + buttonHolderID)) {element.remove();};
+        let buttonHolder = document.createElement('div');
+        buttonHolder.setAttribute('id', buttonHolderID);
+        // element0.style.background = 'red';
+        buttonHolder.style.display = 'flex';
+        buttonHolder.style.alignItems = 'center';
+        // element0.style.border = '1px grey solid';
+        buttonHolder.style.height = '26px';
+        embedCodeFrame.appendChild(buttonHolder);
+        // --------------------------------------------------------------------------------
         let element0ID = 'uniqueEmbedCodeCatInputHolder';
         for (let element of document.querySelectorAll('#' + element0ID)) {element.remove();};
         let element0 = document.createElement('div');
@@ -840,6 +863,17 @@
             G_embedCodeTextCategorie = autoSort(G_embedCodeTextCategorie);
             e.target.value = G_embedCodeTextCategorie;
             updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+            // ---
+            for (let button of document.querySelectorAll('#uniqueEmbedCodeCatButtonHolder > button')) {
+                // if (text == button.innerText.trim()) return;
+                button.remove();
+            };
+            for (let word of e.target.value.split(', ')) {
+                if (typeof word !== 'undefined') {
+                    word = word.trim()
+                    addCatButton(word, false);
+                };
+            };
         }, false);
         // --------------------------------------------------------------------------------
         element0.appendChild(element);
@@ -860,12 +894,12 @@
         let option = document.createElement('option');
         option.value = '-----------------------------';
         element3.appendChild(option);
-        console.log(option);
+        // console.log(option);
         for (let word of G_RenameTable) {
             let option = document.createElement('option');
             option.value = word;
             element3.appendChild(option);
-            console.log(option);
+            // console.log(option);
         };
         // --------------------------------------------------------------------------------
         let element2ID = 'uniqueEmbedCodeCatList';
@@ -903,42 +937,69 @@
         element4.innerHTML = '+';
         element0.appendChild(element4);
         // --------------------------------------------------------------------------------
-        element4.onclick = function(e) {
-            let value1 = element.value.trim();
-            let value2 = element2.value.trim();
-            let notInArray = true;
-            if (value2 == '') {
-                notInArray = false;
-            }
-            else {
-                for (let word of value1.split(', ')) {
-                    if (typeof word !== 'undefined') {
-                        word = word.trim()
-                        if (word !== '' && word.toLowerCase() == value2.toLowerCase()) {
-                            notInArray = false;
-                        };
-                    };
+        addGlobalStyle('#uniqueEmbedCodeCatButtonHolder > button {height: 20px; font-size: 12px; width: max-content;}', 'buttons');
+        function addCatButton(text, ignoreDupes = false) {
+            text = text.trim();
+            if (text == '') return;
+            if (!ignoreDupes) {
+                //                 let curValues = element.value.trim().split(', ');
+                //                 if (curValues.includes(text)) return;
+                for (let button of document.querySelectorAll('#uniqueEmbedCodeCatButtonHolder > button')) {
+                    if (text == button.innerText.trim()) return;
                 };
             };
-            if (notInArray) {
-                let a = [];
-                for (let word of value1.split(', ')) {
-                    if (typeof word !== 'undefined') {
-                        word = word.trim()
-                        if (word !== '') {
-                            a.push(word);
-                        };
+            //--
+            let b = document.createElement('button');
+            buttonHolder.appendChild(b);
+            b.innerText = text;
+            b.onclick = (e) => {
+                let b = e.target;
+                b.remove();
+                let text = b.innerText.trim();
+                let curValues = element.value.trim().split(', ');
+                // let firstValue = curValues[0], lastValue = curValues[curValues.length-1];
+                let newValues = [];
+                for (let word of text.split(', ')) {
+                    for (let value of curValues) {
+                        value = value.trim();
+                        if (value == '') continue;
+                        if (value == word) continue;
+                        newValues.push(value);
                     };
                 };
-                a.push(value2);
-                value1 = a.join(', ');
-                element.value = value1;
+                element.value = newValues.join(', ');
                 // Create a new 'change' event
                 let event = new Event('change');
                 // Dispatch it.
                 element.dispatchEvent(event);
             };
-            console.log(value1, notInArray);
+            // console.log('b:', b);
+        };
+        element4.onclick = function(e) {
+            let value1 = element.value.trim();
+            let value2 = element2.value.trim();
+            // ----
+            //             let b = addCatButton(value2);
+            //             console.log('b:', b);
+            // ----
+            let a = value1.split(', '); // [];
+            for (let word of value2.split(', ')) {
+                if (typeof word !== 'undefined') {
+                    word = word.trim();
+                    if (word == '') continue;
+                    if (a.includes(word)) continue;
+                    a.push(word);
+                };
+            };
+            // console.log('a:', a);
+            // a.push(value2);
+            value1 = a.join(', ');
+            element.value = value1;
+            // Create a new 'change' event
+            let event = new Event('change');
+            // Dispatch it.
+            element.dispatchEvent(event);
+            // console.log(value1, notInArray);
             element2.value = '';
         };
         // --------------------------------------------------------------------------------
@@ -969,6 +1030,13 @@
         element.style.width = 'calc(100% - ' + element2.style.width + ' - ' + element4.style.width + ' - 1px - ' + element5.style.width + ' - 1px)';
         element.style['max-width'] = element.style.width;
         // --------------------------------------------------------------------------------
+        for (let word of element.value.split(', ')) {
+            if (typeof word !== 'undefined') {
+                word = word.trim()
+                addCatButton(word, false);
+            };
+        };
+        // --
         return element;
     };
     var G_embedCodeTextStart = '00:00:00';
@@ -1091,6 +1159,7 @@
         element.addEventListener('load', function(e){
             G_embedCodeTextImage = e.target.src;
             G_embedCodeImageInput.value = G_embedCodeTextImage;
+            updatePostersArrayStyle();
         }, false);
         // --------------------------------------------------------------------------------
         return element;
@@ -1208,9 +1277,23 @@
         return G_embedCodeText;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodePosterSelector, G_postersArray = [];
+    var G_embedCodePosterSelector, G_postersArray = [], G_postersArrayStyle = document.createElement('style');
+    G_postersArrayStyle.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(G_postersArrayStyle);
+    function updatePostersArrayStyle() {
+        const parentID = 'uniqueEmbedCodePosterSelector';
+        if (!document.querySelectorAll('#' + parentID) || !G_postersArrayStyle) return;
+        const posterURL = G_embedCodePoster.src.replace(/^.*?:/, '');
+        const css = [
+            'border-color: red;',
+            'border-width: 6px;',
+            'border-style: double;',
+            'box-sizing: content-box;',
+        ].join('\n\t');
+        G_postersArrayStyle.innerHTML = `#${parentID} > img[src*="${posterURL}"] {${css}}`
+    };
     function addEmbedCodePosterSelector(URLArray) {
         console.log('G_embedCodePosterSelector --> URLArray:', URLArray);
+        URLArray = URLArray.unique();
         if (URLArray.length > 0) {
             let justRefresh = false;
             let elementID = 'uniqueEmbedCodePosterSelector';
@@ -1225,6 +1308,7 @@
                 updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
                 G_embedCodePoster.setAttribute('src', G_posterURL);
                 resizeEmbedCodePoster(1.0, 0.5, 5000);
+                updatePostersArrayStyle();
             };
             let imageStyle = G_embedCodePoster.getAttribute('style');
             imageStyle = 'display: inline-block !important; vertical-align: inherit; max-height: 120px; width: auto; height: auto; min-width: auto; min-height: 162px; zoom: 0.5;';
@@ -2868,7 +2952,7 @@
             // --------------------------------------------------------------------------------
             G_standartReCastFunc();
         };
-        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries * G_triesReCastMult * 2, G_timerGroup);
     }
     // ================================================================================
     else if (
