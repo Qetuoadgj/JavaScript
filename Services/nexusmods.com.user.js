@@ -1,65 +1,49 @@
 // ==UserScript==
 // @name         nexusmods.com
 // @icon         https://www.google.com/s2/favicons?domain=nexusmods.com
-// @version      1.0.1
+// @version      1.0.03
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/nexusmods.com.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @run-at       document-start
 // @noframes
-// @match        *://www.nexusmods.com/?id=*
-// @match        *://www.nexusmods.com/*/mods/*
-// @match        *://oblivion.nexusmods.com/mods/*
-// @match        *://skyrim.nexusmods.com/mods/*
 // @match        *://*.nexusmods.com/mods/*
+// @match        *://www.nexusmods.com/*/mods/*?tab=files&file_id=*
 // ==/UserScript==
 
 (function() {
     'use strict';
 
     // Your code here...
+    // ---------------------
+    if (
+        location.search.match('tab=files&file_id=')
+    ) {
+        function getDownlodURL() {
+            const downloadButton = document.querySelector('button[data-download-url]');
+            if (downloadButton) {
+                return downloadButton.dataset.downloadUrl;
+            };
+        };
+        // ---------------------
+        function handleNewElements(event) {
+            const element = event ? event.target : null;
+            const URL = getDownlodURL();
+            if (URL) {
+                document.removeEventListener('DOMNodeInserted', handleNewElements);
+                location.href = URL;
+                location.search = '?tab=files';
+            };
+        };
+        document.addEventListener('DOMNodeInserted', handleNewElements, false);
+    }
 
-    // Page Redirection
-    setTimeout(function(){
-        var pageHost = location.hostname,
-            pageURL = location.href,
-            pageTitle = document.title,
-            shortURL = (location.protocol + '//' + location.host + location.pathname).trim()
-        ;
-        var base = location.protocol + '//www.nexusmods.com',
-            game = 'oblivion',
-            mod = null
-        ;
-        if (pageURL.match(/https?:\/\/.*\.nexusmods\.com\/mods\//i)) {
-            mod = location.href.match(/mods\/(\d+)/i);
-            game = location.href.match(/:\/\/(.*?)\.nexusmods.com/i)[1];
-        }
-        else {
-            mod = location.href.match(/id=(\d+)/i);
-        }
-        if (mod) {
-            var mod_id = mod[1];
-            var new_url = base + '/' + game + '/mods/' + mod_id;
-            location.href = new_url;
-            return
-        }
-    }, 100);
-
-    // Links Fix
-    setTimeout(function(){
-        var links = document.querySelectorAll('a');
-        for (var i = 0; i < links.length; i++) {
-            var link = links[i];
-            var matches = link.href.match(/^https?:\/\/(.*?)\.nexusmods\.com\/downloads\/file.php\?id=(\d+)/i);
-            if (matches) {
-                var link_game = matches[1];
-                var link_mod_id = matches[2];
-                var new_href = location.protocol + '//www.nexusmods.com/'+link_game+'/mods/'+link_mod_id+'/';
-                link.setAttribute('href', new_href);
-                console.log('fixed: ' + link.href);
-            }
-        }
-    }, 1000);
-
+    else {
+        if (location.host.match(/^www\./)) return;
+        const game = (location.host.match('(.*?)\.nexusmods.com') || [])[1];
+        const mod_id = (location.pathname.match(/(\d+)\b/) || location.search.match(/(\d+)\b/) || [])[1];
+        // Page Redirection
+        if (game && mod_id) location.href = location.protocol + `//www.nexusmods.com/${game}/mods/${mod_id}`;
+    };
 })();
