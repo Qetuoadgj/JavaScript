@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.30
+// @version      0.0.31
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -20,43 +20,41 @@
     'use strict';
 
     // Your code here...
-    var G_USE_AS_EXTENSION = typeof GM == 'undefined';
+    const G_USE_AS_EXTENSION = typeof GM == 'undefined';
     console.log('G_USE_AS_EXTENSION:', G_USE_AS_EXTENSION);
 
     // https://vshare.io/v/404/https://s902.vshare.io:440/s,128-1000-22-1-2191707-bkxdtksrwj/186745/351673/185658/ff-8840c3e48fc8f80f67eeacc4b3fc3cdbb94c86b4,5c584cc5,2f23e49_480.mp4
     window.stop();
     // ---------------------------------------------------
     function removeEventListeners(elementSelector) {
-        var elementsArray = document.querySelectorAll(elementSelector);
-        for (var i = 0; i < elementsArray.length; i++) {
-            var element = elementsArray[i];
+        const elementsArray = document.querySelectorAll(elementSelector);
+        for (let element of elementsArray) {
             element.outerHTML = element.outerHTML;
         };
-    }
+    };
     removeEventListeners('head');
     removeEventListeners('body');
     // ---------------------------------------------------
     function removeElement(elementSelector) {
-        var elementsArray = document.querySelectorAll(elementSelector);
-        for (var i = 0; i < elementsArray.length; i++) {
-            var element = elementsArray[i];
+        const elementsArray = document.querySelectorAll(elementSelector);
+        for (let element of elementsArray) {
             element.remove();
         };
-    }
+    };
     removeElement('head'); // document.querySelector('head').remove();
     removeElement('body'); // document.querySelector('body').remove();
-    var head = document.createElement('head'); document.documentElement.appendChild(head);
-    var body = document.createElement('body'); document.documentElement.appendChild(body);
+    const head = document.createElement('head'); document.documentElement.appendChild(head);
+    const body = document.createElement('body'); document.documentElement.appendChild(body);
     // ---------------------------------------------------
     function addGlobalStyle(css, cssClass) {
-        var head = document.getElementsByTagName('head')[0]; if (!head) { return; }
-        var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
+        const head = document.getElementsByTagName('head')[0]; if (!head) { return; }
+        const style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = css;
         if (cssClass) style.setAttribute('class', cssClass);
         head.appendChild(style);
-    }
+    };
     function prettyPrint(string) {
         return string.replace(/\{/g, '{\n\t').replace(/;\s+/g, ';\n\t').replace(/\}/g, '\n}').replace(/}([^\s]+)/g, '}\n$1');
-    }
+    };
     // /*
     addGlobalStyle(
         prettyPrint(
@@ -88,7 +86,7 @@
         };
     };
     // ---------------------------------------------------
-    var html = [
+    const html = [
         // `<!DOCTYPE html>`,
         `<html>`,
         `    <head>`,
@@ -155,7 +153,7 @@
     ].join('\n');
     document.documentElement.innerHTML = html;
     // ---------------------------------------------------
-    var css = [
+    const css = [
         `body {`,
         `    background: linear-gradient(to right, #1cb5e0, #000046);`,
         `    display: flex;`,
@@ -718,6 +716,15 @@
         const seconds = sec_num % 60;
         return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v, i) => v !== "00" || i > 0).join(":");
     }
+    function seconds(time) {
+        let duration = time.split(':');
+        for (let v of duration) {
+            return (
+                duration.length == 3 ? Number(duration[0]) * 60 * 60 + Number(duration[1]) * 60 + Number(duration[2]) :
+                duration.length == 2 ? Number(duration[0]) * 60 + Number(duration[1]) : Number(duration[0])
+            );
+        };
+    };
     // When the openFullscreen() function is executed, open the video in fullscreen.
     // Note that we must include prefixes for different browsers, as they don't support the requestFullscreen method yet.
     function requestFullscreen(elem) {
@@ -868,7 +875,7 @@
     // ---------------------------------------------------
     /*
     // ---------------------------------------------------
-    var video = document.createElement('video');
+    const video = document.createElement('video');
     video.addEventListener('error', failed);
     video.setAttribute('id', 'cleaned_video');
     video.setAttribute('preload', 'metadata'); // none
@@ -885,7 +892,7 @@
     function initPlayer() {
         // console.clear();
 
-        var paramStart, pageDomain;
+        let paramStart, pageDomain;
         if (G_USE_AS_EXTENSION) {
             paramStart = /^.*?player\.html#/;
         }
@@ -901,16 +908,116 @@
         function ctrlKeyIsDown() {return !!(window.event.ctrlKey || window.event.metaKey);}
         function altKeyIsDown() {return !!window.event.altKey;}
 
+        const KEY_BACKSPACE = 8,
+              KEY_TAB = 9,
+              KEY_ENTER = 13,
+              KEY_SHIFT = 16,
+              KEY_CTRL = 17,
+              KEY_ALT = 18,
+              KEY_PAUSE_BREAK = 19,
+              KEY_CAPS_LOCK = 20,
+              KEY_ESCAPE = 27,
+              KEY_PAGE_UP = 33,
+              KEY_PAGE_DOWN = 34,
+              KEY_END = 35,
+              KEY_HOME = 36,
+              KEY_LEFT_ARROW = 37,
+              KEY_UP_ARROW = 38,
+              KEY_RIGHT_ARROW = 39,
+              KEY_DOWN_ARROW = 40,
+              KEY_INSERT = 45,
+              KEY_DELETE = 46,
+              KEY_0 = 48,
+              KEY_1 = 49,
+              KEY_2 = 50,
+              KEY_3 = 51,
+              KEY_4 = 52,
+              KEY_5 = 53,
+              KEY_6 = 54,
+              KEY_7 = 55,
+              KEY_8 = 56,
+              KEY_9 = 57,
+              KEY_A = 65,
+              KEY_B = 66,
+              KEY_C = 67,
+              KEY_D = 68,
+              KEY_E = 69,
+              KEY_F = 70,
+              KEY_G = 71,
+              KEY_H = 72,
+              KEY_I = 73,
+              KEY_J = 74,
+              KEY_K = 75,
+              KEY_L = 76,
+              KEY_M = 77,
+              KEY_N = 78,
+              KEY_O = 79,
+              KEY_P = 80,
+              KEY_Q = 81,
+              KEY_R = 82,
+              KEY_S = 83,
+              KEY_T = 84,
+              KEY_U = 85,
+              KEY_V = 86,
+              KEY_W = 87,
+              KEY_X = 88,
+              KEY_Y = 89,
+              KEY_Z = 90,
+              KEY_LEFT_WINDOW_KEY = 91,
+              KEY_RIGHT_WINDOW_KEY = 92,
+              KEY_SELECT_KEY = 93,
+              KEY_NUMPAD_0 = 96,
+              KEY_NUMPAD_1 = 97,
+              KEY_NUMPAD_2 = 98,
+              KEY_NUMPAD_3 = 99,
+              KEY_NUMPAD_4 = 100,
+              KEY_NUMPAD_5 = 101,
+              KEY_NUMPAD_6 = 102,
+              KEY_NUMPAD_7 = 103,
+              KEY_NUMPAD_8 = 104,
+              KEY_NUMPAD_9 = 105,
+              KEY_MULTIPLY = 106,
+              KEY_ADD = 107,
+              KEY_SUBTRACT = 109,
+              KEY_DECIMAL_POINT = 110,
+              KEY_DIVIDE = 111,
+              KEY_F1 = 112,
+              KEY_F2 = 113,
+              KEY_F3 = 114,
+              KEY_F4 = 115,
+              KEY_F5 = 116,
+              KEY_F6 = 117,
+              KEY_F7 = 118,
+              KEY_F8 = 119,
+              KEY_F9 = 120,
+              KEY_F10 = 121,
+              KEY_F11 = 122,
+              KEY_F12 = 123,
+              KEY_NUM_LOCK = 144,
+              KEY_SCROLL_LOCK = 145,
+              KEY_SEMI_COLON = 186,
+              KEY_EQUAL_SIGN = 187,
+              KEY_COMMA = 188,
+              KEY_DASH = 189,
+              KEY_PERIOD = 190,
+              KEY_FORWARD_SLASH = 191,
+              KEY_GRAVE_ACCENT = 192,
+              KEY_OPEN_BRACKET = 219,
+              KEY_BACK_SLASH = 220,
+              KEY_CLOSE_BRACKET = 221,
+              KEY_SINGLE_QUOTE = 222
+        ;
+
         function msgbox(title, message, time, width, height) {
             width = width || 250;
             height = height || 120;
 
-            var padding = 10;
-            var w = width - padding*2,
-                h = height - padding*2;
+            const padding = 10;
+            const w = width - padding*2,
+                  h = height - padding*2;
 
-            var centerX = function(e, fix) {
-                var transform = e.style.transform;
+            const centerX = function(e, fix) {
+                let transform = e.style.transform;
                 transform = transform + (fix ? 'translateY(0.5px) translateX(-50%)' : 'translateX(-50%)');
                 e.style.left = 50 + '%';
                 e.style['-ms-transform'] = transform;
@@ -918,8 +1025,8 @@
                 e.style['-webkit-transform'] = transform;
                 e.style.transform = transform;
             };
-            var centerY = function(e, fix) {
-                var transform = e.style.transform;
+            const centerY = function(e, fix) {
+                let transform = e.style.transform;
                 transform = transform + (fix ? 'translateX(0.5px) translateY(-50%)' : 'translateY(-50%)');
                 e.style.top = 50 + '%';
                 e.style['-ms-transform'] = transform;
@@ -928,11 +1035,11 @@
                 e.style.transform = transform;
             };
 
-            var fade = function(element, fadeDelay) {
+            const fade = function(element, fadeDelay) {
                 fadeDelay = fadeDelay || 2000;
-                var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+                const fadeDelaySeconds = Math.floor(fadeDelay/1000);
                 function fadeStart(show) {
-                    var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+                    const transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
                     element.style.opacity = show ? 1 : 0;
                     element.style.transition = transition;
                     element.style['-webkit-transition'] = transition; // Safari
@@ -942,7 +1049,7 @@
                 setTimeout(fadeStart, fadeDelaySeconds*1000);
             };
 
-            var d = document.createElement('div');
+            const d = document.createElement('div');
             d.style.display = 'table';
             d.style.position = 'fixed';
             d.style.right = 10 + 'px';
@@ -962,7 +1069,7 @@
             // centerX(d);
 
             if (title) {
-                var titleElement = document.createElement('p');
+                const titleElement = document.createElement('p');
                 titleElement.style.borderBottom = '1px solid black';
                 titleElement.style.margin = 0;
                 titleElement.style.padding = (padding/2) + 'px';
@@ -973,7 +1080,7 @@
             }
 
             if (message) {
-                var messageElement = document.createElement('p');
+                const messageElement = document.createElement('p');
                 messageElement.style.margin = 0;
                 messageElement.style.padding = (padding/2) + 'px';
                 messageElement.style.display = 'table-row';
@@ -990,18 +1097,18 @@
         }
 
         /*
-        var toHHMMSS = function(secs) {
-            var sec_num = parseInt(secs, 10);
-            var hours = Math.floor(sec_num / 3600) % 24;
-            var minutes = Math.floor(sec_num / 60) % 60;
-            var seconds = sec_num % 60;
+        const toHHMMSS = function(secs) {
+            const sec_num = parseInt(secs, 10);
+            const hours = Math.floor(sec_num / 3600) % 24;
+            const minutes = Math.floor(sec_num / 60) % 60;
+            const seconds = sec_num % 60;
             return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v,i) => v !== "00" || i > 0).join(":");
         };
         */
 
         function addMediaTextIndicator(media, fontSize) {
             fontSize = fontSize || 72;
-            var mediaTextIndicator = document.createElement('div');
+            const mediaTextIndicator = document.createElement('div');
             mediaTextIndicator.style.setProperty('color', 'yellow', 'important');
             mediaTextIndicator.style['font-size'] = fontSize + 'px';
             mediaTextIndicator.style.position = 'absolute';
@@ -1013,11 +1120,11 @@
             mediaTextIndicator.style['user-select: none;'] = 'none';
             mediaTextIndicator.style['-webkit-user-select'] = 'none';
             media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
-            var volumeTextFade = function(fadeDelay) {
+            const volumeTextFade = function(fadeDelay) {
                 fadeDelay = fadeDelay || 2000;
-                var fadeDelaySeconds = Math.floor(fadeDelay/1000);
+                const fadeDelaySeconds = Math.floor(fadeDelay/1000);
                 function textFadeStart(show) {
-                    var transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
+                    const transition = show ? '' : ('opacity '+fadeDelaySeconds+'s');
                     mediaTextIndicator.style.opacity = show ? 1 : 0;
                     mediaTextIndicator.style.transition = transition;
                     mediaTextIndicator.style['-webkit-transition'] = transition; // Safari
@@ -1025,17 +1132,17 @@
                 textFadeStart(true);
                 setTimeout(textFadeStart, fadeDelaySeconds*1000);
             };
-            var setVolumeText = function() {
+            const setVolumeText = function() {
                 volumeTextFade(2000);
                 mediaTextIndicator.textContent = Math.round(media.volume * 100) > 0 ? Math.round(media.volume * 100) : 'Выкл.';
             };
-            var setTimeText = function() {
+            const setTimeText = function() {
                 volumeTextFade(2000);
-                var duration = media.duration;
-                var currentTime = media.currentTime;
+                const duration = media.duration;
+                const currentTime = media.currentTime;
                 mediaTextIndicator.textContent = (toHHMMSS(currentTime) + "/" + toHHMMSS(duration));
             };
-            var addEventHandlers = function() {
+            const addEventHandlers = function() {
                 if (media.addEventListener) {
                     media.addEventListener("volumechange", setVolumeText, false); // IE9, Chrome, Safari, Opera
                     media.addEventListener("seeking", setTimeText, false); // IE9, Chrome, Safari, Opera
@@ -1049,12 +1156,12 @@
             return mediaTextIndicator;
         }
 
-        var mediaKeyboardControls = function(media) {
-            var onKeyDown = function(e) {
+        const mediaKeyboardControls = function(media) {
+            const onKeyDown = function(e) {
                 e = e || window.event;
-                var lArrow = 37, rArrow = 39, kSpace = 32;
-                var ctrlDown = e.ctrlKey || e.metaKey; // Mac support
-                var mediaState = media.paused ? 0 : 1;
+                const lArrow = 37, rArrow = 39, kSpace = 32;
+                const ctrlDown = e.ctrlKey || e.metaKey; // Mac support
+                const mediaState = media.paused ? 0 : 1;
                 setTimeout(function() {
                     if (e.keyCode == lArrow) {
                         media.pause(); media.currentTime = parseInt(media.currentTime) - 5; if (mediaState == 1) media.play();
@@ -1073,24 +1180,24 @@
 
         function mediaMouseControls(media, step) {
             step = (step === 0) ? 0 : (step || 1);
-            var mouseWheelAudioHandler = function(e) {
+            const mouseWheelAudioHandler = function(e) {
                 if (step !== 0) {
                     // cross-browser wheel delta
                     e = window.event || e; // old IE support
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                    var amount = parseInt(delta*step), volume = parseInt(media.volume*100);
-                    var value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
+                    const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    const amount = parseInt(delta*step), volume = parseInt(media.volume*100);
+                    const value = amount > 0 ? Math.floor((volume+amount)/step)*step : Math.ceil((volume+amount)/step)*step;
                     media.volume = Math.max(0, Math.min(100, value)) / 100;
                 }
                 e.preventDefault();
             };
-            var mouseWheelTimeHandler = function(e) {
+            const mouseWheelTimeHandler = function(e) {
                 if (step !== 0) {
                     // cross-browser wheel delta
                     e = window.event || e; // old IE support
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                    var amount = parseInt(delta*step);
-                    var mediaState = media.paused ? 0 : 1;
+                    const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    const amount = parseInt(delta*step);
+                    const mediaState = media.paused ? 0 : 1;
                     setTimeout(function() {
                         if (delta < 0) {
                             media.pause(); media.currentTime = parseInt(media.currentTime) - 5; if (mediaState == 1) media.play();
@@ -1102,7 +1209,7 @@
                 }
                 e.preventDefault();
             };
-            var mouseWheelHandler = function(e) {
+            const mouseWheelHandler = function(e) {
                 if (shiftKeyIsDown()) {
                     mouseWheelAudioHandler(e);
                 }
@@ -1117,7 +1224,7 @@
             else {
                 media.attachEvent("onmousewheel", mouseWheelAudioHandler); // IE 6/7/8
             }
-            var mediaTextIndicator = addMediaTextIndicator(media, 56);
+            const mediaTextIndicator = addMediaTextIndicator(media, 56);
         }
 
         // Convert search param string into an object or array
@@ -1126,8 +1233,8 @@
             //  option to preserve duplicate keys (e.g. 'sort=name&sort=age')
             preserveDuplicates = preserveDuplicates || false; // disabled by default
 
-            var outputNoDupes = {};
-            var outputWithDupes = []; // optional output array to preserve duplicate keys
+            let outputNoDupes = {};
+            let outputWithDupes = []; // optional output array to preserve duplicate keys
 
             //  sanity check
             if(!search) throw new Error('processSearchParams: expecting "search" input parameter');
@@ -1141,7 +1248,7 @@
             //  separate keys from values (['foo=1', 'bar=2'] -> [{foo:1}, {bar:2}])
             //  also construct simplified outputObj
             outputWithDupes = search.map(function(keyval){
-                var out = {};
+                let out = {};
                 keyval = keyval.split('=');
                 out[keyval[0]] = keyval[1];
                 outputNoDupes[keyval[0]] = keyval[1]; //  might as well do the no-dupe work too while we're in the loop
@@ -1165,9 +1272,8 @@
         // }
         function getPathInfo(path) {
             //  create a link in the DOM and set its href
-            var link = document.createElement('a');
+            const link = document.createElement('a');
             link.setAttribute('href', path);
-
             //  return an easy-to-use object that breaks apart the path
             return {
                 host:     link.hostname, // 'example.com'
@@ -1176,7 +1282,7 @@
                 path:     link.pathname, // '/blog/foo/bar'
                 protocol: link.protocol // 'http:'
             };
-        }
+        };
 
         function getDomain(url, subdomain) {
             subdomain = subdomain || false;
@@ -1192,8 +1298,8 @@
             return url;
         }
 
-        var mediaShowInfoBox = function(media) {
-            var hosts = {
+        const mediaShowInfoBox = function(media) {
+            const hosts = {
                 "oloadcdn.net" : "openload.co",
                 "phncdn.com" : "pornhub.com",
                 "t8cdn.com" : "tube8.com",
@@ -1203,40 +1309,45 @@
                 "trafficdeposit.com" : "yourporn.sexy",
                 "cdnity.net" : "yourporn.sexy",
             };
-            var showMsgBox = function(media) {
-                var width = media.videoWidth, height = media.videoHeight;
+            const showMsgBox = function(media) {
+                const width = media.videoWidth, height = media.videoHeight;
                 // console.log('media: '+media.src+' ['+width+'x'+height+']');
-                var host = getPathInfo(media.src).host.replace(/^www\./, ''); // getDomain(media.src);
+                let host = getPathInfo(media.src).host.replace(/^www\./, ''); // getDomain(media.src);
                 host = hosts[host] ? host + '\n['+hosts[host]+']' : host;
-                var msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
+                const msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
                 msg.style.right = 0 + 'px';
                 // msg.style.bottom = 32 + 'px';
                 msg.style.top = 0 + 'px';
             };
-            var onKeyDown = function(e) {
+            const onKeyDown = function(e) {
                 e = e || window.event;
-                var xKey = 88;
-                var ctrlDown = e.ctrlKey||e.metaKey; // Mac support
+                const xKey = 88;
+                const ctrlDown = e.ctrlKey || e.metaKey; // Mac support
                 if (e.keyCode == xKey) {
                     media.focus();
                     showMsgBox(media);
-                }
+                };
+                if (e.keyCode == KEY_G && ctrlDown) {
+                    let result = prompt('', toHHMMSS(video.currentTime || 0));
+                    if (result === null) {return;}
+                    video.currentTime = seconds(result);
+                };
             };
-            window.addEventListener("keydown", function(e){onKeyDown(e);}, false);
-            media.addEventListener("loadedmetadata",function(e){
+            window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+            media.addEventListener('loadedmetadata', function(e){
                 showMsgBox(media);
                 if (media.videoWidth) console.log('media: '+media.src+' ['+media.videoWidth+'x'+media.videoHeight+']');
             },false);
         };
 
-        var useLocalVolumeCookie = function(mediaElementSelector, cookieName) {
+        const useLocalVolumeCookie = function(mediaElementSelector, cookieName) {
             cookieName = cookieName || "media";
-            var mediaVolume = localStorage.getItem(cookieName+"_volume");
-            var mediaMuted = localStorage.getItem(cookieName+"_muted");
+            let mediaVolume = localStorage.getItem(cookieName+"_volume");
+            let mediaMuted = localStorage.getItem(cookieName+"_muted");
             if (mediaMuted == "false") mediaMuted = false; // normalize
-            var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+            const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
             for (let mediaElement of mediaElementsArray) {
-                let saveSettings = function() {
+                const saveSettings = function() {
                     localStorage.setItem(cookieName+"_volume", mediaElement.volume || 0);
                     localStorage.setItem(cookieName+"_muted", mediaElement.muted);
                 };
@@ -1246,15 +1357,15 @@
                 // console.log("mediaElement: ", mediaElement);
                 // console.log("localStorage."+cookieName+"_volume: ", localStorage.getItem(cookieName+"_volume"));
                 // console.log("localStorage."+cookieName+"_muted: ", localStorage.getItem(cookieName+"_muted"));
-            }
+            };
         };
 
-        var useGMVolumeCookie = function(mediaElementSelector, cookieName) {
+        const useGMVolumeCookie = function(mediaElementSelector, cookieName) {
             cookieName = cookieName || "media";
-            var mediaVolume = GM_getValue(cookieName+"_volume");
-            var mediaMuted = GM_getValue(cookieName+"_muted");
+            let mediaVolume = GM_getValue(cookieName+"_volume");
+            let mediaMuted = GM_getValue(cookieName+"_muted");
             if (mediaMuted == "false") mediaMuted = false; // normalize
-            var mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+            const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
             for (let mediaElement of mediaElementsArray) {
                 let saveSettings = function() {
                     GM_setValue(cookieName+"_volume", mediaElement.volume || 0);
@@ -1270,70 +1381,70 @@
         };
 
         function GetFirstCustomKey(searchArray, customKeysArray) {
-            for(var i in searchArray){
+            for (let i in searchArray) {
                 if (customKeysArray.indexOf(searchArray[i]) > -1) {
                     return i;
-                }
-            }
+                };
+            };
             return;
-        }
+        };
 
         function getParamsFromURL(searchString) {
-            var customKeysArray = ['autoplay', '#t', 'qualityLimit', 'reflect', 'jjs'];
-            var parse = function(params, pairs) {
-                var pair = pairs[0];
-                var parts = pair.split('=');
-                // var key = decodeURIComponent(parts[0]).replace(/.*?\?/, '');
-                var key = decodeURIComponent(parts[0]).replace(/.*?[?#]/, '');
-                var value = decodeURIComponent(parts.slice(1).join('='));
+            const customKeysArray = ['autoplay', '#t', 'qualityLimit', 'reflect', 'jjs'];
+            const parse = function(params, pairs) {
+                const pair = pairs[0];
+                const parts = pair.split('=');
+                // const key = decodeURIComponent(parts[0]).replace(/.*?\?/, '');
+                const key = decodeURIComponent(parts[0]).replace(/.*?[?#]/, '');
+                const value = decodeURIComponent(parts.slice(1).join('='));
                 // Handle multiple parameters of the same name
                 if (typeof params[key] === "undefined") params[key] = value;
                 else params[key] = [].concat(params[key], value);
                 params = pairs.length == 1 ? params : parse(params, pairs.slice(1));
                 params.main_url = searchString;
                 // params.main_url = params.main_url.replace(/&thumb_src=.*/, '');
-                var firstCustomKeyIndex = GetFirstCustomKey(Object.keys(params), customKeysArray);
+                const firstCustomKeyIndex = GetFirstCustomKey(Object.keys(params), customKeysArray);
                 // console.log('firstCustomKeyIndex = ' + firstCustomKeyIndex);
                 if (firstCustomKeyIndex) {
-                    var firstCustomKey = Object.keys(params)[firstCustomKeyIndex];
-                    // var startSymbol = (firstCustomKeyIndex == 0) ? '\\[?' : '&';
-                    var startSymbol = (firstCustomKeyIndex == 0) ? '[?#]' : '&';
-                    var re = new RegExp(startSymbol + firstCustomKey + '.*');
+                    const firstCustomKey = Object.keys(params)[firstCustomKeyIndex];
+                    // const startSymbol = (firstCustomKeyIndex == 0) ? '\\[?' : '&';
+                    const startSymbol = (firstCustomKeyIndex == 0) ? '[?#]' : '&';
+                    const re = new RegExp(startSymbol + firstCustomKey + '.*');
                     params.main_url = searchString.replace(re, '');
                     params.first_key = firstCustomKey;
-                }
+                };
                 return params;
             };
             // Get rid of leading ?
             return searchString.length === 0 ? {} : parse({}, searchString.split('&')); // .substr(1)
-        }
+        };
 
-        // var url = location.href.split("#")[1].replace(/[?#&]\bREFINE_VIDEO\b/, '');
+        // let url = location.href.split("#")[1].replace(/[?#&]\bREFINE_VIDEO\b/, '');
 
-        // var url = location.href.split(paramStart)[1];
-        var url = location.href.replace(paramStart, '');
+        // let url = location.href.split(paramStart)[1];
+        let url = location.href.replace(paramStart, '');
         if (url && typeof url !== 'undefined') {url = url.replace(/[?#&]\bREFINE_VIDEO\b/, '');}
 
-        function listParams(obj) {for(var i in obj){console.log(i + "=" + obj[i]);}}
+        function listParams(obj) {for(let i in obj){console.log(i + "=" + obj[i]);}}
 
         if (url) {
             console.log('url: ', url);
-            var video = document.querySelector("body video");
+            const video = document.querySelector("body video");
             console.log('video: ', video);
             if (video) {
                 // let event = new Event('click');
                 // video.dispatchEvent(event);
                 //
-                var href = location.href.replace(paramStart, ''); // location.href.split(paramStart)[1];
+                const href = location.href.replace(paramStart, ''); // location.href.split(paramStart)[1];
                 console.log('href: ', href);
-                var params = getParamsFromURL(href); // getParamsFromURL(location.search)
+                const params = getParamsFromURL(href); // getParamsFromURL(location.search)
                 console.log('params: ', params);
                 listParams(params);
                 if (params.autoplay && params.autoplay == 'true') {
                     video.setAttribute('autoplay', '');
                 };
                 // if (params.thumb_src) {G_progressThumbnailSrc = params.thumb_src;};
-                var videoSrc = params.main_url;
+                let videoSrc = params.main_url;
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
                 if (params.reflect) {
                     video.style.transform = 'rotateY(' + params.reflect + ')';

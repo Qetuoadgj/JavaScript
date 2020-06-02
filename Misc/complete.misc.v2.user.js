@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.87
+// @version      2.0.89
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -207,6 +207,34 @@
     };
     // ================================================================================
     var getAbsoluteUrl = (function () { let a; return function (url) { if (!a) a = document.createElement('a'); a.href = url; return a.href; }; })();
+    function setSearchParam(param, value = '') {
+        if (location.search === '') {
+            return `?${param}=${value}`;
+        }
+        else {
+            let matched = false;
+            let symbol = location.search[0];
+            let params_old = location.search.substring(1).split('&'), params_new = [];
+            for (let p of params_old) {
+                let match = p.split('=');
+                if (match) {
+                    let k = match[0], v = match[1];
+                    matched = matched || k == param;
+                    if (k == param) {
+                        v = value;
+                    };
+                    params_new.push(v === '' ? `${k}` : `${k}=${v}`);
+                }
+                else {
+                    matched = matched || p == param;
+                    params_new.push(param);
+                };
+                // console.log(k, v);
+            };
+            if (!matched) params_new.push(value === '' ? `${param}` : `${param}=${value}`);
+            return symbol + params_new.join('&');
+        };
+    };
     // ================================================================================
     // expected hue range: [0, 360)
     // expected saturation range: [0, 1]
@@ -723,6 +751,7 @@
         'DeviantHardcore.com',
         'Throated.com',
         'PropertySex.com',
+        'TeenMegaWorld.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -806,10 +835,11 @@
         'Orgy' : '',
         'Only blowjob' : '',
         'Creampie' : '',
-        'Creampie, Cum in Pussy' : '',
-        'Creampie, Cum in Ass' : '',
-        'Fuck after Cumshot' : '',
-        'Fake Cum': '',
+        'Creampie, Cum in pussy' : '',
+        'Creampie, Cum in ass' : '',
+        // 'Fuck after Cumshot' : '',
+        'Continue after cumshot' : '',
+        'Fake cum': '',
         '★' : '',
         '-----------------------------' : '',
     };
@@ -918,6 +948,8 @@
         element2.onclick = function(e) {
             G_embedCodeTextCategorie = GM_getValue('category', '') || '';
             element.value = G_embedCodeTextCategorie;
+            let event = new Event('change');
+            element.dispatchEvent(event);
         };
         // --------------------------------------------------------------------------------
         let element4ID = 'uniqueEmbedCodeCatButtonAdd';
@@ -1416,8 +1448,16 @@
                 if (G_qualitySampleLastSrc == e.target.src) return;
                 G_qualitySampleLastSrc = e.target.src;
                 G_sampleURL = e.target.src;
-                G_videoWidth = e.target.videoWidth;
-                G_videoHeight = e.target.videoHeight;
+                if (G_videoWidth && G_videoHeight) {
+                    if (e.target.videoWidth * e.target.videoHeight > G_videoWidth * G_videoHeight) {
+                        G_videoWidth = e.target.videoWidth;
+                        G_videoHeight = e.target.videoHeight;
+                    };
+                }
+                else {
+                    G_videoWidth = e.target.videoWidth;
+                    G_videoHeight = e.target.videoHeight;
+                };
                 G_videoDuration = e.target.duration;
                 G_videoQuality = G_videoHeight;
                 updateEmbedCodeTextColor();
@@ -2100,6 +2140,8 @@
                     );
                     let url = flashvars[k];
                     if (url) {
+                        url = url.replace(/\/$/, '');
+                        if (flashvars.rnd) url = url + setSearchParam('rnd', flashvars.rnd);
                         let quality = flashvars[k+'_text'];
                         if (quality) {
                             quality = quality.match(/^(\d+).*$/)[1];
@@ -2202,6 +2244,8 @@
                     );
                     let url = flashvars[k];
                     if (url) {
+                        url = url.replace(/\/$/, '');
+                        if (flashvars.rnd) url = url + setSearchParam('rnd', flashvars.rnd);
                         let quality = flashvars[k+'_text'];
                         if (quality) {
                             quality = quality.match(/^(\d+).*$/)[1];
@@ -2837,6 +2881,18 @@
     else if (
         G_pageURL.matchLink('https?://hqporner.com')
     ) {
+        const css = [
+            `body * {`,
+            `    background: black !important;`,
+            `    color: brown;`, // darkgoldenrod
+            `}`,
+            `#main-wrapper {`,
+            `    background: unset !important;`,
+            `    border-top: unset !important;`,
+            `    border-bottom: unset !important;`,
+            `}`,
+        ].join('\n');
+        addGlobalStyle(css, 'night-mode');
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
