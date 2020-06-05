@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.89
+// @version      2.0.90
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -77,6 +77,9 @@
 // @match        *://txxx.com/embed/*
 
 // @match        *://netfapx.com/*
+
+// @match        *://pornbox.video/video/*
+// @match        *://player.flexcdn.cloud/*
 // ==/UserScript==
 
 (function() {
@@ -752,6 +755,7 @@
         'Throated.com',
         'PropertySex.com',
         'TeenMegaWorld.com',
+        'BannedStories.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -840,6 +844,7 @@
         // 'Fuck after Cumshot' : '',
         'Continue after cumshot' : '',
         'Fake cum': '',
+        'PornHub.com': '',
         '★' : '',
         '-----------------------------' : '',
     };
@@ -2140,8 +2145,8 @@
                     );
                     let url = flashvars[k];
                     if (url) {
-                        url = url.replace(/\/$/, '');
-                        if (flashvars.rnd) url = url + setSearchParam('rnd', flashvars.rnd);
+                        // url = url.replace(/\/$/, '');
+                        // if (flashvars.rnd) url = url + setSearchParam('rnd', flashvars.rnd);
                         let quality = flashvars[k+'_text'];
                         if (quality) {
                             quality = quality.match(/^(\d+).*$/)[1];
@@ -2560,10 +2565,9 @@
     ) {
         try {
             let mhp1138_player_data = JSON.parse(localStorage.mhp1138_player);
-            if (mhp1138_player_data.quality !== 'hls') {
-                mhp1138_player_data.quality = 'hls';
+            if (!mhp1138_player_data.quality || mhp1138_player_data.quality !== 'hls') {
+                mhp1138_player_data.quality = '1080';
                 localStorage.mhp1138_player = JSON.stringify(mhp1138_player_data);
-
             };
         } catch(e) {};
         if (getCookie('lang') !== 'en') {
@@ -3522,7 +3526,56 @@
             waitForElement('video#video_html5_api > source[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
     }
-
+    // --------------------------------------------------------------------------------
+    else if (
+        G_pageURL.matchLink('https?://pornbox.video/video/*')
+    ) {
+        if (G_pageURL.match('#ReCast')) { // https://pornbox.video/video/Gina-Valentina-Shopping-for-anal-5984.html
+            return;
+        }
+        else if (
+            location.pathname.matchLink('^/video/*') // https://biqle.ru/watch/-159565098_456242372  // https://daftsex.com/watch/-111379583_171930025
+        ) {
+            document.addEventListener('DOMContentLoaded', function onDOMContentLoaded(event) {
+                for (let iframe of document.querySelectorAll('iframe')) {
+                    iframe.setAttribute('target', '_self');
+                    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+                };
+            }, false);
+            G_funcToRun = function() {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL; // + '#ReCast';
+                G_posterURL = (
+                    document.querySelector('meta[name="thumbnail"]') ?
+                    document.querySelector('meta[name="thumbnail"]').content :
+                    document.querySelector('meta[property="og:image"]') ?
+                    document.querySelector('meta[property="og:image"]').content :
+                    null
+                ); // https://pornbox.video/Assets/Previews/Medium/5984.jpg"
+                let thumbNailSrc = document.querySelector('link[itemprop="thumbnailUrl"]');
+                G_posterURL = G_posterURL ? G_posterURL :
+                thumbNailSrc ? getAbsoluteUrl(thumbNailSrc.getAttribute('href', 2)) : G_posterURL;
+                G_previewURL = G_posterURL.replace(/\/Assets\/Previews\/.*\/(.*)\.jpg/, '/Assets/Mediabooks/$1.mp4'); // https://pornbox.video/Assets/Mediabooks/5984.mp4
+                G_stickTo = document.querySelectorAll('.player_page')[0]; G_stickPosition = 1;
+                // --------------------------------------------------------------------------------
+                G_standartAddEmbedCodeFunc();
+                G_messageTarget = document.querySelector('iframe').contentWindow;
+            };
+            waitForElement('iframe[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        };
+    }
+    // --------------------------------------------------------------------------------
+    else if (
+        G_pageURL.matchLink('https?://player.flexcdn.cloud/*') // https://player.flexcdn.cloud/5d769d8aa78803079064c8ac
+    ) {
+        G_funcToRun = function () {
+            G_contentURL = G_funcResult.src;
+            // if (G_contentURL) openURL(refineVideo(G_contentURL));
+            G_standartReCastFunc();
+        };
+        waitForElement('video[src], video > source[src]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+    }
+    // --------------------------------------------------------------------------------
     else {
         // alert(G_pageURL);
         console.log('No Match:', G_pageURL);
