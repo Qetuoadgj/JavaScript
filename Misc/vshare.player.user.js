@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.31
+// @version      0.0.32
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -854,8 +854,17 @@
     video.addEventListener('play', updatePlayButton);
     video.addEventListener('pause', updatePlayButton);
     //
-    video.addEventListener('waiting', showLoadingIndicator);
-    video.addEventListener('playing', hideLoadingIndicator);
+    video.addEventListener('play', showLoadingIndicator); // Fires when the audio/video has been started or is no longer paused
+    video.addEventListener('playing', hideLoadingIndicator); // Fires when the audio/video is playing after having been paused or stopped for buffering
+    video.addEventListener('seeking', showLoadingIndicator); // Fires when the user starts moving/skipping to a new position in the audio/video
+    video.addEventListener('seeked', hideLoadingIndicator); // Fires when the user is finished moving/skipping to a new position in the audio/video
+    video.addEventListener('stalled', showLoadingIndicator); // Fires when the browser is trying to get media data, but data is not available
+    video.addEventListener('loadedmetadata', hideLoadingIndicator); // Fires when the browser has loaded meta data for the audio/video
+    video.addEventListener('loadstart', showLoadingIndicator); // Fires when the browser starts looking for the audio/video
+    video.addEventListener('loadeddata', hideLoadingIndicator); // Fires when the browser has loaded the current frame of the audio/video
+    video.addEventListener('waiting', showLoadingIndicator); // Fires when the video stops because it needs to buffer the next frame
+    video.addEventListener('abort', hideLoadingIndicator); // Fires when the loading of an audio/video is aborted
+    video.addEventListener('error', hideLoadingIndicator); // Fires when an error occurred during the loading of an audio/video
     //
     togglePlayButton.addEventListener('click', togglePlay);
     toggleMuteBtn.addEventListener('click', toggleMute);
