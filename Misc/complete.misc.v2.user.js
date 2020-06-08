@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.90
+// @version      2.0.91
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -38,6 +38,7 @@
 // @match        *://www.pornhub.com/embed/*
 // @match        *://www.playvids.com/*/*
 // @match        *://www.pornoeggs.com/*
+// @match        *://www.pornflip.com/*/*
 // @match        *://www.youjizz.com/videos/*.html
 // @match        *://www.veporns.com/video/*
 // @match        *://openload.co/embed/*
@@ -1229,7 +1230,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeVideo, G_sampleURL, G_videoWidth, G_videoHeight, G_videoDuration, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
+    var G_embedCodeVideo, G_sampleURL, G_videoWidth = 0, G_videoHeight = 0, G_videoDuration = 0, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
         let elementID = 'uniqueEmbedCodeVideo';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
@@ -1291,9 +1292,10 @@
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality="' + G_videoWidth + 'x' + G_videoHeight + '"';
         if (G_videoWidth && G_videoHeight) G_embedCodeText += ' data-quality-limit="' + 1080 + '"';
         if (G_videoDuration) {
-            console.log('G_videoDuration:', G_videoDuration);
-            if (!(G_videoDuration+'').match(':')) G_videoDuration = toHHMMSS(G_videoDuration);
-            G_embedCodeText += ' data-duration="' + G_videoDuration + '"';
+            let videoDuration = G_videoDuration;
+            console.log('G_videoDuration:', videoDuration);
+            if (!(videoDuration+'').match(':')) videoDuration = toHHMMSS(videoDuration);
+            G_embedCodeText += ' data-duration="' + videoDuration + '"';
         };
         if (G_embedCodeTextStart && G_embedCodeTextStart !== '00:00:00') {
             G_embedCodeText += ' data-start="' + G_embedCodeTextStart + '"';
@@ -1450,27 +1452,34 @@
         if (G_qualitySampleSource) {
             // document.querySelector('#EPvideo_html5_api').addEventListener('play', function(e) {
             function updateValues(e) {
-                if (G_qualitySampleLastSrc == e.target.src) return;
-                G_qualitySampleLastSrc = e.target.src;
-                G_sampleURL = e.target.src;
-                if (G_videoWidth && G_videoHeight) {
-                    if (e.target.videoWidth * e.target.videoHeight > G_videoWidth * G_videoHeight) {
+                setTimeout(() => {
+                    let changed = 0;
+                    if (G_qualitySampleLastSrc == e.target.currentSrc && !e.target.currentSrc.includes('blob:')) return;
+                    G_qualitySampleLastSrc = e.target.currentSrc;
+                    G_sampleURL = e.target.currentSrc;
+                    //if (G_videoWidth && G_videoHeight) {
+                    if ((e.target.videoWidth * e.target.videoHeight) > (G_videoWidth * G_videoHeight)) {
                         G_videoWidth = e.target.videoWidth;
                         G_videoHeight = e.target.videoHeight;
+                        changed = 1;
                     };
-                }
-                else {
-                    G_videoWidth = e.target.videoWidth;
-                    G_videoHeight = e.target.videoHeight;
-                };
-                G_videoDuration = e.target.duration;
-                G_videoQuality = G_videoHeight;
-                updateEmbedCodeTextColor();
+                    // console.log(e.target.readyState, e.type, e.target.videoHeight);
+                    // console.log(e.target.duration, G_videoDuration, e.target.duration === G_videoDuration);
+                    if (G_videoDuration !== e.target.duration) {
+                        G_videoDuration = e.target.duration;
+                        changed = 1;
+                    };
+                    if (changed === 1) {
+                        G_videoQuality = G_videoHeight;
+                        updateEmbedCodeTextColor();
+                    };
+                }, 250);
             };
-            G_qualitySampleSource.addEventListener('playing', function(e){updateValues(e)});
-            G_qualitySampleSource.addEventListener('canplay', function(e){updateValues(e)});
-            G_qualitySampleSource.addEventListener('loadedmetadata', function(e){updateValues(e)});
-            G_qualitySampleSource.addEventListener('durationchange', function(e){updateValues(e)});
+            G_qualitySampleSource.addEventListener('playing', updateValues);
+            G_qualitySampleSource.addEventListener('canplay', updateValues);
+            G_qualitySampleSource.addEventListener('durationchange', updateValues);
+            G_qualitySampleSource.addEventListener('loadedmetadata', updateValues);
+            G_qualitySampleSource.addEventListener('loadeddata', updateValues);
         }
         else {
             if (G_sampleURL && !G_noQualitySample) {
@@ -2661,7 +2670,9 @@
     }
 
     else if (
-        G_pageURL.matchLink('https?://*.playvids.com/*')
+        G_pageURL.matchLink('https?://*.playvids.com/*') || // https://www.playvids.com/z_GWEZil5lC/massagereep-s-art-of-creepy-massages-lexi-belle-fucking-sexy-wife
+        G_pageURL.matchLink('https?://*.pornoeggs.com/*') || // https://www.pornoeggs.com/watch?v=00RejSBM3Cl
+        G_pageURL.matchLink('https?://*.pornflip.com/*') // https://www.pornflip.com/v/L1_WTxCvGpe
     ) {
         // --------------------------------------------------------------------------------
         let actualSource = () => {
@@ -2681,27 +2692,44 @@
         }
         // --------------------------------------------------------------------------------
         else if (
-            G_pageURL.matchLink('https?://www.playvids.com/embed/*') // https://www.playvids.com/embed/z_GWEZil5lC
+            location.pathname.matchLink('/embed/*') // https://www.playvids.com/embed/z_GWEZil5lC // https://www.pornflip.com/embed/L1_WTxCvGpe
         ) {
             G_funcToRun = function () {
                 G_contentURL = actualSource();
                 G_contentURL = G_contentURL ? G_contentURL : G_funcResult.src;
-                if (G_contentURL) openURL(refineVideo(G_contentURL));
+                G_allData = {};
+                G_allData['360'] = document.querySelector('video[data-qualities]').dataset.hlsSrc360;
+                G_allData['720'] = document.querySelector('video[data-qualities]').dataset.hlsSrc720;
+                G_contentURL = G_allData['720'];
+                // if (G_contentURL) openURL(refineVideo(G_contentURL));
+                // --------------
+                let refinedURL = refineVideo(G_contentURL);
+                if (G_allData) {
+                    let jsonData = encodeURIComponent(JSON.stringify(G_allData));
+                    let symbol = refinedURL.match(/[?]/) ? '&' : '?';
+                    refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
+                };
+                // openURL(refineVideo(contentURL));
+                openURL(refinedURL);
+                // --------------
             };
             waitForElement('video[data-qualities]', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
         }
         // --------------------------------------------------------------------------------
         else if (
-            G_pageURL.matchLink('https?://www.playvids.com/*/*') // https://www.playvids.com/z_GWEZil5lC/massagereep-s-art-of-creepy-massages-lexi-belle-fucking-sexy-wife
+            location.pathname.matchLink('/*/*') || // https://www.playvids.com/z_GWEZil5lC/massagereep-s-art-of-creepy-massages-lexi-belle-fucking-sexy-wife
+            location.pathname.matchLink('/watch') // https://www.pornoeggs.com/watch?v=00RejSBM3Cl
         ) {
             G_funcToRun = function () {
                 G_sampleURL = actualSource();
+                if (!G_sampleURL) G_qualitySampleSource = document.querySelector('video[data-qualities]');
                 // G_contentURL = document.querySelector('link[rel="canonical"]').href; //pageURL + '#ReCast';
                 G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
                 // G_postersArray = CreateLinksList(G_posterURL, /^(.*?)\d+.jpg$/i, '$1$NUM.jpg', 1, 15); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelector('.channel-info'); G_stickPosition = 1;
+                G_actorsSource = document.querySelectorAll('.detail-video a[href*="/model/"], .detail-video a[href*="/pornstar/"]');
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
                 let eventCatcher, media;
@@ -2759,7 +2787,7 @@
                 G_contentURL = document.querySelector('video[data-qualities]').dataset.embed;
                 G_posterURL = document.querySelector('meta[property="og:image"]').content;
                 // G_posterStyle = {'width' : 'auto', 'min-height' : '162px', 'min-width' : 'auto', 'max-height' :  'auto', 'height' : 'auto', 'zoom' : '0.5'};
-                G_stickTo = document.querySelector('.pcomments-left'); G_stickPosition = -1;
+                G_stickTo = document.querySelector('.pcomments-left, .channel-info'); G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
                 G_previewURL = G_posterURL.replace(/^(.*)\/.*.jpg/, '$1/preview.mp4'); // https://cdn-img1.pornoeggs.com/thumbs/697/697331/preview.mp4
                 G_standartAddEmbedCodeFunc();
@@ -2990,7 +3018,7 @@
             window.stop();
             // --------------------------------------------------------------------------------
             let data = {}, result; while((result = re.exec(matchedScriptText)) !== null) {
-                let url = result[1].trim();
+                let url = result[1].replace(/^.*\/\//, '//').trim();
                 if (url.match(/^\/\//)) url = location.protocol + url;
                 let quality = Math.floor(result[2].trim());
                 data[quality] = url;

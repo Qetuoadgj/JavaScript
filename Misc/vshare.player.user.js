@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.32
+// @version      0.0.33
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -751,11 +751,50 @@
         // console.log(percent);
         return percent;
     }
-    let G_progressThumbnailSrc;
+    let G_progressThumbnailSrc, G_hlsMediaAttached = false;
     function updateTimelineThumb(time, minUpdateTime = 2) {
         // if ((Math.abs(time - thumbUpdatedTimeLast)) < minUpdateTime) return;
-        time = Math.floor(time)
-        progressThumbnail.src = (G_progressThumbnailSrc || video.currentSrc).replace(/#t=\d+\b/ig, '') + `#t=${time},${time+1}`; // "#t=" + time;
+        time = Math.floor(time);
+        let src = (G_progressThumbnailSrc || video.currentSrc).replace(/#t=\d+\b/ig, ''); // + `#t=${time},${time+1}`; // "#t=" + time;
+        // console.log(src);
+        if(src.includes('.m3u8')) {
+            // return;
+            if (G_hlsMediaAttached) {
+                progressThumbnail.currentTime = time;
+            }
+            else {
+                try {
+                    /* globals Hls handleMediaError */
+                    let hls = new Hls();
+                    hls.on(Hls.Events.ERROR, function(event,data) {
+                        // const msg = "Player error: " + data.type + " - " + data.details;
+                        // console.error(msg);
+                        if(data.fatal) {
+                            switch(data.type) {
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    handleMediaError(hls);
+                                    break;
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    console.error("network error ...");
+                                    break;
+                                default:
+                                    console.error("unrecoverable error");
+                                    hls.destroy();
+                                    break;
+                            };
+                        };
+                    });
+                    hls.loadSource(src);
+                    hls.attachMedia(progressThumbnail);
+                    // hls.on(Hls.Events.MANIFEST_PARSED,function() { progressThumbnail.play(); });
+                    G_hlsMediaAttached = true;
+                } catch (e) {};
+            };
+        }
+        else {
+            progressThumbnail.src = src;
+            progressThumbnail.currentTime = time;
+        };
         // thumbUpdatedTimeLast = time;
     }
     function playerDisplayTimelineTooltip(e) {
@@ -861,6 +900,69 @@
     video.addEventListener('stalled', showLoadingIndicator); // Fires when the browser is trying to get media data, but data is not available
     video.addEventListener('loadedmetadata', hideLoadingIndicator); // Fires when the browser has loaded meta data for the audio/video
     video.addEventListener('loadstart', showLoadingIndicator); // Fires when the browser starts looking for the audio/video
+
+    video.addEventListener('loadstart', function(e) {
+        /*
+        // Start by creating an empty `<script />` tag element
+        let script_id = 'embedded_videos_js';
+        let scripts = document.querySelectorAll('body > script#'+script_id);
+        for (let script of scripts) {script.remove();};
+        let script = document.createElement('script');
+        // You can now start adding attributes to the element:
+        script.setAttribute('id', script_id);
+        // Set the src attribute, note it won't start loading yet.
+        script.src = 'embedded_videos.js';
+        // In order for it to become part of the page, you need to attach it
+        // to the DOM, to keep things clean, we will append it to the page's
+        // <head /> tag.
+        document.body.appendChild(script);
+        */
+        // ---------------------------------------------------------
+        //(function() {
+        // const videos = document.getElementsByTagName('video');
+        // for (let i = 0; i < videos.length; i++) {
+        // const video = videos[i]
+        //         const srcs = new Array();
+        //         if(video.getAttribute('src')){
+        //             srcs.push(video.getAttribute('src'));
+        //         };
+        //         const sources = video.getElementsByTagName('source')
+        //         for (let i = 0; i < sources.length; i++) {
+        //             srcs.push(sources[i].getAttribute('src'));
+        //         };
+        //         for (let i = 0; i < srcs.length; i++) {
+        //             const src = srcs[i]
+        const src = video.currentSrc;
+        if(src.includes('.m3u8')){
+            let hls = new Hls();
+            hls.on(Hls.Events.ERROR, function(event, data) {
+                // const msg = "Player error: " + data.type + " - " + data.details;
+                // console.error(msg);
+                if(data.fatal) {
+                    switch(data.type) {
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            handleMediaError(hls);
+                            break;
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            console.error("network error ...");
+                            break;
+                        default:
+                            console.error("unrecoverable error");
+                            hls.destroy();
+                            break;
+                    };
+                };
+            });
+            hls.loadSource(src);
+            hls.attachMedia(video);
+            // hls.on(Hls.Events.MANIFEST_PARSED,function() { video.play(); });
+        };
+        //         };
+        // };
+        //})();
+        // ---------------------------------------------------------
+    }); // Fires when the browser starts looking for the audio/video
+
     video.addEventListener('loadeddata', hideLoadingIndicator); // Fires when the browser has loaded the current frame of the audio/video
     video.addEventListener('waiting', showLoadingIndicator); // Fires when the video stops because it needs to buffer the next frame
     video.addEventListener('abort', hideLoadingIndicator); // Fires when the loading of an audio/video is aborted
@@ -1460,6 +1562,7 @@
                     video.style['-webkit-transform'] = 'rotateY(' + params.reflect + ')';
                     video.style['-moz-transform'] = 'rotateY(' + params.reflect + ')';
                 };
+                G_progressThumbnailSrc = videoSrc.replace(/#t=\d+\b/ig, '');
                 let jjs = params.jjs;
                 if (jjs) {
                     const videoSizeOptions = player.querySelector('.video-size-options > .background');
@@ -1485,6 +1588,7 @@
                         };
                     };
                     if (lowestQuality < 9999) G_progressThumbnailSrc = data[lowestQuality];
+                    console.log('lowestQuality:', lowestQuality, G_progressThumbnailSrc);
                     if (videoSizeOptions) {
                         for (let source of sources) {
                             let btn = document.createElement('span');
