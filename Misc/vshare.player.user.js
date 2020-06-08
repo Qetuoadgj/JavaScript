@@ -760,7 +760,7 @@
         if(src.includes('.m3u8')) {
             // return;
             if (G_hlsMediaAttached) {
-                progressThumbnail.currentTime = time;
+                if (time) progressThumbnail.currentTime = time;
             }
             else {
                 try {
@@ -793,7 +793,7 @@
         }
         else {
             progressThumbnail.src = src;
-            progressThumbnail.currentTime = time;
+            if (time) progressThumbnail.currentTime = time;
         };
         // thumbUpdatedTimeLast = time;
     }
@@ -1471,6 +1471,37 @@
             };
         };
 
+        const useChromeLocalVolumeCookie = function(mediaElement, cookieName = '') {
+            /* globals chrome */
+            chrome.storage.local.get('volume', function(result) {
+                let mediaVolume = result.volume; // || 1;
+                if (typeof mediaVolume !== 'undefined') mediaElement.volume = mediaVolume;
+                // console.log('volume [get]:', mediaVolume, mediaElement);
+            });
+            chrome.storage.local.get('muted', function(result) {
+                let mediaMuted = result.muted; // || false;
+                if (mediaMuted == "false") mediaMuted = false; // normalize
+                if (typeof mediaMuted !== 'undefined') mediaElement.muted = mediaMuted;
+                // console.log('muted [get]:', mediaMuted, mediaElement);
+            });
+            // const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
+            // for (let mediaElement of mediaElementsArray) {
+            const saveSettings = function() {
+                chrome.storage.local.set({'volume':  mediaElement.volume}/*, function() {
+                    chrome.storage.local.get('volume', function(result) {
+                        console.log('volume (set):', result.volume);
+                    });
+                }*/);
+                chrome.storage.local.set({'muted': mediaElement.muted}/*, function() {
+                    chrome.storage.local.get('muted', function(result) {
+                        console.log('volume (set):', result.muted);
+                    });
+                }*/);
+            };
+            mediaElement.addEventListener('volumechange', saveSettings, false);
+            // };
+        };
+
         const useGMVolumeCookie = function(mediaElementSelector, cookieName) {
             cookieName = cookieName || "media";
             let mediaVolume = GM_getValue(cookieName+"_volume");
@@ -1611,7 +1642,8 @@
                 mediaMouseControls(video, 5);
                 mediaShowInfoBox(video);
                 if (G_USE_AS_EXTENSION) {
-                    useLocalVolumeCookie("body video", "video");
+                    // useLocalVolumeCookie("body video", "video");
+                    useChromeLocalVolumeCookie(video, "video");
                 }
                 else {
                     useGMVolumeCookie("body video", "video");
