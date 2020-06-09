@@ -933,6 +933,9 @@
     video.addEventListener('abort', hideLoadingIndicator); // Fires when the loading of an audio/video is aborted
     video.addEventListener('error', hideLoadingIndicator); // Fires when an error occurred during the loading of an audio/video
     //
+    // progressThumbnail.addEventListener('seeking', function(e){e.target.style.setProperty('display', 'none')}); // Fires when the browser starts looking for the audio/video
+    // progressThumbnail.addEventListener('seeked', function(e){e.target.style.removeProperty('display')}); // Fires when the browser has loaded the current frame of the audio/video
+    //
     togglePlayButton.addEventListener('click', togglePlay);
     toggleMuteBtn.addEventListener('click', toggleMute);
     toggleFullScreenButton.addEventListener('click', toggleFullscreen);
