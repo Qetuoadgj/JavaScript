@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Krunker.SaveSettings
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.0.03
 // @description  try to take over the world!
 // @author       You
 // @match        https://krunker.io/*
@@ -37,6 +37,7 @@
         'krunker_token',
         'krunker_last',
         'krunker_id',
+        'krk_customPre',
     ];
     function keyExclude(key, pattern) {
         if (key && key.match(pattern) && !restoreSkipList.includes(key)) restoreSkipList.push(key);
@@ -61,6 +62,7 @@
         GM_setValue('data', data);
         alert(index + '. OK');
     }, "");
+    /* globals setSetting selectAttachment selectClass selectSpray selectReticle selectSecondary aspectSelect */
     const MenuCommand_Restore = GM_registerMenuCommand(str_load_settings, function() {
         localStorage.clear();
         let data = GM_getValue('data') || {};
@@ -76,8 +78,19 @@
                 continue;
             };
             localStorage[key] = data[index][key];
+            let match = key.match(/^kro_setngss_(.*)/);
+            if (match) setSetting(match[1], data[index][key]);
         };
-        location.href = '/'; // 'https://krunker.io/';
+        if (typeof data[index].krunker_username !== 'undefined') localStorage.krunker_username = data[index].krunker_username;
+        if (typeof data[index].attachIndex !== 'undefined') selectAttachment(data[index].attachIndex);
+        if (typeof data[index].reticleIndex !== 'undefined') selectReticle(data[index].reticleIndex)
+        if (typeof data[index].classindex !== 'undefined') selectClass(data[index].classindex);
+        if (typeof data[index].classindex !== 'undefined') selectClass(data[index].classindex);
+        if (typeof data[index].sprayindex !== 'undefined') selectSpray(data[index].sprayindex);
+        if (typeof data[index].secondaryInd !== 'undefined') selectSecondary(data[index].secondaryInd);
+        if (typeof data[index].pingRegion4 !== 'undefined') setSetting('defaultRegion', data[index].pingRegion4);
+        if (typeof data[index].kro_setngss_aspectRatio !== 'undefined') aspectSelect('aspectRatio', data[index].kro_setngss_aspectRatio);
+        // location.href = '/'; // 'https://krunker.io/';
     }, "");
     //
     function downloadString(text, fileType, fileName) {

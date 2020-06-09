@@ -1,44 +1,40 @@
 // ==UserScript==
-// @name         YouTube.Page.Auto-Refresh
+// @name         YouTube.URL.TimeStamp.Remove
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.01
+// @version      1.0.07
 // @description  Pure JavaScript version.
 // @author       Ægir
-// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Page.Auto-Refresh.user.js
+// @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.URL.TimeStamp.Remove.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
 // @grant        none
 // @run-at       document-start
 // @noframes
-// @match        *://www.youtube.com/watch*
+// @match        *://www.youtube.com/*
 // ==/UserScript==
 
 (function() {
     'use strict';
 
     // Your code here...
-    function mainFunc(e) {
-        if (location.href !== localStorage.lastPlayed) {
-            localStorage.lastPlayed = location.href;
-            location.reload();
+    function mainFunc() {
+        const re = /[&?]\bt=\d+s\b/;
+        if (location.search.match(re)) {
+            let before = location.search, after = before.replace(re, '');
+            localStorage.lastPlayed = location.origin + location.pathname + after;
+            console.log('YouTube.URL.TimeStamp.Remove', before, after);
+            location.search = location.search.replace(/[&?]\bt=\d+s\b/, '');
+            return true;
         };
     };
-    // --------------------------------------------------
     mainFunc();
-    // --------------------------------------------------
-    var videoElementSelector = [
-        '.html5-video-container > video', // [YouTube.com]
-    ].join(', ');
-    // --------------------------------------------------
     function handleNewElements(event) {
-        let element = event.target;
-        if (element.tagName == 'VIDEO') {
-            let myVideoElement = document.querySelectorAll(videoElementSelector)[0];
-            if (myVideoElement && myVideoElement == element) {
-                document.removeEventListener('DOMNodeInserted', handleNewElements);
-                myVideoElement.addEventListener('loadedmetadata', mainFunc);
-            };
+        let element = event ? event.target : null;
+        if (element && element.tagName == 'DIV' /*&& element.id == "progress"*/ || element.tagName == 'VIDEO') {
+            if (mainFunc()) console.log(element);
+            // window.stop();
         };
+        // console.log('el:', element);
     };
-    // --------------------------------------------------
     document.addEventListener('DOMNodeInserted', handleNewElements, false);
+    // document.addEventListener('DOMContentLoaded', mainFunc, false);
 })();
