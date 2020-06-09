@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.33
+// @version      0.0.34
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -83,6 +83,50 @@
             default:
                 console.log('An unknown error occurred.');
                 break;
+        };
+    };
+    // ---------------------------------------------------
+    /* globals Hls */
+    const G_HLSdata = {};
+    function playHLS(video, hls_id, videoSrc, onLoadFunc) {
+        if (typeof onLoadFunc === 'function') {
+            video.removeEventListener('loadedmetadata', onLoadFunc);
+        };
+        // var video = document.getElementById('video');
+        // var videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        let hls = G_HLSdata[hls_id];
+        if (hls) {hls.destroy();};
+        if (Hls.isSupported()) {
+            /*var*/ hls = new Hls();
+            G_HLSdata[hls_id] = hls;
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                // if (video.autoplay && video.paused) video.play();
+                if (typeof onLoadFunc === 'function') onLoadFunc();
+            });
+        }
+        // hls.js is not supported on platforms that do not have Media Source
+        // Extensions (MSE) enabled.
+        //
+        // When the browser has built-in HLS support (check using `canPlayType`),
+        // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
+        // element through the `src` property. This is using the built-in support
+        // of the plain video element, without using hls.js.
+        //
+        // Note: it would be more normal to wait on the 'canplay' event below however
+        // on Safari (where you are most likely to find built-in HLS support) the
+        // video.src URL must be on the user-driven white-list before a 'canplay'
+        // event will be emitted; the last video event that can be reliably
+        // listened-for when the URL is not on the white-list is 'loadedmetadata'.
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+            //             video.addEventListener('loadedmetadata', function() {
+            //                 if (video.autoplay && video.paused) video.play();
+            //             });
+            if (typeof onLoadFunc === 'function') {
+                video.addEventListener('loadedmetadata', onLoadFunc);
+            };
         };
     };
     // ---------------------------------------------------
@@ -715,7 +759,7 @@
         const minutes = Math.floor(sec_num / 60) % 60;
         const seconds = sec_num % 60;
         return [hours,minutes,seconds].map(v => v < 10 ? "0" + v : v).filter((v, i) => v !== "00" || i > 0).join(":");
-    }
+    };
     function seconds(time) {
         let duration = time.split(':');
         for (let v of duration) {
@@ -739,19 +783,19 @@
         }
         else if (elem.msRequestFullscreen) { // IE/Edge
             elem.msRequestFullscreen();
-        }
-    }
+        };
+    };
     function toggleFullscreen() {
         requestFullscreen(video);
-    }
+    };
     function timelineCalculatePercent(e) {
         const delta = timeline.offsetLeft - timeline_event_catcher.offsetLeft;
         const clickPosX = Math.max(e.offsetX - delta, 0);
         const percent = Math.min(clickPosX / timeline.offsetWidth * 100, 100);
         // console.log(percent);
         return percent;
-    }
-    let G_progressThumbnailSrc, G_hlsMediaAttached = false;
+    };
+    let G_progressThumbnailSrc, G_hlsMediaAttached = false; //, G_progressThumbnailHLS = null;
     function updateTimelineThumb(time, minUpdateTime = 2) {
         // if ((Math.abs(time - thumbUpdatedTimeLast)) < minUpdateTime) return;
         time = Math.floor(time);
@@ -763,78 +807,55 @@
                 if (time) progressThumbnail.currentTime = time;
             }
             else {
-                try {
-                    /* globals Hls handleMediaError */
-                    let hls = new Hls();
-                    hls.on(Hls.Events.ERROR, function(event,data) {
-                        // const msg = "Player error: " + data.type + " - " + data.details;
-                        // console.error(msg);
-                        if(data.fatal) {
-                            switch(data.type) {
-                                case Hls.ErrorTypes.MEDIA_ERROR:
-                                    handleMediaError(hls);
-                                    break;
-                                case Hls.ErrorTypes.NETWORK_ERROR:
-                                    console.error("network error ...");
-                                    break;
-                                default:
-                                    console.error("unrecoverable error");
-                                    hls.destroy();
-                                    break;
-                            };
-                        };
-                    });
-                    hls.loadSource(src);
-                    hls.attachMedia(progressThumbnail);
-                    // hls.on(Hls.Events.MANIFEST_PARSED,function() { progressThumbnail.play(); });
-                    G_hlsMediaAttached = true;
-                } catch (e) {};
+                playHLS(progressThumbnail, 'thumb_video', src);
+                G_hlsMediaAttached = true;
             };
         }
         else {
+            // if (G_progressThumbnailHLS) {G_progressThumbnailHLS.destroy();};
             progressThumbnail.src = src;
             if (time) progressThumbnail.currentTime = time;
         };
         // thumbUpdatedTimeLast = time;
-    }
+    };
     function playerDisplayTimelineTooltip(e) {
         const percent = timelineCalculatePercent(e);
         const time = percent / 100 * video.duration;
         progressBackground.style.width = `${percent}%`;
         currentTime.innerText = toHHMMSS(time);
         updateTimelineThumb(time);
-    }
+    };
     function togglePlay() {
         const playState = video.paused ? 'play' : 'pause';
         let promise = video[playState](); // Call play or paused method
         if (promise !== undefined) {promise.then(_ => {}).catch(error => {});};
-    }
+    };
     function updatePlayButton() {
         if (this.paused) {
             togglePlayButton.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play</title><polygon points="0 0 0 16 16 8"></polygon></svg>`;
         }
         else {
             togglePlayButton.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>pause</title><polygon points="0 0 0 16 5 16 5 0"></polygon><polygon points="16 0 16 16 11 16 11 0"></polygon></svg>`;
-        }
-    }
+        };
+    };
     function toggleMute(e) {
         e.preventDefault();
         video.muted = !video.muted;
-    }
+    };
     function updateMuteButton() {
         if(video.muted) {
             toggleMuteBtn.classList.add('mute');
         }
         else {
             toggleMuteBtn.classList.remove('mute');
-        }
-    }
+        };
+    };
     function onSkipButtonClkick() {
         video.currentTime += parseFloat(this.dataset.skip);
-    }
+    };
     function updateSliders() {
         video[this.name] = this.value;
-    }
+    };
     function updateVideoBufferState() {
         const timeRanges = video.buffered;
         const currentTime = video.currentTime;
@@ -845,17 +866,17 @@
             if (currentTime >= start && currentTime <= end) {
                 curTimeRange = end;
                 break;
-            }
-        }
+            };
+        };
         const percent = (curTimeRange / video.duration) * 100;
         bufferFilled.style.width = `${percent}%`;
-    }
+    };
     function updateProgressBar() {
         const percent = (video.currentTime / video.duration) * 100;
         progressFilled.style.width = `${percent}%`;
         updateVideoBufferState();
         currentTimeDisplay.innerText = toHHMMSS(video.currentTime) + "/" + toHHMMSS(video.duration);
-    }
+    };
     // ---------------------------------------------------
     function onVideoLoadedMetaData() {
         currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);
@@ -866,28 +887,35 @@
         const slider = document.querySelector('input[name="volume"]');
         slider.value = video.volume;
         updateMuteButton();
-    }
+    };
     function onVideoRateChange() {
         playbackRateDisplay.innerText = '×' + parseFloat(video.playbackRate).toFixed(2);
-    }
+    };
     function onTimelineClick(e) {
         const percent = timelineCalculatePercent(e);
         video.currentTime = percent / 100 * video.duration;
-    }
+    };
     function showLoadingIndicator() {
         loadingIndicator.classList.remove('hidden');
-    }
+    };
     function hideLoadingIndicator() {
         loadingIndicator.classList.add('hidden');
-    }
+    };
+    function updateControlsState() {
+        for (let slider of playerSliders) {slider.value = video[slider.name];};
+        updateMuteButton();
+    };
     // ---------------------------------------------------
     // Event listeners
     // ---------------------------------------------------
-    video.addEventListener('load', updateSliders);
-    video.addEventListener('loadedmetadata', onVideoLoadedMetaData);
     video.addEventListener('timeupdate', updateProgressBar);
     video.addEventListener('volumechange', onVideoVolumeChange);
     video.addEventListener('ratechange', onVideoRateChange);
+    //
+    // video.addEventListener('load', updateSliders);
+    video.addEventListener('load', updateControlsState);
+    video.addEventListener('loadstart', updateControlsState); // Fires when the browser starts looking for the audio/video
+    video.addEventListener('loadedmetadata', onVideoLoadedMetaData);
     //
     video.addEventListener('click', togglePlay);
     video.addEventListener('play', updatePlayButton);
@@ -900,69 +928,6 @@
     video.addEventListener('stalled', showLoadingIndicator); // Fires when the browser is trying to get media data, but data is not available
     video.addEventListener('loadedmetadata', hideLoadingIndicator); // Fires when the browser has loaded meta data for the audio/video
     video.addEventListener('loadstart', showLoadingIndicator); // Fires when the browser starts looking for the audio/video
-
-    video.addEventListener('loadstart', function(e) {
-        /*
-        // Start by creating an empty `<script />` tag element
-        let script_id = 'embedded_videos_js';
-        let scripts = document.querySelectorAll('body > script#'+script_id);
-        for (let script of scripts) {script.remove();};
-        let script = document.createElement('script');
-        // You can now start adding attributes to the element:
-        script.setAttribute('id', script_id);
-        // Set the src attribute, note it won't start loading yet.
-        script.src = 'embedded_videos.js';
-        // In order for it to become part of the page, you need to attach it
-        // to the DOM, to keep things clean, we will append it to the page's
-        // <head /> tag.
-        document.body.appendChild(script);
-        */
-        // ---------------------------------------------------------
-        //(function() {
-        // const videos = document.getElementsByTagName('video');
-        // for (let i = 0; i < videos.length; i++) {
-        // const video = videos[i]
-        //         const srcs = new Array();
-        //         if(video.getAttribute('src')){
-        //             srcs.push(video.getAttribute('src'));
-        //         };
-        //         const sources = video.getElementsByTagName('source')
-        //         for (let i = 0; i < sources.length; i++) {
-        //             srcs.push(sources[i].getAttribute('src'));
-        //         };
-        //         for (let i = 0; i < srcs.length; i++) {
-        //             const src = srcs[i]
-        const src = video.currentSrc;
-        if(src.includes('.m3u8')){
-            let hls = new Hls();
-            hls.on(Hls.Events.ERROR, function(event, data) {
-                // const msg = "Player error: " + data.type + " - " + data.details;
-                // console.error(msg);
-                if(data.fatal) {
-                    switch(data.type) {
-                        case Hls.ErrorTypes.MEDIA_ERROR:
-                            handleMediaError(hls);
-                            break;
-                        case Hls.ErrorTypes.NETWORK_ERROR:
-                            console.error("network error ...");
-                            break;
-                        default:
-                            console.error("unrecoverable error");
-                            hls.destroy();
-                            break;
-                    };
-                };
-            });
-            hls.loadSource(src);
-            hls.attachMedia(video);
-            // hls.on(Hls.Events.MANIFEST_PARSED,function() { video.play(); });
-        };
-        //         };
-        // };
-        //})();
-        // ---------------------------------------------------------
-    }); // Fires when the browser starts looking for the audio/video
-
     video.addEventListener('loadeddata', hideLoadingIndicator); // Fires when the browser has loaded the current frame of the audio/video
     video.addEventListener('waiting', showLoadingIndicator); // Fires when the video stops because it needs to buffer the next frame
     video.addEventListener('abort', hideLoadingIndicator); // Fires when the loading of an audio/video is aborted
@@ -981,6 +946,12 @@
     timeline_event_catcher.addEventListener('mousemove', (e) => {mouseDownState && onTimelineClick(e); playerDisplayTimelineTooltip(e)});
     timeline_event_catcher.addEventListener('mousedown', () => {mouseDownState = true});
     timeline_event_catcher.addEventListener('mouseup', () => {mouseDownState = false});
+    //
+    // video.addEventListener('loadstart', function(e) {
+    video.addEventListener('loadstart', function(e) {
+        const src = video.currentSrc;
+        if (src.includes('.m3u8')) playHLS(e.target, 'main_video', src);
+    }); // Fires when the browser starts looking for the audio/video
     // ---------------------------------------------------
     //     video.src = "https://hunzaboy.github.io/Ckin-Video-Player/ckin.mp4#t=10";
     // ---------------------------------------------------
@@ -1476,13 +1447,13 @@
             chrome.storage.local.get('volume', function(result) {
                 let mediaVolume = result.volume; // || 1;
                 if (typeof mediaVolume !== 'undefined') mediaElement.volume = mediaVolume;
-                // console.log('volume [get]:', mediaVolume, mediaElement);
+                // console.log('volume [get]:', mediaVolume, mediaElement, mediaElement.volume);
             });
             chrome.storage.local.get('muted', function(result) {
                 let mediaMuted = result.muted; // || false;
                 if (mediaMuted == "false") mediaMuted = false; // normalize
                 if (typeof mediaMuted !== 'undefined') mediaElement.muted = mediaMuted;
-                // console.log('muted [get]:', mediaMuted, mediaElement);
+                // console.log('muted [get]:', mediaMuted, mediaElement, mediaElement.muted);
             });
             // const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
             // for (let mediaElement of mediaElementsArray) {
@@ -1669,4 +1640,9 @@
     initPlayer();
     // ---------------------------------------------------
     // video.src = 'https://vshare.io/err105.mp4?error=expired&#t=5';
+    // ---------------------------------------------------
+    //     chrome.omnibox.onInputEntered.addListener(function(text) {
+    //         var serviceCall2 = 'http://www.google.com/search?q=' + text;
+    //         chrome.windows.create({"url": serviceCall2});
+    //     });
 })();

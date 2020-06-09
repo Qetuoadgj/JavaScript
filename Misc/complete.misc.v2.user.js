@@ -757,6 +757,10 @@
         'PropertySex.com',
         'TeenMegaWorld.com',
         'BannedStories.com',
+        'Thickumz.com',
+        'MomsTeachSex.com',
+        'IsThisReal.com',
+        'SinsLife.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
@@ -2913,6 +2917,7 @@
     else if (
         G_pageURL.matchLink('https?://hqporner.com')
     ) {
+        /*
         const css = [
             `body * {`,
             `    background: black !important;`,
@@ -2925,6 +2930,7 @@
             `}`,
         ].join('\n');
         addGlobalStyle(css, 'night-mode');
+        */
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
