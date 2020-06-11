@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.34
+// @version      0.0.35
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -812,8 +812,8 @@
             };
         }
         else {
-            // if (G_progressThumbnailHLS) {G_progressThumbnailHLS.destroy();};
-            progressThumbnail.src = src;
+            if (G_HLSdata.thumb_video) {G_HLSdata.thumb_video.destroy();};
+            if (progressThumbnail.src !== src) progressThumbnail.src = src;
             if (time) progressThumbnail.currentTime = time;
         };
         // thumbUpdatedTimeLast = time;
