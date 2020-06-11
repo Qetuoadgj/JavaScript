@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.91
+// @version      2.0.92
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -761,6 +761,7 @@
         'MomsTeachSex.com',
         'IsThisReal.com',
         'SinsLife.com',
+        'PetiteHDPorn.com',
     ];
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
