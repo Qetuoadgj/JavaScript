@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.35
+// @version      0.0.36
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -948,7 +948,7 @@
     timeline_event_catcher.addEventListener('click', onTimelineClick);
     timeline_event_catcher.addEventListener('mousemove', (e) => {mouseDownState && onTimelineClick(e); playerDisplayTimelineTooltip(e)});
     timeline_event_catcher.addEventListener('mousedown', () => {mouseDownState = true});
-    timeline_event_catcher.addEventListener('mouseup', () => {mouseDownState = false});
+    /*timeline_event_catcher*/ player.addEventListener('mouseup', () => {mouseDownState = false});
     //
     // video.addEventListener('loadstart', function(e) {
     video.addEventListener('loadstart', function(e) {
@@ -1529,6 +1529,7 @@
                     params.main_url = searchString.replace(re, '');
                     params.first_key = firstCustomKey;
                 };
+                params.main_url = decodeURIComponent(params.main_url);
                 return params;
             };
             // Get rid of leading ?
@@ -1560,7 +1561,7 @@
                     video.setAttribute('autoplay', '');
                 };
                 // if (params.thumb_src) {G_progressThumbnailSrc = params.thumb_src;};
-                let videoSrc = params.main_url;
+                let videoSrc = params.main_url; // decodeURI(params.main_url);
                 if (params.t) videoSrc = videoSrc + '#t=' + params.t;
                 if (params.reflect) {
                     video.style.transform = 'rotateY(' + params.reflect + ')';
