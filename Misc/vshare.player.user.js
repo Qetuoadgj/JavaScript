@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.36
+// @version      0.0.37
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -147,7 +147,7 @@
         `                    <div class="progress">`,
         `                        <div class="progress-background">`,
         `                            <span class="current-time">00:00</span>`,
-        `                            <video class="progress-thumbnail" preload="metadata" muted></video>`,
+        `                            <div class="progress-thumbnail"><video preload="metadata" muted></video></div>`,
         `                        </div>`,
         `                        <div class="filled-buffer"></div>`,
         `                        <div class="filled-progress"></div>`,
@@ -310,6 +310,10 @@
         `    transform: translateX(50%) translateY(-5px);`,
         `    /*background: rgba(0, 128, 255, 0.3);*/`,
         `    background: rgba(0, 0, 0, 1);`,
+        `}`,
+        `.progress-thumbnail video {`,
+        `    width: 100%;`,
+        `    height: 100%;`,
         `}`,
         `.player-panel {`,
         `    display: flex;`,
@@ -742,7 +746,8 @@
     // ---------------------------------------------------
     const progressBackground = player.querySelector('.progress-background');
     const currentTime = player.querySelector('.current-time');
-    const progressThumbnail = player.querySelector('.progress-thumbnail');
+    const progressThumbnail = player.querySelector('.progress-thumbnail ');
+    const progressThumbnailVideo = player.querySelector('.progress-thumbnail video');
     const playbackRateDisplay = player.querySelector('.current-speed');
     // ---------------------------------------------------
     const timeline = progress;
@@ -804,17 +809,17 @@
         if(src.includes('.m3u8')) {
             // return;
             if (G_hlsMediaAttached) {
-                if (time) progressThumbnail.currentTime = time;
+                if (time) progressThumbnailVideo.currentTime = time;
             }
             else {
-                playHLS(progressThumbnail, 'thumb_video', src);
+                playHLS(progressThumbnailVideo, 'thumb_video', src);
                 G_hlsMediaAttached = true;
             };
         }
         else {
             if (G_HLSdata.thumb_video) {G_HLSdata.thumb_video.destroy();};
-            if (progressThumbnail.src !== src) progressThumbnail.src = src;
-            if (time) progressThumbnail.currentTime = time;
+            if (progressThumbnailVideo.src !== src) progressThumbnailVideo.src = src;
+            if (time) progressThumbnailVideo.currentTime = time;
         };
         // thumbUpdatedTimeLast = time;
     };
@@ -933,8 +938,8 @@
     video.addEventListener('abort', hideLoadingIndicator); // Fires when the loading of an audio/video is aborted
     video.addEventListener('error', hideLoadingIndicator); // Fires when an error occurred during the loading of an audio/video
     //
-    // progressThumbnail.addEventListener('seeking', function(e){e.target.style.setProperty('display', 'none')}); // Fires when the browser starts looking for the audio/video
-    // progressThumbnail.addEventListener('seeked', function(e){e.target.style.removeProperty('display')}); // Fires when the browser has loaded the current frame of the audio/video
+    progressThumbnailVideo.addEventListener('seeking', function(e){e.target.style.setProperty('visibility', 'hidden')}); // Fires when the browser starts looking for the audio/video
+    progressThumbnailVideo.addEventListener('seeked', function(e){e.target.style.removeProperty('visibility')}); // Fires when the browser has loaded the current frame of the audio/video
     //
     togglePlayButton.addEventListener('click', togglePlay);
     toggleMuteBtn.addEventListener('click', toggleMute);

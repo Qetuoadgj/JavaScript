@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.92
+// @version      2.0.93
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -763,6 +763,202 @@
         'SinsLife.com',
         'PetiteHDPorn.com',
     ];
+    // let t = []; for (let item of document.querySelectorAll('option')) {let s = item.innerText.replace(/\s+/g, '').trim();if (!s.includes('.')) continue;s = s.includes('.') ? s : s + '.com';t.push(s);}; console.log(t);
+    /*
+    let t = [], a = document.querySelectorAll('.info > a');
+    for (let i = 0; i < a.length; i++) {
+        let item = a[i];
+        let url = item.href; // item.innerText.replace(/\s+/g, '');
+        // 1. Создаём новый объект XMLHttpRequest
+        var xhr = new XMLHttpRequest();
+        // 2. Конфигурируем его: GET-запрос на URL 'phones.json'
+        xhr.open('GET', url, false);
+        // 3. Отсылаем запрос
+        xhr.send();
+        // 4. Если код ответа сервера не 200, то это ошибка
+        if (xhr.status != 200) {
+            // обработать ошибку
+            console.log( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
+        }
+        else {
+            // вывести результат
+            // console.log( xhr.responseText ); // responseText -- текст ответа.
+            const matched = xhr.responseText.match(/<div class="site"><a href="\/search.php\?site\[\]=\d+">(.*?)<\/a><\/div>/);
+            if (matched) {
+                let url = matched[1].trim();
+                t.push(url);
+                console.log(url);
+                if (i === a.length-1) console.log(t);
+            };
+        };
+    };
+    */
+    const G_siteNetworks = {
+        'Nubiles.net' : [
+            "Nubiles-Porn.com",
+            "StepSiblingsCaught.com",
+            "MomsTeachSex.com",
+            "BadTeensPunished.com",
+            "PrincessCum.com",
+            "NubilesUnscripted.com",
+            "Nubiles-Casting.com",
+            "Nubiles.net",
+            "PetiteHDPorn.com",
+            "DriverXXX.com",
+            "PetiteBallerinasFucked.com",
+            "TeacherFucksTeens.com",
+            "BountyHunterPorn.com",
+            "DaddysLilAngel.com",
+            "MyFamilyPies.com",
+            "DetentionGirls.com",
+            "NubilesET.com",
+            "NubileFilms.com"
+        ],
+        'FetishNetwork.com' : [
+            "BrutalPOV.com",
+            "InternetCreeper.com",
+            "OperationEscort.com",
+            "LatinaPatrol.com",
+            "HostelXXX.com",
+            "TeenCreeper.com",
+            "TeensInTheWoods.com",
+            "HelplessTeens.com",
+            "BrutalCastings.com",
+            "SexualDisgrace.com",
+            "StrapOnSquad.com",
+            "BrutalPickups.com"
+        ],
+        'PornPros.com' :  [
+            "18YearsOld.com",
+            "DeepThroatLove.com",
+            "PublicViolations.com",
+            "TeenBFF.com",
+            "MassageCreep.com",
+            "FreaksOfCock.com",
+            "40ozBounce.com",
+            "ShadyPi.com",
+            "JurassicCock.com",
+            "CrueltyParty.com",
+            "FreaksOfBoobs.com",
+            "CockCompetition.com",
+            "PimpParade.com",
+            "FlexiblePositions.com",
+            "Disgraced18.com",
+            "EuroHumpers.com",
+            "CumshotSurprise.com",
+            "SquirtDisgrace.com"
+        ],
+        'PerfectGonzo.com' : [
+            "PerfectGonzo.com",
+            "AllInternal.com",
+            "AssTraffic.com",
+            "PrimeCups.com",
+            "CumForCover.com",
+            "SpermSwap.com",
+            "MilfThing.com",
+            "TamedTeens.com"
+        ],
+        'TeenCoreClub.com' : [
+            "AnalyzedGirls.com",
+            "AssTeenMouth.com",
+            "BangTeenPussy.com",
+            "BrutalInvasion.com",
+            "CleanMyAss.com",
+            "CollegePartyTime.com",
+            "CumaholicTeens.com",
+            "CumFilledThroat.com",
+            "CumSumptionCocktail.com",
+            "Defiled18.com",
+            "DirtyBabySitter.com",
+            "DoubleTeamedTeens.com",
+            "DreamteensHD.com",
+            "DrillHerButt.com",
+            "DualThroat.com",
+            "GangLandVictims.com",
+            "GirlsGotCream.com",
+            "HardcoreYouth.com",
+            "LittleHellcat.com",
+            "LittleTeenSuckers.com",
+            "MakeTeenGape.com",
+            "MakeTeenMoan.com",
+            "MegaPenetrations.com",
+            "MessyGangBangs.com",
+            "MyBlackCoeds.com",
+            "MyLatinaTeen.com",
+            "NastyAssLickers.com",
+            "NaughtyLittleNymphs.com",
+            "NeverDoneThatBefore.com",
+            "NylonSweeties.com",
+            "PinkEyeSluts.com",
+            "Plug2Holes.com",
+            "RoadGangBangs.com",
+            "SchoolBusChicks.com",
+            "Seductive18.com",
+            "ShowMeGape.com",
+            "ShyTeachersPet.com",
+            "SmallTitsHunter.com",
+            "Spermantino.com",
+            "TeachMyAss.com",
+            "TeenagersGoingWild.com",
+            "TeenAnalCasting.com",
+            "TeenDrillers.com",
+            "TeenGina.com",
+            "TeensLoveBlacks.com",
+            "TeensNaturalWay.com",
+            "TeensTryAnal.com",
+            "TeensTryBlacks.com",
+            "TeensWantOrgies.com",
+            "TryTeens.com",
+            "TugJobQueens.com",
+            "WhiteBoxBlackCocks.com",
+            "WhiteTeensBlackCocks.com",
+            "YoungThroats.com",
+        ],
+        'TeenMegaWorld.com' : [
+            "TmwVRnet.com",
+            "Beauty4K.com",
+            "X-Angels.com",
+            "RawCouples.com",
+            "FirstBGG.com",
+            "Anal-Angels.com",
+            "Anal-Beauty.com",
+            "Creampie-Angels.com",
+            "Beauty-Angels.com",
+            "Old-n-Young.com",
+            "FuckStudies.com",
+            "TeenSexMovs.com",
+            "TeenSexMania.com",
+            "TrickyMasseur.com",
+            "Dirty-Coach.com",
+            "Dirty-Doctor.com",
+            "NubileGirlsHD.com",
+            "WOW-Orgasms.com",
+            "SquirtingVirgin.com",
+            "NylonsX.com",
+            "HomeToyTeens.com",
+            "18FirstSex.com",
+            "HomeTeenVids.com",
+            "WatchMeFucked.com",
+            "LollyHardcore.com",
+            "AboutGirlsLove.com",
+            "ExGFBox.com",
+            "Gag-n-Gape.com",
+            "SoloTeenGirls.net",
+            "TeenStarsOnly.com",
+            "PrivateTeenVideo.com",
+            "Teens3Some.com",
+            "ATMovs.com",
+        ],
+    };
+    for (let parentSite of Object.keys(G_siteNetworks)) {
+        if (G_RenameTable.indexOf(parentSite) === -1) G_RenameTable.push(parentSite);
+        for (let childSite of G_siteNetworks[parentSite]) {
+            const index = G_RenameTable.indexOf(childSite);
+            if (index > -1) {G_RenameTable.splice(index, 1);};
+            let value = childSite === parentSite ? parentSite : `${parentSite}, ${childSite}`;
+            G_RenameTable.push(value);
+        };
+    };
     G_RenameTable = [...new Set(G_RenameTable)].sort();
     function autoReplace(str) {
         str = str.trim().
@@ -854,7 +1050,7 @@
         '★' : '',
         '-----------------------------' : '',
     };
-    var G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
+    var G_Reflect = null, G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
         let buttonHolderID = 'uniqueEmbedCodeCatButtonHolder';
         for (let element of document.querySelectorAll('#' + buttonHolderID)) {element.remove();};
         let buttonHolder = document.createElement('div');
@@ -1079,7 +1275,26 @@
                 addCatButton(word, false);
             };
         };
-        // --
+        // --------------------------------------------------------------------------------
+        let element99ID = 'uniqueEmbedCodeReflectCheckbox';
+        for (let element of document.querySelectorAll('#' + element99ID)) {element.remove();};
+        // --------------------------------------------------------------------------------
+        let element99 = document.createElement('input');
+        element99.type = 'checkbox';
+        element99.setAttribute('id', element5ID);
+        element99.style.display = 'inline-flex';
+        element99.name = 'reflect';
+        element99.value = '-180deg';
+        element0.appendChild(element99);
+        element99.onchange = function(e) {
+            G_Reflect = e.target.checked ? e.target.value : null;
+            updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+        };
+        let element98 = document.createElement('label');
+        element98.for = element99.name;
+        element98.iinerText = 'data-reflect';
+        element0.appendChild(element98);
+        // --------------------------------------------------------------------------------
         return element;
     };
     var G_embedCodeTextStart = '00:00:00';
@@ -1304,6 +1519,9 @@
         };
         if (G_embedCodeTextStart && G_embedCodeTextStart !== '00:00:00') {
             G_embedCodeText += ' data-start="' + G_embedCodeTextStart + '"';
+        };
+        if (G_Reflect) {
+            G_embedCodeText += ' data-reflect="' + G_Reflect + '"';
         };
         G_embedCodeTextCategorie = G_embedCodeTextCategorie.trim().
         replace(/\s+,/g, ',').
