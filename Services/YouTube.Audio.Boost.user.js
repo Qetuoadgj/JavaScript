@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.14
+// @version      1.0.15
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -46,21 +46,26 @@
         gainNode.gain.value = result*1; // boost the volume
     };
     function connectBoost(myVideoElement) {
+        console.log(myVideoElement);
         // create an audio context and hook up the video element as the source
         var audioCtx = new AudioContext();
         var source = audioCtx.createMediaElementSource(myVideoElement);
         // create a gain node
         var gainNode = audioCtx.createGain();
+        var convolver = audioCtx.createConvolver();
+        convolver.normalize = true;
         let volume_mult = GM_getValue('enabled') == true ? GM_getValue('volume_mult') : 1;
         gainNode.gain.value = volume_mult; // boost the volume
         source.connect(gainNode);
+        source.connect(convolver);
         // connect the gain node to an output destination
         gainNode.connect(audioCtx.destination);
+        convolver.connect(audioCtx.destination);
         return gainNode;
     };
     var videoElementSelector = [
         '.html5-video-container > video', // [YouTube.com]
-        '#player video', // magicianer.cc, streamguard.cc [rezka.ag]
+        'pjsdiv video, #player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
     videoElementSelector = location.host == 'rezka.ag' ? 'video[src^="blob:"]' : videoElementSelector;
