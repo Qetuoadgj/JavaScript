@@ -101,6 +101,7 @@
         mediaTextIndicator.style['z-index'] = 2147483647; // Always on TOP
         mediaTextIndicator.style.top = '0px';
         mediaTextIndicator.style.left = (fontSize/4) + 'px';
+        mediaTextIndicator.style.transform = 'translate(50px, 50px)';
         media.parentNode.insertBefore(mediaTextIndicator, media.nextSibling);
         var volumeTextFade = function(fadeDelay) {
             fadeDelay = fadeDelay || 2000;
