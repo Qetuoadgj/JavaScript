@@ -27,6 +27,7 @@
 # 127.0.0.1 cdn1d-static-shared.phncdn.com
 127.0.0.1 etahub.com
 127.0.0.1 static.trafficjunky.com
+127.0.0.1 trafficjunky.com
 # ad videos
 127.0.0.1 evtubescms.phncdn.com
 
