@@ -1,0 +1,33 @@
+# [porntrex.com]
+127.0.0.1 a.exosrv.com
+127.0.0.1 ads.bullionyield.com
+127.0.0.1 bullionyield.com
+127.0.0.1 serve.adworldmedia.com
+127.0.0.1 adworldmedia.com
+127.0.0.1 ccs.livejasmin.com
+127.0.0.1 livejasmin.com
+127.0.0.1 chaturbate.com
+127.0.0.1 exofrwe.com
+127.0.0.1 js-agent.newrelic.com
+127.0.0.1 newrelic.com
+127.0.0.1 mavenlohi.com
+127.0.0.1 offoonguser.com
+127.0.0.1 promo-bc.com
+127.0.0.1 protoawe.com
+127.0.0.1 pt.protoawe.com
+127.0.0.1 syndication.realsrv.com
+127.0.0.1 realsrv.com
+127.0.0.1 ssl-ccstatic.highwebmedia.com
+127.0.0.1 twinrdsrv.com
+127.0.0.1 www.googletagmanager.com
+
+# [pornhub.com]
+127.0.0.1 cdn1d-static-shared.phncdn.com
+127.0.0.1 etahub.com
+
+# [eporner.com]
+127.0.0.1 tsyndicate.com
+127.0.0.1 clckysudks.com
+127.0.0.1 syndication.exosrv.com
+127.0.0.1 exosrv.com
+127.0.0.1 trafforsrv.com
