@@ -22,7 +22,7 @@
 127.0.0.1 www.googletagmanager.com
 
 # [pornhub.com]
-127.0.0.1 cdn1d-static-shared.phncdn.com
+# 127.0.0.1 cdn1d-static-shared.phncdn.com
 127.0.0.1 etahub.com
 
 # [eporner.com]
