@@ -1,3 +1,5 @@
+# 1.0.00 [30.08.2020 16:25]
+
 # [porntrex.com]
 127.0.0.1 a.exosrv.com
 127.0.0.1 ads.bullionyield.com
@@ -24,6 +26,9 @@
 # [pornhub.com]
 # 127.0.0.1 cdn1d-static-shared.phncdn.com
 127.0.0.1 etahub.com
+127.0.0.1 static.trafficjunky.com
+# ad videos
+127.0.0.1 evtubescms.phncdn.com
 
 # [eporner.com]
 127.0.0.1 tsyndicate.com
