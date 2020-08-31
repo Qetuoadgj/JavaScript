@@ -1,50 +1,69 @@
-# 2020.08.31 15:12:48
+# 2020.08.31 16:10:34
 
-# [main]
-127.0.0.1 a.exosrv.com
-127.0.0.1 ads.bullionyield.com
-127.0.0.1 ads.exosrv.com
-127.0.0.1 ads.trafficjunky.net
-127.0.0.1 adworldmedia.com
-127.0.0.1 bullionyield.com
-127.0.0.1 ccs.livejasmin.com
+# [misc]
 127.0.0.1 chaturbate.com
 127.0.0.1 clckysudks.com
 127.0.0.1 etahub.com
 127.0.0.1 evtubescms.phncdn.com
 127.0.0.1 exofrwe.com
-127.0.0.1 hw-cdn2.adtng.com
-127.0.0.1 js-agent.newrelic.com
-127.0.0.1 livejasmin.com
-127.0.0.1 main.realsrv.com
 127.0.0.1 mavenlohi.com
-127.0.0.1 newrelic.com
 127.0.0.1 offoonguser.com
 127.0.0.1 promo-bc.com
-127.0.0.1 protoawe.com
-127.0.0.1 pt.protoawe.com
-127.0.0.1 pxl.tsyndicate.com
-127.0.0.1 serve.adworldmedia.com
 127.0.0.1 ssl-ccstatic.highwebmedia.com
-127.0.0.1 syndication.exosrv.com
-127.0.0.1 syndication.realsrv.com
 127.0.0.1 trafficstars.com
 127.0.0.1 trafforsrv.com
-127.0.0.1 tsyndicate.com
 127.0.0.1 twinrdsrv.com
 127.0.0.1 www.googletagmanager.com
-127.0.0.1 ctrack.trafficjunky.net
-127.0.0.1 hw-cdn.trafficjunky.net
-127.0.0.1 a.adtng.com
-127.0.0.1 ams.adtng.com
-127.0.0.1 ord.adtng.com
-
-# [rezka]
 127.0.0.1 streamguard.cc
-127.0.0.1 fs1.fex.net
-127.0.0.1 fs19.fex.net
-127.0.0.1 fs25.fex.net
 127.0.0.1 ankunding.biz
 127.0.0.1 franeski.net
 127.0.0.1 rstbtmd.com
 
+# [exosrv.com]
+127.0.0.1 a.exosrv.com
+127.0.0.1 ads.exosrv.com
+127.0.0.1 syndication.exosrv.com
+
+# [bullionyield.com]
+127.0.0.1 ads.bullionyield.com
+127.0.0.1 bullionyield.com
+
+# [trafficjunky.net]
+127.0.0.1 ads.trafficjunky.net
+127.0.0.1 ctrack.trafficjunky.net
+127.0.0.1 hw-cdn.trafficjunky.net
+
+# [adworldmedia.com]
+127.0.0.1 adworldmedia.com
+127.0.0.1 serve.adworldmedia.com
+
+# [livejasmin.com]
+127.0.0.1 ccs.livejasmin.com
+127.0.0.1 livejasmin.com
+
+# [adtng.com]
+127.0.0.1 hw-cdn2.adtng.com
+127.0.0.1 a.adtng.com
+127.0.0.1 ams.adtng.com
+127.0.0.1 ord.adtng.com
+
+# [newrelic.com]
+127.0.0.1 js-agent.newrelic.com
+127.0.0.1 newrelic.com
+
+# [realsrv.com]
+127.0.0.1 main.realsrv.com
+127.0.0.1 syndication.realsrv.com
+
+# [protoawe.com]
+127.0.0.1 protoawe.com
+127.0.0.1 pt.protoawe.com
+
+# [tsyndicate.com]
+127.0.0.1 pxl.tsyndicate.com
+127.0.0.1 tsyndicate.com
+
+# [fex.net]
+127.0.0.1 fs1.fex.net
+127.0.0.1 fs19.fex.net
+127.0.0.1 fs25.fex.net

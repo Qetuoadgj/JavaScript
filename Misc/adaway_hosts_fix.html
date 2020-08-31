@@ -1,0 +1,164 @@
+<html>
+	<head>
+		<style>
+			#ta1
+			{
+				width: 50vw;
+				height: 80vh;
+			}
+		</style>
+		<script>
+			function timeStamp()
+			{
+				let today = new Date;
+				let date = today.toLocaleDateString('en-US', {year:'numeric', month:'2-digit', day:'2-digit'}).split('/');
+				let time = today.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'}).split(':');
+				return (date[2] + '.' + date[0] + '.' + date[1] + ' ' + time[0] + ':' + time[1] + ':' + time[2]);
+			};
+		</script>
+		<script>
+			const g_s1 = [
+				'# 2020.08.31 15:05:24',
+				'',
+				'# [main]',
+				'127.0.0.1 a.exosrv.com',
+				'127.0.0.1 ads.bullionyield.com',
+				'127.0.0.1 ads.exosrv.com',
+				'127.0.0.1 ads.trafficjunky.net',
+				'127.0.0.1 adworldmedia.com',
+				'127.0.0.1 bullionyield.com',
+				'127.0.0.1 ccs.livejasmin.com',
+				'127.0.0.1 chaturbate.com',
+				'127.0.0.1 clckysudks.com',
+				'127.0.0.1 etahub.com',
+				'127.0.0.1 evtubescms.phncdn.com',
+				'127.0.0.1 exofrwe.com',
+				'127.0.0.1 hw-cdn2.adtng.com',
+				'127.0.0.1 js-agent.newrelic.com',
+				'127.0.0.1 livejasmin.com',
+				'127.0.0.1 main.realsrv.com',
+				'127.0.0.1 mavenlohi.com',
+				'127.0.0.1 newrelic.com',
+				'127.0.0.1 offoonguser.com',
+				'127.0.0.1 promo-bc.com',
+				'127.0.0.1 protoawe.com',
+				'127.0.0.1 pt.protoawe.com',
+				'127.0.0.1 pxl.tsyndicate.com',
+				'127.0.0.1 serve.adworldmedia.com',
+				'127.0.0.1 ssl-ccstatic.highwebmedia.com',
+				'127.0.0.1 syndication.exosrv.com',
+				'127.0.0.1 syndication.realsrv.com',
+				'127.0.0.1 trafficstars.com',
+				'127.0.0.1 trafforsrv.com',
+				'127.0.0.1 tsyndicate.com',
+				'127.0.0.1 twinrdsrv.com',
+				'127.0.0.1 www.googletagmanager.com',
+				'127.0.0.1 ads.trafficjunky.net',
+				'127.0.0.1 ctrack.trafficjunky.net',
+				'127.0.0.1 hw-cdn.trafficjunky.net',
+				'127.0.0.1 a.adtng.com',
+				'127.0.0.1 ams.adtng.com',
+				'127.0.0.1 ord.adtng.com',
+				'127.0.0.1 hw-cdn2.adtng.com',
+				'',
+				'',
+				'# [rezka]',
+				'127.0.0.1 streamguard.cc',
+				'127.0.0.1 fs1.fex.net',
+				'127.0.0.1 fs19.fex.net',
+				'127.0.0.1 fs25.fex.net',
+				'127.0.0.1 ankunding.biz',
+				'127.0.0.1 franeski.net',
+				'127.0.0.1 rstbtmd.com',
+				'',
+				'',
+			].join('\n');
+			let G_TMP = {};
+			let G_DOMAINS_MISC = [];
+			let G_DOMAINS_MULT = {};
+			function fix(target)
+			{
+				let string = target.value;
+				string = string.replace(/\r\n/g, '\n');
+				string = string.replace(/\n{3,}/g, '\n\n');
+				let array = string.split('\n');
+				for (let host of array)
+				{
+					host = host.replace(/.*\/\/(.*)/, '$1');
+					host = host.replace(/(.*?)\/.*/, '$1');
+					host = host.replace(/127\.0\.0\.1\s+/, '').trim();
+					let skip = host === '' || host.match(/^#/) || !host.match(/.*[.].*/);
+					if (!skip)
+					{
+						let domain = host.replace(/^(.*\.)?(.+\..+)$/, '$2') ; //v1.split('.', 1);
+						if (!G_TMP[domain]) G_TMP[domain] = {};
+						G_TMP[domain][host] = true;
+						console.log(host, '=', domain);
+					}
+				}
+				console.log(G_TMP);
+				//
+				let domains = Object.keys(G_TMP)
+				for (let domain of domains)
+				{
+					let hosts = Object.keys(G_TMP[domain]);
+					// console.log(hosts);
+					if (hosts.length === 1)
+					{
+						let host = hosts[0];
+						if (!G_DOMAINS_MISC.includes(host))
+						{
+							G_DOMAINS_MISC.push(host);
+						};
+					}
+					else
+					{
+						if (!G_DOMAINS_MULT[domain]) G_DOMAINS_MULT[domain] = [];
+						for (let host of hosts)
+						{
+							if (!G_DOMAINS_MULT[domain].includes(host))
+							{
+								G_DOMAINS_MULT[domain].push(host);
+							};
+						}
+					}
+				}
+				console.log(G_DOMAINS_MULT);
+				//
+				let result = '';
+				if (G_DOMAINS_MISC.length > 0)
+				{
+					result = result + '# [misc]\n';
+					for (let host of G_DOMAINS_MISC)
+					{
+						result = result + '127.0.0.1 ' + host + '\n';
+					}
+					result = result + '\n';
+				}
+				for (let domain of Object.keys(G_DOMAINS_MULT))
+				{
+					result = result + '# [' + domain + ']\n';
+					let hosts = G_DOMAINS_MULT[domain];
+					for (let host of hosts)
+					{
+						result = result + '127.0.0.1 ' + host + '\n';
+					}
+					result = result + '\n';
+				}
+				console.log(result);
+				//
+				let out = '';
+				out = '# ' + timeStamp() + '\n\n' + result;
+				out = out.replace(/\n{3,}/g, '\n\n');
+				console.log('out:\n' + out);
+				target.value = out;
+				//
+				console.log(G_TMP);
+			}
+		</script>
+	</head>
+	<body>
+		<textarea id="ta1" onchange="fix(this);"></textarea>
+		<script>const ta1 = document.querySelector('#ta1'); ta1.value = g_s1;</script>
+	</body>
+</html>
