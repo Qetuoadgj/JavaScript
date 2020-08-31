@@ -1,39 +1,49 @@
-# 1.0.00 [30.08.2020 16:25]
+# 1.0.01 [31.08.2020 14:20]
 
-# [porntrex.com]
+# [main]
 127.0.0.1 a.exosrv.com
 127.0.0.1 ads.bullionyield.com
-127.0.0.1 bullionyield.com
-127.0.0.1 serve.adworldmedia.com
+127.0.0.1 ads.exosrv.com
+127.0.0.1 ads.trafficjunky.com
+127.0.0.1 ads.trafficjunky.net
 127.0.0.1 adworldmedia.com
+127.0.0.1 bullionyield.com
 127.0.0.1 ccs.livejasmin.com
-127.0.0.1 livejasmin.com
 127.0.0.1 chaturbate.com
+127.0.0.1 clckysudks.com
+127.0.0.1 etahub.com
+127.0.0.1 evtubescms.phncdn.com
 127.0.0.1 exofrwe.com
+127.0.0.1 hw-cdn2.adtng.com
 127.0.0.1 js-agent.newrelic.com
-127.0.0.1 newrelic.com
+127.0.0.1 livejasmin.com
+127.0.0.1 main.realsrv.com
 127.0.0.1 mavenlohi.com
+127.0.0.1 media.trafficjunky.com
+127.0.0.1 media.trafficstars.com
+127.0.0.1 newrelic.com
 127.0.0.1 offoonguser.com
 127.0.0.1 promo-bc.com
 127.0.0.1 protoawe.com
 127.0.0.1 pt.protoawe.com
-127.0.0.1 syndication.realsrv.com
-127.0.0.1 realsrv.com
+127.0.0.1 pxl.tsyndicate.com
+127.0.0.1 serve.adworldmedia.com
 127.0.0.1 ssl-ccstatic.highwebmedia.com
+127.0.0.1 static.trafficjunky.net
+127.0.0.1 static.trafficstars.com
+127.0.0.1 syndication.exosrv.com
+127.0.0.1 syndication.realsrv.com
+127.0.0.1 trafficjunky.com
+127.0.0.1 trafficjunky.net
+127.0.0.1 trafficstars.com
+127.0.0.1 trafforsrv.com
+127.0.0.1 tsyndicate.com
 127.0.0.1 twinrdsrv.com
 127.0.0.1 www.googletagmanager.com
 
-# [pornhub.com]
-# 127.0.0.1 cdn1d-static-shared.phncdn.com
-127.0.0.1 etahub.com
-127.0.0.1 static.trafficjunky.com
-127.0.0.1 trafficjunky.com
-# ad videos
-127.0.0.1 evtubescms.phncdn.com
-
-# [eporner.com]
-127.0.0.1 tsyndicate.com
-127.0.0.1 clckysudks.com
-127.0.0.1 syndication.exosrv.com
-127.0.0.1 exosrv.com
-127.0.0.1 trafforsrv.com
+# [rezka]
+127.0.0.1 streamguard.cc
+127.0.0.1 fs*.fex.net
+127.0.0.1 ankunding.biz
+127.0.0.1 franeski.net
+127.0.0.1 rstbtmd.com
