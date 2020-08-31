@@ -93,10 +93,10 @@
 						let domain = host.replace(/^(.*\.)?(.+\..+)$/, '$2') ; //v1.split('.', 1);
 						if (!G_TMP[domain]) G_TMP[domain] = {};
 						G_TMP[domain][host] = true;
-						console.log(host, '=', domain);
+						// console.log(host, '=', domain);
 					}
 				}
-				console.log(G_TMP);
+				// console.log(G_TMP);
 				//
 				let domains = Object.keys(G_TMP)
 				for (let domain of domains)
@@ -123,20 +123,23 @@
 						}
 					}
 				}
-				console.log(G_DOMAINS_MULT);
 				//
+				console.log(G_DOMAINS_MISC);
 				let result = '';
 				if (G_DOMAINS_MISC.length > 0)
 				{
 					result = result + '# [misc]\n';
-					for (let host of G_DOMAINS_MISC)
+					for (let host of G_DOMAINS_MISC.sort())
 					{
 						result = result + '127.0.0.1 ' + host + '\n';
 					}
 					result = result + '\n';
 				}
-				for (let domain of Object.keys(G_DOMAINS_MULT))
+				console.log(G_DOMAINS_MULT);
+				///*
+				for (let domain of Object.keys(G_DOMAINS_MULT).sort())
 				{
+					console.log(domain);
 					result = result + '# [' + domain + ']\n';
 					let hosts = G_DOMAINS_MULT[domain];
 					for (let host of hosts)
@@ -145,15 +148,14 @@
 					}
 					result = result + '\n';
 				}
-				console.log(result);
+				//*/
+				// console.log(result);
 				//
 				let out = '';
 				out = '# ' + timeStamp() + '\n\n' + result;
 				out = out.replace(/\n{3,}/g, '\n\n');
-				console.log('out:\n' + out);
+				// console.log('out:\n' + out);
 				target.value = out;
-				//
-				console.log(G_TMP);
 			}
 		</script>
 	</head>
