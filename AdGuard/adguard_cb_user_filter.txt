@@ -1,0 +1,31 @@
+www.instagram.com##.Yx5HN.RnEpo
+*rezka*.*###send-video-issue
+*rezka*.*##.b-post__social_holder
+*rezka*.*##.b-post__support_holder
+*rezka*.*##.b-post__lastepisodeout
+*rezka*.*##.b-post__mixedtext
+||fs*.fex.net/get/*$media,important
+||ankunding.biz^$media,important
+||ofhypnoer.com^$important
+||offoonguser.com^$important
+||gounlimited.to^$important
+||*.mp4$media,domain=streamguard.cc,important
+www.porntrex.com###exclusive-link
+www.porntrex.com###index-link
+pornhub.com###hd-rightColVideoPage > .clearfix
+pornhub.com###videoSearchResult ~ .sectionWrapper
+pornhub.com##.streamatesModelsContainer
+xhamster.com##.wih-spot-container
+redtube.com###related_searches_section ~ div
+www.eporner.com##.ad300px
+www.xxxfiles.com##a[href*="scrWidth="]
+www.xxxfiles.com###bsk1ead
+www.xxxfiles.com##div[style*="position: fixed; top: 0px; bottom: 0px; left: 0px; right: 0px; z-index: 2147483647; background: black; opacity: 0.01;"]
+www.xxxfiles.com##iframe
+/.*\.com\/(.*?)\/(.*?)\/(.*?)\/\1\2\3.*\.js/
+daftsex.com##.extension
+daftsex.com##.up
+netfapx.com##.sidebar
+www.trendyporn.com##.side-bar-ad
+||*/img/ybb13.png$image
+www.hdporns.eu##.jconfirm-dhantiadblocker
