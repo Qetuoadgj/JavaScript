@@ -1,10 +1,10 @@
-# LINKS:
-# DNS filtering rules syntax
-# https://kb.adguard.com/en/general/dns-filtering-syntax
-# Peter Lowe’s Ad and tracking server list
-# https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext
+! LINKS:
+! DNS filtering rules syntax
+! https://kb.adguard.com/en/general/dns-filtering-syntax
+! Peter Lowe’s Ad and tracking server list
+! https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext
 
-# Misc
+! Misc
 ||adtng.com^
 ||adworldmedia.com^
 ||aj*.online^
@@ -62,24 +62,24 @@
 ||yadro.ru^
 ||zenmxapps.com^
 
-# Google Ads
+! Google Ads
 ||adservice.google.com^
 ||playatoms-pa.googleapis.com^
 ||pagead2.googlesyndication.com^
 ||googletagmanager.com^
 
-# YoutTube Ads
+! YoutTube Ads
 ||r*---sn-*.googlevideo.com^
 @@||r*---sn-*sn*.googlevideo.com^$important
 
-# Google Tracking
+! Google Tracking
 /client_204?$image,other,ping,script
 /csi_204?$image,other,ping,script
 /gen204?$image,other,ping,script
 /gen_204?$image,other,ping,script
 /generate_204$image,other,ping,script
 
-# YoutTube
+! YoutTube
 ||s.youtube.com^
 ||youtube.com/api/stats/ads?
 ||youtube.com/api/stats/atr
