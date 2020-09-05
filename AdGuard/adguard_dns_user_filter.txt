@@ -1,0 +1,93 @@
+! LINKS:
+! DNS filtering rules syntax
+! https://kb.adguard.com/en/general/dns-filtering-syntax
+! Peter Lowe’s Ad and tracking server list
+! https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext
+
+! Misc
+||adtng.com^
+||adworldmedia.com^
+||aj*.online^
+||ankunding.biz^
+||awmserve.com^
+||bmrdrct.best^
+||bullionyield.com^
+||cdntrex.com^
+||chaturbate.com^
+||clckysudks.com^
+||doubleclick.net^
+||eroadvertising.com^
+||etahub.com^
+||exofrwe.com^
+||exosrv.com^
+||facebook.com^
+||fex.net^
+||franecki.net^
+||franeski.net^
+||gevtttmrusuh^
+||ggpht.com^
+||gounlimited.to^
+||h-cdn.com^
+||highwebmedia.com^
+||ipsganlwmj^
+||livejasmin.com^
+||lroraihwby^
+||mavenlohi.com^
+||messiupal.com^
+||mldqdbc^
+||mmturjustovnxt^
+||mxttrf.com^
+||newrelic.com^
+||offoonguser.com^
+||ofhypnoer.com^
+||optnx.com^
+||phncdn.com^
+||promo-bc.com^
+||protoawe.com^
+||realsrv.com^
+||reichelcormier.bid^
+||rstbtmd.com^
+||sguhmoaa^
+||streamguard.cc^
+||traffer.net^
+||trafficbass.com^
+||trafficforce.com^
+||trafficjunky.net^
+||trafficstars.com^
+||trafforsrv.com^
+||tsyndicate.com^
+||twinrdsrv.com^
+||vb17112tiffanyhayward.pw^
+||wpu.sh^
+||yadro.ru^
+||zenmxapps.com^
+
+! Google Ads
+||adservice.google.com^
+||playatoms-pa.googleapis.com^
+||pagead2.googlesyndication.com^
+||googletagmanager.com^
+
+! YoutTube Ads
+||r*---sn-*.googlevideo.com^
+@@||r*---sn-*sn*.googlevideo.com^$important
+
+! Google Tracking
+/client_204?$image,other,ping,script
+/csi_204?$image,other,ping,script
+/gen204?$image,other,ping,script
+/gen_204?$image,other,ping,script
+/generate_204$image,other,ping,script
+
+! YoutTube
+||s.youtube.com^
+||youtube.com/api/stats/ads?
+||youtube.com/api/stats/atr
+||youtube.com/api/stats/delayplay?
+||youtube.com/api/stats/qoe?
+||youtube.com/get_video?
+||youtube.com/mac_204?
+||youtube.com/ptracking?
+||youtube.com/s?
+||youtube.com/set_awesome?
+@@||youtube.com/api/analytics/$~third-party
