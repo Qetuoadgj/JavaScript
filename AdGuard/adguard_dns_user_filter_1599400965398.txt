@@ -1,2 +1,2 @@
-||googlevideo.com/videoplayback?^
-@@||r*sn*27sn7*.googlevideo.com/videoplayback?^$important
+||r*sn*.googlevideo.com^
+@@||r*sn*27sn7*.googlevideo.com^$important
