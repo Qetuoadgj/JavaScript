@@ -1,2 +1,3 @@
 ||r*sn*.googlevideo.com^
+@@||r*sn*7sn*.googlevideo.com^$important
 @@||r*sn*n7*.googlevideo.com^$important
