@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube.Audio.Boost
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
-// @version      1.0.15
+// @version      1.0.16
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/YouTube.Audio.Boost.user.js
@@ -24,7 +24,7 @@
     'use strict';
 
     // Your code here...
-    var G_gainNode;
+    var G_gainNode, G_myVideoElement;
     var userLang = navigator.language || navigator.userLanguage;
     var str_title_prompt = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Множитель громкости' : 'Volume multiplier',
         str_title_menu = 'ru-RU uk-UA be-BY kk-KZ'.includes(userLang) ? 'Усилить громкость видео' : 'Boost video volume',
@@ -63,12 +63,12 @@
         convolver.connect(audioCtx.destination);
         return gainNode;
     };
-    var videoElementSelector = [
+    var G_videoElementSelector = [
         '.html5-video-container > video', // [YouTube.com]
         'pjsdiv video, #player video', // magicianer.cc, streamguard.cc [rezka.ag]
         'body video', // any page
     ].join(', ')
-    videoElementSelector = location.host == 'rezka.ag' ? 'video[src^="blob:"]' : videoElementSelector;
+    G_videoElementSelector = location.host == 'rezka.ag' ? 'video[src^="blob:"]' : G_videoElementSelector;
     // --------------------------------------------------
     var cmdOff, cmdOn, turnOn, turnOff;
     turnOn = function() {
@@ -187,13 +187,16 @@
         mediaTextIndicator.style.top = '5px';
     };
     // ================================================================================
-    // --------------------------------------------------
-    let handleNewElements; function initFunction() {
-        let myVideoElement = document.querySelectorAll(videoElementSelector)[0]; // 1st match
-        if (myVideoElement) {
+    function isStale(element) {
+        return element.closest('body').length > 0;
+    };
+    // ================================================================================
+    function initFunction() {
+        /*let*/ G_myVideoElement = document.querySelectorAll(G_videoElementSelector)[0]; // 1st match
+        if (G_myVideoElement) {
             document.removeEventListener('DOMNodeInserted', handleNewElements);
-            if (location.host == 'rezka.ag') mediaMouseControls(myVideoElement, myVideoElement, 1);
-            G_gainNode = connectBoost(myVideoElement);
+            if (location.host == 'rezka.ag') mediaMouseControls(G_myVideoElement, G_myVideoElement, 1);
+            G_gainNode = connectBoost(G_myVideoElement);
             if (G_gainNode) {
                 GM_registerMenuCommand(str_title_menu, function(){callPrompt(G_gainNode);}, '');
                 if (GM_getValue('enabled') == true) {
@@ -205,9 +208,9 @@
             };
         };
     };
-    handleNewElements = function(event) {
+    function handleNewElements(event) {
         let element = event.target;
-        if (G_gainNode) {
+        if (G_myVideoElement && isStale(G_myVideoElement) && G_gainNode) {
             return;
         }
         else if (element.tagName == 'VIDEO') {
