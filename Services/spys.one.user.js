@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         spys.one
 // @icon         https://www.google.com/s2/favicons?domain=spys.one
-// @version      1.0.7
+// @version      1.0.8
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @grant        GM_registerMenuCommand
@@ -14,10 +14,10 @@
 /// @noframes
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Services/spys.one.user.js
 // @homepageURL  https://github.com/Qetuoadgj/JavaScript/tree/master/Services
-// @match        http://spys.one/*
-// @match        https://hidemy.name/ru/proxy-checker/
-// @match        https://hidemyna.me/ru/proxy-checker/
-// @namespace    http://spys.one/
+// @match        ://spys.one/*
+// @match        ://hidemy.name/ru/proxy-checker/
+// @match        ://hidemyna.me/ru/proxy-checker/
+// @namespace    spys.one
 // ==/UserScript==
 
 (function() {
@@ -65,8 +65,8 @@
 
     function check_proxies() {
         if (
-            pageURL.match("https://hidemy.name/") ||
-            pageURL.match("https://hidemyna.me/")
+            pageURL.match("https?://hidemy.name/") ||
+            pageURL.match("https?://hidemyna.me/")
         ) {
             var check_button = document.getElementById("chkb1");
             if (check_button) {
@@ -89,7 +89,7 @@
                 }, 2000);
             }
         }
-        else if ( pageURL.match("http://spys.one/") ) {
+        else if ( pageURL.match("https?://spys.one/") ) {
             var proxy_checker = document.getElementById("proxy_checker");
             if (proxy_checker) {
                 proxy_checker.focus();
@@ -101,8 +101,8 @@
     // if (shortURL !== location.protocol + "//" + location.host + "/") window.location = location.protocol + "//" + location.host;
 
     if (
-        pageURL.match("https://hidemy.name/") ||
-        pageURL.match("https://hidemyna.me/")
+        pageURL.match("https?://hidemy.name/") ||
+        pageURL.match("https?://hidemyna.me/")
     ) {
         if (pageIsInIframe()) {
             var GM_proxy_list = GM_getValue("proxy_list", null);
@@ -150,7 +150,7 @@
         if (picture) picture.remove(); // picture.style.display = "none";
     }
 
-    else if ( pageURL.match("http://spys.one/") ) {
+    else if ( pageURL.match("https?://spys.one/") ) {
         var anon_select = document.getElementById("anmm");
         if (anon_select) anon_select.options[2].selected = true; // ANM & HIA
 
