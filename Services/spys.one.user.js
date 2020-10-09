@@ -215,7 +215,8 @@
             proxy_checker.id = "proxy_checker";
             proxy_checker.src = check_url.href ; //"https://hidemy.name/ru/proxy-checker/";
             proxy_checker.style.width = "100%";
-            proxy_checker.style.height = "0px";
+            proxy_checker.style.minHeight = "480px";
+            proxy_checker.style.height = 'auto'; //"0px";
             proxy_checker.style.overflow = "hidden";
             proxy_checker.value = ip_list;
 
