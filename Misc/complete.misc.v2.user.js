@@ -542,7 +542,7 @@
     if (qualityLimitMatch) {
         GM_setValue('qualityLimit', parseInt(qualityLimitMatch[1])*1.1); // +10%
     };
-    const G_qualityLimit = GM_getValue('qualityLimit', 9999);
+    const G_qualityLimit = GM_getValue('qualityLimit', 1120); // 9999
     var reflectMatch = location.href.match(/reflect=(\d+deg\b)/i);
     if (reflectMatch) {
         GM_setValue('reflect', reflectMatch[1]);
@@ -1811,6 +1811,7 @@
             mediaData.height = media.videoHeight;
             mediaData.duration = media.duration;
             if (G_allData) {
+                mediaData.src = G_allData[G_allData.quality];
                 mediaData.json = encodeURIComponent(JSON.stringify(G_allData)); //encodeURI(JSON.stringify(G_allData));
                 // console.log(JSON.stringify(G_allData), mediaData.json, decodeURIComponent(mediaData.json)); alert(JSON.stringify(G_allData) == decodeURIComponent(mediaData.json));
                 let symbol = mediaData.refined.match(/[?]/) ? '&' : '?';
@@ -2360,7 +2361,7 @@
                         for (let keyName of keys) {
                             let match = keyName.match(/^quality_(\d+)p?$/);
                             if (match) {
-                                let quality = parseInt(match[1]);
+                                let quality = Number(match[1]);
                                 if (quality > maxQuality) {
                                     maxQuality = quality;
                                     videoData.key = match[0];
@@ -2586,7 +2587,7 @@
                         let quality = flashvars[k+'_text'];
                         if (quality) {
                             quality = quality.match(/^(\d+).*$/)[1];
-                            quality = parseInt(quality);
+                            quality = Number(quality);
                             G_allData[quality] = url;
                             if (quality > maxQuality) {
                                 if (limit && quality > limit) continue;
@@ -2690,7 +2691,7 @@
                         let quality = flashvars[k+'_text'];
                         if (quality) {
                             quality = quality.match(/^(\d+).*$/)[1];
-                            quality = parseInt(quality);
+                            quality = Number(quality);
                             G_allData[quality] = url;
                             if (quality > maxQuality) {
                                 if (limit && quality > limit) continue;
@@ -2982,7 +2983,7 @@
                 let text = link.innerText;
                 let match = link.innerText.match(/(\d+)[pk]/i);
                 if (match) {
-                    let quality = parseInt(match[1]);
+                    let quality = Number(match[1]);
                     if (quality < 16) {quality = Math.floor(1080*quality/2);};
                     let text = match[0].trim();
                     console.log(quality, text);
@@ -3023,8 +3024,8 @@
                     if (player.options_.sources[i].label) {
                         let match = player.options_.sources[i].label.match(/(\d+)p/i);
                         if (match) {
-                            let quality = parseInt(match[1]);
-                            if (quality < 16) {quality = Math.floor(1080*quality/2);};
+                            let quality = Number(match[1]);
+                            if (quality < 16) {quality = Number(Math.floor(1080*quality/2));};
                             let text = match[0].trim();
                             if (data[quality+'p']) {
                                 player.options_.sources[i].src = data[quality+'p'].src;
@@ -3555,7 +3556,7 @@
             let data = {}, result; while((result = re.exec(matchedScriptText)) !== null) {
                 let url = result[1].replace(/^.*\/\//, '//').trim();
                 if (url.match(/^\/\//)) url = location.protocol + url;
-                let quality = Math.floor(result[2].trim());
+                let quality = result[2].trim(); // Math.floor(result[2].trim());
                 data[quality] = url;
                 // console.log('url:', url);
                 // console.log('quality:', quality);
@@ -3563,11 +3564,15 @@
             G_allData = data;
             console.log('data:', data);
             let compare = 0; for (let quality of Object.keys(data)) {
-                if (quality > compare && quality < G_qualityLimit) {
+                quality = Number(quality);
+                if (quality > compare /*&& quality < G_qualityLimit*/) {
                     G_allData.quality = quality;
-                    G_contentURL = /*location.protocol + */ data[quality];
+                    if (quality <= G_qualityLimit) {
+                        G_contentURL = /*location.protocol + */ data[quality];
+                    };
                     console.log('url:', G_contentURL);
                     console.log('quality:', quality);
+                    compare = quality;
                 };
             };
             console.log('G_contentURL:', G_contentURL);
@@ -4006,7 +4011,7 @@
                     for (let key of Object.keys(globParams.video.cdn_files)) {
                         let match = key.match(/^(.*)_(\d+)\w?$/)
                         if (match) {
-                            let keyQuality = parseInt(match[2]);
+                            let keyQuality = Number(match[2]);
                             if (limit && keyQuality > limit*1.1) continue;
                             if (keyQuality > maxQuality) {
                                 let type = match[1];
@@ -4029,7 +4034,7 @@
                     let match = item.download.match(/^(\d+)\w?/)
                     if (match) {
                         if (!item.href) continue;
-                        let itemQuality = parseInt(match[1]);
+                        let itemQuality = Number(match[1]);
                         if (limit && itemQuality > limit*1.1) continue;
                         if (itemQuality > maxQuality) {
                             maxQuality = itemQuality;
