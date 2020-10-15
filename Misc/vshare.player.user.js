@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.37
+// @version      0.0.38
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -1388,46 +1388,27 @@
             return url;
         }
 
+        const hostAliases = {
+            "oloadcdn.net" : "openload.co",
+            "phncdn.com" : "pornhub.com",
+            "t8cdn.com" : "tube8.com",
+            "playercdn.net" : "bitporno.com",
+            "ahcdn.com" : "txxx.com | porndig.com",
+            "userscontent.net" : "playvids.com",
+            "trafficdeposit.com" : "yourporn.sexy",
+            "cdnity.net" : "yourporn.sexy",
+        };
         const mediaShowInfoBox = function(media) {
-            const hosts = {
-                "oloadcdn.net" : "openload.co",
-                "phncdn.com" : "pornhub.com",
-                "t8cdn.com" : "tube8.com",
-                "playercdn.net" : "bitporno.com",
-                "ahcdn.com" : "txxx.com | porndig.com",
-                "userscontent.net" : "playvids.com",
-                "trafficdeposit.com" : "yourporn.sexy",
-                "cdnity.net" : "yourporn.sexy",
-            };
-            const showMsgBox = function(media) {
-                const width = media.videoWidth, height = media.videoHeight;
-                // console.log('media: '+media.src+' ['+width+'x'+height+']');
-                let host = getPathInfo(media.src).host.replace(/^www\./, ''); // getDomain(media.src);
-                host = hosts[host] ? host + '\n['+hosts[host]+']' : host;
-                const msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
-                msg.style.right = 0 + 'px';
-                // msg.style.bottom = 32 + 'px';
-                msg.style.top = 0 + 'px';
-            };
-            const onKeyDown = function(e) {
-                e = e || window.event;
-                const xKey = 88;
-                const ctrlDown = e.ctrlKey || e.metaKey; // Mac support
-                if (e.keyCode == xKey) {
-                    media.focus();
-                    showMsgBox(media);
-                };
-                if (e.keyCode == KEY_G && ctrlDown) {
-                    let result = prompt('', toHHMMSS(video.currentTime || 0));
-                    if (result === null) {return;}
-                    video.currentTime = seconds(result);
-                };
-            };
-            window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
-            media.addEventListener('loadedmetadata', function(e){
-                showMsgBox(media);
-                if (media.videoWidth) console.log('media: '+media.src+' ['+media.videoWidth+'x'+media.videoHeight+']');
-            },false);
+            //const showMsgBox = function(media) {
+            const width = media.videoWidth, height = media.videoHeight;
+            // console.log('media: '+media.src+' ['+width+'x'+height+']');
+            let host = getPathInfo(media.src).host.replace(/^www\./, ''); // getDomain(media.src);
+            host = hostAliases[host] ? host + '\n['+hostAliases[host]+']' : host;
+            const msg = msgbox('Video', (width+' x '+height)+'\n'+host, 2000, 250, 120);
+            msg.style.right = 0 + 'px';
+            // msg.style.bottom = 32 + 'px';
+            msg.style.top = 0 + 'px';
+            //};
         };
 
         const useLocalVolumeCookie = function(mediaElementSelector, cookieName) {
@@ -1437,13 +1418,13 @@
             if (mediaMuted == "false") mediaMuted = false; // normalize
             const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
             for (let mediaElement of mediaElementsArray) {
-                const saveSettings = function() {
+                const saveLocalSettings = function() {
                     localStorage.setItem(cookieName+"_volume", mediaElement.volume || 0);
                     localStorage.setItem(cookieName+"_muted", mediaElement.muted);
                 };
                 if (mediaVolume) mediaElement.volume = mediaVolume;
                 mediaElement.muted = mediaMuted;
-                mediaElement.addEventListener("volumechange", saveSettings, false);
+                mediaElement.addEventListener("volumechange", saveLocalSettings, false);
                 // console.log("mediaElement: ", mediaElement);
                 // console.log("localStorage."+cookieName+"_volume: ", localStorage.getItem(cookieName+"_volume"));
                 // console.log("localStorage."+cookieName+"_muted: ", localStorage.getItem(cookieName+"_muted"));
@@ -1465,7 +1446,7 @@
             });
             // const mediaElementsArray = document.querySelectorAll(mediaElementSelector);
             // for (let mediaElement of mediaElementsArray) {
-            const saveSettings = function() {
+            const saveChromeLocalSettings = function() {
                 chrome.storage.local.set({'volume':  mediaElement.volume}/*, function() {
                     chrome.storage.local.get('volume', function(result) {
                         console.log('volume (set):', result.volume);
@@ -1477,7 +1458,7 @@
                     });
                 }*/);
             };
-            mediaElement.addEventListener('volumechange', saveSettings, false);
+            mediaElement.addEventListener('volumechange', saveChromeLocalSettings, false);
             // };
         };
 
@@ -1620,7 +1601,29 @@
                 console.log('src: ', videoSrc);
                 mediaKeyboardControls(video);
                 mediaMouseControls(video, 5);
-                mediaShowInfoBox(video);
+                // mediaShowInfoBox(video);
+                const onKeyDown = function(e) {
+                    e = e || window.event;
+                    const xKey = 88;
+                    const ctrlDown = e.ctrlKey || e.metaKey; // Mac support
+                    if (e.keyCode == xKey) {
+                        e.preventDefault();
+                        video.focus();
+                        mediaShowInfoBox(video);
+                    };
+                    if (e.keyCode == KEY_G && ctrlDown) {
+                        e.preventDefault();
+                        let result = prompt('', toHHMMSS(video.currentTime || 0));
+                        if (result === null) {return;}
+                        video.currentTime = seconds(result);
+                    };
+                };
+                window.addEventListener('keydown', function(e){onKeyDown(e);}, false);
+                video.addEventListener('loadedmetadata', function(e){
+                    mediaShowInfoBox(video);
+                    if (video.videoWidth) console.log('media: '+video.src+' ['+video.videoWidth+'x'+video.videoHeight+']');
+                },false);
+                //
                 if (G_USE_AS_EXTENSION) {
                     // useLocalVolumeCookie("body video", "video");
                     useChromeLocalVolumeCookie(video, "video");

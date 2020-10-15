@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.94
+// @version      2.0.99
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -53,6 +53,7 @@
 // @match        *://jjgirls.com/pornpics/*
 // @match        *://www.babesandstars.com/*/*/*/
 // @match        *://www.definebabe.com/gallery/*
+// @match        *://hqporner.com/*
 // @match        *://hqporner.com/hdporn/*.html
 // @match        *://mydaddy.cc/video/*
 // @match        *://hqwo.cc/player/*
@@ -65,6 +66,7 @@
 // @match        *://biqle.org/watch/*
 // @match        *://biqle.com/watch/*
 // @match        *://daftsex.com/watch/*
+// @match        *://daftsex.com/*
 // @match        *://daxab.com/player/*
 // @match        *://dxb.to/player/*
 
@@ -81,6 +83,9 @@
 
 // @match        *://pornbox.video/video/*
 // @match        *://player.flexcdn.cloud/*
+
+// @match        *://www.tnaflix.com/hd-videos/*
+// @match        *://player.tnaflix.com/video/*
 // ==/UserScript==
 
 (function() {
@@ -766,7 +771,7 @@
         'TeenErotica.xxx',
         'ArchAngelVideo.com',
     ];
-    // let t = []; for (let item of document.querySelectorAll('option')) {let s = item.innerText.replace(/\s+/g, '').trim();if (!s.includes('.')) continue;s = s.includes('.') ? s : s + '.com';t.push(s);}; console.log(t);
+    // let t = []; for (let item of document.querySelectorAll('.list-site-block > a[title]')) {let s = item.title.replace(/[\s'’.]+/g, '').trim(); /*if (!s.includes('.')) continue;*/ s = s.includes('.') ? s : s + '.com';t.push(s);}; console.log(t);
     /*
     let t = [], a = document.querySelectorAll('.info > a');
     for (let i = 0; i < a.length; i++) {
@@ -973,6 +978,50 @@
             "SlutStepMom.com",
             "TeensLoveCream.com",
             "SeducedByACougar.com",
+            "MyDaughtersHotFriend.com",
+            "LASluts.com",
+            "MyWifeIsMyPornstar.com",
+            "TonightsGirlfriend.com",
+            "WivesonVacation.com",
+            "NaughtyWeddings.com",
+            "DirtyWivesClub.com",
+            "MyDadsHotGirlfriend.com",
+            "MyGirlLovesAnal.com",
+            "AnalCollege.com",
+            "LesbianGirlonGirl.com",
+            "IHaveaWife.com",
+            "NaughtyBookworms.com",
+            "Housewife1on1.com",
+            "MyWifesHotFriend.com",
+            "LatinAdultery.com",
+            "AssMasterpiece.com",
+            "2ChicksSameTime.com",
+            "MyFriendsHotGirl.com",
+            "NeighborAffair.com",
+            "MyGirlfriendsBustyFriend.com",
+            "NaughtyAthletics.com",
+            "MyNaughtyMassage.com",
+            "FastTimes.com",
+            "ThePassenger.com",
+            "MilfSugarBabes.com",
+            "PerfectFuckingStrangers.com",
+            "AmericanDaydreams.com",
+            "SocalCoeds.com",
+            "NaughtyCountryGirls.com",
+            "DiaryofaMilf.com",
+            "NaughtyRichGirls.com",
+            "MyNaughtyLatinMaid.com",
+            "NaughtyAmerica.com",
+            "DiaryofaNanny.com",
+            "NaughtyFlipside.com",
+            "TonightsFuck.com",
+            "LivePartyGirl.com",
+            "LiveNaughtyStudent.com",
+            "LiveNaughtySecretary.com",
+            "LiveGymCam.com",
+            "LiveNaughtyTeacher.com",
+            "LiveNaughtyMilf.com",
+            "LiveNaughtyNurse.com",
         ],
         'RealityKings.com' : [
             "RKPrime.com",
@@ -1059,6 +1108,34 @@
             "LovelyTeenLand.com",
             "YoungPornHomeVideo.com",
             "YoungLesbiansPortal.com",
+        ],
+        'TeamSkeet.com' : [
+            "BadMilfs.com",
+            "BraceFaced.com",
+            "CFNMTeens.com",
+            "Dyked.com",
+            "ExxxtraSmall.com",
+            "GingerPatch.com",
+            "HerFreshmanYear.com",
+            "InnocentHigh.com",
+            "KissingSis.com",
+            "LatinaTeam.com",
+            "LustHD.com",
+            "MyBabySittersClub.com",
+            "OyeLoca.com",
+            "POVLife.com",
+            "RubATeen.com",
+            "SelfDesire.com",
+            "ShesNew.com",
+            "SoloInterviews.com",
+            "StayHomePOV.com",
+            "StepSiblings.com",
+            "TeamSkeetAllstars.com",
+            "TeamSkeetExtras.com",
+            "TeamSkeetSelects.com",
+            "TeenCurves.com",
+            "TeenPies.com",
+            "TeenJoi.com",
         ],
     };
     for (let parentSite of Object.keys(G_siteNetworks)) {
@@ -1828,6 +1905,8 @@
         addKeyComboCtrlC(G_embedCodeTextArea, 1, 0);
         if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
         // --------------------------------------------------------------------------------
+        UpdatePageTitle();
+        // --------------------------------------------------------------------------------
         log(G_debugMode, G_contentURL, '\n', G_sampleURL, '\n', G_posterURL);
     };
     // ================================================================================
@@ -1872,6 +1951,20 @@
     // --------------------------------------------------------------------------------
     function deleteCookie(name) { // удаляет cookie
         setCookie(name, null, { expires: -1 });
+    };
+    // ================================================================================
+    function UpdatePageTitle()
+    {
+        let oldTitle = document.documentElement.getAttribute('title') || document.title, newTitle = oldTitle;
+        let prefix = '';
+        for (let a of G_actorsSource) {prefix += '' + a.innerText.trim() + ', '};
+        prefix = prefix.replace(/[, ]+$/, '');
+        if (prefix != '') {
+            newTitle = '[' + prefix + '] ' + oldTitle;
+            document.title = newTitle;
+        };
+        // console.clear();
+        // console.log(document.title, '\n', newTitle);
     };
     // ================================================================================
     function setCategory(category) {
@@ -2717,6 +2810,78 @@
     }
 
     else if (
+        G_pageURL.matchLink('https?://www.tnaflix.com/*') ||
+        G_pageURL.matchLink('https?://player.tnaflix.com/*')
+    ) {
+        if (
+            G_pageURL.matchLink('https?://www.tnaflix.com/hd-videos/*') || // https://www.tnaflix.com/hd-videos/Teenie-Takes-Dick-During-Shower-Melody-Marks/video4836881?isFeatured=0
+            G_pageURL.matchLink('https?://player.tnaflix.com/video/*') // https://player.tnaflix.com/video/
+        ) {
+            // localStorage.flixPlayerConfig = '100,false,undefined,false,' + 720;
+            /* globals videoCurrentInfo */
+            G_funcToTest = function () {
+                return typeof videoCurrentInfo !== "undefined" && videoCurrentInfo.downloadLinks && videoCurrentInfo.downloadLinks.length > 100;
+            };
+            function getMaxQualityURL(limit = 0) {
+                let maxQuality = 0, contentURL;
+                G_allData = {};
+                for (let i = 0; i < videoCurrentInfo.downloadLinks.length; i++) {
+                    let url = videoCurrentInfo.downloadLinks[i];
+                    if (typeof url !== "undefined") {
+                        let quality = i;
+                        if (quality > maxQuality) {
+                            if (limit && quality > limit) continue;
+                            G_allData[quality] = url;
+                            contentURL = url;
+                        };
+                    };
+                };
+                return contentURL;
+            };
+            if (G_pageURL.match('https?://player.tnaflix.com/video/*')) { // https://www.tnaflix.com/hd-videos/Teenie-Takes-Dick-During-Shower-Melody-Marks/video4836881#OnlyVideo
+                // window.stop();
+                G_funcToRun = function () {
+                    /*
+                    let contentURL = getMaxQualityURL(G_qualityLimit);
+                    // let posterURL = flashvars.preview_url;
+                    console.log('contentURL: ', contentURL);
+                    openURL(refineVideo(contentURL));
+                    */
+                    let playButton = document.querySelectorAll('.piPlay, .vidPlay')[0];
+                    playButton.click();
+                };
+                waitForElement('body video', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+                // waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            }
+            else {
+                G_funcToRun = function () {
+                    for (let b of document.querySelectorAll('.pQValues > .pQVal.clear')) { // Max quality
+                        b.click();
+                        break;
+                    };
+                    G_contentURL = document.querySelector('meta[itemprop="embedUrl"]').content; //G_shortURL + '#OnlyVideo';
+                    G_sampleURL = getMaxQualityURL(0);
+                    G_forceLoad = true;
+                    G_posterURL = document.querySelector('body video').poster;
+                    G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+                    G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/(\d+)_(.*)\.jpg/i, '$1/$NUM_$3.jpg', 1, 100); // console.log('G_posters:\n', G_postersArray);
+                    //                     if (G_qualitySampleSource.poster) {
+                    //                         G_postersArray.push(G_qualitySampleSource.poster);
+                    //                         G_posterURL = G_qualitySampleSource.poster;
+                    //                     };
+                    G_actorsSource = document.querySelectorAll('a.video-link-detailed[href*="/profile/"]');
+                    G_stickTo = document.querySelector('._video_info'); G_stickPosition = 1;
+                    // --------------------------------------------------------------------------------
+                    G_standartAddEmbedCodeFunc();
+                    // --------------------------------------------------------------------------------
+                };
+                // waitForElement('body video', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
+                waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
+            };
+        }
+    }
+
+    else if (
         G_pageURL.matchLink('https?://yourporn.sexy/*') ||
         G_pageURL.matchLink('https?://sxyprn.com/*') ||
         G_pageURL.matchLink('https?://sxyprn.net/*')
@@ -2887,6 +3052,21 @@
                 G_standartAddEmbedCodeFunc();
                 // console.log(G_embedCodeVideo)
                 // alert(G_sampleURL);
+                // --------------------------------------------------------------------------------
+                /*
+                let e1 = document.querySelector('body');
+                function replaceWithIframe(element, url, params = {})
+                {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = url;
+                    for (let k of Object.keys(params))
+                    {
+                        iframe[k] = params[k];
+                    }
+                    element.replaceWith(iframe);
+                }
+                replaceWithIframe(e1, refineVideo(G_sampleURL, false));
+                */
                 // --------------------------------------------------------------------------------
                 let eventCatcher, media;
                 waitForCondition(function(){
@@ -3247,20 +3427,32 @@
     else if (
         G_pageURL.matchLink('https?://hqporner.com')
     ) {
-        /*
+        //         /*
+        document.cookie = 'darkTheme=yes; max-age=9999999; SameSite=None; Secure';
         const css = [
-            `body * {`,
-            `    background: black !important;`,
-            `    color: brown;`, // darkgoldenrod
+            //             `body * {`,
+            //             `    background: black !important;`,
+            //             `    color: brown;`, // darkgoldenrod
+            //             `}`,
+            //             `#main-wrapper {`,
+            //             `    background: unset !important;`,
+            //             `    border-top: unset !important;`,
+            //             `    border-bottom: unset !important;`,
+            //             `}`,
+            `#main-wrapper, .major > span, .footer-bg, #footer, #nav, #skel-layers-wrapper {`,
+            `    background-color: #191919 !important;`,
+            `    background: #191919 !important;`,
+            `    font-family: 'Lato','Helvetica Neue', Helvetica, Arial, sans-serif !important;`,
             `}`,
-            `#main-wrapper {`,
-            `    background: unset !important;`,
-            `    border-top: unset !important;`,
-            `    border-bottom: unset !important;`,
+            `.major, .footer-bg, #footer, #main-wrapper {`,
+            `    border-color: #191919 !important;`,
             `}`,
         ].join('\n');
         addGlobalStyle(css, 'night-mode');
-        */
+        document.addEventListener("DOMContentLoaded", function(event) {
+            addGlobalStyle(css, 'night-mode');
+        });
+        //         */
         if (
             G_pageURL.matchLink('https?://hqporner.com/hdporn/*') // https://hqporner.com/hdporn/83708-cute_teen_tied_to_tree_and_fucked.html
         ) {
@@ -3325,8 +3517,15 @@
                 G_actorsSource = document.querySelectorAll('a[href*="/actress/"]'); // https://hqporner.com/actress/lana-rhoades
                 G_categoriesSource = document.querySelectorAll('a[href*="/category/"]'); // https://hqporner.com/category/60fps-porn
                 G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                // UpdatePageTitle();
+                // --------------------------------------------------------------------------------
+                for (let e of document.querySelectorAll('#linkAltPlayer, .content.content-left')) {e.scrollIntoView(); break;};
             };
             waitForElement('iframe', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        }
+        else {
+            return;
         };
     }
 
@@ -3725,6 +3924,24 @@
         G_pageURL.matchLink('https?://biqle.*/*') ||
         G_pageURL.matchLink('https?://daftsex.*/*')
     ) {
+        const css = [
+            // `    body, .videos, .header, .bg_width, .page_wrapper, .footer, .more {background: black;}`,
+            `    body, .videos, .header, .bg_width, .page_wrapper, .footer, .more, a, .video, .tab-show, .more-playlists, .comments, .search-form {`,
+            `    background-color: #191919 !important;`,
+            `    background: #191919 !important;`,
+            `    font-family: 'Lato','Helvetica Neue', Helvetica, Arial, sans-serif !important;`,
+            `    border-color: #191919 !important;`,
+            `    color: wheat;`,
+            `}`,
+            //
+            `textarea, button, input {`,
+            `    background: black /*!important*/;`,
+            // `    color: wheat !important;`,
+            `    border-color: #222 !important;`,
+            `    border-width: 1px !important;`,
+            `}`,
+        ].join('\n');
+        addGlobalStyle(css, 'night-mode');
         if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
             return;
         }
@@ -3734,7 +3951,7 @@
             document.addEventListener('DOMContentLoaded', function onDOMContentLoaded(event) {
                 for (let iframe of document.querySelectorAll('iframe')) {
                     iframe.setAttribute('target', '_self');
-                    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+                    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-modals');
                 };
             }, false);
             G_funcToRun = function() {
