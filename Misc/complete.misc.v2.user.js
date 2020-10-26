@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.0.99
+// @version      2.1.04
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -12,6 +12,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
+/// @require      http://code.jquery.com/jquery-3.4.1.min.js
 // @match        file:///*/2.*.*.html*
 // @match        *://www.eporner.com/hd-porn/*/*/
 // @match        *://www.eporner.eu/hd-porn/*/*/
@@ -115,6 +116,44 @@
     var G_userLang = navigator.language || navigator.userLanguage;
     var G_userLangShort = G_userLang.substr(0, 2);
     document.documentElement.lang = G_userLangShort; // disable "Google Translate Page" prompt
+    // ================================================================================
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+    // ================================================================================
+    /* globals XDomainRequest */
+    /*
+    function createCORSRequest(method, url)
+    {
+        var xhr = new XMLHttpRequest();
+        if ('withCredentials' in xhr)
+        {
+
+            // Check if the XMLHttpRequest object has a "withCredentials" property.
+            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+            xhr.open(method, url, true);
+
+        }
+        else if (typeof XDomainRequest != "undefined")
+        {
+
+            // Otherwise, check if XDomainRequest.
+            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        }
+        else {
+            // Otherwise, CORS is not supported by the browser.
+            xhr = null;
+        };
+        return xhr;
+    };
+    */
     // ================================================================================
     var G_funcToTest, G_funcToRun, G_funcResult, G_delay = 100, G_tries = 50, G_timerGroup = [];
     function waitForCondition(funcToTest = false, funcToRun = false, delay = 50, tries = 5, timerGroup = []) {
@@ -1238,7 +1277,19 @@
         '★' : '',
         '-----------------------------' : '',
     };
-    var G_Reflect = null, G_embedCodeCatInput; function addEmbedCodeCatInput(embedCodeFrame) {
+    var G_Reflect = null, G_embedCodeCatInput, G_embedCodeDescriptionHolder; function addEmbedCodeCatInput(embedCodeFrame) {
+        let descriptionHolderID = 'uniqueEmbedCodedescriptionHolder';
+        for (let element of document.querySelectorAll('#' + descriptionHolderID)) {element.remove();};
+        /*let*/ G_embedCodeDescriptionHolder = document.createElement('div');
+        G_embedCodeDescriptionHolder.setAttribute('id', descriptionHolderID);
+        // G_embedCodeDescriptionHolder.style.background = 'red';
+        G_embedCodeDescriptionHolder.style.display = 'flex';
+        G_embedCodeDescriptionHolder.style.alignItems = 'left';
+        // G_embedCodeDescriptionHolder.style.border = '1px grey solid';
+        // G_embedCodeDescriptionHolder.style.height = '26px';
+        G_embedCodeDescriptionHolder.style.backgroundColor = 'black';
+        embedCodeFrame.appendChild(G_embedCodeDescriptionHolder);
+        // --------------------------------------------------------------------------------
         let buttonHolderID = 'uniqueEmbedCodeCatButtonHolder';
         for (let element of document.querySelectorAll('#' + buttonHolderID)) {element.remove();};
         let buttonHolder = document.createElement('div');
@@ -1796,7 +1847,7 @@
     // ================================================================================
     var G_noPlayerExtension = false, G_triesReCastMult = 2, /*G_progressThumbnailSrc,*/ G_standartReCastFunc = function() {
         console.log('G_standartReCastFunc:', G_pageURL);
-        let media = G_funcResult, contentURL = G_contentURL ? G_contentURL : media.src;
+        let media = G_funcResult, contentURL = G_contentURL ? G_contentURL : (media.currentSrc || media.src);
         if (!contentURL.match(/^http/) && !contentURL.match(/^[/]/)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
         else if (contentURL.match(/^\/\//)) contentURL = location.protocol + G_contentURL;
         else if (contentURL.match(/^\//)) contentURL = (location.protocol + '//' + G_pageDomain) + G_contentURL;
@@ -1823,6 +1874,9 @@
                 window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
             }
             else {
+                // alert(mediaData.src);
+                // console.clear();
+                // console.log(Object.assign({sender: 'ANSWER'}, mediaData));
                 window.parent.postMessage(Object.assign({sender: 'ANSWER'}, mediaData), '*');
                 openURL(mediaData.refined);
             };
@@ -1830,10 +1884,16 @@
         G_funcToRun();
     };
     // ================================================================================
-    function updateEmbedCodeTextColor() {
-        let quality = (G_videoWidth && G_videoHeight) ? ((G_videoWidth * G_videoHeight) / (1920 * 1080)) : (G_videoQuality / 1080);
-        G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
-        G_embedCodeTextAreaColor = valToColor(quality * 100, 1, 1.0, 0, 100, 1);
+    function updateEmbedCodeTextColor(color = null) {
+        if (color) {
+            G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+            G_embedCodeTextAreaColor = color;
+        }
+        else {
+            let quality = (G_videoWidth && G_videoHeight) ? ((G_videoWidth * G_videoHeight) / (1920 * 1080)) : (G_videoQuality / 1080);
+            G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+            G_embedCodeTextAreaColor = valToColor(quality * 100, 1, 1.0, 0, 100, 1);
+        }
         G_embedCodeTextArea.style.color = G_embedCodeTextAreaColor;
         log(G_debugMode, G_embedCodeTextAreaColor);
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
@@ -1847,7 +1907,34 @@
         resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_qualitySampleLastSrc = null, G_actorsSource = [], G_categoriesSource = [], G_standartAddEmbedCodeFunc = function() {
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_qualitySampleLastSrc = null, G_fileSize = 0, G_fileSizeMax = 0, G_fileQualityMax = 0, G_actorsSource = [], G_categoriesSource = [];
+    function applyQuality(size, duration, decimals) {
+        size = Number(size)
+        G_fileSize = size;
+        G_fileSizeMax = G_fileSize > Number(G_fileSizeMax) ? G_fileSize : Number(G_fileSizeMax);
+        const quality = (size / duration) / (360000 * 1.3 * 0.71 / 0.4);
+        G_fileQualityMax = quality > G_fileQualityMax ? quality : G_fileQualityMax;
+        const color = valToColor(quality * 100, 1, 1.0, 0, 100, 1);
+        G_embedCodeDescriptionHolder.style.color = valToColor(quality * 100, 1, 1.0, 0, 100, 1)
+        G_embedCodeDescriptionHolder.innerText = formatBytes(size, decimals) + ' [' + formatBytes(G_fileSizeMax, decimals) + ', ' + G_fileQualityMax.toFixed(2) + ']';
+        updateEmbedCodeTextColor(color);
+    };
+    // --------------------------------------------------------------------------------
+    function getMediaFileSize(media, link = null) {
+        link = link ? link : media.currentSrc;
+        applyQuality(0, 1, 0);
+        try {
+            fetch(link, {method: 'HEAD', cache: 'no-cache', mode: 'cors'}).then((response) => {
+                const size = response.headers.get('Content-Length');
+                applyQuality(size, media.duration, 2);
+                UpdatePageTitle();
+            });
+        } catch(e){
+            console.log(e);
+        };
+    };
+    // --------------------------------------------------------------------------------
+    function G_standartAddEmbedCodeFunc() {
         // --------------------------------------------------------------------------------
         for (let a of G_actorsSource) {let s = 'M:' + a.innerText.trim(); G_categories[s] = '';};
         for (let a of G_categoriesSource) {let s = a.innerText.trim(); G_categories[s] = '';};
@@ -1869,6 +1956,7 @@
                     if (G_qualitySampleLastSrc == e.target.currentSrc && !e.target.currentSrc.includes('blob:')) return;
                     G_qualitySampleLastSrc = e.target.currentSrc;
                     G_sampleURL = e.target.currentSrc;
+                    getMediaFileSize(e.target, G_sampleURL);
                     //if (G_videoWidth && G_videoHeight) {
                     if ((e.target.videoWidth * e.target.videoHeight) > (G_videoWidth * G_videoHeight)) {
                         G_videoWidth = e.target.videoWidth;
@@ -1896,6 +1984,7 @@
         else {
             if (G_sampleURL && !G_noQualitySample) {
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
+                    getMediaFileSize(G_embedCodeVideo, G_sampleURL);
                     updateEmbedCodeTextColor();
                 }, function onErrorFunc() {
                     log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
@@ -1956,10 +2045,19 @@
     // ================================================================================
     function UpdatePageTitle()
     {
-        let oldTitle = document.documentElement.getAttribute('title') || document.title, newTitle = oldTitle;
+        let oldTitle = document.documentElement.getAttribute('title');
+        if (!oldTitle) {
+            document.documentElement.setAttribute('title', document.title);
+            oldTitle = document.title;
+        };
+        let newTitle = oldTitle;
         let prefix = '';
         for (let a of G_actorsSource) {prefix += '' + a.innerText.trim() + ', '};
-        prefix = prefix.replace(/[, ]+$/, '');
+        if (G_fileSizeMax) {
+            prefix += String(formatBytes(G_fileSizeMax, 2));
+            prefix += ', ' + String(G_fileQualityMax.toFixed(2));
+        };
+        prefix = prefix.replace(/[, ]+$/, '').replace(/^[, ]+/, '');
         if (prefix != '') {
             newTitle = '[' + prefix + '] ' + oldTitle;
             document.title = newTitle;
@@ -2031,7 +2129,10 @@
             G_messageTarget.postMessage({sender: 'QUESTION', data: null}, '*');
         };
     }, "");
+    // ================================================================================
     window.addEventListener('message', function(e) {
+        // alert(e.data);
+        // console.log(e.data);
         if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.currentTime) {
             G_embedCodeTextStart = toHHMMSS(e.data.currentTime); // || '00:00:00';
             alert('ANSWER.data.currentTime: ' + G_embedCodeTextStart);
@@ -2058,9 +2159,11 @@
                 G_videoWidth = e.data.width;
                 G_videoHeight = e.data.height;
                 G_videoDuration = e.data.duration;
+                G_fileSize = e.data.size ? e.data.size : G_fileSize;
                 // G_posterURL = e.data.poster;
                 // alert(G_posterURL);
                 if (!G_embedCodeFrame) return;
+                applyQuality(G_fileSize, G_videoDuration, 2);
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                     updateEmbedCodeTextColor();
                     if (e.data.poster) {
@@ -2086,6 +2189,12 @@
                     //                     };
                 }, G_forceLoad);
             };
+        }
+        else if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.size) {
+            G_fileSize = e.data.size;
+            if (!G_embedCodeFrame) return;
+            applyQuality(e.data.size, e.data.duration, 2);
+            UpdatePageTitle();
         };
     });
     // ================================================================================
@@ -2104,6 +2213,14 @@
             G_pageURL.matchLink('https?://www.eporner.eu/hd-porn/*/*/')
         ) {
             G_funcToRun = function() {
+                let inp = document.querySelector('.repdivcol > input[name="ids"]');
+                if (inp) {
+                    let id = inp.value;
+                    for (let thumb of document.querySelectorAll(`div.mb[data-id="${id}"]`)) {
+                        thumb.style.display = 'none';
+                    };
+                };
+                //
                 G_contentURL = document.querySelector('#embright > .textare1 > textarea').value.match(/.*src="(.*?)".*/i)[1]; // https://www.eporner.com/embed/uCS7LAWJ70b
                 G_posterURL = G_posterURL ? G_posterURL : document.querySelector('meta[property="og:image"]').content;
                 G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
@@ -2903,9 +3020,19 @@
                 // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 G_stickTo = document.querySelectorAll('div.comments_area, .combo_container')[0]; G_stickPosition = -1;
                 // --------------------------------------------------------------------------------
-                G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
+                // G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
+                G_sampleURL = G_funcResult;
                 G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
                 G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                const element = document.querySelectorAll('#vid_container_id, #vid_container_id video')[0]; //document.querySelector('.player-holder > div');
+                const iframe = document.createElement('iframe');
+                element.parentNode.appendChild(iframe);
+                iframe.style.width = element.offsetWidth + 'px';
+                iframe.style.height = element.offsetHeight + 'px';
+                iframe.style.border = 'none';
+                element.replaceWith(iframe);
+                iframe.src = refineVideo(G_sampleURL, false);
                 // --------------------------------------------------------------------------------
                 let eventCatcher, media;
                 waitForCondition(function(){
@@ -2917,7 +3044,7 @@
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
             };
-            waitForElement('#vid_container_id video[src] > source[src], #vid_container_id video[src]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+            waitForElement('#vid_container_id video[src*="/cdn"] > source[src*="/cdn"], #vid_container_id video[src*="/cdn"]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
     }
 
@@ -3054,21 +3181,6 @@
                 // console.log(G_embedCodeVideo)
                 // alert(G_sampleURL);
                 // --------------------------------------------------------------------------------
-                /*
-                let e1 = document.querySelector('body');
-                function replaceWithIframe(element, url, params = {})
-                {
-                    const iframe = document.createElement('iframe');
-                    iframe.src = url;
-                    for (let k of Object.keys(params))
-                    {
-                        iframe[k] = params[k];
-                    }
-                    element.replaceWith(iframe);
-                }
-                replaceWithIframe(e1, refineVideo(G_sampleURL, false));
-                */
-                // --------------------------------------------------------------------------------
                 let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.player video');
@@ -3079,6 +3191,15 @@
                 }, function() {
                     mediaMouseControls(eventCatcher, media, 1);
                 }, G_delay, G_tries, G_timerGroup);
+                // --------------------------------------------------------------------------------
+                /*
+                const element = document.querySelector('.player-holder > div');
+                const iframe = document.createElement('iframe');
+                element.parentNode.appendChild(iframe);
+                // element.replaceWith(iframe);
+                iframe.src = refineVideo(G_sampleURL, false);
+                */
+                // --------------------------------------------------------------------------------
             };
             waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
@@ -3169,6 +3290,7 @@
                 G_actorsSource = document.querySelectorAll('.video-detailed-info > .video-info-row a[href*="/model/"], .video-detailed-info > .video-info-row a[href*="/pornstar/"]');
                 // --------------------------------------------------------------------------------
                 G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
                 let eventCatcher, media;
                 waitForCondition(function(){
                     eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.mhp1138_eventCatcher');
@@ -3179,6 +3301,16 @@
                     mediaMouseControls(eventCatcher, media, 1);
                     G_messageTarget = media;
                 }, G_delay, G_tries, G_timerGroup);
+                // --------------------------------------------------------------------------------
+                /*
+                waitForElement('.mhp1138_videoWrapper > video', null, () => {
+                    for (let media of document.querySelectorAll('.mhp1138_videoWrapper > video')) {
+                        media.addEventListener('play', function(e) {
+                            getMediaFileSize(e.target, null);
+                        });
+                    };
+                }, G_delay, G_tries, []);
+                */
             };
             waitForElement('.video-actions-container', null, G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
@@ -4012,12 +4144,13 @@
                         let match = key.match(/^(.*)_(\d+)\w?$/)
                         if (match) {
                             let keyQuality = Number(match[2]);
-                            if (limit && keyQuality > limit*1.1) continue;
+                            // if (limit && keyQuality > limit*1.1) continue;
                             if (keyQuality > maxQuality) {
                                 let type = match[1];
                                 maxQuality = keyQuality;
                                 maxQualityURL = domain + globParams.video.cdn_files[key].replace(/(.*)?\.(.*)/, `/videos/${id1}/${id2}/$1.${type}?extra=$2`);
                                 G_allData[String(keyQuality)] = maxQualityURL;
+                                G_allData.quality = String(keyQuality);
                             };
                         };
                     };
@@ -4035,10 +4168,12 @@
                     if (match) {
                         if (!item.href) continue;
                         let itemQuality = Number(match[1]);
-                        if (limit && itemQuality > limit*1.1) continue;
+                        // if (limit && itemQuality > limit*1.1) continue;
                         if (itemQuality > maxQuality) {
                             maxQuality = itemQuality;
                             maxQualityURL = item.href;
+                            G_allData[String(itemQuality)] = maxQualityURL;
+                            G_allData.quality = String(itemQuality);
                         };
                     };
                 };
@@ -4048,10 +4183,11 @@
         G_funcToRun = function() {
             G_contentURL = daxabGetMaxQualityURL(0);
             G_posterURL = G_contentURL.replace(/(^.*videos\/.*?\/.*?)\/.*/, '$1/thumb.jpg');
-            //psv53-1.daxab.com/videos/-146716990/456239017/thumb.jpg
-            //             location.href = G_posterURL;
+            // psv53-1.daxab.com/videos/-146716990/456239017/thumb.jpg
+            // location.href = G_posterURL;
             // alert(G_contentURL);
             // alert(G_posterURL);
+            // alert(G_allData.quality);
             G_standartReCastFunc();
         };
         waitForElement('.videoplayer_media_el[src], .videoplayer_controls_item.videoplayer_dl *[download]', null, G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vshare.player
 // @icon         https://www.google.com/s2/favicons?domain=vshare.io
-// @version      0.0.38
+// @version      0.0.40
 // @description  Pure JavaScript version.
 // @author       Ægir
 // @namespace    complete.misc
@@ -85,6 +85,53 @@
                 break;
         };
     };
+    // ---------------------------------------------------
+    //     function humanize(size)
+    //     {
+    //         var units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    //         var ord = Math.floor(Math.log(size) / Math.log(1024));
+    //         ord = Math.min(Math.max(0, ord), units.length - 1);
+    //         var s = Math.round((size / Math.pow(1024, ord)) * 100) / 100;
+    //         return s + ' ' + units[ord];
+    //     };
+    // ---------------------------------------------------
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+    // ---------------------------------------------------
+    /* globals XDomainRequest */
+    /*
+    function createCORSRequest(method, url)
+    {
+        var xhr = new XMLHttpRequest();
+        if ('withCredentials' in xhr)
+        {
+
+            // Check if the XMLHttpRequest object has a "withCredentials" property.
+            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+            xhr.open(method, url, true);
+
+        }
+        else if (typeof XDomainRequest != "undefined")
+        {
+
+            // Otherwise, check if XDomainRequest.
+            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        }
+        else {
+            // Otherwise, CORS is not supported by the browser.
+            xhr = null;
+        };
+        return xhr;
+    };
+    */
     // ---------------------------------------------------
     /* globals Hls */
     const G_HLSdata = {};
@@ -756,6 +803,8 @@
     // let thumbUpdatedTimeLast = 0;
     let mouseDownState = false;
     // ---------------------------------------------------
+    let currentFilSize = null;
+    // ---------------------------------------------------
     // Logic
     // ---------------------------------------------------
     function toHHMMSS(secs = 0) {
@@ -883,9 +932,68 @@
         currentTimeDisplay.innerText = toHHMMSS(video.currentTime) + "/" + toHHMMSS(video.duration);
     };
     // ---------------------------------------------------
+    /* globals $ */
+    let G_fileSize = null;
+    function updateSourceQualityDisplay()
+    {
+        // /*
+        /*
+        $.ajax({
+            type: 'HEAD',
+            url: video.currentSrc,
+            complete: function(xhr) {
+                G_fileSize = xhr.getResponseHeader('Content-Length');
+                const size = formatBytes(G_fileSize, 2); // humanize(xhr.getResponseHeader('Content-Length'));
+                currentSourceQualityDisplay.innerText = video.videoHeight + `p [${size}]`;
+                window.top.postMessage({
+                    sender: 'ANSWER',
+                    // data: {
+                    duration: video.duration,
+                    // currentTime: video.currentTime, // skip sending 'video.currentTime'
+                    videoWidth: video.videoWidth,
+                    videoHeight: video.videoHeight,
+                    size: G_fileSize,
+                    // }
+                }, '*');
+            }
+        });
+        */
+        try {
+            fetch(video.currentSrc, {method: 'HEAD', cache: 'no-cache', mode: 'cors'}).then((response) => {
+                G_fileSize = Number(response.headers.get('Content-Length'));
+                const size = formatBytes(G_fileSize, 2);
+                currentSourceQualityDisplay.innerText = video.videoHeight + `p [${size}]`;
+                window.top.postMessage({
+                    sender: 'ANSWER',
+                    // data: {
+                    duration: video.duration,
+                    // currentTime: video.currentTime, // skip sending 'currentTime'
+                    videoWidth: video.videoWidth,
+                    videoHeight: video.videoHeight,
+                    size: G_fileSize,
+                    // src: video.currentSrc, // skip sending 'src'
+                    // }
+                }, '*');
+            });
+        } catch(e){
+            console.log(e);
+        };
+        // */
+        /*
+        let xhr = createCORSRequest('HEAD', video.currentSrc);
+        xhr.onload = function()
+        {
+            let size = formatBytes(xhr.getResponseHeader('Content-Length'), 2); // humanize(xhr.getResponseHeader('Content-Length'));
+            currentSourceQualityDisplay.innerText = video.videoHeight + `p [${size}]`;
+            // alert(size);
+        };
+        xhr.send();
+        */
+    };
     function onVideoLoadedMetaData() {
         currentTimeDisplay.innerText = toHHMMSS(0) + "/" + toHHMMSS(video.duration);
         currentSourceQualityDisplay.innerText = video.videoHeight + 'p';
+        updateSourceQualityDisplay();
         updateProgressBar();
     };
     function onVideoVolumeChange() {
@@ -1641,6 +1749,8 @@
                                 currentTime: video.currentTime,
                                 videoWidth: video.videoWidth,
                                 videoHeight: video.videoHeight,
+                                size: G_fileSize,
+                                // src: video.currentSrc, // skip sending 'src'
                                 // }
                             }, '*');
                         }, 50);
