@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.1.04
+// @version      2.1.06
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -32,6 +32,7 @@
 // @match        *://www.ebalovo.pro/video/*
 // @match        *://sxyprn.com/post/*
 // @match        *://sxyprn.net/post/*
+// @match        *://pornley.com/porn-video/*
 // @match        *://upornia.com/videos/*/*
 // @match        *://txxx.tube/videos/*/*
 // @match        *://*.pornhub.com/*
@@ -334,6 +335,21 @@
         head.appendChild(style);
         return style;
     };
+    const darkModeCSS = [
+        `:root {`,
+        `    background-color: #fefefe;`,
+        `    filter: invert(100%);`,
+        `}`,
+        `* {`,
+        `    background-color: inherit;`,
+        `}`,
+        `#uniqueEmbedCodedescriptionHolder, #uniqueEmbedCodeTextArea, #uniqueEmbedCodeCatInput {`,
+        `    background-color: transparent;`,
+        `}`,
+        `img:not([src*=".svg"]), video, iframe, #info-msg-box, #uniqueEmbedCodedescriptionHolder, #uniqueEmbedCodeTextArea, #uniqueEmbedCodeCatButtonHolder > button, #uniqueEmbedCodeCatInput, #uniqueEmbedCodeFrame > a[target="_blank"] {`,
+        `    filter: invert(100%);`,
+        `}`,
+    ].join('\n');
     // ================================================================================
     function addKeyComboCtrlC(targetElement, preventDefault, ignoreSelections) {
         let keyCodes = {'c' : 67};
@@ -1287,7 +1303,7 @@
         G_embedCodeDescriptionHolder.style.alignItems = 'left';
         // G_embedCodeDescriptionHolder.style.border = '1px grey solid';
         // G_embedCodeDescriptionHolder.style.height = '26px';
-        G_embedCodeDescriptionHolder.style.backgroundColor = 'black';
+        // G_embedCodeDescriptionHolder.style.backgroundColor = 'black';
         embedCodeFrame.appendChild(G_embedCodeDescriptionHolder);
         // --------------------------------------------------------------------------------
         let buttonHolderID = 'uniqueEmbedCodeCatButtonHolder';
@@ -1898,7 +1914,8 @@
         log(G_debugMode, G_embedCodeTextAreaColor);
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
         // let A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
-        msgbox('Video', (G_videoWidth + ' x ' + G_videoHeight) + '\n' + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
+        const msg = msgbox('Video', `${G_videoWidth} x ${G_videoHeight} [${G_fileQualityMax.toFixed(2)}]\n` + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
+        msg.id = 'info-msg-box';
         // --------------------------------------------------------------------------------
         G_embedCodePoster.style.borderColor = G_embedCodeTextAreaColor;
         G_embedCodePoster.style.borderWidth = '2px';
@@ -2785,13 +2802,12 @@
     else if (
         G_pageURL.matchLink('https?://www.ebalovo.pro/*')
     ) {
+        addGlobalStyle(darkModeCSS, 'style-dark-mode');
         if (
             location.pathname.match(/^\/video\//)
         ) {
             //* globals flashvars */
-            G_funcToTest = function () {
-                return typeof flashvars !== "undefined" && flashvars.video_url;
-            };
+            G_funcToTest = function () { return typeof flashvars !== 'undefined' && flashvars.video_url;};
             function getMaxQualityURL(limit = 0) {
                 let maxQuality = 0, contentURL;
                 G_allData = {};
@@ -2821,20 +2837,23 @@
                 };
                 return contentURL;
             };
+            function preparePlayerData() {
+                let contentURL = getMaxQualityURL(G_qualityLimit);
+                let posterURL = flashvars.preview_url;
+                console.log('contentURL: ', contentURL);
+                let refinedURL = refineVideo(contentURL);
+                if (G_allData) {
+                    let jsonData = encodeURIComponent(JSON.stringify(G_allData));
+                    let symbol = refinedURL.match(/[?]/) ? '&' : '?';
+                    refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
+                };
+                return refinedURL;
+            };
             if (G_pageURL.match('#OnlyVideo')) { // https://www.ebalovo.pro/video/fotomodel-obslujivaet-tolpu-chernokojih/#OnlyVideo
                 // window.stop();
                 G_funcToRun = function () {
-                    let contentURL = getMaxQualityURL(G_qualityLimit);
-                    let posterURL = flashvars.preview_url;
-                    console.log('contentURL: ', contentURL);
-                    let refinedURL = refineVideo(contentURL);
-                    if (G_allData) {
-                        let jsonData = encodeURIComponent(JSON.stringify(G_allData));
-                        let symbol = refinedURL.match(/[?]/) ? '&' : '?';
-                        refinedURL = refinedURL + symbol + 'jjs=' + jsonData;
-                    };
                     // openURL(refineVideo(contentURL));
-                    openURL(refinedURL);
+                    openURL(preparePlayerData());
                 };
                 waitForCondition(G_funcToTest, G_funcToRun, G_delay, G_tries, G_timerGroup);
             }
@@ -2865,6 +2884,15 @@
                     G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
                     // --------------------------------------------------------------------------------
                     G_standartAddEmbedCodeFunc();
+                    // --------------------------------------------------------------------------------
+                    const element = document.querySelectorAll('.video-embed')[0]; //document.querySelector('.player-holder > div');
+                    const iframe = document.createElement('iframe');
+                    element.parentNode.appendChild(iframe);
+                    iframe.style.width = element.offsetWidth + 'px';
+                    iframe.style.height = element.offsetHeight + 'px';
+                    iframe.style.border = 'none';
+                    element.replaceWith(iframe);
+                    iframe.src = preparePlayerData();
                     // --------------------------------------------------------------------------------
                     let eventCatcher, media;
                     let handleNewElements = function (e) {
@@ -3047,6 +3075,54 @@
             waitForElement('#vid_container_id video[src*="/cdn"] > source[src*="/cdn"], #vid_container_id video[src*="/cdn"]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
         };
     }
+
+    else if (
+        G_pageURL.matchLink('https?://pornley.com/*') // https://pornley.com/
+    ) {
+        if (G_pageURL.match('#ReCast')) { // https://pornley.com/porn-video/blackmail-my-bro-gina-valentina#ReCast
+            G_funcToRun = function() {G_contentURL = G_funcResult; G_standartReCastFunc();};
+            waitForElement('.video_player video', 'currentSrc', G_funcToRun, G_delay, G_tries * G_triesReCastMult, G_timerGroup);
+        }
+        else if (
+            location.pathname.matchLink('/porn-video/*') // https://pornley.com/porn-video/blackmail-my-bro-gina-valentina
+        ) {
+            G_funcToRun = function () {
+                // --------------------------------------------------------------------------------
+                G_contentURL = G_shortURL; // + '#ReCast';
+                // G_posterURL = G_posterURL ? G_posterURL : getAbsoluteUrl(document.querySelector('meta[property="og:image"]').getAttribute('content', 2));
+                // G_postersArray = CreateLinksList(G_posterURL, /^(https?:\/\/.*eporner.com\/thumbs\/.*)\/\d+_(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                G_stickTo = document.querySelectorAll('div.sponsor, .combo_container')[0]; G_stickPosition = -1;
+                // --------------------------------------------------------------------------------
+                // G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
+                G_sampleURL = G_funcResult;
+                G_posterURL = G_sampleURL.replace(/https?:\/\/pornley.com\/upload\/videos\/(\d+)\/.*.mp4.*/, 'https://pornley.com/upload/videos/$1/1.jpg');
+                G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
+                // G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_standartAddEmbedCodeFunc();
+                // --------------------------------------------------------------------------------
+                const element = document.querySelectorAll('.video_player, .video_player video')[0]; //document.querySelector('.player-holder > div');
+                const iframe = document.createElement('iframe');
+                element.parentNode.appendChild(iframe);
+                iframe.style.width = element.offsetWidth + 'px';
+                iframe.style.height = element.offsetHeight + 'px';
+                iframe.style.border = 'none';
+                element.replaceWith(iframe);
+                iframe.src = refineVideo(G_sampleURL, false);
+                // --------------------------------------------------------------------------------
+                let eventCatcher, media;
+                waitForCondition(function(){
+                    eventCatcher = eventCatcher ? eventCatcher : document.querySelector('.video_player video[src]');
+                    media = media ? media : eventCatcher;
+                    // if (media) {media = media.parentNode};
+                    return eventCatcher && media;
+                }, function() {
+                    mediaMouseControls(eventCatcher, media, 1);
+                }, G_delay, G_tries, G_timerGroup);
+            };
+            waitForElement('.video_player video[src*="/upload"] > source[src*="/upload"], .video_player video[src*="/upload"]', 'src', G_funcToRun, G_delay, G_tries, G_timerGroup);
+        };
+    }
+
 
     else if (
         G_pageURL.matchLink('https?://upornia.com/*') || // https://upornia.com/videos/1080364/exotic-pornstars-melanie-rios-and-gigi-rivera-in-crazy-brunette-hd-sex-clip/
