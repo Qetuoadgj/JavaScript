@@ -2,7 +2,7 @@
 // @name         complete.misc.v2
 // @icon         https://www.google.com/s2/favicons?domain=jquery.com
 // @namespace    complete.misc
-// @version      2.1.06
+// @version      2.1.07
 // @description  try to take over the world!
 // @author       You
 // @downloadURL  https://github.com/Qetuoadgj/JavaScript/raw/master/Misc/complete.misc.v2.user.js
@@ -1705,7 +1705,7 @@
         return element;
     };
     // --------------------------------------------------------------------------------
-    var G_embedCodeVideo, G_sampleURL, G_videoWidth = 0, G_videoHeight = 0, G_videoDuration = 0, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
+    var G_embedCodeVideo, G_sampleURL, G_noSampleVideo = false, G_videoWidth = 0, G_videoHeight = 0, G_videoDuration = 0, G_videoQuality, G_forceLoad = true; function addEmbedCodeVideo(embedCodeFrame, onClickFunc, onLoadFunc, onErrorFunc, forceLoad = false) {
         let elementID = 'uniqueEmbedCodeVideo';
         for (let element of document.querySelectorAll('#' + elementID)) {element.remove();};
         // --------------------------------------------------------------------------------
@@ -1900,7 +1900,7 @@
         G_funcToRun();
     };
     // ================================================================================
-    function updateEmbedCodeTextColor(color = null) {
+    function updateEmbedCodeTextColor(color = null, noMsg = false) {
         if (color) {
             G_embedCodeText = updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
             G_embedCodeTextAreaColor = color;
@@ -1914,8 +1914,10 @@
         log(G_debugMode, G_embedCodeTextAreaColor);
         // new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join(123)).play();
         // let A, o = (A = new AudioContext()).createOscillator(); o.connect(A.destination); o.start(0); setTimeout(function(){o.stop(0)}, 200);
-        const msg = msgbox('Video', `${G_videoWidth} x ${G_videoHeight} [${G_fileQualityMax.toFixed(2)}]\n` + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
-        msg.id = 'info-msg-box';
+        if (!noMsg) {
+            const msg = msgbox('Video', `${G_videoWidth} x ${G_videoHeight} [${G_fileQuality.toFixed(2)}/${G_fileQualityMax.toFixed(2)}]\n` + (G_sampleURL || G_pageURL).replace(/.*?:\/\/(.*?)\/.*/, '$1'), 3000);
+            msg.id = 'info-msg-box';
+        }
         // --------------------------------------------------------------------------------
         G_embedCodePoster.style.borderColor = G_embedCodeTextAreaColor;
         G_embedCodePoster.style.borderWidth = '2px';
@@ -1924,26 +1926,41 @@
         resizeEmbedCodePoster(1.0, 0.5, 5000);
     };
     // ================================================================================
-    var G_noQualitySample = false, G_qualitySampleSource = null, G_qualitySampleLastSrc = null, G_fileSize = 0, G_fileSizeMax = 0, G_fileQualityMax = 0, G_actorsSource = [], G_categoriesSource = [];
-    function applyQuality(size, duration, decimals) {
-        size = Number(size)
-        G_fileSize = size;
+    var G_noQualitySample = false, G_qualitySampleSource = null, G_qualitySampleLastSrc = null, G_fileSize = 0, G_fileSizeMax = 0, G_fileQuality = 0, G_fileQualityMax = 0, G_videoHeightMax = 0, G_actorsSource = [], G_categoriesSource = [];
+    function applyQuality(data = {
+        src: null,
+        duration: null,
+        videoHeight: null,
+        videoWidth: null,
+        size: null,
+    }, decimals = 2) {
+        G_fileSize = Number(data.size);
         G_fileSizeMax = G_fileSize > Number(G_fileSizeMax) ? G_fileSize : Number(G_fileSizeMax);
-        const quality = (size / duration) / (360000 * 1.3 * 0.71 / 0.4);
-        G_fileQualityMax = quality > G_fileQualityMax ? quality : G_fileQualityMax;
+        const quality = (data.size / data.duration) / (360000 * 1.3 * 0.71 / 0.4);
+        G_fileQuality = quality;
+        if (G_fileQuality > G_fileQualityMax) {
+            G_fileQualityMax = G_fileQuality;
+            G_videoHeightMax = data.videoHeight;
+        };
         const color = valToColor(quality * 100, 1, 1.0, 0, 100, 1);
         G_embedCodeDescriptionHolder.style.color = valToColor(quality * 100, 1, 1.0, 0, 100, 1)
-        G_embedCodeDescriptionHolder.innerText = formatBytes(size, decimals) + ' [' + formatBytes(G_fileSizeMax, decimals) + ', ' + G_fileQualityMax.toFixed(2) + ']';
-        updateEmbedCodeTextColor(color);
+        G_embedCodeDescriptionHolder.innerText = `${G_videoHeight}p, ${formatBytes(data.size, decimals)}, ${G_fileQuality.toFixed(2)} | ${G_videoHeightMax}p, ${formatBytes(G_fileSizeMax, decimals)}, ${G_fileQualityMax.toFixed(2)}`;
+        updateEmbedCodeTextColor(color, typeof data.size === 'undefined');
     };
     // --------------------------------------------------------------------------------
     function getMediaFileSize(media, link = null) {
         link = link ? link : media.currentSrc;
-        applyQuality(0, 1, 0);
+        applyQuality(0, 1, 0, null);
         try {
             fetch(link, {method: 'HEAD', cache: 'no-cache', mode: 'cors'}).then((response) => {
                 const size = response.headers.get('Content-Length');
-                applyQuality(size, media.duration, 2);
+                applyQuality({
+                    src:  media.currentSrc,
+                    duration: media.duration,
+                    videoHeight: media.videoHeight,
+                    videoHeight: media.videoWidth,
+                    size: size,
+                }, 2);
                 UpdatePageTitle();
             });
         } catch(e){
@@ -1999,7 +2016,7 @@
             G_qualitySampleSource.addEventListener('loadeddata', updateValues);
         }
         else {
-            if (G_sampleURL && !G_noQualitySample) {
+            if (!G_noSampleVideo && G_sampleURL && !G_noQualitySample) {
                 G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
                     getMediaFileSize(G_embedCodeVideo, G_sampleURL);
                     updateEmbedCodeTextColor();
@@ -2173,44 +2190,50 @@
             }
             else {
                 G_sampleURL = e.data.src;
-                G_videoWidth = e.data.width;
-                G_videoHeight = e.data.height;
+                G_videoWidth = e.data.videoWidth ? e.data.videoWidth : e.data.width;
+                G_videoHeight = e.data.videoHeight ? e.data.videoHeight : e.data.height;
                 G_videoDuration = e.data.duration;
                 G_fileSize = e.data.size ? e.data.size : G_fileSize;
                 // G_posterURL = e.data.poster;
                 // alert(G_posterURL);
                 if (!G_embedCodeFrame) return;
-                applyQuality(G_fileSize, G_videoDuration, 2);
-                G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
-                    updateEmbedCodeTextColor();
-                    if (e.data.poster) {
-                        if (!G_postersArray.includes(e.data.poster)) {
-                            G_postersArray = G_postersArray.concat([e.data.poster]).unique();
-                            if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
-                            let currentSrc = G_embedCodePoster.getAttribute('src');
-                            if ( currentSrc == '' || currentSrc.match('/vk.com/images/video/thumbs/video_l.png')) {
-                                G_embedCodePoster.setAttribute('src', e.data.poster);
-                                G_posterURL = e.data.poster;
-                                updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
-                            };
-                        }
-                    };
-                }, function onErrorFunc() {
-                    log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
-                    updateEmbedCodeTextColor();
-                    //                     if (G_posterURL) {
-                    //                         if (!G_postersArray.includes(e.data.poster)) {
-                    //                             G_postersArray = G_postersArray.concat([e.data.poster]).unique();
-                    //                             if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
-                    //                         }
-                    //                     };
-                }, G_forceLoad);
+                applyQuality(e.data, 2);
+                if (!G_noSampleVideo) {
+                    G_embedCodeVideo = addEmbedCodeVideo(G_embedCodeFrame, G_funcToRun, function onLoadFunc() {
+                        updateEmbedCodeTextColor();
+                        if (e.data.poster) {
+                            if (!G_postersArray.includes(e.data.poster)) {
+                                G_postersArray = G_postersArray.concat([e.data.poster]).unique();
+                                if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                                let currentSrc = G_embedCodePoster.getAttribute('src');
+                                if ( currentSrc == '' || currentSrc.match('/vk.com/images/video/thumbs/video_l.png')) {
+                                    G_embedCodePoster.setAttribute('src', e.data.poster);
+                                    G_posterURL = e.data.poster;
+                                    updateEmbedCodeText(G_embedCodeTextArea, 1, G_delimiter);
+                                };
+                            }
+                        };
+                    }, function onErrorFunc() {
+                        log(G_debugMode, 'G_embedCodeVideo: onErrorFunc');
+                        updateEmbedCodeTextColor();
+                        //                     if (G_posterURL) {
+                        //                         if (!G_postersArray.includes(e.data.poster)) {
+                        //                             G_postersArray = G_postersArray.concat([e.data.poster]).unique();
+                        //                             if (G_postersArray && G_postersArray.length > 0) G_embedCodePosterSelector = addEmbedCodePosterSelector(G_postersArray);
+                        //                         }
+                        //                     };
+                    }, G_forceLoad);
+                };
             };
         }
         else if(typeof e.data === 'object' && e.data.sender === 'ANSWER' && e.data.size) {
+            // G_sampleURL = e.data.src;
+            G_videoWidth = e.data.videoWidth ? e.data.videoWidth : e.data.width;
+            G_videoHeight = e.data.videoHeight ? e.data.videoHeight : e.data.height;
+            G_videoDuration = e.data.duration;
             G_fileSize = e.data.size;
             if (!G_embedCodeFrame) return;
-            applyQuality(e.data.size, e.data.duration, 2);
+            applyQuality(e.data, 2);
             UpdatePageTitle();
         };
     });
@@ -2886,6 +2909,7 @@
                     G_actorsSource = document.querySelectorAll('#tab_video_info a[href*="/models/"]');
                     G_stickTo = document.querySelector('div.video-info'); G_stickPosition = -1;
                     // --------------------------------------------------------------------------------
+                    G_noSampleVideo = true;
                     G_standartAddEmbedCodeFunc();
                     // --------------------------------------------------------------------------------
                     const element = document.querySelectorAll('.video-embed')[0]; //document.querySelector('.player-holder > div');
@@ -3054,6 +3078,7 @@
                 // G_qualitySampleSource = document.querySelector('#vid_container_id video[src]');
                 G_sampleURL = G_funcResult;
                 G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_noSampleVideo = true;
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 const element = document.querySelectorAll('#vid_container_id, #vid_container_id video')[0]; //document.querySelector('.player-holder > div');
@@ -3101,6 +3126,7 @@
                 G_posterURL = G_sampleURL.replace(/https?:\/\/pornley.com\/upload\/videos\/(\d+)\/.*.mp4.*/, 'https://pornley.com/upload/videos/$1/1.jpg');
                 G_postersArray = CreateLinksList(G_posterURL, /^(.*)\/(\d+).jpg/i, '$1/$NUM_$2.jpg', 1, 100); console.log('G_posters:\n', G_postersArray);
                 // G_previewURL = G_posterURL.replace('/full.jpg', '/vidthumb.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                G_noSampleVideo = true;
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 const element = document.querySelectorAll('.video_player, .video_player video')[0]; //document.querySelector('.player-holder > div');
@@ -3256,6 +3282,7 @@
                 G_sampleURL = data[data.maxQuality+'p'].src; // document.querySelector('.player video > source[src]').src;
                 // G_qualitySampleSource = document.querySelector('.player video');
                 // G_previewURL = G_posterURL.replace('(.*)/(.*)\.jpg', '$1/$2.mp4'); // https://s14.trafficdeposit.com//blog/vid/5ba53b584947a/5c3fa60edb1ed/vidthumb.mp4
+                // G_noSampleVideo = true;
                 G_standartAddEmbedCodeFunc();
                 // console.log(G_embedCodeVideo)
                 // alert(G_sampleURL);
@@ -3728,6 +3755,7 @@
                 // --------------------------------------------------------------------------------
                 G_actorsSource = document.querySelectorAll('a[href*="/actress/"]'); // https://hqporner.com/actress/lana-rhoades
                 G_categoriesSource = document.querySelectorAll('a[href*="/category/"]'); // https://hqporner.com/category/60fps-porn
+                G_noSampleVideo = true;
                 G_standartAddEmbedCodeFunc();
                 // --------------------------------------------------------------------------------
                 // UpdatePageTitle();
