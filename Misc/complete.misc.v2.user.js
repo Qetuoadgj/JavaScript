@@ -343,7 +343,7 @@
         `* {`,
         `    background-color: inherit;`,
         `}`,
-        `#uniqueEmbedCodedescriptionHolder, #uniqueEmbedCodeTextArea, #uniqueEmbedCodeCatInput {`,
+        `#uniqueEmbedCodedescriptionHolder, #uniqueEmbedCodeTextArea, #uniqueEmbedCodeCatInput, #uniqueEmbedCodeFrame > a[target="_blank"] {`,
         `    background-color: transparent;`,
         `}`,
         `img:not([src*=".svg"]), video, iframe, #info-msg-box, #uniqueEmbedCodedescriptionHolder, #uniqueEmbedCodeTextArea, #uniqueEmbedCodeCatButtonHolder > button, #uniqueEmbedCodeCatInput, #uniqueEmbedCodeFrame > a[target="_blank"] {`,
@@ -4137,6 +4137,7 @@
         G_pageURL.matchLink('https?://biqle.*/*') ||
         G_pageURL.matchLink('https?://daftsex.*/*')
     ) {
+        /*
         const css = [
             // `    body, .videos, .header, .bg_width, .page_wrapper, .footer, .more {background: black;}`,
             `    body, .videos, .header, .bg_width, .page_wrapper, .footer, .more, a, .video, .tab-show, .more-playlists, .comments, .search-form {`,
@@ -4148,13 +4149,17 @@
             `}`,
             //
             `textarea, button, input {`,
-            `    background: black /*!important*/;`,
             // `    color: wheat !important;`,
             `    border-color: #222 !important;`,
             `    border-width: 1px !important;`,
             `}`,
         ].join('\n');
         addGlobalStyle(css, 'night-mode');
+        */
+        if (location.host.match('daftsex')) {
+            addGlobalStyle(darkModeCSS, 'style-dark-mode');
+            addGlobalStyle('form.search-form > .head-menu {background: transparent;}', 'search-form-fix');
+        }
         if (G_pageURL.match('#ReCast')) { // https://biqle.ru/watch/-159565098_456242372#ReCast
             return;
         }
