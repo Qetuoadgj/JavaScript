@@ -2676,6 +2676,9 @@
         G_pageURL.matchLink('https?://www.porntrex.com/*')
     ) {
         // https://www.porntrex.com/models/Brooklyn%20Gray/hd/longest/
+        // addGlobalStyle(darkModeCSS, 'style-dark-mode');
+        setCookie('kt_rt_theme', 'black', {kt_rt_theme: 'black', domain: 'www.porntrex.com'/*, expire: null*/});
+        setCookie('kt_rt_theme_capch', 'black', {kt_rt_theme_capch: 'black', domain: 'www.porntrex.com'/*, expire: null*/});
         if (location.pathname.match('%20')) {
             let newPath = location.pathname.replace(/%20/g, '-');
             location.pathname = newPath;
