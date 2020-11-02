@@ -1,0 +1,9 @@
+! https://easylist.to/easylist/easylist.txt
+! https://easylist.to/easylist/easyprivacy.txt
+! https://cdn.statically.io/gh/uBlockOrigin/uAssets/master/filters/filters.txt
+
+! 05.03.2020 https://www.pornhub.com
+pornhub.com###hd-rightColVideoPage > .clearfix
+pornhub.com###videoSearchResult ~ .sectionWrapper
+pornhub.com##.streamatesModelsContainer
+@@||phncdn.com/videos/*$xhr,domain=pornhub.com
