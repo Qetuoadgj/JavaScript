@@ -99,18 +99,18 @@
                     break;
                 };
             };
-            if (!result) {
-                // console.trace();
-            };
+            // if (!result) {
+            //     console.trace();
+            // };
             return result;
         };
         // --------------------------------------------------------------------------------
         waitForCondition(funcToTest, funcOnSuccess, funcOnFail, delay, tries, timerGroup);
     };
     // ================================================================================
-    G_funcToTest = function(){return 1;};
-    G_funcOnFail = function(){alert('G_funcOnFail');};
-    G_funcOnSuccess = function(){alert(G_funcResult);};
+    // G_funcToTest = function(){return 1;};
+    // G_funcOnFail = function(){alert('G_funcOnFail');};
+    // G_funcOnSuccess = function(){alert(G_funcResult);};
     // ================================================================================
     const selector_reserve = '#report-availability';
     const selector_reserve_size = '#report-availability-size';
@@ -121,7 +121,7 @@
         alert(G_funcResult);
     };
     G_funcOnFail = function(){
-        alert('G_funcOnFail');
+        // alert('G_funcOnFail');
         location.reload();
     };
     // ================================================================================
